@@ -9,7 +9,7 @@ final class presentation_exchange_iosTests: XCTestCase {
     XCTAssertNotNil(url)
   }
   
-  func testValidateAgainstBasicExampleSchema() throws {
+  func testValidateBasicExampleAgainstSchema() throws {
     
     var schema: [String: Any] = [:]
     var definition: [String: Any] = [:]
@@ -28,6 +28,32 @@ final class presentation_exchange_iosTests: XCTestCase {
       definition = example
     case .failure(let error):
       XCTAssert(false, error.localizedDescription)
+    }
+    
+    let errors = try! validate(
+      definition,
+      schema: schema
+    ).errors
+    
+    XCTAssertNil(errors)
+  }
+  
+  func testValidateMinimalExampleAgainstSchema() throws {
+    
+    let schema = try? Dictionary.from(
+      localJSONfile: "presentation-definition-envelope"
+    ).get()
+    
+    let definition = try? Dictionary.from(
+      localJSONfile: "minimal_example"
+    ).get()
+    
+    guard
+      let schema = schema,
+      let definition = definition
+    else {
+      XCTAssert(false)
+      return
     }
     
     let errors = try! validate(
