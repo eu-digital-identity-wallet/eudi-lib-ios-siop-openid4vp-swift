@@ -32,10 +32,10 @@ extension Dictionary where Key == String, Value == Any {
     }
 
     static func from(localJSONfile name: String) -> Result<Self, JSONParseError> {
+      //  Bundle.module.path(forResource: "basic_example", ofType: "json")!
         let fileType = "json"
-        let fullFileName = name + (name.contains(fileType) ? "" : ".\(fileType)")
-        guard let path = Bundle.main.path(forResource: fullFileName, ofType: "") else {
-            return .failure(.fileNotFound(filename: fullFileName))
+        guard let path = Bundle.module.path(forResource: name, ofType: fileType) else {
+            return .failure(.fileNotFound(filename: name))
         }
         return from(JSONfile: URL(fileURLWithPath: path))
     }
