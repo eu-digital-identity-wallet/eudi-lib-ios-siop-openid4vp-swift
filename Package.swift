@@ -13,6 +13,15 @@ let package = Package(
             targets: ["presentation-exchange-ios"]),
     ],
     dependencies: [
+      .package(
+        name: "JSONSchema",
+        url: "https://github.com/kylef/JSONSchema.swift",
+        from: "0.6.0"
+      ),
+      .package(
+        url: "https://github.com/g-mark/SwiftPath",
+        from: "0.3.1"
+      )
     ],
     targets: [
         .target(
@@ -22,6 +31,6 @@ let package = Package(
         ),
         .testTarget(
             name: "presentation-exchange-iosTests",
-            dependencies: ["presentation-exchange-ios"]),
+            dependencies: ["presentation-exchange-ios", "JSONSchema"]),
     ]
 )
