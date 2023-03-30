@@ -86,6 +86,24 @@ final class presentation_exchange_iosTests: XCTestCase {
   
   func testValidatePresentationDefinitionAgainstSchema() throws {
     
+    let schema = try! Dictionary.from(
+      localJSONfile: "presentation-definition-envelope"
+    ).get()
     
+    let parser = Parser()
+    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
+      path: "input_descriptors_example",
+      type: "json"
+    )
+    
+    let container = try! result.get()
+    let definition = try! DictionaryEncoder().encode(container.definition)
+    
+    let errors = try! validate(
+      definition,
+      schema: schema
+    ).errors
+    
+    XCTAssertNil(errors)
   }
 }

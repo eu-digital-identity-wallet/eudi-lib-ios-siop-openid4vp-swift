@@ -8,9 +8,28 @@ enum ParserError: Error {
 
 protocol ParserProtocol {
   func decode<T: Codable>(path: String, type: String) -> Result<T, ParserError>
+  func decode<T: Codable>(json: String) -> Result<T, ParserError>
 }
 
 class Parser: ParserProtocol {
+  
+  func decode<T: Codable>(json: String) -> Result<T, ParserError> {
+    guard
+      let data = json.data(using: .utf8)
+    else {
+      return .failure(.invalidData)
+    }
+    
+    let decoder = JSONDecoder()
+
+    do {
+       let presentationDefinition = try decoder.decode(T.self, from: data)
+      return .success(presentationDefinition)
+      
+    } catch {
+      return .failure(.decodingFailure(error.localizedDescription))
+    }
+  }
   
   func decode<T: Codable>(path: String, type: String) -> Result<T, ParserError> {
     
