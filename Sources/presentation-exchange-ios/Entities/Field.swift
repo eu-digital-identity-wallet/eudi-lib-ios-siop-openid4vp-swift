@@ -7,7 +7,7 @@ struct Field: Codable, Equatable {
   let intentToRetain: Bool?
 
   enum CodingKeys: String, CodingKey {
-      case path, filter, purpose
-      case intentToRetain = "intent_to_retain"
+    case path, filter, purpose
+    case intentToRetain = "intent_to_retain"
   }
 }

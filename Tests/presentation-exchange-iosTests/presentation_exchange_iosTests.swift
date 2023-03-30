@@ -63,4 +63,29 @@ final class presentation_exchange_iosTests: XCTestCase {
     
     XCTAssertNil(errors)
   }
+  
+  func testPresentationDefinitionDecoding() throws {
+    
+    let parser = Parser()
+    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
+      path: "input_descriptors_example",
+      type: "json"
+    )
+    
+    let container = try? result.get()
+    guard
+      let container = container
+    else {
+      XCTAssert(false)
+      return
+    }
+    
+    XCTAssert(container.definition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(true)
+  }
+  
+  func testValidatePresentationDefinitionAgainstSchema() throws {
+    
+    
+  }
 }
