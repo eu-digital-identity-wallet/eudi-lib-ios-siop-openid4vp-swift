@@ -4,7 +4,7 @@ struct Format: Codable, Equatable {
   let jwt: Jwt?
   let jwtVc: Jwt?
   let jwtVp: Jwt?
-  
+  let msoMdoc: Jwt?
   let ldpVc: Ldp?
   let ldpVp: Ldp?
   let ldp: Ldp?
@@ -16,6 +16,7 @@ struct Format: Codable, Equatable {
     case ldpVc = "ldp_vc"
     case ldpVp = "ldp_vp"
     case ldp
+    case msoMdoc = "mso_mdoc"
   }
 }
 
