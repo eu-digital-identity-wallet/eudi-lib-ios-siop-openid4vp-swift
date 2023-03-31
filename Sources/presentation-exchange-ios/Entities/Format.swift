@@ -1,8 +1,13 @@
 import Foundation
 
 struct Format: Codable, Equatable {
-  let jwt, jwtVc, jwtVp: Jwt
-  let ldpVc, ldpVp, ldp: Ldp
+  let jwt: Jwt?
+  let jwtVc: Jwt?
+  let jwtVp: Jwt?
+  let msoMdoc: Jwt?
+  let ldpVc: Ldp?
+  let ldpVp: Ldp?
+  let ldp: Ldp?
 
   enum CodingKeys: String, CodingKey {
     case jwt
@@ -11,6 +16,7 @@ struct Format: Codable, Equatable {
     case ldpVc = "ldp_vc"
     case ldpVp = "ldp_vp"
     case ldp
+    case msoMdoc = "mso_mdoc"
   }
 }
 
