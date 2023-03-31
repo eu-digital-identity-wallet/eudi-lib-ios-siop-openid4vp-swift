@@ -1,5 +1,9 @@
 import Foundation
 
+public func ==(lhs: Dictionary<String, Any>, rhs: Dictionary<String, Any>) -> Bool {
+    return NSDictionary(dictionary: lhs).isEqual(to: rhs)
+}
+
 extension Dictionary where Key == String, Value == Any {
 
   enum JSONParseError: Error {

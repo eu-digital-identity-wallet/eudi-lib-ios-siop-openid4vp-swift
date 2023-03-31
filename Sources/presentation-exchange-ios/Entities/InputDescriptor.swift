@@ -1,6 +1,6 @@
 import Foundation
 
-struct InputDescriptor: Codable, Equatable {
+struct InputDescriptor: Codable {
   let id: InputDescriptorId
   let name: Name?
   let purpose: Purpose?

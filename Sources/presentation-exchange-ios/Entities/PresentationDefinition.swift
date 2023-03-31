@@ -3,7 +3,7 @@ import Foundation
 /*
  Based on https://identity.foundation/presentation-exchange/
  */
-struct PresentationDefinitionContainer: Codable, Equatable {
+struct PresentationDefinitionContainer: Codable {
   let definition: PresentationDefinition
   
   enum CodingKeys: String, CodingKey {
@@ -11,7 +11,7 @@ struct PresentationDefinitionContainer: Codable, Equatable {
   }
 }
 
-struct PresentationDefinition: Codable, Equatable {
+struct PresentationDefinition: Codable {
   
   let id: String
   let name: Name?
