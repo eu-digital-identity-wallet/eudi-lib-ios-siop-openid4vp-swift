@@ -1,6 +1,6 @@
 import Foundation
 
-struct Constraints: Codable, Equatable {
+struct Constraints: Codable {
   public let fields: [Field]
   
   enum CodingKeys: String, CodingKey {
