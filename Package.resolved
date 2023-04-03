@@ -1,6 +1,24 @@
 {
   "pins" : [
     {
+      "identity" : "chronometer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/KittyMac/Chronometer.git",
+      "state" : {
+        "revision" : "742a6a58714e6c134d635abc589dbca9526099c3",
+        "version" : "0.1.9"
+      }
+    },
+    {
+      "identity" : "hitch",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/KittyMac/Hitch.git",
+      "state" : {
+        "revision" : "627e9f79fb99a068abcd6f23ee0801acc5a6549c",
+        "version" : "0.4.101"
+      }
+    },
+    {
       "identity" : "jsonschema.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kylef/JSONSchema.swift",
@@ -19,21 +37,30 @@
       }
     },
     {
+      "identity" : "sextant",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/KittyMac/Sextant.git",
+      "state" : {
+        "revision" : "5510717d7e0eeb0e847e11fb60cf5d9bbed06675",
+        "version" : "0.4.18"
+      }
+    },
+    {
+      "identity" : "spanker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/KittyMac/Spanker.git",
+      "state" : {
+        "revision" : "6287aebdb7cb64787b7a6790bfef860ccb55e0ef",
+        "version" : "0.2.33"
+      }
+    },
+    {
       "identity" : "spectre",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/kylef/Spectre.git",
       "state" : {
         "revision" : "26cc5e9ae0947092c7139ef7ba612e34646086c7",
         "version" : "0.10.1"
-      }
-    },
-    {
-      "identity" : "swiftpath",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/g-mark/SwiftPath",
-      "state" : {
-        "revision" : "76144e5936117ff1a535b7ba686f52daa5bb430a",
-        "version" : "0.3.1"
       }
     }
   ],

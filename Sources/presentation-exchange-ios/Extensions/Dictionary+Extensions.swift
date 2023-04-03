@@ -6,6 +6,18 @@ public func ==(lhs: Dictionary<String, Any>, rhs: Dictionary<String, Any>) -> Bo
 
 extension Dictionary where Key == String, Value == Any {
 
+  var jsonData: Data? {
+    return try? JSONSerialization.data(withJSONObject: self, options: [.prettyPrinted])
+  }
+    
+  func toJSONString() -> String? {
+    if let jsonData = jsonData {
+      let jsonString = String(data: jsonData, encoding: .utf8)
+      return jsonString
+    }
+    return nil
+  }
+  
   enum JSONParseError: Error {
     case fileNotFound(filename: String)
     case dataInitialisation(Error)

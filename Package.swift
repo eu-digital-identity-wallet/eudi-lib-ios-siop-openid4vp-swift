@@ -14,23 +14,35 @@ let package = Package(
     ],
     dependencies: [
       .package(
-        name: "JSONSchema",
         url: "https://github.com/kylef/JSONSchema.swift",
         from: "0.6.0"
       ),
       .package(
-        url: "https://github.com/g-mark/SwiftPath",
-        from: "0.3.1"
+        url: "https://github.com/KittyMac/Sextant.git",
+          .upToNextMinor(from: "0.4.0")
       )
     ],
     targets: [
         .target(
             name: "presentation-exchange-ios",
             dependencies: [],
-            resources: [.process("Resources")]
+            resources: [
+              .process("Resources")
+            ]
         ),
         .testTarget(
             name: "presentation-exchange-iosTests",
-            dependencies: ["presentation-exchange-ios", "JSONSchema"]),
+            dependencies: [
+              "presentation-exchange-ios",
+                .product(
+                  name: "JSONSchema",
+                  package: "JSONSchema.swift"
+                ),
+              .product(
+                name: "Sextant",
+                package: "Sextant"
+              )
+            ]
+        ),
     ]
 )

@@ -1,5 +1,7 @@
 import XCTest
 import JSONSchema
+import Sextant
+
 @testable import presentation_exchange_ios
 
 final class presentation_exchange_iosTests: XCTestCase {
@@ -105,5 +107,53 @@ final class presentation_exchange_iosTests: XCTestCase {
     ).errors
     
     XCTAssertNil(errors)
+  }
+  
+  func testSimpleDecodableJSONPath() {
+      let json = #"{"data":{"people":[{"name":"Rocco","age":42},{"name":"John","age":12},{"name":"Elizabeth","age":35},{"name":"Victoria","age":85}]}}"#
+      
+      class Person: Decodable {
+          let name: String
+          let age: Int
+      }
+      
+      guard let persons: [Person] = json.query("$..[?(@.name)]") else { return XCTFail() }
+      XCTAssertEqual(persons[0].name, "Rocco")
+      XCTAssertEqual(persons[0].age, 42)
+      XCTAssertEqual(persons[2].name, "Elizabeth")
+      XCTAssertEqual(persons[2].age, 35)
+  }
+  
+  func testPresentationMatcher() {
+    let matcher = PresentationMatcher()
+    let parser = Parser()
+    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
+      path: "basic_example",
+      type: "json"
+    )
+    
+    guard let container = try? result.get() else {
+      XCTAssert(false, "Unable to decode presentation definition")
+      return
+    }
+    
+    let match = matcher.match(pd: container.definition, claims: [
+      Claim(
+        id: "samplePassport",
+        jsonObject: [
+          "credentialSchema":
+            [
+              "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
+            ],
+          "credentialSubject":
+            [
+              "birth_date":"1974-02-11"
+            ]
+          ]
+        )
+      ]
+    )
+    
+    XCTAssertTrue(!match.isEmpty)
   }
 }

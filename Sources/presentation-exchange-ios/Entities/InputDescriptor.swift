@@ -6,7 +6,7 @@ struct InputDescriptor: Codable {
   let purpose: Purpose?
   let format: Format?
   let constraints: Constraints
-  let groups: [Group]
+  let groups: [Group]?
   
   enum CodingKeys: String, CodingKey {
     case id
