@@ -40,6 +40,35 @@ final class presentation_exchange_iosTests: XCTestCase {
     XCTAssertNil(errors)
   }
   
+  func testValidateMdlExampleAgainstSchema() throws {
+    
+    var schema: [String: Any] = [:]
+    var definition: [String: Any] = [:]
+    
+    let schemaResult = Dictionary.from(localJSONfile: "presentation-definition-envelope")
+    switch schemaResult {
+    case .success(let envelope):
+      schema = envelope
+    case .failure(let error):
+      XCTAssert(false, error.localizedDescription)
+    }
+    
+    let definitionResult = Dictionary.from(localJSONfile: "mdl_example")
+    switch definitionResult {
+    case .success(let example):
+      definition = example
+    case .failure(let error):
+      XCTAssert(false, error.localizedDescription)
+    }
+    
+    let errors = try? validate(
+      definition,
+      schema: schema
+    ).errors
+    
+    XCTAssertNil(errors)
+  }
+  
   func testValidateMinimalExampleAgainstSchema() throws {
     
     let schema = try? Dictionary.from(
@@ -107,6 +136,48 @@ final class presentation_exchange_iosTests: XCTestCase {
     ).errors
     
     XCTAssertNil(errors)
+  }
+  
+  func testValidateMdlExamplePresentationDefinitionAgainstSchema() throws {
+    
+    let schema = try! Dictionary.from(
+      localJSONfile: "presentation-definition-envelope"
+    ).get()
+    
+    let parser = Parser()
+    let result: Result<PresentationDefinition, ParserError> = parser.decode(
+      path: "mdl_example",
+      type: "json"
+    )
+    
+    let container = try! result.get()
+    let definition = try! DictionaryEncoder().encode(container)
+    
+    let errors = try! validate(
+      definition,
+      schema: schema
+    ).errors
+    
+    XCTAssertNil(errors)
+  }
+  
+  func testValidateMdlExamplePresentationDefinitionExpectedData() throws {
+    
+    let schema = try! Dictionary.from(
+      localJSONfile: "presentation-definition-envelope"
+    ).get()
+    
+    let parser = Parser()
+    let result: Result<PresentationDefinition, ParserError> = parser.decode(
+      path: "mdl_example",
+      type: "json"
+    )
+    
+    let container = try! result.get()
+    let definition = try! DictionaryEncoder().encode(container)
+    
+    XCTAssertTrue(container.inputDescriptors.first!.format!.msoMdoc!.alg.count == 2)
+    XCTAssertTrue(container.inputDescriptors.first!.format!.msoMdoc!.alg.last == "ES256")
   }
   
   func testSimpleDecodableJSONPath() {

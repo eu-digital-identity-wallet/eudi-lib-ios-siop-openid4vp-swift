@@ -15,7 +15,7 @@ struct Field: Codable {
   init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     path = try container.decode([String].self, forKey: .path)
-    filter = try container.decode(JSONObject.self, forKey: .filter)
+    filter = try? container.decode(JSONObject.self, forKey: .filter)
     purpose = try? container.decode(String.self, forKey: .purpose)
     intentToRetain = try? container.decode(Bool.self, forKey: .filter)
   }
