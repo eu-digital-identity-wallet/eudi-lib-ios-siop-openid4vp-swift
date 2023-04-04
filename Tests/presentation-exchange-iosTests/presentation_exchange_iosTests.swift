@@ -163,21 +163,15 @@ final class presentation_exchange_iosTests: XCTestCase {
   
   func testValidateMdlExamplePresentationDefinitionExpectedData() throws {
     
-    let schema = try! Dictionary.from(
-      localJSONfile: "presentation-definition-envelope"
-    ).get()
-    
     let parser = Parser()
     let result: Result<PresentationDefinition, ParserError> = parser.decode(
       path: "mdl_example",
       type: "json"
     )
     
-    let container = try! result.get()
-    let definition = try! DictionaryEncoder().encode(container)
-    
-    XCTAssertTrue(container.inputDescriptors.first!.format!.msoMdoc!.alg.count == 2)
-    XCTAssertTrue(container.inputDescriptors.first!.format!.msoMdoc!.alg.last == "ES256")
+    let presentationDefinition = try! result.get()
+    XCTAssertTrue(presentationDefinition.inputDescriptors.first!.format!.msoMdoc!.alg.count == 2)
+    XCTAssertTrue(presentationDefinition.inputDescriptors.first!.format!.msoMdoc!.alg.last == "ES256")
   }
   
   func testSimpleDecodableJSONPath() {
