@@ -25,7 +25,12 @@ let package = Package(
     targets: [
         .target(
             name: "presentation-exchange-ios",
-            dependencies: [],
+            dependencies: [
+              .product(
+                name: "Sextant",
+                package: "Sextant"
+              )
+            ],
             resources: [
               .process("Resources")
             ]
@@ -34,10 +39,10 @@ let package = Package(
             name: "presentation-exchange-iosTests",
             dependencies: [
               "presentation-exchange-ios",
-                .product(
-                  name: "JSONSchema",
-                  package: "JSONSchema.swift"
-                ),
+              .product(
+                name: "JSONSchema",
+                package: "JSONSchema.swift"
+              ),
               .product(
                 name: "Sextant",
                 package: "Sextant"
