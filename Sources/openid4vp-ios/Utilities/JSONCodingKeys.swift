@@ -1,6 +1,6 @@
 import Foundation
 
-typealias JSONObject = Dictionary<String, Any>
+public typealias JSONObject = Dictionary<String, Any>
 
 public struct JSONCodingKeys: CodingKey {
   public var stringValue: String

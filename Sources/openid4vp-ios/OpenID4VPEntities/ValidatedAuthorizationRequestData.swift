@@ -22,7 +22,7 @@ enum ClientMetaDataSource {
   case fetchByReference(url: URL)
 }
 
-enum ResponseMode {
+public enum ResponseMode {
   case directPost(responseURI: URL)
   case none
 }

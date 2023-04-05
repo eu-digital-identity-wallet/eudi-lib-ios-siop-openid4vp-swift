@@ -1,17 +1,17 @@
 import Foundation
 import Sextant
 
-struct Claim {
+public struct Claim {
   let id: ClaimId
   let jsonObject: JSONObject
 }
 
-protocol PresentationMatching {
+public protocol PresentationMatching {
   func match(pd: PresentationDefinition, claims: [Claim]) -> Match
 }
 
-class PresentationMatcher: PresentationMatching {
-  func match(pd: PresentationDefinition, claims: [Claim]) -> Match {
+public class PresentationMatcher: PresentationMatching {
+  public func match(pd: PresentationDefinition, claims: [Claim]) -> Match {
     var match: Match = [:]
     let inputDescriptors = pd.inputDescriptors
     claims.forEach { claim in

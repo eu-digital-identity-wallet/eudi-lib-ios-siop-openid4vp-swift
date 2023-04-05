@@ -1,13 +1,13 @@
 import Foundation
 
-struct Format: Codable, Equatable {
-  let jwt: Jwt?
-  let jwtVc: Jwt?
-  let jwtVp: Jwt?
-  let msoMdoc: Jwt?
-  let ldpVc: Ldp?
-  let ldpVp: Ldp?
-  let ldp: Ldp?
+public struct Format: Codable, Equatable {
+  public let jwt: Jwt?
+  public let jwtVc: Jwt?
+  public let jwtVp: Jwt?
+  public let msoMdoc: Jwt?
+  public let ldpVc: Ldp?
+  public let ldpVp: Ldp?
+  public let ldp: Ldp?
 
   enum CodingKeys: String, CodingKey {
     case jwt
@@ -20,12 +20,12 @@ struct Format: Codable, Equatable {
   }
 }
 
-struct Jwt: Codable, Equatable {
-  let alg: [String]
+public struct Jwt: Codable, Equatable {
+  public let alg: [String]
 }
 
-struct Ldp: Codable, Equatable {
-  let proofType: [String]
+public struct Ldp: Codable, Equatable {
+  public let proofType: [String]
 
   enum CodingKeys: String, CodingKey {
     case proofType = "proof_type"

@@ -1,8 +1,8 @@
 import Foundation
 
-typealias Match = Dictionary<String, [(String, Any)]>
-typealias ClaimId = String
-typealias Purpose = String
-typealias Name = String
-typealias InputDescriptorId = String
-typealias Group = String
+public typealias Match = Dictionary<String, [(String, Any)]>
+public typealias ClaimId = String
+public typealias Purpose = String
+public typealias Name = String
+public typealias InputDescriptorId = String
+public typealias Group = String

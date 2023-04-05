@@ -4,7 +4,7 @@ import Foundation
  *
  * https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-authorization-request
  */
-struct AuthorizationRequestData: Codable {
+public struct AuthorizationRequestData: Codable {
   let responseType: String?
   let presentationDefinition: String?
   let presentationDefinitionUri: String?
@@ -27,7 +27,7 @@ struct AuthorizationRequestData: Codable {
     case responseMode = "response_mode"
   }
   
-  init(from decoder: Decoder) throws {
+  public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     responseType = try container.decode(String.self, forKey: .responseType)
     presentationDefinition = try container.decode(String.self, forKey: .presentationDefinition)
@@ -40,7 +40,7 @@ struct AuthorizationRequestData: Codable {
     responseMode = try container.decode(String.self, forKey: .responseMode)
   }
       
-  func encode(to encoder: Encoder) throws {
+  public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try? container.encode(responseType, forKey: .responseType)
     try? container.encode(presentationDefinition, forKey: .presentationDefinition)

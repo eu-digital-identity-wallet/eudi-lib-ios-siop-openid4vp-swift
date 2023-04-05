@@ -1,5 +1,5 @@
 import Foundation
 
-typealias Nonce = String
-typealias Scope = String
-typealias ClientMetaData = JSONObject
+public typealias Nonce = String
+public typealias Scope = String
+public typealias ClientMetaData = JSONObject

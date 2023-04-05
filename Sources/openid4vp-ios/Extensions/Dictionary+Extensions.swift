@@ -4,7 +4,7 @@ public func ==(lhs: Dictionary<String, Any>, rhs: Dictionary<String, Any>) -> Bo
     return NSDictionary(dictionary: lhs).isEqual(to: rhs)
 }
 
-extension Dictionary where Key == String, Value == Any {
+public extension Dictionary where Key == String, Value == Any {
 
   var jsonData: Data? {
     return try? JSONSerialization.data(withJSONObject: self, options: [.prettyPrinted])
