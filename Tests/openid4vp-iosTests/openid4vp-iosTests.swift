@@ -2,7 +2,7 @@ import XCTest
 import JSONSchema
 import Sextant
 
-@testable import presentation_exchange_ios
+@testable import openid4vp_ios
 
 final class presentation_exchange_iosTests: XCTestCase {
   

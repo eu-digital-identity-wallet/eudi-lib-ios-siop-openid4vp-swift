@@ -4,13 +4,13 @@
 import PackageDescription
 
 let package = Package(
-    name: "presentation-exchange-ios",
+    name: "openid4vp-ios",
     platforms: [.iOS(.v14)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
-            name: "presentation-exchange-ios",
-            targets: ["presentation-exchange-ios"]),
+            name: "git@github.com:niscy-eudiw/openid4vp-ios.git",
+            targets: ["openid4vp-ios"]),
     ],
     dependencies: [
       .package(
@@ -24,7 +24,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "presentation-exchange-ios",
+            name: "openid4vp-ios",
             dependencies: [
               .product(
                 name: "Sextant",
@@ -36,9 +36,9 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "presentation-exchange-iosTests",
+            name: "openid4vp-iosTests",
             dependencies: [
-              "presentation-exchange-ios",
+              "openid4vp-ios",
               .product(
                 name: "JSONSchema",
                 package: "JSONSchema.swift"
