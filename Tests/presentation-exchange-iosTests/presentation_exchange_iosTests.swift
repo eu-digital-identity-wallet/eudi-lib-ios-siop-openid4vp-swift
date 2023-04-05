@@ -206,6 +206,12 @@ final class presentation_exchange_iosTests: XCTestCase {
       Claim(
         id: "samplePassport",
         jsonObject: [
+          "vc": [
+            "credentialSchema":
+              [
+                "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
+              ]
+          ],
           "credentialSchema":
             [
               "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
