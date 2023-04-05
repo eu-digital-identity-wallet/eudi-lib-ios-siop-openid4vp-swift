@@ -115,6 +115,19 @@ final class presentation_exchange_iosTests: XCTestCase {
     XCTAssert(true)
   }
   
+  func testPresentationDefinitionJsonStringDecoding() throws {
+    
+    let definition = try! Dictionary.from(
+      localJSONfile: "minimal_example"
+    ).get().toJSONString()!
+    
+    let result: Result<PresentationDefinitionContainer, ParserError> = Parser().decode(json: definition)
+    
+    let container = try! result.get()
+    
+    XCTAssert(container.definition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+  }
+  
   func testValidatePresentationDefinitionAgainstSchema() throws {
     
     let schema = try! Dictionary.from(
