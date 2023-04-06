@@ -5,4 +5,5 @@ public enum AuthorizationError: Error {
   case missingResponseType
   case missingPresentationDefinition
   case nonHttpsPresentationDefinitionUri
+  case unsupportedURLScheme
 }
