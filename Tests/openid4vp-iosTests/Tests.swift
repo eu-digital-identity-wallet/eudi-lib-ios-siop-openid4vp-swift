@@ -4,7 +4,7 @@ import Sextant
 
 @testable import openid4vp_ios
 
-final class presentation_exchange_iosTests: XCTestCase {
+final class Tests: XCTestCase {
   
   func testInputDescriptorResourcesExists() throws {
     let url = Bundle.module.url(forResource: "input-descriptor", withExtension: "json")
