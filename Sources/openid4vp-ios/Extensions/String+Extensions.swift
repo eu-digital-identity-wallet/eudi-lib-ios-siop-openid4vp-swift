@@ -6,4 +6,17 @@ extension String {
     let range = NSRange(location: 0, length: self.utf16.count)
     return regex.firstMatch(in: self, options: [], range: range) != nil
   }
+  
+  func isValidJSONString(_ jsonString: String) -> Bool {
+    guard let data = jsonString.data(using: .utf8) else {
+      return false
+    }
+    
+    do {
+      let json = try JSONSerialization.jsonObject(with: data, options: [])
+      return json is [String: Any] || json is [Any]
+    } catch {
+      return false
+    }
+  }
 }
