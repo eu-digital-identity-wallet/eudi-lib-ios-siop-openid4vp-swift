@@ -18,15 +18,6 @@ default_platform(:ios)
 platform :ios do
   desc "Runs unit tests"
   lane :tests do
-    spm(
-      command: "generate-xcodeproj"
-    )
-
-    # run_tests(
-    #   project: "./openid4vp-ios.xcodeproj",
-    #   device: "iPhone 14"
-    # )
-
-    sh("rm", "-rf", "../openid4vp-ios.xcodeproj")
+    sh("swift test")
   end
 end
