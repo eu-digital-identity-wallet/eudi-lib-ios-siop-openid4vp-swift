@@ -1,5 +1,13 @@
 import Foundation
 
+public enum JSONParseError: Error {
+  case fileNotFound(filename: String)
+  case dataInitialisation(Error)
+  case jsonSerialization(Error)
+  case mappingFail(value: Any, toType: Any)
+  case invalidJSON
+}
+
 public func ==(lhs: Dictionary<String, Any>, rhs: Dictionary<String, Any>) -> Bool {
     return NSDictionary(dictionary: lhs).isEqual(to: rhs)
 }
@@ -16,13 +24,6 @@ public extension Dictionary where Key == String, Value == Any {
       return jsonString
     }
     return nil
-  }
-  
-  enum JSONParseError: Error {
-    case fileNotFound(filename: String)
-    case dataInitialisation(Error)
-    case jsonSerialization(Error)
-    case mappingFail(value: Any, toType: Any)
   }
 
   static func from(JSONfile url: URL) -> Result<Self, JSONParseError> {

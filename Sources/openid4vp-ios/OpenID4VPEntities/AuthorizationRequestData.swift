@@ -29,15 +29,34 @@ public struct AuthorizationRequestData: Codable {
   
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-    responseType = try container.decode(String.self, forKey: .responseType)
-    presentationDefinition = try container.decode(String.self, forKey: .presentationDefinition)
-    presentationDefinitionUri = try container.decode(String.self, forKey: .presentationDefinitionUri)
-    clientMetaData = try container.decode(JSONObject.self, forKey: .clientMetaData)
-    clientMetadataUri = try container.decode(String.self, forKey: .clientMetadataUri)
-    clientIdScheme = try container.decode(String.self, forKey: .clientIdScheme)
-    nonce = try container.decode(String.self, forKey: .nonce)
-    scope = try container.decode(String.self, forKey: .scope)
-    responseMode = try container.decode(String.self, forKey: .responseMode)
+    responseType = try? container.decode(String.self, forKey: .responseType)
+    presentationDefinition = try? container.decode(String.self, forKey: .presentationDefinition)
+    presentationDefinitionUri = try? container.decode(String.self, forKey: .presentationDefinitionUri)
+    clientMetaData = try? container.decode(JSONObject.self, forKey: .clientMetaData)
+    clientMetadataUri = try? container.decode(String.self, forKey: .clientMetadataUri)
+    clientIdScheme = try? container.decode(String.self, forKey: .clientIdScheme)
+    nonce = try? container.decode(String.self, forKey: .nonce)
+    scope = try? container.decode(String.self, forKey: .scope)
+    responseMode = try? container.decode(String.self, forKey: .responseMode)
+  }
+  
+  public init?(from url: URL) {
+    
+    let parameters = url.queryParameters
+    
+    responseType = parameters?[CodingKeys.responseType.rawValue] as? String
+    presentationDefinition = parameters?[CodingKeys.presentationDefinition.rawValue] as? String
+    presentationDefinitionUri = parameters?[CodingKeys.presentationDefinitionUri.rawValue] as? String
+    clientMetaData = parameters?[CodingKeys.clientMetaData.rawValue] as? JSONObject
+    clientMetadataUri = parameters?[CodingKeys.clientMetadataUri.rawValue] as? String
+    clientIdScheme = parameters?[CodingKeys.clientIdScheme.rawValue] as? String
+    nonce = parameters?[CodingKeys.nonce.rawValue] as? String
+    scope = parameters?[CodingKeys.scope.rawValue] as? String
+    responseMode = parameters?[CodingKeys.responseMode.rawValue] as? String
+    
+    if presentationDefinition?.isValidJSONString == false {
+      return nil
+    }
   }
       
   public func encode(to encoder: Encoder) throws {
