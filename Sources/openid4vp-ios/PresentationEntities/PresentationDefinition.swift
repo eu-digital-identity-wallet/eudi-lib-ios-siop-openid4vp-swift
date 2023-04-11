@@ -4,13 +4,19 @@ import Foundation
  Based on https://identity.foundation/presentation-exchange/
  */
 public struct PresentationDefinitionContainer: Codable {
+  let comment: String?
   let definition: PresentationDefinition
   
   enum CodingKeys: String, CodingKey {
+    case comment
     case definition = "presentation_definition"
   }
   
-  public init(definition: PresentationDefinition) {
+  public init(
+    comment: String,
+    definition: PresentationDefinition
+  ) {
+    self.comment = comment
     self.definition = definition
   }
 }

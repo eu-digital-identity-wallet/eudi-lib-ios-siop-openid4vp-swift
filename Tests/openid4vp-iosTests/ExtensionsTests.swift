@@ -6,6 +6,16 @@ import Sextant
 
 final class ExtensionsTests: XCTestCase {
   
+  func testArraySubscriptGivenInboundsIndex() {
+    let array = [0, 1, 2, 3, 4, 5, 6]
+    XCTAssertTrue(array[safe: 1] == 1)
+  }
+  
+  func testArraySubscriptGivenOutOfboundsIndex() {
+    let array = [0, 1, 2, 3, 4, 5, 6]
+    XCTAssertNil(array[safe: 10])
+  }
+  
   func testJsonPathSyntaxIsValid() throws {
     let path1 = "$.name"
     let path2 = "$.friends[*].name"

@@ -21,7 +21,7 @@ public struct AuthorizationRequestData: Codable {
     case presentationDefinitionUri = "presentation_definition_uri"
     case clientMetaData = "client_meta_data"
     case clientMetadataUri = "client_metadata_uri"
-    case clientIdScheme = "client_id"
+    case clientIdScheme = "client_id_scheme"
     case nonce
     case scope
     case responseMode = "response_mode"
