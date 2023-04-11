@@ -15,6 +15,12 @@ public struct AuthorizationRequestData: Codable {
   let scope: String?
   let responseMode: String?
   
+  // Missing keys
+  // OpenIdVP auth request is from an OAuth2.0
+  // For the full set of attributes look up the OAuth2.0 spec
+  
+  // TODO: Added SIOP extra params
+  
   enum CodingKeys: String, CodingKey {
     case responseType = "response_type"
     case presentationDefinition = "presentation_definition"

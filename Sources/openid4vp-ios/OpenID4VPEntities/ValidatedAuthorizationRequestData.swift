@@ -3,7 +3,7 @@ import Foundation
 public enum ResponseType: String, Codable {
   case vpToken = "vp_token"
   case IdToken = "id_token"
-  case vpAndIdToken = "vp_token_id_token"
+  case vpAndIdToken = "vp_token id_token"
   case code = "code"
   
   init(authorizationRequestData: AuthorizationRequestData) throws {
@@ -78,6 +78,8 @@ public struct ValidatedAuthorizationRequestData {
   let nonce: Nonce
   let scope: Scope?
   let responseMode: ResponseMode
+  
+  // TODO: The responseType is responsible for assesing which validated structure we map to
   
   public init(
     responseType: ResponseType,

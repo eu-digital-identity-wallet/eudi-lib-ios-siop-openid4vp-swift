@@ -4,6 +4,8 @@ import XCTest
 
 final class OpenID4VPTests: XCTestCase {
   
+  // TODO: Also this info below as JSON ~> JWT ~> JWS
+  // request_uri ~> url encoded url ~> 200 is a JWT
   var nonNormativeUrlString =
   "https://www.example.com/authorize?" +
   "response_type=vp_token" +
@@ -11,7 +13,7 @@ final class OpenID4VPTests: XCTestCase {
   "&client_id_scheme=pre-registered" +
   "&redirect_uri=https://client.example.org/" +
   "&presentation_definition=%@" +
-  "&nonce=n-0S6_WzA2Mj HTTP/1.1"
+  "&nonce=n-0S6_WzA2Mj"
   
   var nonNormativeOutOfScopeUrlString =
   "https://www.example.com/authorize?" +
@@ -20,9 +22,10 @@ final class OpenID4VPTests: XCTestCase {
   "&client_id_scheme=redirect_uri" +
   "&redirect_uri=https://client.example.org/" +
   "&presentation_definition=%@" +
-  "&nonce=n-0S6_WzA2Mj HTTP/1.1"
+  "&nonce=n-0S6_WzA2Mj"
   
   var validOutOfScopeAuthorizeUrl: URL {
+    // TODO: use definitition, not container
     let presentationDefinitionJson = try! String(
       contentsOf: Bundle.module.url(forResource: "minimal_example", withExtension: "json")!
     )
