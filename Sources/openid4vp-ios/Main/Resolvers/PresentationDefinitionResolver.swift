@@ -1,9 +1,5 @@
 import Foundation
 
-public enum ResolvingError: Error {
-  case invalidSource
-}
-
 public class PresentationDefinitionResolver: Resolving {
   public typealias InputType = PresentationDefinitionSource
   public typealias OutputType = PresentationDefinition
