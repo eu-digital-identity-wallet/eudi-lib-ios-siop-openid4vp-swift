@@ -4,7 +4,9 @@ public enum PresentationDefinitionSource {
   case passByValue(presentationDefinition: PresentationDefinition)
   case fetchByReference(url: URL)
   case scopes(scopes: [String])
-  
+}
+
+extension PresentationDefinitionSource {
   init(authorizationRequestData: AuthorizationRequestData) throws {
     
     if let presentationDefinitionString = authorizationRequestData.presentationDefinition {

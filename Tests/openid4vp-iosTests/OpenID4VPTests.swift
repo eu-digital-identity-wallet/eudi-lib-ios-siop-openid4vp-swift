@@ -66,11 +66,6 @@ final class OpenID4VPTests: XCTestCase {
     XCTAssertNotNil(authorizationRequestData)
   }
   
-  func testAuthorizationRequestDataGivenInvalidDataInURL() throws {
-    let authorizationRequestData = AuthorizationRequestData(from: invalidAuthorizeUrl)
-    XCTAssertNil(authorizationRequestData)
-  }
-  
   func testAuthorizationRequestDataGivenValidInput() throws {
     
     let parser = Parser()

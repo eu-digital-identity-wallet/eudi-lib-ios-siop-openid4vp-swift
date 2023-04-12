@@ -45,6 +45,22 @@ public struct AuthorizationRequestData: Codable {
     scope = try? container.decode(String.self, forKey: .scope)
     responseMode = try? container.decode(String.self, forKey: .responseMode)
   }
+      
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try? container.encode(responseType, forKey: .responseType)
+    try? container.encode(presentationDefinition, forKey: .presentationDefinition)
+    try? container.encode(presentationDefinitionUri, forKey: .presentationDefinitionUri)
+    try? container.encode(clientMetaData, forKey: .clientMetaData)
+    try? container.encode(clientMetadataUri, forKey: .clientMetadataUri)
+    try? container.encode(clientIdScheme, forKey: .clientIdScheme)
+    try? container.encode(nonce, forKey: .nonce)
+    try? container.encode(scope, forKey: .scope)
+    try? container.encode(responseMode, forKey: .responseMode)
+  }
+}
+
+extension AuthorizationRequestData {
   
   public init?(from url: URL) {
     
@@ -59,22 +75,5 @@ public struct AuthorizationRequestData: Codable {
     nonce = parameters?[CodingKeys.nonce.rawValue] as? String
     scope = parameters?[CodingKeys.scope.rawValue] as? String
     responseMode = parameters?[CodingKeys.responseMode.rawValue] as? String
-    
-    if presentationDefinition?.isValidJSONString == false {
-      return nil
-    }
-  }
-      
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    try? container.encode(responseType, forKey: .responseType)
-    try? container.encode(presentationDefinition, forKey: .presentationDefinition)
-    try? container.encode(presentationDefinitionUri, forKey: .presentationDefinitionUri)
-    try? container.encode(clientMetaData, forKey: .clientMetaData)
-    try? container.encode(clientMetadataUri, forKey: .clientMetadataUri)
-    try? container.encode(clientIdScheme, forKey: .clientIdScheme)
-    try? container.encode(nonce, forKey: .nonce)
-    try? container.encode(scope, forKey: .scope)
-    try? container.encode(responseMode, forKey: .responseMode)
   }
 }
