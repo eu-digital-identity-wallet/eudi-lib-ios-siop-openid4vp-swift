@@ -2,10 +2,11 @@ import Foundation
 
 public protocol Resolving {
   associatedtype InputType
-  associatedtype OutputType
+  associatedtype OutputType: Codable
   associatedtype ErrorType: Error
   func resolve(
+    fetcher: Fetcher<OutputType>,
     predefinedDefinitions: Dictionary<String, OutputType>,
     source: InputType
-  ) -> Result<OutputType, ErrorType>
+  ) async -> Result<OutputType, ErrorType>
 }

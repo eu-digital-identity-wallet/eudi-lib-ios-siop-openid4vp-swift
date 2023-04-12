@@ -4,6 +4,8 @@ import XCTest
 
 final class OpenID4VPTests: XCTestCase {
   
+  // MARK: Input data
+  
   // TODO: Also this info below as JSON ~> JWT ~> JWS
   // request_uri ~> url encoded url ~> 200 is a JWT
   var nonNormativeUrlString =
@@ -117,6 +119,9 @@ final class OpenID4VPTests: XCTestCase {
     XCTAssertNil(container)
   }
   
+  // MARK: - Validated Authorisation Request Testing
+  
+  #if os(iOS)
   func testValidatedAuthorizationRequestDataGivenValidInputData() throws {
     
     let authorizationRequestData = AuthorizationRequestData(from: validAuthorizeUrl)
@@ -126,6 +131,7 @@ final class OpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validAuthorizationData)
   }
+  #endif
   
   func testValidatedAuthorizationRequestDataGivenInvalidInputData() throws {
     
@@ -135,6 +141,7 @@ final class OpenID4VPTests: XCTestCase {
     XCTAssertNil(validAuthorizationData)
   }
   
+  #if os(iOS)
   func testValidatedAuthorizationRequestDataGivenValidOutofScopeInput() throws {
     
     let authorizationRequestData = AuthorizationRequestData(from: validOutOfScopeAuthorizeUrl)
@@ -149,4 +156,29 @@ final class OpenID4VPTests: XCTestCase {
   
     XCTAssert(false)
   }
+  #endif
+  
+  // MARK: - Resolved Validated Authorisation Request Testing
+  
+  #if os(iOS)
+  func testValidationResolutionGivenDataIsValid() async throws {
+    
+    let authorizationRequestData = AuthorizationRequestData(from: validAuthorizeUrl)
+    XCTAssertNotNil(authorizationRequestData)
+    
+    let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
+    
+    XCTAssertNotNil(validAuthorizationData)
+    
+    let resolvedValidAuthorizationData = try? await ResolvedAuthorizationRequestData(resolver: PresentationDefinitionResolver(), source: validAuthorizationData!.presentationDefinitionSource!)
+    
+    XCTAssertNotNil(resolvedValidAuthorizationData)
+    
+    let presentationDefinition = resolvedValidAuthorizationData!.presentationDefinition
+    
+    XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(presentationDefinition.inputDescriptors.count == 1)
+    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.path.first == "$.credentialSubject.dateOfBirth")
+  }
+  #endif
 }

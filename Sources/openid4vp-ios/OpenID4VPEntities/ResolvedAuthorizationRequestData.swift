@@ -11,7 +11,7 @@ public extension ResolvedAuthorizationRequestData {
   init(
     resolver: PresentationDefinitionResolver,
     source: PresentationDefinitionSource
-  ) throws {
-    presentationDefinition = try resolver.resolve(source: source).get()
+  ) async throws {
+    presentationDefinition = try await resolver.resolve(source: source).get()
   }
 }
