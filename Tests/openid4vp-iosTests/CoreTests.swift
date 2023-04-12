@@ -150,7 +150,7 @@ final class CoreTests: XCTestCase {
   }
   
   
-  func testResizedImageHasCorrectSize() async {
+  func testFetcherCodableDecodingGivenValidRemoteURL() async {
     
     struct TestCodable: Codable {
       let title: String
