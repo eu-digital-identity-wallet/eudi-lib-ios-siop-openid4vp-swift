@@ -7,8 +7,8 @@ extension String {
     return regex.firstMatch(in: self, options: [], range: range) != nil
   }
   
-  func isValidJSONString(_ jsonString: String) -> Bool {
-    guard let data = jsonString.data(using: .utf8) else {
+  var isValidJSONString: Bool {
+    guard let data = self.data(using: .utf8) else {
       return false
     }
     

@@ -50,8 +50,8 @@ public class Parser: ParserProtocol {
     let decoder = JSONDecoder()
 
     do {
-       let presentationDefinition = try decoder.decode(T.self, from: data)
-      return .success(presentationDefinition)
+      let object = try decoder.decode(T.self, from: data)
+      return .success(object)
       
     } catch {
       return .failure(.decodingFailure(error.localizedDescription))

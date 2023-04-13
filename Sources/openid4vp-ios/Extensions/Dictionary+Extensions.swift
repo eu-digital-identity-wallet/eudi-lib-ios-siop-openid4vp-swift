@@ -17,13 +17,6 @@ public extension Dictionary where Key == String, Value == Any {
     }
     return nil
   }
-  
-  enum JSONParseError: Error {
-    case fileNotFound(filename: String)
-    case dataInitialisation(Error)
-    case jsonSerialization(Error)
-    case mappingFail(value: Any, toType: Any)
-  }
 
   static func from(JSONfile url: URL) -> Result<Self, JSONParseError> {
     let data: Data

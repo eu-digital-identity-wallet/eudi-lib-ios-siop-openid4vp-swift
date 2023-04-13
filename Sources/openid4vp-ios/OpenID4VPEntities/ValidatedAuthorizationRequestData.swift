@@ -1,33 +1,6 @@
 import Foundation
 
-public enum ResponseType: String, Codable {
-  case vpToken = "vp_token"
-  case IdToken = "id_token"
-  case vpAndIdToken = "vp_token_id_token"
-  case code = "code"
-}
-
-/*
- * https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-additional-verifier-metadat
- */
-enum ClientIdScheme: String, Codable {
-  case preRegistered = "pre-registered"
-  case redirectUri = "redirect_uri"
-  case entityId = "entity_id"
-  case did = "did"
-}
-
-enum ClientMetaDataSource {
-  case passByValue(metaData: ClientMetaData)
-  case fetchByReference(url: URL)
-}
-
-public enum ResponseMode {
-  case directPost(responseURI: URL)
-  case none
-}
-
-struct ValidatedAuthorizationRequestData {
+public struct ValidatedAuthorizationRequestData {
   let responseType: ResponseType
   let presentationDefinitionSource: PresentationDefinitionSource?
   let clientMetaDataSource: ClientMetaDataSource?
@@ -35,4 +8,44 @@ struct ValidatedAuthorizationRequestData {
   let nonce: Nonce
   let scope: Scope?
   let responseMode: ResponseMode
+  
+  // TODO: The responseType is responsible for assesing which validated structure we map to
+  
+  public init(
+    responseType: ResponseType,
+    presentationDefinitionSource: PresentationDefinitionSource?,
+    clientMetaDataSource: ClientMetaDataSource?,
+    clientIdScheme: ClientIdScheme?,
+    nonce: Nonce,
+    scope: Scope?,
+    responseMode: ResponseMode) {
+    self.responseType = responseType
+    self.presentationDefinitionSource = presentationDefinitionSource
+    self.clientMetaDataSource = clientMetaDataSource
+    self.clientIdScheme = clientIdScheme
+    self.nonce = nonce
+    self.scope = scope
+    self.responseMode = responseMode
+  }
+}
+
+extension ValidatedAuthorizationRequestData {
+  
+  init(authorizationRequestData: AuthorizationRequestData?) throws {
+    guard
+      let authorizationRequestData = authorizationRequestData
+    else {
+      throw ValidatedAuthorizationError.noAuthorizationData
+    }
+    
+    self.init(
+      responseType: try .init(authorizationRequestData: authorizationRequestData),
+      presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
+      clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
+      clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
+      nonce: "",
+      scope: "",
+      responseMode: .none
+    )
+  }
 }
