@@ -16,11 +16,11 @@ public class PresentationDefinitionResolver: Resolving {
         return .success(presentationDefinition)
       }
       return .failure(.invalidSource)
-    case .scopes(scopes: let list):
+    case .scope(scope: let list):
       if let definition = predefinedDefinitions.first(where: { list.contains($0.key)}) {
         return .success(definition.value)
       }
-      return .failure(.invalidSource)
+      return .failure(.invalidScopes)
     }
   }
 }
