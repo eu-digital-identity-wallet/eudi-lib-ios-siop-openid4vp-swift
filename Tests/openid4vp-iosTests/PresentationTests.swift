@@ -4,6 +4,9 @@ import JSONSchema
 @testable import openid4vp_ios
 
 final class PresentationTests: XCTestCase {
+  
+  // MARK: - Presentation definition
+  
   func testPresentationDefinitionDecoding() throws {
     
     let parser = Parser()
@@ -94,5 +97,40 @@ final class PresentationTests: XCTestCase {
     let presentationDefinition = try! result.get()
     XCTAssertTrue(presentationDefinition.inputDescriptors.first!.format!.msoMdoc!.alg.count == 2)
     XCTAssertTrue(presentationDefinition.inputDescriptors.first!.format!.msoMdoc!.alg.last == "ES256")
+  }
+  
+  // MARK: - Presentation submission
+  
+  func testPresentationSubmissionDecoding() throws {
+    
+    let parser = Parser()
+    let result: Result<PresentationSubmissionContainer, ParserError> = parser.decode(
+      path: "presentation_submission_example",
+      type: "json"
+    )
+    
+    let container = try? result.get()
+    guard
+      let container = container
+    else {
+      XCTAssert(false)
+      return
+    }
+    
+    XCTAssert(container.submission.id == "a30e3b91-fb77-4d22-95fa-871689c322e2")
+    XCTAssert(true)
+  }
+  
+  func testPresentationSubmissionJsonStringDecoding() throws {
+    
+    let definition = try! Dictionary.from(
+      localJSONfile: "presentation_submission_example"
+    ).get().toJSONString()!
+    
+    let result: Result<PresentationSubmissionContainer, ParserError> = Parser().decode(json: definition)
+    
+    let container = try! result.get()
+    
+    XCTAssert(container.submission.id == "a30e3b91-fb77-4d22-95fa-871689c322e2")
   }
 }
