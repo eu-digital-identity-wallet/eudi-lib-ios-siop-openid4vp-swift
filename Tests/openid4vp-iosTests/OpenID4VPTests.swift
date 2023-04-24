@@ -180,5 +180,16 @@ final class OpenID4VPTests: XCTestCase {
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
     XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.path.first == "$.credentialSubject.dateOfBirth")
   }
+  
+  func testSDKValidationResolutionGivenDataIsValid() async throws {
+    
+    let sdk = OpenID4VP()
+    let presentationDefinition = try await sdk.process(url: validAuthorizeUrl)
+    
+    XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(presentationDefinition.inputDescriptors.count == 1)
+    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.path.first == "$.credentialSubject.dateOfBirth")
+  }
+  
   #endif
 }
