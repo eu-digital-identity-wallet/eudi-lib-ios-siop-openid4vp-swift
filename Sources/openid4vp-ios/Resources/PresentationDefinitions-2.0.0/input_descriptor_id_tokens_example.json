@@ -22,6 +22,9 @@
                 "type": "string",
                 "pattern": "active"
               }
+            },
+            {
+              "path": ["$.credentialSubject.birth_date"],
             }
           ]
         }
