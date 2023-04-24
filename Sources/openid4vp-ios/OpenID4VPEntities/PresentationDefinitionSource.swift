@@ -3,7 +3,7 @@ import Foundation
 public enum PresentationDefinitionSource {
   case passByValue(presentationDefinition: PresentationDefinition)
   case fetchByReference(url: URL)
-  case scopes(scopes: [String])
+  case scope(scope: [String])
 }
 
 extension PresentationDefinitionSource {
@@ -32,7 +32,7 @@ extension PresentationDefinitionSource {
       
     } else if let scopes = authorizationRequestData.scope?.components(separatedBy: " "),
               !scopes.isEmpty {
-      self = .scopes(scopes: scopes)
+      self = .scope(scope: scopes)
       
     } else {
      

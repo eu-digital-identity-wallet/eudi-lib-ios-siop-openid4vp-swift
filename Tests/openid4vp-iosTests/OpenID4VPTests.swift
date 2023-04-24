@@ -35,6 +35,15 @@ final class OpenID4VPTests: XCTestCase {
   "&presentation_definition_uri=%@" +
   "&nonce=n-0S6_WzA2Mj"
   
+  var nonNormativeScopesUrlString =
+  "https://www.example.com/authorize?" +
+  "response_type=vp_token" +
+  "&client_id=https://client.example.org/" +
+  "&client_id_scheme=pre-registered" +
+  "&redirect_uri=https://client.example.org/" +
+  "&scope=%@" +
+  "&nonce=n-0S6_WzA2Mj"
+  
   var validOutOfScopeAuthorizeUrl: URL {
     // TODO: use definitition, not container
     let presentationDefinitionJson = try! String(
@@ -63,12 +72,21 @@ final class OpenID4VPTests: XCTestCase {
   }
   
   var validByReferenceAuthorizeUrl: URL {
-    let encodedUrlString = String(
+    let urlString = String(
       format: nonNormativeByReferenceUrlString,
       "https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/presentation_definition/32f54163-7166-48f1-93d8-ff217bdb0653"
     )
     
-    return URL(string: encodedUrlString)!
+    return URL(string: urlString)!
+  }
+  
+  var validByScopesAuthorizeUrl: URL {
+    let urlString = String(
+      format: nonNormativeScopesUrlString,
+      "com.example.input_descriptors_example"
+    )
+    
+    return URL(string: urlString)!
   }
   
   var invalidAuthorizeUrl: URL {
@@ -230,5 +248,37 @@ final class OpenID4VPTests: XCTestCase {
     
     XCTAssert(false)
   }
+  
+  // MARK: - Presentation definition scopes test
+  
+  func testValidationResolutionGivenScopesDataIsValid() async throws {
+    
+    let authorizationRequestData = AuthorizationRequestData(from: validByScopesAuthorizeUrl)
+    XCTAssertNotNil(authorizationRequestData)
+    
+    let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
+    
+    XCTAssertNotNil(validAuthorizationData)
+    
+    let parser = Parser()
+    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
+      path: "input_descriptors_example",
+      type: "json"
+    )
+    
+    let cachedPresentationDefinition = try? result.get().definition
+    XCTAssertNotNil(cachedPresentationDefinition)
+    
+    let resolvedValidAuthorizationData = try? await ResolvedAuthorizationRequestData(resolver: PresentationDefinitionResolver(), source: validAuthorizationData!.presentationDefinitionSource!, predefinedDefinitions: ["com.example.input_descriptors_example": cachedPresentationDefinition!])
+    
+    XCTAssertNotNil(resolvedValidAuthorizationData)
+    
+    let presentationDefinition = resolvedValidAuthorizationData!.presentationDefinition
+    
+    XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(presentationDefinition.inputDescriptors.count == 1)
+    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.path.first == "$.credentialSchema.id")
+  }
+  
   #endif
 }

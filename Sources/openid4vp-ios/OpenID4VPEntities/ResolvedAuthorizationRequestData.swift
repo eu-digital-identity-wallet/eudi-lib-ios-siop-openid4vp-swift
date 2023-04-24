@@ -10,8 +10,12 @@ public struct ResolvedAuthorizationRequestData {
 public extension ResolvedAuthorizationRequestData {
   init(
     resolver: PresentationDefinitionResolver,
-    source: PresentationDefinitionSource
+    source: PresentationDefinitionSource,
+    predefinedDefinitions: Dictionary<String, PresentationDefinition> = [:]
   ) async throws {
-    presentationDefinition = try await resolver.resolve(source: source).get()
+    presentationDefinition = try await resolver.resolve(
+      predefinedDefinitions: predefinedDefinitions,
+      source: source
+    ).get()
   }
 }
