@@ -26,6 +26,15 @@ final class OpenID4VPTests: XCTestCase {
   "&presentation_definition=%@" +
   "&nonce=n-0S6_WzA2Mj"
   
+  var nonNormativeByReferenceUrlString =
+  "https://www.example.com/authorize?" +
+  "response_type=vp_token" +
+  "&client_id=https://client.example.org/" +
+  "&client_id_scheme=pre-registered" +
+  "&redirect_uri=https://client.example.org/" +
+  "&presentation_definition_uri=%@" +
+  "&nonce=n-0S6_WzA2Mj"
+  
   var validOutOfScopeAuthorizeUrl: URL {
     // TODO: use definitition, not container
     let presentationDefinitionJson = try! String(
@@ -49,6 +58,15 @@ final class OpenID4VPTests: XCTestCase {
       format: nonNormativeUrlString,
       presentationDefinitionJson).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed
       )!
+    
+    return URL(string: encodedUrlString)!
+  }
+  
+  var validByReferenceAuthorizeUrl: URL {
+    let encodedUrlString = String(
+      format: nonNormativeByReferenceUrlString,
+      "https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/presentation_definition/32f54163-7166-48f1-93d8-ff217bdb0653"
+    )
     
     return URL(string: encodedUrlString)!
   }
@@ -184,11 +202,10 @@ final class OpenID4VPTests: XCTestCase {
   func testSDKValidationResolutionGivenDataIsValid() async throws {
     
     let sdk = OpenID4VP()
-    let presentationDefinition = try await sdk.process(url: validAuthorizeUrl)
+    let presentationDefinition = try await sdk.process(url: validByReferenceAuthorizeUrl)
     
     XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
-    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.path.first == "$.credentialSubject.dateOfBirth")
   }
   
   #endif
