@@ -23,5 +23,5 @@ public class OpenID4VP {
     return matcher.match(pd: presentationDefinition, claims: claims)
   }
   
-  public func verify() {}
+  public func submit() {}
 }
