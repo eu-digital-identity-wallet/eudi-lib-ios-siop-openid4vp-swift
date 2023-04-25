@@ -214,7 +214,7 @@ final class OpenID4VPTests: XCTestCase {
     
     XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
-    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.path.first == "$.credentialSubject.dateOfBirth")
+    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSubject.dateOfBirth")
   }
   
   func testSDKValidationResolutionGivenDataByValueIsValid() async throws {
@@ -277,7 +277,38 @@ final class OpenID4VPTests: XCTestCase {
     
     XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
-    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.path.first == "$.credentialSchema.id")
+    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSchema.id")
+  }
+  
+  func testSDKValidationResolutionAndMatchGivenDataByValueIsValid() async throws {
+    
+    let sdk = OpenID4VP()
+    let passportClaim = Claim(
+      id: "samplePassport",
+      jsonObject: [
+        "credentialSchema":
+          [
+            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
+          ],
+        "credentialSubject":
+          [
+            "birth_date":"1974-02-11",
+          ]
+        ]
+      )
+    
+    let presentationDefinition = try await sdk.process(url: validAuthorizeUrl)
+    let match = sdk.match(presentationDefinition: presentationDefinition, claims: [passportClaim])
+    
+    XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(presentationDefinition.inputDescriptors.count == 1)
+    
+    if case .found = match {
+      XCTAssert(true)
+      
+    } else {
+      XCTFail("wrong match")
+    }
   }
   
   #endif

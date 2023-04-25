@@ -1,41 +1,44 @@
 import Foundation
 import Sextant
 
-public struct Claim {
-  let id: ClaimId
-  let jsonObject: JSONObject
+public enum ClaimsEvaluation {
+  case found(Match)
+  case notFound
 }
 
 public protocol PresentationMatching {
-  func match(pd: PresentationDefinition, claims: [Claim]) -> Match
+  func match(pd: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
 }
 
 public class PresentationMatcher: PresentationMatching {
-  public func match(pd: PresentationDefinition, claims: [Claim]) -> Match {
+  public func match(pd: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation {
     var match: Match = [:]
-    let inputDescriptors = pd.inputDescriptors
     claims.forEach { claim in
-      inputDescriptors.forEach { descriptor in
-        let constraints = descriptor.constraints
-        var result: [(String, Any)] = []
-        constraints.fields.forEach { field in
-          
-          let queries = field.path
-          let json = claim.jsonObject.toJSONString()
-          
-          let values = json?.query(values: queries)
-          let paths = json?.query(paths: queries)
-          
-          if let path = paths?.first as? String,
-             let value = values?.first as? String {
-            result.append((path, value))
-          }
-        }
-        if !result.isEmpty {
-          match[claim.id] = result
+      let matches = pd.inputDescriptors.map { descriptor in
+        let matches = self.match(claim: claim, with: descriptor)
+        return [descriptor.id: matches]
+      }
+      match[claim.id] = matches
+    }
+    /*
+    if match.count != pd.inputDescriptors.count {
+      return .notFound
+    }
+     */
+    return .found(match)
+  }
+  
+  private func match(claim: Claim, with descriptor: InputDescriptor) -> [(String, Any)] {
+    var result: [(String, Any)] = []
+    descriptor.constraints.fields.forEach { field in
+      field.paths.forEach { query in
+        let json = claim.jsonObject.toJSONString()
+        if let values = json?.query(values: query)?.compactMap({ $0 }),
+           !values.isEmpty {
+          result.append((query, values))
         }
       }
     }
-    return match
+    return result
   }
 }

@@ -123,30 +123,45 @@ final class CoreTests: XCTestCase {
       return
     }
     
-    let match = matcher.match(pd: container.definition, claims: [
-      Claim(
-        id: "samplePassport",
-        jsonObject: [
-          "vc": [
-            "credentialSchema":
-              [
-                "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
-              ]
+    let passportClaim = Claim(
+      id: "samplePassport",
+      jsonObject: [
+        "credentialSchema":
+          [
+            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
           ],
-          "credentialSchema":
-            [
-              "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
-            ],
-          "credentialSubject":
-            [
-              "birth_date":"1974-02-11"
-            ]
+        "credentialSubject":
+          [
+            "birth_date":"1974-02-11",
           ]
-        )
+        ]
+      )
+    
+    let bankAccountClaim = Claim(
+      id: "sampleBankAccount",
+      jsonObject: [
+        "credentialSchema":
+          [
+            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
+          ],
+        "credentialSubject":
+          [
+            "account_number":"1234-5678",
+          ]
+        ]
+      )
+    
+    let match = matcher.match(pd: container.definition, claims: [
+      passportClaim,
+      bankAccountClaim
       ]
     )
     
-    XCTAssertTrue(!match.isEmpty)
+    if case .found = match {
+      XCTAssert(true)
+    } else {
+      XCTFail("wrong match")
+    }
   }
   
   

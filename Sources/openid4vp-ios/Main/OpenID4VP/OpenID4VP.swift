@@ -18,7 +18,9 @@ public class OpenID4VP {
     return resolvedValidAuthorizationData.presentationDefinition
   }
   
-  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) {
+  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation {
+    let matcher = PresentationMatcher()
+    return matcher.match(pd: presentationDefinition, claims: claims)
   }
   
   public func verify() {}
