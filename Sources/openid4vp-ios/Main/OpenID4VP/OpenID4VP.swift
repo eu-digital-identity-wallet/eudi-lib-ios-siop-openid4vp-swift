@@ -2,7 +2,9 @@ import Foundation
 
 public class OpenID4VP {
   
-  func process(url: URL) async throws -> PresentationDefinition {
+  public init() {}
+  
+  public func process(url: URL) async throws -> PresentationDefinition {
     let authorizationRequestData = AuthorizationRequestData(from: url)
     
     let validAuthorizationData = try ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
@@ -16,8 +18,8 @@ public class OpenID4VP {
     return resolvedValidAuthorizationData.presentationDefinition
   }
   
-  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) {
+  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) {
   }
   
-  func verify() {}
+  public func verify() {}
 }
