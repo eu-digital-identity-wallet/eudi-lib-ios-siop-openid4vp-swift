@@ -7,10 +7,9 @@ let package = Package(
     name: "OpenID4VP",
     platforms: [.iOS(.v14), .macOS(.v12)],
     products: [
-        // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "git@github.com:niscy-eudiw/openid4vp-ios.git",
-            targets: ["openid4vp-ios"]),
+            targets: ["OpenID4VP"]),
     ],
     dependencies: [
       .package(
@@ -28,7 +27,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "openid4vp-ios",
+            name: "OpenID4VP",
             dependencies: [
               .product(
                 name: "Sextant",
@@ -41,9 +40,9 @@ let package = Package(
             plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]
         ),
         .testTarget(
-            name: "openid4vp-iosTests",
+            name: "OpenID4VPTests",
             dependencies: [
-              "openid4vp-ios",
+              "OpenID4VP",
               .product(
                 name: "JSONSchema",
                 package: "JSONSchema.swift"
