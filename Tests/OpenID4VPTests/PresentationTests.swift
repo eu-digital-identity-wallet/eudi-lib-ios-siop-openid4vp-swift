@@ -7,6 +7,12 @@ final class PresentationTests: XCTestCase {
   
   // MARK: - Presentation definition
   
+  func testPreviewPresentationDefinitionDecoding() throws {
+    
+    let definition = Constants.presentationDefinitionPreview()
+    XCTAssert(definition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+  }
+  
   func testPresentationDefinitionDecoding() throws {
     
     let parser = Parser()
