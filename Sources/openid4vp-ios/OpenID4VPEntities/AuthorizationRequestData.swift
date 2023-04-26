@@ -14,13 +14,10 @@ public struct AuthorizationRequestData: Codable {
   let nonce: String?
   let scope: String?
   let responseMode: String?
-  
+
   // Missing keys
   // OpenIdVP auth request is from an OAuth2.0
   // For the full set of attributes look up the OAuth2.0 spec
-  
-  // TODO: Added SIOP extra params
-  
   enum CodingKeys: String, CodingKey {
     case responseType = "response_type"
     case presentationDefinition = "presentation_definition"
@@ -32,7 +29,7 @@ public struct AuthorizationRequestData: Codable {
     case scope
     case responseMode = "response_mode"
   }
-  
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     responseType = try? container.decode(String.self, forKey: .responseType)
@@ -45,7 +42,7 @@ public struct AuthorizationRequestData: Codable {
     scope = try? container.decode(String.self, forKey: .scope)
     responseMode = try? container.decode(String.self, forKey: .responseMode)
   }
-      
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
     try? container.encode(responseType, forKey: .responseType)
@@ -61,11 +58,8 @@ public struct AuthorizationRequestData: Codable {
 }
 
 extension AuthorizationRequestData {
-  
   public init?(from url: URL) {
-    
     let parameters = url.queryParameters
-    
     responseType = parameters?[CodingKeys.responseType.rawValue] as? String
     presentationDefinition = parameters?[CodingKeys.presentationDefinition.rawValue] as? String
     presentationDefinitionUri = parameters?[CodingKeys.presentationDefinitionUri.rawValue] as? String

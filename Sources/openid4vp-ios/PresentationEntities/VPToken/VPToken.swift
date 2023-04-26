@@ -6,7 +6,7 @@ public struct VpTokenContainer: Codable {
   enum CodingKeys: String, CodingKey {
     case vpToken = "vp_token"
   }
-  
+
   public init(vpToken: VpToken) {
     self.vpToken = vpToken
   }
@@ -18,7 +18,7 @@ public struct VpToken: Codable {
   enum CodingKeys: String, CodingKey {
     case presentationDefinition = "presentation_definition"
   }
-  
+
   public init(presentationDefinition: PresentationDefinition) {
     self.presentationDefinition = presentationDefinition
   }

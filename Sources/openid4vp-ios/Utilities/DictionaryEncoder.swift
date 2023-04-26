@@ -5,27 +5,27 @@ class DictionaryEncoder {
   private let encoder = JSONEncoder()
 
   var dateEncodingStrategy: JSONEncoder.DateEncodingStrategy {
-    set { encoder.dateEncodingStrategy = newValue }
     get { return encoder.dateEncodingStrategy }
+    set { encoder.dateEncodingStrategy = newValue }
   }
 
   var dataEncodingStrategy: JSONEncoder.DataEncodingStrategy {
-    set { encoder.dataEncodingStrategy = newValue }
     get { return encoder.dataEncodingStrategy }
+    set { encoder.dataEncodingStrategy = newValue }
   }
 
   var nonConformingFloatEncodingStrategy: JSONEncoder.NonConformingFloatEncodingStrategy {
-    set { encoder.nonConformingFloatEncodingStrategy = newValue }
     get { return encoder.nonConformingFloatEncodingStrategy }
+    set { encoder.nonConformingFloatEncodingStrategy = newValue }
   }
 
   var keyEncodingStrategy: JSONEncoder.KeyEncodingStrategy {
-    set { encoder.keyEncodingStrategy = newValue }
     get { return encoder.keyEncodingStrategy }
+    set { encoder.keyEncodingStrategy = newValue }
   }
 
-  func encode<T>(_ value: T) throws -> [String: Any] where T : Encodable {
+  func encode<T>(_ value: T) throws -> [String: Any] where T: Encodable {
     let data = try encoder.encode(value)
-      return try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! [String: Any]
+    return try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] ?? [:]
   }
 }

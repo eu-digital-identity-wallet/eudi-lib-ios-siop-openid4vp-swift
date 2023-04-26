@@ -18,7 +18,7 @@ extension ClientIdScheme {
     else {
       throw ValidatedAuthorizationError.unsupportedClientIdScheme(authorizationRequestData.clientIdScheme)
     }
-    
+
     self = clientIdScheme
   }
 }

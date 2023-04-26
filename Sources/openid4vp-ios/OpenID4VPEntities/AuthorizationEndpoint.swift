@@ -6,9 +6,7 @@ enum OpenId4VPAuthorization {
 }
 
 protocol OpenId4VPAuthorizationEndPointProtocol {
-  
   var response: AuthorizationResponse {get set}
-  
   func initialize(wallet configuration: Any)
   func authorize(authorization: OpenId4VPAuthorization) -> Result<AuthorizationResponse, Error>
   func match(claims: [JSONObject]) -> Result<AuthorizationResponse, Error>

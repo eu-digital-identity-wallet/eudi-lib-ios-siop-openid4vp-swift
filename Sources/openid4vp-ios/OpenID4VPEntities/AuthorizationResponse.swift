@@ -1,7 +1,6 @@
 import Foundation
 
 protocol AuthorizationResponseData {
-  
 }
 
 enum AuthorizationResponse {

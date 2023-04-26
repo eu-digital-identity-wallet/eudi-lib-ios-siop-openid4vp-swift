@@ -10,13 +10,12 @@ extension JSONWebToken {
   init?(jsonWebToken: String) {
     let encodedData = { (string: String) -> Data? in
       var encodedString = string.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
-  
-      switch (encodedString.utf16.count % 4) {
+
+      switch encodedString.utf16.count % 4 {
       case 2: encodedString = "\(encodedString)=="
       case 3: encodedString = "\(encodedString)="
       default: break
       }
-  
       return Data(base64Encoded: encodedString)
     }
 

@@ -20,6 +20,10 @@ let package = Package(
       .package(
         url: "https://github.com/KittyMac/Sextant.git",
           .upToNextMinor(from: "0.4.0")
+      ),
+      .package(
+        url: "https://github.com/realm/SwiftLint.git",
+          .upToNextMinor(from: "0.51.0")
       )
     ],
     targets: [
@@ -33,7 +37,8 @@ let package = Package(
             ],
             resources: [
               .process("Resources")
-            ]
+            ],
+            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]
         ),
         .testTarget(
             name: "openid4vp-iosTests",

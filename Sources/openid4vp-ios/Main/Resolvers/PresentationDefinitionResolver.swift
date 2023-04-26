@@ -3,7 +3,7 @@ import Foundation
 public class PresentationDefinitionResolver: Resolving {
   public func resolve(
     fetcher: Fetcher<PresentationDefinition> = Fetcher(),
-    predefinedDefinitions: Dictionary<String, PresentationDefinition> = [:],
+    predefinedDefinitions: [String: PresentationDefinition] = [:],
     source: PresentationDefinitionSource
   ) async -> Result<PresentationDefinition, ResolvingError> {
     switch source {

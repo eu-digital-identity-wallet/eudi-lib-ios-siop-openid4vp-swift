@@ -6,12 +6,12 @@ import Foundation
 public struct PresentationDefinitionContainer: Codable {
   let comment: String?
   let definition: PresentationDefinition
-  
+
   enum CodingKeys: String, CodingKey {
     case comment
     case definition = "presentation_definition"
   }
-  
+
   public init(
     comment: String,
     definition: PresentationDefinition
@@ -22,13 +22,13 @@ public struct PresentationDefinitionContainer: Codable {
 }
 
 public struct PresentationDefinition: Codable {
-  
+
   public let id: String
   public let name: Name?
   public let purpose: Purpose?
   public let format: Format?
   public let inputDescriptors: [InputDescriptor]
-  
+
   enum CodingKeys: String, CodingKey {
     case id
     case name

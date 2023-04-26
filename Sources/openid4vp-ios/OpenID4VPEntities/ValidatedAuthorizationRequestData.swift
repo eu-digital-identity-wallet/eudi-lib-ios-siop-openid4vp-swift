@@ -8,9 +8,8 @@ public struct ValidatedAuthorizationRequestData {
   let nonce: Nonce
   let scope: Scope?
   let responseMode: ResponseMode
-  
+
   // TODO: The responseType is responsible for assesing which validated structure we map to
-  
   public init(
     responseType: ResponseType,
     presentationDefinitionSource: PresentationDefinitionSource?,
@@ -30,14 +29,13 @@ public struct ValidatedAuthorizationRequestData {
 }
 
 extension ValidatedAuthorizationRequestData {
-  
   init(authorizationRequestData: AuthorizationRequestData?) throws {
     guard
       let authorizationRequestData = authorizationRequestData
     else {
       throw ValidatedAuthorizationError.noAuthorizationData
     }
-    
+
     self.init(
       responseType: try .init(authorizationRequestData: authorizationRequestData),
       presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),

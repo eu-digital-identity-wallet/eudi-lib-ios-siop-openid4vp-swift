@@ -7,14 +7,14 @@ public enum ClaimsEvaluation {
 }
 
 public protocol PresentationMatching {
-  func match(pd: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
+  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
 }
 
 public class PresentationMatcher: PresentationMatching {
-  public func match(pd: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation {
+  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation {
     var match: Match = [:]
     claims.forEach { claim in
-      let matches = pd.inputDescriptors.map { descriptor in
+      let matches = presentationDefinition.inputDescriptors.map { descriptor in
         let matches = self.match(claim: claim, with: descriptor)
         return [descriptor.id: matches]
       }
@@ -27,7 +27,7 @@ public class PresentationMatcher: PresentationMatching {
      */
     return .found(match)
   }
-  
+
   private func match(claim: Claim, with descriptor: InputDescriptor) -> [(String, Any)] {
     var result: [(String, Any)] = []
     descriptor.constraints.fields.forEach { field in

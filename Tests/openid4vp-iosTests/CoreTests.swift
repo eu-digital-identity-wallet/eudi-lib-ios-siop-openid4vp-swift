@@ -151,7 +151,7 @@ final class CoreTests: XCTestCase {
         ]
       )
     
-    let match = matcher.match(pd: container.definition, claims: [
+    let match = matcher.match(presentationDefinition: container.definition, claims: [
       passportClaim,
       bankAccountClaim
       ]

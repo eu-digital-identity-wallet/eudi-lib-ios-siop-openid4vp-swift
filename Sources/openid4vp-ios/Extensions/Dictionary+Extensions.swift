@@ -1,6 +1,6 @@
 import Foundation
 
-public func ==(lhs: Dictionary<String, Any>, rhs: Dictionary<String, Any>) -> Bool {
+public func == (lhs: [String: Any], rhs: [String: Any]) -> Bool {
     return NSDictionary(dictionary: lhs).isEqual(to: rhs)
 }
 
@@ -9,7 +9,7 @@ public extension Dictionary where Key == String, Value == Any {
   var jsonData: Data? {
     return try? JSONSerialization.data(withJSONObject: self, options: [.prettyPrinted])
   }
-    
+
   func toJSONString() -> String? {
     if let jsonData = jsonData {
       let jsonString = String(data: jsonData, encoding: .utf8)
@@ -41,7 +41,6 @@ public extension Dictionary where Key == String, Value == Any {
   }
 
   static func from(localJSONfile name: String) -> Result<Self, JSONParseError> {
-  
     let fileType = "json"
     guard let path = Bundle.module.path(forResource: name, ofType: fileType) else {
       return .failure(.fileNotFound(filename: name))

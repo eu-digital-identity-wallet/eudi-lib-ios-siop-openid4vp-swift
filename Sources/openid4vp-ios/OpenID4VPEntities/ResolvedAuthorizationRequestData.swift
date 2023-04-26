@@ -11,7 +11,7 @@ public extension ResolvedAuthorizationRequestData {
   init(
     resolver: PresentationDefinitionResolver,
     source: PresentationDefinitionSource,
-    predefinedDefinitions: Dictionary<String, PresentationDefinition> = [:]
+    predefinedDefinitions: [String: PresentationDefinition] = [:]
   ) async throws {
     presentationDefinition = try await resolver.resolve(
       predefinedDefinitions: predefinedDefinitions,

@@ -34,7 +34,7 @@ final class DependencyStore {
       fatalError("Could not cast \(String(describing: dependency.initializer)) to \(T.self)")
     }
   }
-  
+
   private func identifier<T>(for protocol: T) -> String {
     String(describing: T.self)
   }
