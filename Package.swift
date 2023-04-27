@@ -23,6 +23,10 @@ let package = Package(
       .package(
         url: "https://github.com/realm/SwiftLint.git",
           .upToNextMinor(from: "0.51.0")
+      ),
+      .package(
+        url: "https://github.com/airsidemobile/JOSESwift.git",
+          .upToNextMinor(from: "2.4.0")
       )
     ],
     targets: [
@@ -32,6 +36,14 @@ let package = Package(
               .product(
                 name: "Sextant",
                 package: "Sextant"
+              ),
+              .product(
+                name: "JSONSchema",
+                package: "JSONSchema.swift"
+              ),
+              .product(
+                name: "JOSESwift",
+                package: "JOSESwift"
               )
             ],
             resources: [
@@ -50,6 +62,10 @@ let package = Package(
               .product(
                 name: "Sextant",
                 package: "Sextant"
+              ),
+              .product(
+                name: "JOSESwift",
+                package: "JOSESwift"
               )
             ]
         ),
