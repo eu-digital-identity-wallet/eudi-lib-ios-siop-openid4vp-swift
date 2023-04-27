@@ -71,6 +71,19 @@ final class OpenID4VPTests: XCTestCase {
     return URL(string: encodedUrlString)!
   }
   
+  var validMatchAuthorizeUrl: URL {
+    let presentationDefinitionJson = try! String(
+      contentsOf: Bundle.module.url(forResource: "basic_example", withExtension: "json")!
+    )
+    
+    let encodedUrlString = String(
+      format: nonNormativeUrlString,
+      presentationDefinitionJson).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed
+      )!
+    
+    return URL(string: encodedUrlString)!
+  }
+  
   var validByReferenceAuthorizeUrl: URL {
     let urlString = String(
       format: nonNormativeByReferenceUrlString,
@@ -212,7 +225,7 @@ final class OpenID4VPTests: XCTestCase {
     
     let presentationDefinition = resolvedValidAuthorizationData!.presentationDefinition
     
-    XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
     XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSubject.dateOfBirth")
   }
@@ -222,7 +235,7 @@ final class OpenID4VPTests: XCTestCase {
     let sdk = OpenID4VP()
     let presentationDefinition = try await sdk.process(url: validAuthorizeUrl)
     
-    XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
   }
   
@@ -280,7 +293,7 @@ final class OpenID4VPTests: XCTestCase {
     XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSchema.id")
   }
   
-  func testSDKValidationResolutionAndMatchGivenDataByValueIsValid() async throws {
+  func testSDKValidationResolutionAndDoNotMatchGivenDataByValueIsValid() async throws {
     
     let sdk = OpenID4VP()
     let passportClaim = Claim(
@@ -300,10 +313,10 @@ final class OpenID4VPTests: XCTestCase {
     let presentationDefinition = try await sdk.process(url: validAuthorizeUrl)
     let match = sdk.match(presentationDefinition: presentationDefinition, claims: [passportClaim])
     
-    XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
     
-    if case .found = match {
+    if case .notFound = match {
       XCTAssert(true)
       
     } else {

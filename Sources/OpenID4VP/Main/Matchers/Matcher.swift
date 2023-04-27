@@ -14,18 +14,15 @@ public class PresentationMatcher: PresentationMatching {
   public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation {
     var match: Match = [:]
     claims.forEach { claim in
-      let matches = presentationDefinition.inputDescriptors.map { descriptor in
+      let matches = presentationDefinition.inputDescriptors.compactMap { descriptor in
         let matches = self.match(claim: claim, with: descriptor)
-        return [descriptor.id: matches]
+        return matches.isEmpty ? nil : [descriptor.id: matches]
       }
-      match[claim.id] = matches
+      if !matches.isEmpty {
+        match[claim.id] = matches
+      }
     }
-    /*
-    if match.count != pd.inputDescriptors.count {
-      return .notFound
-    }
-     */
-    return .found(match)
+    return match.isEmpty ? .notFound : .found(match)
   }
 
   private func match(claim: Claim, with descriptor: InputDescriptor) -> [(String, Any)] {

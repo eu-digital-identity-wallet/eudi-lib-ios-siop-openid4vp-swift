@@ -110,7 +110,7 @@ final class CoreTests: XCTestCase {
       XCTAssertEqual(persons[2].age, 35)
   }
   
-  func testPresentationMatcher() {
+  func testPresentationMatcherGivenMatchingClaims() {
     let matcher = PresentationMatcher()
     let parser = Parser()
     let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
@@ -164,6 +164,43 @@ final class CoreTests: XCTestCase {
     }
   }
   
+  func testPresentationMatcherGivenNonMatchingClaims() {
+    let matcher = PresentationMatcher()
+    let parser = Parser()
+    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
+      path: "basic_example",
+      type: "json"
+    )
+    
+    guard let container = try? result.get() else {
+      XCTAssert(false, "Unable to decode presentation definition")
+      return
+    }
+    
+    let nonMatchingClaim = Claim(
+      id: "samplePassport",
+      jsonObject: [
+        "squadName": "Super hero squad",
+        "homeTown": "Metro City",
+        "formed": 2016,
+        "secretBase": "Super tower",
+        "active": true,
+        "members": [
+        ]
+      ]
+    )
+    
+    let match = matcher.match(presentationDefinition: container.definition, claims: [
+      nonMatchingClaim
+      ]
+    )
+    
+    if case .notFound = match {
+      XCTAssert(true)
+    } else {
+      XCTFail("wrong match")
+    }
+  }
   
   func testFetcherCodableDecodingGivenValidRemoteURL() async {
     
