@@ -27,7 +27,11 @@ let package = Package(
       .package(
         url: "https://github.com/airsidemobile/JOSESwift.git",
           .upToNextMinor(from: "2.4.0")
-      )
+      ),
+      .package(
+        url: "https://github.com/birdrides/mockingbird.git",
+          .upToNextMinor(from: "0.20.0")
+      ),
     ],
     targets: [
         .target(
@@ -46,15 +50,22 @@ let package = Package(
                 package: "JOSESwift"
               )
             ],
+            path: "Sources",
             resources: [
               .process("Resources")
             ],
-            plugins: [.plugin(name: "SwiftLintPlugin", package: "SwiftLint")]
+            plugins: [
+              .plugin(name: "SwiftLintPlugin", package: "SwiftLint")
+            ]
         ),
         .testTarget(
             name: "OpenID4VPTests",
             dependencies: [
               "OpenID4VP",
+              .product(
+                name: "Mockingbird",
+                package: "mockingbird"
+              ),
               .product(
                 name: "JSONSchema",
                 package: "JSONSchema.swift"
@@ -67,7 +78,8 @@ let package = Package(
                 name: "JOSESwift",
                 package: "JOSESwift"
               )
-            ]
+            ],
+            path: "Tests"
         ),
     ]
 )
