@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1400"
-   version = "1.3">
+   LastUpgradeVersion = "1430"
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "openid4vp-ios_openid4vp-ios"
-               BuildableName = "openid4vp-ios_openid4vp-ios"
-               BlueprintName = "openid4vp-ios_openid4vp-ios"
+               BlueprintIdentifier = "OpenID4VP_OpenID4VP"
+               BuildableName = "OpenID4VP_OpenID4VP"
+               BlueprintName = "OpenID4VP_OpenID4VP"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -37,28 +37,28 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "openid4vp-iosTests"
-               BuildableName = "openid4vp-iosTests"
-               BlueprintName = "openid4vp-iosTests"
+               BlueprintIdentifier = "OpenID4VP"
+               BuildableName = "OpenID4VP"
+               BlueprintName = "OpenID4VP"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "openid4vp-ios"
-               BuildableName = "openid4vp-ios"
-               BlueprintName = "openid4vp-ios"
+               BlueprintIdentifier = "OpenID4VPTests"
+               BuildableName = "OpenID4VPTests"
+               BlueprintName = "OpenID4VPTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -69,25 +69,15 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "YES">
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "git@github.com:niscy-eudiw/openid4vp-ios.git"
-            BuildableName = "git@github.com:niscy-eudiw/openid4vp-ios.git"
-            BlueprintName = "git@github.com:niscy-eudiw/openid4vp-ios.git"
-            ReferencedContainer = "container:">
-         </BuildableReference>
-      </CodeCoverageTargets>
+      shouldAutocreateTestPlan = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "openid4vp-iosTests"
-               BuildableName = "openid4vp-iosTests"
-               BlueprintName = "openid4vp-iosTests"
+               BlueprintIdentifier = "OpenID4VPTests"
+               BuildableName = "OpenID4VPTests"
+               BlueprintName = "OpenID4VPTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
@@ -113,9 +103,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "openid4vp-ios_openid4vp-ios"
-            BuildableName = "openid4vp-ios_openid4vp-ios"
-            BlueprintName = "openid4vp-ios_openid4vp-ios"
+            BlueprintIdentifier = "OpenID4VP_OpenID4VP"
+            BuildableName = "OpenID4VP_OpenID4VP"
+            BlueprintName = "OpenID4VP_OpenID4VP"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>
