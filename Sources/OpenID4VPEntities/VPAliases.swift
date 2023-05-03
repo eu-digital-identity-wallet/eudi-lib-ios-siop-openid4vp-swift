@@ -1,5 +1,4 @@
 import Foundation
-import logic_core
 
 public typealias JWTURI = String
 public typealias JWTString = String

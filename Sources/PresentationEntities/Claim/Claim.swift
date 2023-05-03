@@ -1,5 +1,4 @@
 import Foundation
-import logic_core
 
 public struct Claim {
   public let id: ClaimId

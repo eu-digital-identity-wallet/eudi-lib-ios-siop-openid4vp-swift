@@ -1,5 +1,4 @@
 import XCTest
-import logic_presentation_exchange
 
 @testable import OpenID4VP
 

@@ -31,14 +31,6 @@ let package = Package(
     .package(
       url: "https://github.com/birdrides/mockingbird.git",
       .upToNextMinor(from: "0.20.0")
-    ),
-    .package(
-      name: "logic_core",
-      path: "./Modules/logic_core"
-    ),
-    .package(
-      name: "logic_presentation_exchange",
-      path: "./Modules/logic_presentation_exchange"
     )
   ],
   targets: [
@@ -56,14 +48,6 @@ let package = Package(
         .product(
           name: "JOSESwift",
           package: "JOSESwift"
-        ),
-        .product(
-          name: "logic_core",
-          package: "logic_core"
-        ),
-        .product(
-          name: "logic_presentation_exchange",
-          package: "logic_presentation_exchange"
         )
       ],
       path: "Sources",
@@ -93,14 +77,6 @@ let package = Package(
         .product(
           name: "JOSESwift",
           package: "JOSESwift"
-        ),
-        .product(
-          name: "logic_core",
-          package: "logic_core"
-        ),
-        .product(
-          name: "logic_presentation_exchange",
-          package: "logic_presentation_exchange"
         )
       ],
       path: "Tests"
