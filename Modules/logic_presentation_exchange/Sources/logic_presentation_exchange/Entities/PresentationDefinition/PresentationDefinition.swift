@@ -4,8 +4,8 @@ import Foundation
  Based on https://identity.foundation/presentation-exchange/
  */
 public struct PresentationDefinitionContainer: Codable {
-  let comment: String?
-  let definition: PresentationDefinition
+  public  let comment: String?
+  public let definition: PresentationDefinition
 
   enum CodingKeys: String, CodingKey {
     case comment
@@ -35,5 +35,18 @@ public struct PresentationDefinition: Codable {
     case purpose
     case format
     case inputDescriptors = "input_descriptors"
+  }
+
+  public init(
+    id: String,
+    name: Name?,
+    purpose: Purpose?,
+    format: Format?,
+    inputDescriptors: [InputDescriptor]) {
+      self.id = id
+      self.name = name
+      self.purpose = purpose
+      self.format = format
+      self.inputDescriptors = inputDescriptors
   }
 }

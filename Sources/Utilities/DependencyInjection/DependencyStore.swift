@@ -1,12 +1,12 @@
 import Foundation
 
-protocol Injectable {}
+public protocol Injectable {}
 
-final class DependencyStore {
-  static let shared = DependencyStore()
+public final class DependencyStore {
+  public static let shared = DependencyStore()
   private var store: [String: Dependency<Any>] = [:]
 
-  func register<T: Injectable, U>(_ initializer: @escaping @autoclosure () -> T, for type: U.Type) {
+  public func register<T: Injectable, U>(_ initializer: @escaping @autoclosure () -> T, for type: U.Type) {
     let key = identifier(for: U.self)
     if store.keys.contains(key) {
       fatalError("Attempted to register \(key) twice.")
@@ -14,7 +14,7 @@ final class DependencyStore {
     store[key] = Dependency(initializer: initializer)
   }
 
-  func resolve<T>() -> T {
+  public func resolve<T>() -> T {
     let key = identifier(for: T.self)
 
     guard let dependency = store[key] else {

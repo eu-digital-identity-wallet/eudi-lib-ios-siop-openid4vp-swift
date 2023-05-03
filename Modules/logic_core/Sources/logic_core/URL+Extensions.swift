@@ -1,7 +1,7 @@
 import Foundation
 
-extension URL {
-  public var queryParameters: [String: Any]? {
+public extension URL {
+  var queryParameters: [String: Any]? {
     guard
       let string = self.absoluteString.removingPercentEncoding,
       let components = URLComponents(string: string),

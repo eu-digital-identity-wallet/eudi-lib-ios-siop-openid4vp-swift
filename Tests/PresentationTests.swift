@@ -1,5 +1,7 @@
 import XCTest
 import JSONSchema
+import logic_core
+import logic_presentation_exchange
 
 @testable import OpenID4VP
 

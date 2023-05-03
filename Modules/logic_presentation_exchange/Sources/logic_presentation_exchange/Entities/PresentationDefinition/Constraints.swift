@@ -6,4 +6,8 @@ public struct Constraints: Codable {
   enum CodingKeys: String, CodingKey {
     case fields
   }
+
+  public init(fields: [Field]) {
+    self.fields = fields
+  }
 }

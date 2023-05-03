@@ -1,24 +1,29 @@
 import Foundation
 
-struct JSONWebTokenHeader {
-  let type: String
-  let algorithm: String
+public struct JSONWebTokenHeader {
+  public let type: String
+  public let algorithm: String
+
+  public init(type: String, algorithm: String) {
+    self.type = type
+    self.algorithm = algorithm
+  }
 }
 
 extension JSONWebTokenHeader: Codable {
 
-  private enum Key: String, CodingKey {
+  enum Key: String, CodingKey {
     case type      = "typ"
     case algorithm = "alg"
   }
 
-  func encode(to encoder: Encoder) throws {
+  public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: Key.self)
     try container.encode(type, forKey: .type)
     try container.encode(algorithm, forKey: .algorithm)
   }
 
-  init(from decoder: Decoder) throws {
+  public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: Key.self)
     type = try container.decode(String.self, forKey: .type)
     algorithm = try container.decode(String.self, forKey: .algorithm)

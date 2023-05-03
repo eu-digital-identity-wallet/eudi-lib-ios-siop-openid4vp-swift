@@ -4,7 +4,7 @@ import Foundation
  Based on https://identity.foundation/presentation-exchange/
  */
 public struct PresentationSubmissionContainer: Codable {
-  let submission: PresentationSubmission
+  public let submission: PresentationSubmission
 
   enum CodingKeys: String, CodingKey {
     case submission = "presentation_submission"
@@ -18,9 +18,9 @@ public struct PresentationSubmissionContainer: Codable {
 }
 
 public struct PresentationSubmission: Codable {
-  let id: String
-  let definitionID: String
-  let descriptorMap: [DescriptorMap]
+  public let id: String
+  public let definitionID: String
+  public let descriptorMap: [DescriptorMap]
 
   enum CodingKeys: String, CodingKey {
     case id
