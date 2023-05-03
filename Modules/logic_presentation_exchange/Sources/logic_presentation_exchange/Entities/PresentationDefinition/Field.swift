@@ -1,4 +1,5 @@
 import Foundation
+import logic_core
 
 public struct Field: Codable {
 
@@ -11,6 +12,17 @@ public struct Field: Codable {
     case path = "path"
     case filter, purpose
     case intentToRetain = "intent_to_retain"
+  }
+
+  public init(
+    paths: [String],
+    filter: JSONObject?,
+    purpose: String?,
+    intentToRetain: Bool?) {
+      self.paths = paths
+      self.filter = filter
+      self.purpose = purpose
+      self.intentToRetain = intentToRetain
   }
 
   public init(from decoder: Decoder) throws {

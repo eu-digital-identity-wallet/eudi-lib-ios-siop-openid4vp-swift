@@ -1,12 +1,18 @@
 import Foundation
 
-struct JSONWebToken {
-  let header: JSONWebTokenHeader
-  let payload: JSONObject
-  let signature: String
+public struct JSONWebToken {
+  public let header: JSONWebTokenHeader
+  public let payload: JSONObject
+  public let signature: String
+
+  public init(header: JSONWebTokenHeader, payload: JSONObject, signature: String) {
+    self.header = header
+    self.payload = payload
+    self.signature = signature
+  }
 }
 
-extension JSONWebToken {
+public extension JSONWebToken {
   init?(jsonWebToken: String) {
     let encodedData = { (string: String) -> Data? in
       var encodedString = string.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")

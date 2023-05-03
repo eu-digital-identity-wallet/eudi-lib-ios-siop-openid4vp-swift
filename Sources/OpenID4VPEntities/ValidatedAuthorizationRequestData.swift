@@ -9,7 +9,6 @@ public struct ValidatedAuthorizationRequestData {
   let scope: Scope?
   let responseMode: ResponseMode
 
-  // TODO: The responseType is responsible for assesing which validated structure we map to
   public init(
     responseType: ResponseType,
     presentationDefinitionSource: PresentationDefinitionSource?,

@@ -1,4 +1,5 @@
 import Foundation
+import logic_core
 
 enum OpenId4VPAuthorization {
   case url(URL)

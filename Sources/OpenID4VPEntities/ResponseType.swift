@@ -16,8 +16,6 @@ extension ResponseType {
       throw ValidatedAuthorizationError.invalidResponseType
     }
 
-    // TODO: Current scope support "vp_token" only, final score will include all cases
-
     guard
       responseType == "vp_token",
       let responseType = ResponseType(rawValue: authorizationRequestData.responseType ?? "")

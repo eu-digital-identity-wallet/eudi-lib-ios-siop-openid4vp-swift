@@ -1,6 +1,7 @@
 import XCTest
 import JSONSchema
 import Sextant
+import logic_presentation_exchange
 
 @testable import OpenID4VP
 

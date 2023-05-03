@@ -1,4 +1,5 @@
 import Foundation
+import logic_presentation_exchange
 
 public enum PresentationDefinitionSource {
   case passByValue(presentationDefinition: PresentationDefinition)

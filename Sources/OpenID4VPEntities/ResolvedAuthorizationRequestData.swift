@@ -1,4 +1,5 @@
 import Foundation
+import logic_presentation_exchange
 
 public struct ResolvedAuthorizationRequestData {
   public let presentationDefinition: PresentationDefinition
