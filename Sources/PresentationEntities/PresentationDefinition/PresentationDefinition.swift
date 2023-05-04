@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 /*
  Based on https://identity.foundation/presentation-exchange/
