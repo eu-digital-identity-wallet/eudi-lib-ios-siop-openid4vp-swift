@@ -170,7 +170,6 @@ final class OpenID4VPTests: XCTestCase {
   
   // MARK: - Validated Authorisation Request Testing
   
-  #if os(iOS)
   func testValidatedAuthorizationRequestDataGivenValidInputData() throws {
     
     let authorizationRequestData = AuthorizationRequestData(from: validAuthorizeUrl)
@@ -180,7 +179,6 @@ final class OpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validAuthorizationData)
   }
-  #endif
   
   func testValidatedAuthorizationRequestDataGivenInvalidInputData() throws {
     
@@ -190,7 +188,6 @@ final class OpenID4VPTests: XCTestCase {
     XCTAssertNil(validAuthorizationData)
   }
   
-  #if os(iOS)
   func testValidatedAuthorizationRequestDataGivenValidOutofScopeInput() throws {
     
     let authorizationRequestData = AuthorizationRequestData(from: validOutOfScopeAuthorizeUrl)
@@ -205,11 +202,9 @@ final class OpenID4VPTests: XCTestCase {
   
     XCTAssert(false)
   }
-  #endif
   
   // MARK: - Resolved Validated Authorisation Request Testing
   
-  #if os(iOS)
   func testValidationResolutionGivenDataIsValid() async throws {
     
     let authorizationRequestData = AuthorizationRequestData(from: validAuthorizeUrl)
@@ -323,6 +318,4 @@ final class OpenID4VPTests: XCTestCase {
       XCTFail("wrong match")
     }
   }
-  
-  #endif
 }
