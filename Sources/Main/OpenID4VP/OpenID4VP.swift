@@ -7,6 +7,13 @@ import Foundation
    Reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html
  
  */
+
+public protocol OpenID4VPProtocol {
+  func process(url: URL) async throws -> PresentationDefinition
+  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
+  func submit()
+}
+
 public class OpenID4VP {
 
   public init() {}
