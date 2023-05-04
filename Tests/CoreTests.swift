@@ -186,6 +186,7 @@ final class CoreTests: XCTestCase {
         "secretBase": "Super tower",
         "active": true,
         "members": [
+          "member-one"
         ]
       ]
     )

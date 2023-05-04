@@ -8,7 +8,7 @@ let package = Package(
   platforms: [.iOS(.v14), .macOS(.v12)],
   products: [
     .library(
-      name: "https://github.com/niscy-eudiw/siop-openid4vp-ios.git",
+      name: "OpenID4VP",
       targets: ["OpenID4VP"]),
   ],
   dependencies: [
