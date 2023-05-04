@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
       "state" : {
-        "revision" : "742056aae5afc4afb7ebfa59442105f7588dac21",
-        "version" : "0.0.1"
+        "revision" : "aef98c0b6b8321496d02ae675083ac5b03c8a6a1",
+        "version" : "0.0.2"
       }
     },
     {

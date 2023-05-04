@@ -34,7 +34,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.1")
+      .upToNextMinor(from: "0.0.2")
     )
   ],
   targets: [
@@ -54,7 +54,7 @@ let package = Package(
           package: "JOSESwift"
         ),
         .product(
-          name: "presentation-exchange-swift",
+          name: "PresentationExchange",
           package: "presentation-exchange-swift"
         )
       ],
@@ -87,7 +87,7 @@ let package = Package(
           package: "JOSESwift"
         ),
         .product(
-          name: "presentation-exchange-swift",
+          name: "PresentationExchange",
           package: "presentation-exchange-swift"
         )
       ],
