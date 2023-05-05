@@ -8,7 +8,7 @@ public enum ResponseType: String, Codable {
 }
 
 extension ResponseType {
-  init(authorizationRequestData: AuthorizationRequestData) throws {
+  init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
 
     guard
       let responseType = authorizationRequestData.responseType

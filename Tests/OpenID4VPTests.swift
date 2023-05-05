@@ -8,6 +8,7 @@ final class OpenID4VPTests: XCTestCase {
   
   // TODO: Also this info below as JSON ~> JWT ~> JWS
   // request_uri ~> url encoded url ~> 200 is a JWT
+  
   var nonNormativeUrlString =
   "https://www.example.com/authorize?" +
   "response_type=vp_token" +
@@ -27,7 +28,7 @@ final class OpenID4VPTests: XCTestCase {
   "&nonce=n-0S6_WzA2Mj"
   
   var nonNormativeByReferenceUrlString =
-  "https://www.example.com/authorize?" +
+  "eudi-wallet://authorize?" +
   "response_type=vp_token" +
   "&client_id=https://client.example.org/" +
   "&client_id_scheme=pre-registered" +
@@ -113,14 +114,14 @@ final class OpenID4VPTests: XCTestCase {
   // MARK: - Authorisation Request Testing
   
   func testAuthorizationRequestDataGivenValidDataInURL() throws {
-    let authorizationRequestData = AuthorizationRequestData(from: validAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
   }
   
   func testAuthorizationRequestDataGivenValidInput() throws {
     
     let parser = Parser()
-    let authorizationResult: Result<AuthorizationRequestData, ParserError> = parser.decode(
+    let authorizationResult: Result<AuthorizationRequestUnprocessedData, ParserError> = parser.decode(
       path: "valid_authorizaton_data_example",
       type: "json"
     )
@@ -148,7 +149,7 @@ final class OpenID4VPTests: XCTestCase {
   func testAuthorizationRequestDataGivenInvalidInput() throws {
   
     let parser = Parser()
-    let result: Result<AuthorizationRequestData, ParserError> = parser.decode(
+    let result: Result<AuthorizationRequestUnprocessedData, ParserError> = parser.decode(
       path: "input_descriptors_example",
       type: "json"
     )
@@ -159,7 +160,7 @@ final class OpenID4VPTests: XCTestCase {
   
   func testAuthorizationRequestDataGivenInvalidJSONInput() throws {
     let parser = Parser()
-    let result: Result<AuthorizationRequestData, ParserError> = parser.decode(
+    let result: Result<AuthorizationRequestUnprocessedData, ParserError> = parser.decode(
       path: "i-dont-know",
       type: "json"
     )
@@ -172,7 +173,7 @@ final class OpenID4VPTests: XCTestCase {
   
   func testValidatedAuthorizationRequestDataGivenValidInputData() throws {
     
-    let authorizationRequestData = AuthorizationRequestData(from: validAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
     
     let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
@@ -182,7 +183,7 @@ final class OpenID4VPTests: XCTestCase {
   
   func testValidatedAuthorizationRequestDataGivenInvalidInputData() throws {
     
-    let authorizationRequestData = AuthorizationRequestData(from: invalidAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: invalidAuthorizeUrl)
     let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
     
     XCTAssertNil(validAuthorizationData)
@@ -190,7 +191,7 @@ final class OpenID4VPTests: XCTestCase {
   
   func testValidatedAuthorizationRequestDataGivenValidOutofScopeInput() throws {
     
-    let authorizationRequestData = AuthorizationRequestData(from: validOutOfScopeAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validOutOfScopeAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
     
     do {
@@ -207,7 +208,7 @@ final class OpenID4VPTests: XCTestCase {
   
   func testValidationResolutionGivenDataIsValid() async throws {
     
-    let authorizationRequestData = AuthorizationRequestData(from: validAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
     
     let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
@@ -261,7 +262,7 @@ final class OpenID4VPTests: XCTestCase {
   
   func testValidationResolutionGivenScopesDataIsValid() async throws {
     
-    let authorizationRequestData = AuthorizationRequestData(from: validByScopesAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validByScopesAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
     
     let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)

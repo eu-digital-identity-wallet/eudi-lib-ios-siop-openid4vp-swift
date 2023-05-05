@@ -8,10 +8,11 @@ public enum ClientIdScheme: String, Codable {
   case redirectUri = "redirect_uri"
   case entityId = "entity_id"
   case did = "did"
+  case isox509 = "iso_x509"
 }
 
 extension ClientIdScheme {
-  init(authorizationRequestData: AuthorizationRequestData) throws {
+  init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
     guard
       authorizationRequestData.clientIdScheme == "pre-registered",
       let clientIdScheme = ClientIdScheme(rawValue: authorizationRequestData.clientIdScheme ?? "")

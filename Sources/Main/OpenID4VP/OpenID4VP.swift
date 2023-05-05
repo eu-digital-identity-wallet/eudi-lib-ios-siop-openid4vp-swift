@@ -31,7 +31,7 @@ public class OpenID4VP {
    - Throws: An error if it cannot resolve a presentation definition
    */
   public func process(url: URL) async throws -> PresentationDefinition {
-    let authorizationRequestData = AuthorizationRequestData(from: url)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
 
     let validAuthorizationData = try ValidatedAuthorizationRequestData(
       authorizationRequestData: authorizationRequestData

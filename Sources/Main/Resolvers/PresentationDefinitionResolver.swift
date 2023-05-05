@@ -16,7 +16,7 @@ public class PresentationDefinitionResolver: Resolving {
         return .success(presentationDefinition)
       }
       return .failure(.invalidSource)
-    case .scope(scope: let list):
+    case .implied(scope: let list):
       if let definition = predefinedDefinitions.first(where: { list.contains($0.key)}) {
         return .success(definition.value)
       }

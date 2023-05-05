@@ -3,11 +3,11 @@ import Foundation
 public enum PresentationDefinitionSource {
   case passByValue(presentationDefinition: PresentationDefinition)
   case fetchByReference(url: URL)
-  case scope(scope: [String])
+  case implied(scope: [String])
 }
 
 extension PresentationDefinitionSource {
-  init(authorizationRequestData: AuthorizationRequestData) throws {
+  init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
     if let presentationDefinitionString = authorizationRequestData.presentationDefinition {
       guard
         presentationDefinitionString.isValidJSONString
@@ -31,7 +31,7 @@ extension PresentationDefinitionSource {
       self = .fetchByReference(url: uri)
     } else if let scopes = authorizationRequestData.scope?.components(separatedBy: " "),
               !scopes.isEmpty {
-      self = .scope(scope: scopes)
+      self = .implied(scope: scopes)
 
     } else {
 

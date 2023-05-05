@@ -28,7 +28,7 @@ public struct ValidatedAuthorizationRequestData {
 }
 
 extension ValidatedAuthorizationRequestData {
-  init(authorizationRequestData: AuthorizationRequestData?) throws {
+  init(authorizationRequestData: AuthorizationRequestUnprocessedData?) throws {
     guard
       let authorizationRequestData = authorizationRequestData
     else {

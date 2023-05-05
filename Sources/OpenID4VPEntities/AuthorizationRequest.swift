@@ -1,7 +1,7 @@
 import Foundation
 
 enum AuthorizationRequest {
-  case oauth2(data: AuthorizationRequestData)
+  case oauth2(data: AuthorizationRequestUnprocessedData)
   case jwtSecuredAuthorizationRequest(request: JwtSecuredAuthorizationRequest)
 }
 
