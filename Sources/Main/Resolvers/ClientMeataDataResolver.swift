@@ -12,7 +12,7 @@ public protocol ClientMetaDataResolving {
 
 public class ClientMetaDataResolver: ClientMetaDataResolving {
   public func resolve(
-    fetcher: Fetcher<ClientMetaData>,
+    fetcher: Fetcher<ClientMetaData> = Fetcher(),
     source: ClientMetaDataSource
   ) async -> Result<ClientMetaData, ResolvingError> {
     switch source {
