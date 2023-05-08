@@ -4,8 +4,15 @@ internal enum DictionaryError: Error {
     case nilValue
 }
 
-internal func getValue<T>(_ key: String, in dictionary: [String: T]) throws -> T {
-    guard let value = dictionary[key] else {
+internal func getStringValue(from metaData: [String: Any], for key: String) throws -> String {
+    guard let value = metaData[key] as? String else {
+        throw DictionaryError.nilValue
+    }
+    return value
+}
+
+internal func getStringArrayValue(from metaData: [String: Any], for key: String) throws -> [String] {
+    guard let value = metaData[key] as? [String] else {
         throw DictionaryError.nilValue
     }
     return value
