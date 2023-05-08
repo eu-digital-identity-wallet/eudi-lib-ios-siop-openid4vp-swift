@@ -1,5 +1,16 @@
 import Foundation
 
+internal enum DictionaryError: Error {
+    case nilValue
+}
+
+internal func getValue<T>(_ key: String, in dictionary: [String: T]) throws -> T {
+    guard let value = dictionary[key] else {
+        throw DictionaryError.nilValue
+    }
+    return value
+}
+
 public func == (lhs: [String: Any], rhs: [String: Any]) -> Bool {
     return NSDictionary(dictionary: lhs).isEqual(to: rhs)
 }

@@ -1,10 +1,5 @@
 import Foundation
 
-public enum IdTokenType: String, Codable {
-  case subjectSigned = "subject_signed"
-  case attesterSigned = "attester_signed"
-}
-
 /*
  *
  * https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-authorization-request
