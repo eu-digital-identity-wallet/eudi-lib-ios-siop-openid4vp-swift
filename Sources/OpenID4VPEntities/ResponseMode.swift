@@ -12,7 +12,7 @@ extension ResponseMode {
   init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
 
     guard
-      let responseType = authorizationRequestData.responseMode
+      authorizationRequestData.responseMode != nil
     else {
       self = .none
       return

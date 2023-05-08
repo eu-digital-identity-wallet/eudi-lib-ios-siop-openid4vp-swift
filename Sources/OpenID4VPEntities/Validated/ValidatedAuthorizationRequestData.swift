@@ -40,8 +40,8 @@ extension ValidatedAuthorizationRequestData {
       presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
       clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
       clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
-      nonce: "",
-      scope: "",
+      nonce: authorizationRequestData.nonce ?? "",
+      scope: authorizationRequestData.scope,
       responseMode: .none
     )
   }

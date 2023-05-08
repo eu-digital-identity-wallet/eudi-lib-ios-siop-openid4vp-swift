@@ -9,8 +9,8 @@ extension ValidatedSiopOpenId4VPRequest {
     let nonce: String
     let scope: Scope?
     let responseMode: ResponseMode
-    let state: String
-    
+    let state: String?
+
     public init(
       idTokenType: [IdTokenType],
       clientMetaDataSource: ClientMetaDataSource?,
@@ -19,7 +19,7 @@ extension ValidatedSiopOpenId4VPRequest {
       nonce: String,
       scope: Scope?,
       responseMode: ResponseMode,
-      state: String
+      state: String?
     ) {
       self.idTokenType = idTokenType
       self.clientMetaDataSource = clientMetaDataSource

@@ -8,7 +8,7 @@ extension ResolvedSiopOpenId4VPRequestData {
     let nonce: String
     let responseMode: ResponseMode
     let state: String?
-    
+
     public init(
       presentationDefinition: PresentationDefinition,
       clientMetaData: ClientMetaData,

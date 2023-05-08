@@ -10,7 +10,7 @@ extension ResolvedSiopOpenId4VPRequestData {
     let responseMode: ResponseMode
     let state: String?
     let scope: Scope?
-    
+
     public init(
       idTokenType: [IdTokenType],
       presentationDefinition: PresentationDefinition,

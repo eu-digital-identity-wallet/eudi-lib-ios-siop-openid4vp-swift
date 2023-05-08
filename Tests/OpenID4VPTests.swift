@@ -6,9 +6,6 @@ final class OpenID4VPTests: XCTestCase {
   
   // MARK: Input data
   
-  // TODO: Also this info below as JSON ~> JWT ~> JWS
-  // request_uri ~> url encoded url ~> 200 is a JWT
-  
   var nonNormativeUrlString =
   "https://www.example.com/authorize?" +
   "response_type=vp_token" +

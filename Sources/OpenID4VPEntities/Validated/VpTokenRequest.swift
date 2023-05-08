@@ -8,8 +8,8 @@ extension ValidatedSiopOpenId4VPRequest {
     let clientId: String
     let nonce: String
     let responseMode: ResponseMode
-    let state: String
-    
+    let state: String?
+
     public init(
       presentationDefinitionSource: PresentationDefinitionSource,
       clientMetaDataSource: ClientMetaDataSource?,
@@ -17,7 +17,7 @@ extension ValidatedSiopOpenId4VPRequest {
       clientId: String,
       nonce: String,
       responseMode: ResponseMode,
-      state: String
+      state: String?
     ) {
       self.presentationDefinitionSource = presentationDefinitionSource
       self.clientMetaDataSource = clientMetaDataSource
