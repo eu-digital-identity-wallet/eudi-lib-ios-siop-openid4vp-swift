@@ -12,16 +12,42 @@ extension ResponseMode {
   init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
 
     guard
-      authorizationRequestData.responseMode != nil
+      let responseMode = authorizationRequestData.responseMode
     else {
-      self = .none
-      return
+      throw ValidatedAuthorizationError.missingRequiredField(".responseMode")
     }
 
-    if let responseURI = URL(string: authorizationRequestData.responseUri ?? "") {
-      self = .directPost(responseURI: responseURI)
-    } else {
-      throw ValidatedAuthorizationError.unsupportedResponseMode(authorizationRequestData.responseType)
+    switch responseMode {
+    case "direct_post":
+      if let responseUri = authorizationRequestData.responseUri,
+         let uri = URL(string: responseUri) {
+        self = .directPost(responseURI: uri)
+      } else {
+        throw ValidatedAuthorizationError.missingRequiredField(".responseUri")
+      }
+    case "direct_post.jwt":
+      if let responseUri = authorizationRequestData.responseUri,
+         let uri = URL(string: responseUri) {
+         self = .directPostJWT(responseURI: uri)
+      } else {
+        throw ValidatedAuthorizationError.missingRequiredField(".responseUri")
+      }
+    case "query":
+      if let redirectUri = authorizationRequestData.redirectUri,
+         let uri = URL(string: redirectUri) {
+        self = .query(responseURI: uri)
+      } else {
+        throw ValidatedAuthorizationError.missingRequiredField(".redirectUri")
+      }
+    case "fragment":
+      if let redirectUri = authorizationRequestData.redirectUri,
+         let uri = URL(string: redirectUri) {
+        self = .fragment(responseURI: uri)
+      } else {
+        throw ValidatedAuthorizationError.missingRequiredField(".redirectUri")
+      }
+    default:
+      throw ValidatedAuthorizationError.unsupportedResponseMode(responseMode)
     }
   }
 }
