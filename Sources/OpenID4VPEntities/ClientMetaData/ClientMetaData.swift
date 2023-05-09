@@ -1,7 +1,7 @@
 import Foundation
 
 // By OpenID Connect Dynamic Client Registration specification
-public struct ClientMetaData: Codable {
+public struct ClientMetaData: Codable, Equatable {
   public let jwksUri: String
   public let idTokenSignedResponseAlg: String
   public let idTokenEncryptedResponseAlg: String
@@ -31,6 +31,18 @@ public struct ClientMetaData: Codable {
   }
 
   public init(metaData: JSONObject) throws {
+    self.jwksUri = try getStringValue(from: metaData, for: "jwks_uri")
+    self.idTokenSignedResponseAlg = try getStringValue(from: metaData, for: "id_token_signed_response_alg")
+    self.idTokenEncryptedResponseAlg = try getStringValue(from: metaData, for: "id_token_encrypted_response_alg")
+    self.idTokenEncryptedResponseEnc = try getStringValue(from: metaData, for: "id_token_encrypted_response_enc")
+    self.subjectSyntaxTypesSupported = try getStringArrayValue(from: metaData, for: "subject_syntax_types_supported")
+  }
+
+  public init(metaDataString: String) throws {
+    guard let metaData = try metaDataString.convertToDictionary() else {
+      throw ValidatedAuthorizationError.invalidClientMetadata
+    }
+
     self.jwksUri = try getStringValue(from: metaData, for: "jwks_uri")
     self.idTokenSignedResponseAlg = try getStringValue(from: metaData, for: "id_token_signed_response_alg")
     self.idTokenEncryptedResponseAlg = try getStringValue(from: metaData, for: "id_token_encrypted_response_alg")

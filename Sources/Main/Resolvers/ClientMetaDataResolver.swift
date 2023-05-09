@@ -2,7 +2,7 @@ import Foundation
 
 public protocol ClientMetaDataResolving {
   associatedtype InputType
-  associatedtype OutputType: Codable
+  associatedtype OutputType: Codable, Equatable
   associatedtype ErrorType: Error
   func resolve(
     fetcher: Fetcher<OutputType>,

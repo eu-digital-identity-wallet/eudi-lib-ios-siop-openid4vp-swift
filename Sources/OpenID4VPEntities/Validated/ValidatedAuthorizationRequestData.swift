@@ -35,8 +35,9 @@ extension ValidatedAuthorizationRequestData {
       throw ValidatedAuthorizationError.noAuthorizationData
     }
 
+    let responseType = try ResponseType.init(authorizationRequestData: authorizationRequestData)
     self.init(
-      responseType: try .init(authorizationRequestData: authorizationRequestData),
+      responseType: responseType,
       presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
       clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
       clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),

@@ -7,7 +7,7 @@ final class OpenID4VPTests: XCTestCase {
   // MARK: Input data
   
   var nonNormativeUrlString =
-  "https://www.example.com/authorize?" +
+  "eudi-wallet://authorize?" +
   "response_type=vp_token" +
   "&client_id=https://client.example.org/" +
   "&client_id_scheme=pre-registered" +

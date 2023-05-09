@@ -1,6 +1,15 @@
 import Foundation
 
 public extension String {
+
+  func convertToDictionary() throws -> [String: Any]? {
+    if let jsonData = self.data(using: .utf8) {
+      let dictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+      return dictionary
+    }
+    return nil
+  }
+
   // swiftlint:disable line_length
   var isValidJSONPath: Bool {
     guard

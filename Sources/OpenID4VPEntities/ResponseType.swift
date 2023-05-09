@@ -11,13 +11,6 @@ extension ResponseType {
   init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
 
     guard
-      let responseType = authorizationRequestData.responseType
-    else {
-      throw ValidatedAuthorizationError.invalidResponseType
-    }
-
-    guard
-      responseType == "vp_token",
       let responseType = ResponseType(rawValue: authorizationRequestData.responseType ?? "")
     else {
       throw ValidatedAuthorizationError.unsupportedResponseType(authorizationRequestData.responseType)

@@ -8,7 +8,7 @@ public enum ClientMetaDataSource {
 extension ClientMetaDataSource {
   init?(authorizationRequestData: AuthorizationRequestUnprocessedData) {
     if let metaData = authorizationRequestData.clientMetaData,
-       let clientMetaData = try? ClientMetaData(metaData: metaData) {
+       let clientMetaData = try? ClientMetaData(metaDataString: metaData) {
       self = .passByValue(metaData: clientMetaData)
     } else if let clientMetadataUri = authorizationRequestData.clientMetadataUri,
               let uri = URL(string: clientMetadataUri),

@@ -18,9 +18,9 @@ extension ResponseMode {
       return
     }
 
-    do {
-      self = try ResponseMode(authorizationRequestData: authorizationRequestData)
-    } catch {
+    if let responseURI = URL(string: authorizationRequestData.responseUri ?? "") {
+      self = .directPost(responseURI: responseURI)
+    } else {
       throw ValidatedAuthorizationError.unsupportedResponseMode(authorizationRequestData.responseType)
     }
   }

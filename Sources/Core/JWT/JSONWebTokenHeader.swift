@@ -10,7 +10,7 @@ public struct JSONWebTokenHeader {
   }
 }
 
-extension JSONWebTokenHeader: Codable {
+extension JSONWebTokenHeader: Codable, Equatable {
 
   enum Key: String, CodingKey {
     case type      = "typ"

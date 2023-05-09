@@ -13,7 +13,7 @@ public struct AuthorizationRequestUnprocessedData: Codable {
   let presentationDefinitionUri: String?
   let request: String?
   let requestUri: String?
-  let clientMetaData: JSONObject?
+  let clientMetaData: String?
   let clientId: String?
   let clientMetadataUri: String?
   let clientIdScheme: String?
@@ -52,7 +52,7 @@ public struct AuthorizationRequestUnprocessedData: Codable {
     presentationDefinitionUri = try? container.decode(String.self, forKey: .presentationDefinitionUri)
 
     clientId = try? container.decode(String.self, forKey: .clientId)
-    clientMetaData = try? container.decode(JSONObject.self, forKey: .clientMetaData)
+    clientMetaData = try? container.decode(String.self, forKey: .clientMetaData)
     clientMetadataUri = try? container.decode(String.self, forKey: .clientMetadataUri)
 
     clientIdScheme = try? container.decode(String.self, forKey: .clientIdScheme)
@@ -106,7 +106,7 @@ extension AuthorizationRequestUnprocessedData {
     presentationDefinitionUri = parameters?[CodingKeys.presentationDefinitionUri.rawValue] as? String
 
     clientId = parameters?[CodingKeys.clientId.rawValue] as? String
-    clientMetaData = parameters?[CodingKeys.clientMetaData.rawValue] as? JSONObject
+    clientMetaData = parameters?[CodingKeys.clientMetaData.rawValue] as? String
     clientMetadataUri = parameters?[CodingKeys.clientMetadataUri.rawValue] as? String
 
     clientIdScheme = parameters?[CodingKeys.clientIdScheme.rawValue] as? String
