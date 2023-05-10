@@ -14,9 +14,9 @@ extension PresentationDefinitionSource {
       let presentationDefinition = try JSONDecoder().decode(PresentationDefinition.self, from: jsonData)
 
       self = .passByValue(presentationDefinition: presentationDefinition)
-    } else if let presentationDefinitionUri = authorizationRequestObject[Constants.PRESENTATION_DEFINITION_URI] as? String,
-              let uri = URL(string: presentationDefinitionUri),
-              uri.scheme == "https" {
+    } else if let uri = authorizationRequestObject[Constants.PRESENTATION_DEFINITION_URI] as? String,
+              let uri = URL(string: uri),
+              uri.scheme == Constants.HTTPS {
       self = .fetchByReference(url: uri)
     } else if let scope = authorizationRequestObject[Constants.SCOPE] as? String,
               !scope.components(separatedBy: " ").isEmpty {
@@ -48,7 +48,7 @@ extension PresentationDefinitionSource {
       self = .passByValue(presentationDefinition: presentationDefinition)
     } else if let presentationDefinitionUri = authorizationRequestData.presentationDefinitionUri,
               let uri = URL(string: presentationDefinitionUri),
-              uri.scheme == "https" {
+              uri.scheme == Constants.HTTPS {
       self = .fetchByReference(url: uri)
     } else if let scopes = authorizationRequestData.scope?.components(separatedBy: " "),
               !scopes.isEmpty {
