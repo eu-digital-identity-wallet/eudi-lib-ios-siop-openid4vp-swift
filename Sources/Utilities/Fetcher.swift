@@ -1,10 +1,23 @@
 import Foundation
 
-public enum FetchError: Error {
+public enum FetchError: LocalizedError {
   case invalidUrl
   case networkError(Error)
   case invalidResponse
   case decodingError(Error)
+
+  public var errorDescription: String? {
+    switch self {
+    case .invalidUrl:
+      return ".invalidUrl"
+    case .networkError(let error):
+      return ".networkError \(error.localizedDescription)"
+    case .invalidResponse:
+      return ".invalidResponse"
+    case .decodingError(let error):
+      return ".decodingError \(error.localizedDescription)"
+    }
+  }
 }
 
 public protocol Fetching {

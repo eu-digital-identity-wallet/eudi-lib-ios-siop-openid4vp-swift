@@ -2,7 +2,7 @@ import Foundation
 
 public enum AuthorizationRequest {
   case oauth2(data: ResolvedSiopOpenId4VPRequestData)
-  case jwtSecuredAuthorizationRequest(request: JwtSecuredAuthorizationRequest)
+  case jwt(request: ResolvedSiopOpenId4VPRequestData)
 }
 
 public extension AuthorizationRequest {
@@ -15,10 +15,24 @@ public extension AuthorizationRequest {
     }
 
     if let request = authorizationRequestData.request {
-      self = .jwtSecuredAuthorizationRequest(request: .passByValue(jwt: request))
+      let validatedAuthorizationRequestData = try ValidatedSiopOpenId4VPRequest(request: request)
+
+      let resolvedSiopOpenId4VPRequestData = try await ResolvedSiopOpenId4VPRequestData(
+        clientMetaDataResolver: ClientMetaDataResolver(),
+        presentationDefinitionResolver: PresentationDefinitionResolver(),
+        validatedAuthorizationRequest: validatedAuthorizationRequestData
+      )
+      self = .jwt(request: resolvedSiopOpenId4VPRequestData)
 
     } else if let requestUri = authorizationRequestData.requestUri {
-      self = .jwtSecuredAuthorizationRequest(request: .passByReference(jwtURI: requestUri))
+      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(requestUri: requestUri)
+
+      let resolvedSiopOpenId4VPRequestData = try await ResolvedSiopOpenId4VPRequestData(
+        clientMetaDataResolver: ClientMetaDataResolver(),
+        presentationDefinitionResolver: PresentationDefinitionResolver(),
+        validatedAuthorizationRequest: validatedAuthorizationRequestData
+      )
+      self = .jwt(request: resolvedSiopOpenId4VPRequestData)
 
     } else {
 
@@ -35,9 +49,4 @@ public extension AuthorizationRequest {
       self = .oauth2(data: resolvedSiopOpenId4VPRequestData)
     }
   }
-}
-
-public enum JwtSecuredAuthorizationRequest {
-  case passByValue(jwt: JWTString)
-  case passByReference(jwtURI: JWTURI)
 }

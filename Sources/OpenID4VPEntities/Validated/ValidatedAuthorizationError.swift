@@ -13,6 +13,7 @@ public enum ValidatedAuthorizationError: LocalizedError {
   case invalidClientMetadata
   case missingRequiredField(String?)
   case invalidJwtPayload
+  case invalidRequestUri(String?)
 
   public var errorDescription: String? {
     switch self {
@@ -40,6 +41,8 @@ public enum ValidatedAuthorizationError: LocalizedError {
       return ".missingRequiredField \(field ?? "")"
     case .invalidJwtPayload:
       return ".invalidJwtPayload"
+    case .invalidRequestUri(let uri):
+      return ".invalidRequestUri \(uri ?? "")"
     }
   }
 }

@@ -1,7 +1,14 @@
 import Foundation
 
-internal enum DictionaryError: Error {
+internal enum DictionaryError: LocalizedError {
   case nilValue
+
+  var errorDescription: String? {
+    switch self {
+    case .nilValue:
+      return ".nilValue"
+    }
+  }
 }
 
 internal func getStringValue(from metaData: [String: Any], for key: String) throws -> String {

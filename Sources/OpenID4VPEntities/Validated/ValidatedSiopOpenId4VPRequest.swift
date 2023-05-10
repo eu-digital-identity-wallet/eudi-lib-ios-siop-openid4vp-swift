@@ -8,7 +8,13 @@ public enum ValidatedSiopOpenId4VPRequest {
 
 public extension ValidatedSiopOpenId4VPRequest {
   init(requestUri: JWTURI) async throws {
-    let jsonWebToken = JSONWebToken(jsonWebToken: requestUri)
+    guard let requestUrl = URL(string: requestUri) else {
+      throw ValidatedAuthorizationError.invalidRequestUri(requestUri)
+    }
+    guard let token: RemoteJWT = try await Fetcher().fetch(url: requestUrl).get() else {
+      throw ValidatedAuthorizationError.invalidJwtPayload
+    }
+    let jsonWebToken = JSONWebToken(jsonWebToken: token.jwt)
     guard let payload = jsonWebToken?.payload else { throw ValidatedAuthorizationError.invalidAuthorizationData }
     guard let clientId = payload["client_id"] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".clientId")

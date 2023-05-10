@@ -2,7 +2,7 @@ import Foundation
 
 public struct RemoteJWT: Codable, Equatable {
   let jwt: JWTString
-  
+
   public init(jwt: JWTString) {
     self.jwt = jwt
   }
@@ -22,7 +22,7 @@ extension RemoteJWT {
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: Key.self)
     jwt = try container.decode(String.self, forKey: .jwt)
-    
+
     if !jwt.isValidJWT() {
       throw JSONParseError.invalidJWT
     }

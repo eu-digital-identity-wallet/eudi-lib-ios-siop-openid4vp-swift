@@ -1,9 +1,20 @@
 import Foundation
 
-public enum ParserError: Error {
+public enum ParserError: LocalizedError {
   case notFound
   case invalidData
   case decodingFailure(String)
+
+  public var errorDescription: String? {
+    switch self {
+    case .notFound:
+      return ".notFound"
+    case .invalidData:
+      return ".invalidData"
+    case .decodingFailure(let failure):
+      return ".decodingFailure \(failure)"
+    }
+  }
 }
 
 public protocol ParserProtocol {
