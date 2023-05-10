@@ -190,4 +190,16 @@ final class SiopOpenID4VPTests: XCTestCase {
       XCTAssert(false)
     }
   }
+  
+  func testSDKInstanceValidationResolutionGivenDataRequestObjectByValueIsValid() async throws {
+    
+    let sdk = SiopOpenID4VP()
+    let presentationDefinition = try? await sdk.process(url: TestsConstants.requestObjectUrl)
+    
+    XCTAssertNotNil(presentationDefinition!)
+    
+    XCTAssert(presentationDefinition!.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
+    XCTAssert(presentationDefinition!.inputDescriptors.count == 2)
+    XCTAssert(presentationDefinition!.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSchema.id")
+  }
 }

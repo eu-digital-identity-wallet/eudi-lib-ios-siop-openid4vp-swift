@@ -35,6 +35,15 @@ public class SiopOpenID4VP {
     let authorizationRequest = try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
 
     switch authorizationRequest {
+    case .jwt(request: let data):
+      switch data {
+      case .idToken:
+        throw ValidatedAuthorizationError.unsupportedResponseType(".idToken")
+      case .vpToken(let request):
+        return request.presentationDefinition
+      case .idAndVpToken(let request):
+        return request.presentationDefinition
+      }
     case .oauth2(let data):
       switch data {
       case .idToken:
@@ -44,8 +53,6 @@ public class SiopOpenID4VP {
       case .idAndVpToken(let request):
         return request.presentationDefinition
       }
-    default:
-      throw ValidatedAuthorizationError.invalidAuthorizationData
     }
   }
 
