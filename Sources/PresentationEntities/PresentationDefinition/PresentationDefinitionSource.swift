@@ -7,6 +7,27 @@ public enum PresentationDefinitionSource {
 }
 
 extension PresentationDefinitionSource {
+  init(authorizationRequestObject: JSONObject) throws {
+    if let presentationDefinitionObject = authorizationRequestObject["presentation_definition"] as? JSONObject {
+
+      let jsonData = try JSONSerialization.data(withJSONObject: presentationDefinitionObject, options: [])
+      let presentationDefinition = try JSONDecoder().decode(PresentationDefinition.self, from: jsonData)
+
+      self = .passByValue(presentationDefinition: presentationDefinition)
+    } else if let presentationDefinitionUri = authorizationRequestObject["presentation_definition_uri"] as? String,
+              let uri = URL(string: presentationDefinitionUri),
+              uri.scheme == "https" {
+      self = .fetchByReference(url: uri)
+    } else if let scope = authorizationRequestObject["scope"] as? String,
+              !scope.components(separatedBy: " ").isEmpty {
+      self = .implied(scope: scope.components(separatedBy: " "))
+
+    } else {
+
+      throw ValidatedAuthorizationError.invalidPresentationDefinition
+    }
+  }
+
   init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
     if let presentationDefinitionString = authorizationRequestData.presentationDefinition {
       guard

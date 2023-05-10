@@ -4,7 +4,6 @@ public enum ResolvedSiopOpenId4VPRequestData {
   case idToken(request: IdTokenData)
   case vpToken(request: VpTokenData)
   case idAndVpToken(request: IdAndVpTokenData)
-  case none
 }
 
 public extension ResolvedSiopOpenId4VPRequestData {

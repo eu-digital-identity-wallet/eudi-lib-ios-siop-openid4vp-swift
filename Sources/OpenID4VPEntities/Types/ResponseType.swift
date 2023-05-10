@@ -8,6 +8,17 @@ public enum ResponseType: String, Codable {
 }
 
 extension ResponseType {
+  init(authorizationRequestObject: JSONObject) throws {
+    let type = authorizationRequestObject["response_type"] as? String ?? ""
+    guard
+      let responseType = ResponseType(rawValue: type)
+    else {
+      throw ValidatedAuthorizationError.unsupportedResponseType(type.isEmpty ? "unknown" : type)
+    }
+
+    self = responseType
+  }
+
   init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
 
     guard

@@ -12,6 +12,7 @@ public enum ValidatedAuthorizationError: LocalizedError {
   case invalidPresentationDefinition
   case invalidClientMetadata
   case missingRequiredField(String?)
+  case invalidJwtPayload
 
   public var errorDescription: String? {
     switch self {
@@ -37,6 +38,8 @@ public enum ValidatedAuthorizationError: LocalizedError {
       return ".invalidClientMetadata"
     case .missingRequiredField(let field):
       return ".missingRequiredField \(field ?? "")"
+    case .invalidJwtPayload:
+      return ".invalidJwtPayload"
     }
   }
 }

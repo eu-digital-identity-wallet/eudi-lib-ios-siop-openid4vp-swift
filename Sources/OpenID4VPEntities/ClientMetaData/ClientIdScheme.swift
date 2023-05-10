@@ -12,6 +12,19 @@ public enum ClientIdScheme: String, Codable {
 }
 
 extension ClientIdScheme {
+
+  init(authorizationRequestObject: JSONObject) throws {
+    let scheme = authorizationRequestObject["client_id_scheme"] as? String ?? "unknown"
+    guard
+      scheme == "pre-registered",
+      let clientIdScheme = ClientIdScheme(rawValue: scheme)
+    else {
+      throw ValidatedAuthorizationError.unsupportedClientIdScheme(scheme)
+    }
+
+    self = clientIdScheme
+  }
+
   init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
     guard
       authorizationRequestData.clientIdScheme == "pre-registered",

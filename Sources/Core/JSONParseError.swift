@@ -6,4 +6,5 @@ public enum JSONParseError: Error {
   case jsonSerialization(Error)
   case mappingFail(value: Any, toType: Any)
   case invalidJSON
+  case invalidJWT
 }

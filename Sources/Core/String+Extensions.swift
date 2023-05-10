@@ -2,6 +2,15 @@ import Foundation
 
 public extension String {
 
+  func isValidJWT() -> Bool {
+      let jwtPattern = "^([A-Za-z0-9-_=]+)\\.([A-Za-z0-9-_=]+)\\.([A-Za-z0-9-_.+/=]*)$"
+    guard let jwtRegex = try? NSRegularExpression(pattern: jwtPattern, options: []) else { return false }
+
+      let matches = jwtRegex.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf8.count))
+
+      return matches.count == 1
+  }
+
   func convertToDictionary() throws -> [String: Any]? {
     if let jsonData = self.data(using: .utf8) {
       let dictionary = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
