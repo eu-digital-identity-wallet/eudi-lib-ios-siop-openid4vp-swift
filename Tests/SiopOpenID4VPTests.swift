@@ -13,7 +13,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(authorizationRequestData)
     
-    let validatedAuthorizationRequestData = try? ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
@@ -54,7 +54,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     XCTAssertNotNil(authorizationRequestData)
     
     do {
-      _ = try ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
+      _ = try await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
     } catch let error as ValidatedAuthorizationError {
       switch error {
       case ValidatedAuthorizationError.unsupportedResponseType:
@@ -79,7 +79,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
   }
   
-  func testJWT() async throws {
+  func testRequestObjectGivenValidJWT() async throws {
     
     let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validByClientByValuePresentationByReferenceUrl)
     
@@ -87,6 +87,90 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     let validatedAuthorizationRequestData = try? ValidatedSiopOpenId4VPRequest(
       request: TestsConstants.passByValueJWT
+    )
+    
+    XCTAssertNotNil(validatedAuthorizationRequestData)
+    
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(
+      clientMetaDataResolver: ClientMetaDataResolver(),
+      presentationDefinitionResolver: PresentationDefinitionResolver(),
+      validatedAuthorizationRequest: validatedAuthorizationRequestData!
+    )
+    
+    XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
+    
+    switch resolvedSiopOpenId4VPRequestData! {
+    case .vpToken:
+      XCTAssert(true)
+    default:
+      XCTAssert(false)
+    }
+  }
+  
+  func testRequestObjectGivenValidJWTUri() async throws {
+    
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validByClientByValuePresentationByReferenceUrl)
+    
+    XCTAssertNotNil(authorizationRequestData)
+    
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
+      requestUri: TestsConstants.passByValueJWTURI
+    )
+    
+    XCTAssertNotNil(validatedAuthorizationRequestData)
+    
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(
+      clientMetaDataResolver: ClientMetaDataResolver(),
+      presentationDefinitionResolver: PresentationDefinitionResolver(),
+      validatedAuthorizationRequest: validatedAuthorizationRequestData!
+    )
+    
+    XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
+    
+    switch resolvedSiopOpenId4VPRequestData! {
+    case .vpToken:
+      XCTAssert(true)
+    default:
+      XCTAssert(false)
+    }
+  }
+  
+  func testSDKValidationResolutionGivenDataRequestObjectByValueIsValid() async throws {
+    
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.requestObjectUrl)
+    
+    XCTAssertNotNil(authorizationRequestData)
+    
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
+      authorizationRequestData: authorizationRequestData!
+    )
+    
+    XCTAssertNotNil(validatedAuthorizationRequestData)
+    
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(
+      clientMetaDataResolver: ClientMetaDataResolver(),
+      presentationDefinitionResolver: PresentationDefinitionResolver(),
+      validatedAuthorizationRequest: validatedAuthorizationRequestData!
+    )
+    
+    XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
+    
+    switch resolvedSiopOpenId4VPRequestData! {
+    case .vpToken:
+      XCTAssert(true)
+    default:
+      XCTAssert(false)
+    }
+  }
+  
+  func testSDKValidationResolutionGivenDataRequestObjectByReferenceIsValid() async throws {
+    
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.requestUriUrl)
+    
+    XCTAssertNotNil(authorizationRequestData)
+    
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
+      authorizationRequestData: authorizationRequestData!
     )
     
     XCTAssertNotNil(validatedAuthorizationRequestData)

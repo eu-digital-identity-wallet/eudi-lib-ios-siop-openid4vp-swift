@@ -36,7 +36,7 @@ public extension AuthorizationRequest {
 
     } else {
 
-      let validatedAuthorizationRequestData = try ValidatedSiopOpenId4VPRequest(
+      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
         authorizationRequestData: authorizationRequestData
       )
 
