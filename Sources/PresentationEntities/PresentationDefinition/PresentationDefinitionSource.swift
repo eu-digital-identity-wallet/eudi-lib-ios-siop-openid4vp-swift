@@ -8,17 +8,17 @@ public enum PresentationDefinitionSource {
 
 extension PresentationDefinitionSource {
   init(authorizationRequestObject: JSONObject) throws {
-    if let presentationDefinitionObject = authorizationRequestObject["presentation_definition"] as? JSONObject {
+    if let presentationDefinitionObject = authorizationRequestObject[Constants.PRESENTATION_DEFINITION] as? JSONObject {
 
       let jsonData = try JSONSerialization.data(withJSONObject: presentationDefinitionObject, options: [])
       let presentationDefinition = try JSONDecoder().decode(PresentationDefinition.self, from: jsonData)
 
       self = .passByValue(presentationDefinition: presentationDefinition)
-    } else if let presentationDefinitionUri = authorizationRequestObject["presentation_definition_uri"] as? String,
+    } else if let presentationDefinitionUri = authorizationRequestObject[Constants.PRESENTATION_DEFINITION_URI] as? String,
               let uri = URL(string: presentationDefinitionUri),
               uri.scheme == "https" {
       self = .fetchByReference(url: uri)
-    } else if let scope = authorizationRequestObject["scope"] as? String,
+    } else if let scope = authorizationRequestObject[Constants.SCOPE] as? String,
               !scope.components(separatedBy: " ").isEmpty {
       self = .implied(scope: scope.components(separatedBy: " "))
 

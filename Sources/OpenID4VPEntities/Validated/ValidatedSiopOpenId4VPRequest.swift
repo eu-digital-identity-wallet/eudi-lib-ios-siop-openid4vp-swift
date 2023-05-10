@@ -17,10 +17,10 @@ public extension ValidatedSiopOpenId4VPRequest {
     guard let payload = JSONWebToken(jsonWebToken: token.jwt)?.payload else {
       throw ValidatedAuthorizationError.invalidAuthorizationData
     }
-    guard let clientId = payload["client_id"] as? String else {
+    guard let clientId = payload[Constants.CLIENT_ID] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".clientId")
     }
-    guard let nonce = payload["nonce"] as? String else {
+    guard let nonce = payload[Constants.NONCE] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
     let responseType = try ResponseType(authorizationRequestObject: payload)
@@ -35,9 +35,9 @@ public extension ValidatedSiopOpenId4VPRequest {
         clientIdScheme: try .init(authorizationRequestObject: payload),
         clientId: clientId,
         nonce: nonce,
-        scope: payload["scope"] as? String ?? "",
+        scope: payload[Constants.SCOPE] as? String ?? "",
         responseMode: try .init(authorizationRequestObject: payload),
-        state: payload["state"] as? String
+        state: payload[Constants.STATE] as? String
       ))
     case .vpToken:
       self = .vpToken(request: .init(
@@ -47,7 +47,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         clientId: clientId,
         nonce: nonce,
         responseMode: try .init(authorizationRequestObject: payload),
-        state: payload["state"] as? String
+        state: payload[Constants.STATE] as? String
       ))
     case .vpAndIdToken:
       self = .idAndVpToken(request: .init(
@@ -59,9 +59,9 @@ public extension ValidatedSiopOpenId4VPRequest {
         clientIdScheme: try .init(authorizationRequestObject: payload),
         clientId: clientId,
         nonce: nonce,
-        scope: payload["scope"] as? String ?? "",
+        scope: payload[Constants.SCOPE] as? String ?? "",
         responseMode: try .init(authorizationRequestObject: payload),
-        state: payload["state"] as? String
+        state: payload[Constants.STATE] as? String
       ))
     case .code:
       throw ValidatedAuthorizationError.unsupportedResponseType(".code")
@@ -71,10 +71,10 @@ public extension ValidatedSiopOpenId4VPRequest {
   init(request: JWTString) throws {
     let jsonWebToken = JSONWebToken(jsonWebToken: request)
     guard let payload = jsonWebToken?.payload else { throw ValidatedAuthorizationError.invalidAuthorizationData }
-    guard let clientId = payload["client_id"] as? String else {
+    guard let clientId = payload[Constants.CLIENT_ID] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".clientId")
     }
-    guard let nonce = payload["nonce"] as? String else {
+    guard let nonce = payload[Constants.NONCE] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
     let responseType = try ResponseType(authorizationRequestObject: payload)
@@ -94,7 +94,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         clientId: clientId,
         nonce: nonce,
         responseMode: try .init(authorizationRequestObject: payload),
-        state: payload["state"] as? String
+        state: payload[Constants.STATE] as? String
       ))
     case .vpAndIdToken:
       self = .idAndVpToken(request: .init(
@@ -106,9 +106,9 @@ public extension ValidatedSiopOpenId4VPRequest {
         clientIdScheme: try .init(authorizationRequestObject: payload),
         clientId: clientId,
         nonce: nonce,
-        scope: payload["scope"] as? String ?? "",
+        scope: payload[Constants.SCOPE] as? String ?? "",
         responseMode: try .init(authorizationRequestObject: payload),
-        state: payload["state"] as? String
+        state: payload[Constants.STATE] as? String
       ))
     case .code:
       throw ValidatedAuthorizationError.unsupportedResponseType(".code")
@@ -188,9 +188,9 @@ private extension ValidatedSiopOpenId4VPRequest {
       clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       nonce: nonce,
-      scope: authorizationRequestObject["scope"] as? String ?? "",
+      scope: authorizationRequestObject[Constants.SCOPE] as? String ?? "",
       responseMode: try .init(authorizationRequestObject: authorizationRequestObject),
-      state: authorizationRequestObject["state"] as? String
+      state: authorizationRequestObject[Constants.STATE] as? String
     ))
   }
 }
