@@ -5,4 +5,4 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - run:  echo "fastlane tests coming back soon!" # fastlane tests
+      - run:  fastlane just_build
