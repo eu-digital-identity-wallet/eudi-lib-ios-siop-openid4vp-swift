@@ -64,6 +64,15 @@
       }
     },
     {
+      "identity" : "presentation-exchange-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
+      "state" : {
+        "revision" : "bf96daa96a18038d4a3ad1d20acac12127b4b012",
+        "version" : "0.0.3"
+      }
+    },
+    {
       "identity" : "sextant",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Sextant.git",
