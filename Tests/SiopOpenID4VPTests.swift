@@ -4,115 +4,11 @@ import XCTest
 @testable import OpenID4VP
 
 final class SiopOpenID4VPTests: XCTestCase {
- 
-  // MARK: Input data
-  
-  var nonNormativeUrlString =
-  "eudi-wallet://authorize?" +
-  "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
-  "&client_id_scheme=pre-registered" +
-  "&redirect_uri=https://client.example.org/" +
-  "&presentation_definition=%@" +
-  "&nonce=n-0S6_WzA2Mj"
-  
-  var nonNormativeOutOfScopeUrlString =
-  "https://www.example.com/authorize?" +
-  "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
-  "&client_id_scheme=redirect_uri" +
-  "&redirect_uri=https://client.example.org/" +
-  "&presentation_definition=%@" +
-  "&nonce=n-0S6_WzA2Mj"
-  
-  var nonNormativeByReferenceUrlString =
-  "eudi-wallet://authorize?" +
-  "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
-  "&client_id_scheme=pre-registered" +
-  "&redirect_uri=https://client.example.org/" +
-  "&presentation_definition_uri=%@" +
-  "&nonce=n-0S6_WzA2Mj"
-  
-  var nonNormativeScopesUrlString =
-  "https://www.example.com/authorize?" +
-  "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
-  "&client_id_scheme=pre-registered" +
-  "&redirect_uri=https://client.example.org/" +
-  "&scope=%@" +
-  "&nonce=n-0S6_WzA2Mj"
-  
-  var validOutOfScopeAuthorizeUrl: URL {
-    // TODO: use definitition, not container
-    let presentationDefinitionJson = try! String(
-      contentsOf: Bundle.module.url(forResource: "minimal_example", withExtension: "json")!
-    )
-    
-    let encodedUrlString = String(
-      format: nonNormativeOutOfScopeUrlString,
-      presentationDefinitionJson).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed
-      )!
-    
-    return URL(string: encodedUrlString)!
-  }
-  
-  var validAuthorizeUrl: URL {
-    let presentationDefinitionJson = try! String(
-      contentsOf: Bundle.module.url(forResource: "minimal_example", withExtension: "json")!
-    )
-    
-    let encodedUrlString = String(
-      format: nonNormativeUrlString,
-      presentationDefinitionJson).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed
-      )!
-    
-    return URL(string: encodedUrlString)!
-  }
-  
-  var validMatchAuthorizeUrl: URL {
-    let presentationDefinitionJson = try! String(
-      contentsOf: Bundle.module.url(forResource: "basic_example", withExtension: "json")!
-    )
-    
-    let encodedUrlString = String(
-      format: nonNormativeUrlString,
-      presentationDefinitionJson).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed
-      )!
-    
-    return URL(string: encodedUrlString)!
-  }
-  
-  var validByReferenceAuthorizeUrl: URL {
-    let urlString = String(
-      format: nonNormativeByReferenceUrlString,
-      "https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/presentation_definition/32f54163-7166-48f1-93d8-ff217bdb0653"
-    )
-    
-    return URL(string: urlString)!
-  }
-  
-  var validByScopesAuthorizeUrl: URL {
-    let urlString = String(
-      format: nonNormativeScopesUrlString,
-      "com.example.input_descriptors_example"
-    )
-    
-    return URL(string: urlString)!
-  }
-  
-  var invalidAuthorizeUrl: URL {
-    let encodedUrlString = String(
-      format: nonNormativeUrlString, "THIS IS NOT JSON").addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed
-      )!
-    
-    return URL(string: encodedUrlString)!
-  }
   
   // MARK: - Authorisation Request Testing
   
   func testAuthorizationRequestDataGivenValidDataInURL() throws {
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
   }
   
@@ -171,7 +67,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   func testValidatedAuthorizationRequestDataGivenValidInputData() throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
     
     let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
@@ -181,7 +77,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   func testValidatedAuthorizationRequestDataGivenInvalidInputData() throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: invalidAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.invalidAuthorizeUrl)
     let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
     
     XCTAssertNil(validAuthorizationData)
@@ -189,7 +85,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   func testValidatedAuthorizationRequestDataGivenValidOutofScopeInput() throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validOutOfScopeAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validOutOfScopeAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
     
     do {
@@ -206,7 +102,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   func testValidationResolutionGivenDataIsValid() async throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
     
     let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
@@ -227,7 +123,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   func testSDKValidationResolutionGivenDataByValueIsValid() async throws {
     
     let sdk = SiopOpenID4VP()
-    let presentationDefinition = try await sdk.process(url: validAuthorizeUrl)
+    let presentationDefinition = try await sdk.process(url: TestsConstants.validAuthorizeUrl)
     
     XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
@@ -236,7 +132,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   func testSDKValidationResolutionGivenDataByReferenceIsValid() async throws {
     
     let sdk = SiopOpenID4VP()
-    let presentationDefinition = try await sdk.process(url: validByReferenceAuthorizeUrl)
+    let presentationDefinition = try await sdk.process(url: TestsConstants.validByReferenceAuthorizeUrl)
     
     XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
@@ -247,7 +143,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     let sdk = SiopOpenID4VP()
     
     do {
-      _ = try await sdk.process(url: invalidAuthorizeUrl)
+      _ = try await sdk.process(url: TestsConstants.invalidAuthorizeUrl)
     } catch {
       XCTAssert(true, error.localizedDescription)
       return
@@ -260,7 +156,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   func testValidationResolutionGivenScopesDataIsValid() async throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: validByScopesAuthorizeUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validByScopesAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
     
     let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
@@ -304,7 +200,7 @@ final class SiopOpenID4VPTests: XCTestCase {
         ]
       )
     
-    let presentationDefinition = try await sdk.process(url: validAuthorizeUrl)
+    let presentationDefinition = try await sdk.process(url: TestsConstants.validAuthorizeUrl)
     let match = sdk.match(presentationDefinition: presentationDefinition, claims: [passportClaim])
     
     XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
