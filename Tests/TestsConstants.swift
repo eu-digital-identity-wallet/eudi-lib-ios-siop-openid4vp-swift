@@ -18,7 +18,8 @@ struct TestsConstants {
   "&response_uri=https://client.example.org/response"
   
   static var validByClientByValuePresentationByReferenceUrl: URL {
-    return URL(string: validByClientByValuePresentationByReferenceUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+    return URL(string: validByClientByValuePresentationByReferenceUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
+    )!
   }
   
   // MARK: - Client meta data by reference, Presentation definition by reference
