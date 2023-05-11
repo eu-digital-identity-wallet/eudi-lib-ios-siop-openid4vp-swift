@@ -7,7 +7,7 @@ extension ValidatedSiopOpenId4VPRequest {
     let clientIdScheme: ClientIdScheme?
     let clientId: String
     let nonce: String
-    let responseMode: ResponseMode
+    let responseMode: ResponseMode?
     let state: String?
 
     public init(
@@ -16,7 +16,7 @@ extension ValidatedSiopOpenId4VPRequest {
       clientIdScheme: ClientIdScheme?,
       clientId: String,
       nonce: String,
-      responseMode: ResponseMode,
+      responseMode: ResponseMode?,
       state: String?
     ) {
       self.presentationDefinitionSource = presentationDefinitionSource

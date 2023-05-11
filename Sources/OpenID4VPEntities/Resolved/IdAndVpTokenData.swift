@@ -4,20 +4,20 @@ extension ResolvedSiopOpenId4VPRequestData {
   public struct IdAndVpTokenData {
     let idTokenType: [IdTokenType]
     let presentationDefinition: PresentationDefinition
-    let clientMetaData: ClientMetaData
+    let clientMetaData: ClientMetaData?
     let clientId: String
     let nonce: String
-    let responseMode: ResponseMode
+    let responseMode: ResponseMode?
     let state: String?
     let scope: Scope?
 
     public init(
       idTokenType: [IdTokenType],
       presentationDefinition: PresentationDefinition,
-      clientMetaData: ClientMetaData,
+      clientMetaData: ClientMetaData?,
       clientId: String,
       nonce: String,
-      responseMode: ResponseMode,
+      responseMode: ResponseMode?,
       state: String?,
       scope: Scope?
     ) {

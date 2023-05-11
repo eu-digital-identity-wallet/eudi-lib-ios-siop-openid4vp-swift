@@ -3,18 +3,18 @@ import Foundation
 extension ResolvedSiopOpenId4VPRequestData {
   public struct VpTokenData {
     let presentationDefinition: PresentationDefinition
-    let clientMetaData: ClientMetaData
+    let clientMetaData: ClientMetaData?
     let clientId: String
     let nonce: String
-    let responseMode: ResponseMode
+    let responseMode: ResponseMode?
     let state: String?
 
     public init(
       presentationDefinition: PresentationDefinition,
-      clientMetaData: ClientMetaData,
+      clientMetaData: ClientMetaData?,
       clientId: String,
       nonce: String,
-      responseMode: ResponseMode,
+      responseMode: ResponseMode?,
       state: String?
     ) {
       self.presentationDefinition = presentationDefinition

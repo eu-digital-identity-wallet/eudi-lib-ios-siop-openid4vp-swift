@@ -15,12 +15,8 @@ public extension ResolvedSiopOpenId4VPRequestData {
   ) async throws {
     switch validatedAuthorizationRequest {
     case .idToken(request: let request):
-      guard
-        let clientMetaDataSource = request.clientMetaDataSource,
-        let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
-      else {
-        throw ResolvedAuthorisationError.invalidClientData
-      }
+      let clientMetaDataSource = request.clientMetaDataSource
+      let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
 
       self = .idToken(request: .init(
         idTokenType: request.idTokenType,
@@ -32,12 +28,8 @@ public extension ResolvedSiopOpenId4VPRequestData {
         scope: request.scope
       ))
     case .vpToken(request: let request):
-      guard
-        let clientMetaDataSource = request.clientMetaDataSource,
-        let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
-      else {
-        throw ResolvedAuthorisationError.invalidClientData
-      }
+      let clientMetaDataSource = request.clientMetaDataSource
+      let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
 
       guard
         let presentationDefinition = try? await presentationDefinitionResolver.resolve(
@@ -56,12 +48,8 @@ public extension ResolvedSiopOpenId4VPRequestData {
         state: request.state
       ))
     case .idAndVpToken(request: let request):
-      guard
-        let clientMetaDataSource = request.clientMetaDataSource,
-        let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
-      else {
-        throw ResolvedAuthorisationError.invalidClientData
-      }
+      let clientMetaDataSource = request.clientMetaDataSource
+      let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
 
       guard
         let presentationDefinition = try? await presentationDefinitionResolver.resolve(

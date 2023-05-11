@@ -109,7 +109,7 @@ public extension ValidatedSiopOpenId4VPRequest {
           clientId: clientId,
           nonce: nonce,
           scope: authorizationRequestData.scope,
-          responseMode: try .init(authorizationRequestData: authorizationRequestData),
+          responseMode: try? .init(authorizationRequestData: authorizationRequestData),
           state: authorizationRequestData.state
         ))
       case .vpToken:
@@ -129,7 +129,7 @@ public extension ValidatedSiopOpenId4VPRequest {
           clientId: clientId,
           nonce: nonce,
           scope: authorizationRequestData.scope,
-          responseMode: try .init(authorizationRequestData: authorizationRequestData),
+          responseMode: try? .init(authorizationRequestData: authorizationRequestData),
           state: authorizationRequestData.state
         ))
       case .code:
@@ -151,7 +151,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
       clientId: clientId,
       nonce: nonce,
-      responseMode: try .init(authorizationRequestData: authorizationRequestData),
+      responseMode: try? .init(authorizationRequestData: authorizationRequestData),
       state: authorizationRequestData.state
     ))
   }
@@ -169,7 +169,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       clientId: clientId,
       nonce: nonce,
       scope: authorizationRequestObject[Constants.SCOPE] as? String ?? "",
-      responseMode: try .init(authorizationRequestObject: authorizationRequestObject),
+      responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       state: authorizationRequestObject[Constants.STATE] as? String
     ))
   }
@@ -185,7 +185,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       nonce: nonce,
-      responseMode: try .init(authorizationRequestObject: authorizationRequestObject),
+      responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       state: authorizationRequestObject[Constants.STATE] as? String
     ))
   }
@@ -205,7 +205,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       clientId: clientId,
       nonce: nonce,
       scope: authorizationRequestObject[Constants.SCOPE] as? String ?? "",
-      responseMode: try .init(authorizationRequestObject: authorizationRequestObject),
+      responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       state: authorizationRequestObject[Constants.STATE] as? String
     ))
   }

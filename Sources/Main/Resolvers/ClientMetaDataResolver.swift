@@ -6,15 +6,16 @@ public protocol ClientMetaDataResolverType {
   associatedtype ErrorType: Error
   func resolve(
     fetcher: Fetcher<OutputType>,
-    source: InputType
-  ) async -> Result<OutputType, ErrorType>
+    source: InputType?
+  ) async -> Result<OutputType?, ErrorType>
 }
 
 public class ClientMetaDataResolver: ClientMetaDataResolverType {
   public func resolve(
     fetcher: Fetcher<ClientMetaData> = Fetcher(),
-    source: ClientMetaDataSource
-  ) async -> Result<ClientMetaData, ResolvingError> {
+    source: ClientMetaDataSource?
+  ) async -> Result<ClientMetaData?, ResolvingError> {
+    guard let source = source else { return .success(nil) }
     switch source {
     case .passByValue(metaData: let metaData):
       return .success(metaData)
