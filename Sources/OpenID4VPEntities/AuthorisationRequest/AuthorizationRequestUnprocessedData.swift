@@ -121,3 +121,21 @@ extension AuthorizationRequestUnprocessedData {
     requestUri = parameters?[CodingKeys.requestUri.rawValue] as? String
   }
 }
+
+internal extension AuthorizationRequestUnprocessedData {
+  private var hasClientMetaData: Bool {
+    return clientMetaData != nil || clientMetadataUri != nil
+  }
+
+  var hasPresentationDefinitions: Bool {
+    return presentationDefinition != nil || presentationDefinitionUri != nil
+  }
+
+  var hasRequests: Bool {
+    return request != nil || requestUri != nil
+  }
+
+  var hasConflicts: Bool {
+    return (hasClientMetaData || hasPresentationDefinitions) && hasRequests
+  }
+}

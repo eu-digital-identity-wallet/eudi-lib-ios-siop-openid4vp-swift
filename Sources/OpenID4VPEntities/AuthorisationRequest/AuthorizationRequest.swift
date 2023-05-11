@@ -14,6 +14,12 @@ public extension AuthorizationRequest {
       throw ValidatedAuthorizationError.noAuthorizationData
     }
 
+    guard
+      !authorizationRequestData.hasConflicts
+    else {
+      throw ValidatedAuthorizationError.conflictingData
+    }
+    
     if let request = authorizationRequestData.request {
       let validatedAuthorizationRequestData = try ValidatedSiopOpenId4VPRequest(request: request)
 
