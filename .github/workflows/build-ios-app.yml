@@ -5,7 +5,6 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - run:
-        git config --global --add url.https://${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github.com/niscy-eudiw/presentation-exchange-swift.git.insteadof https://github.com/niscy-eudiw/presentation-exchange-swift.git
-      - run:
+      - run: |
+        git config --global --add url."https://${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github".insteadof https://github
         fastlane tests # fastlane just_build
