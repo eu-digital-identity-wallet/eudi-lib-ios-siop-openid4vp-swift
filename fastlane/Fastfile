@@ -25,7 +25,10 @@ platform :ios do
   lane :just_build do
     xcodebuild(
       scheme: "OpenID4VP",
-      destination: "platform=iOS Simulator, OS:16.2, name:iPhone 8"
+      destination: "platform=iOS Simulator,OS=16.2,name=iPhone 8"
     )
   end
 end
+
+'platform=iOS Simulator,name=iPhone 6,OS=8.1'
+"platform=iOS Simulator, OS:16.2, name:iPhone 8"
