@@ -34,7 +34,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.3")
+      .upToNextMinor(from: "0.0.4")
     )
   ],
   targets: [
