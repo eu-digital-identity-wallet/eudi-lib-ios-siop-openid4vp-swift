@@ -8,7 +8,7 @@ import Foundation
  
  */
 
-public protocol OpenID4VPProtocol {
+public protocol OpenID4VPType {
   func process(url: URL) async throws -> PresentationDefinition
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
   func submit()

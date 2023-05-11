@@ -1,6 +1,6 @@
 import Foundation
 
-protocol AuthorizationResponseData {
+struct AuthorizationResponseData {
 }
 
 enum AuthorizationResponse {

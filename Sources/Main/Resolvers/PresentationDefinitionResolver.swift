@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol PresentationDefinitionResolving {
+public protocol PresentationDefinitionResolverType {
   associatedtype InputType
   associatedtype OutputType: Codable
   associatedtype ErrorType: Error
@@ -11,7 +11,7 @@ public protocol PresentationDefinitionResolving {
   ) async -> Result<OutputType, ErrorType>
 }
 
-public class PresentationDefinitionResolver: PresentationDefinitionResolving {
+public class PresentationDefinitionResolver: PresentationDefinitionResolverType {
   public func resolve(
     fetcher: Fetcher<PresentationDefinition> = Fetcher(),
     predefinedDefinitions: [String: PresentationDefinition] = [:],

@@ -17,12 +17,12 @@ public enum ParserError: LocalizedError {
   }
 }
 
-public protocol ParserProtocol {
+public protocol ParserType {
   func decode<T: Codable>(path: String, type: String) -> Result<T, ParserError>
   func decode<T: Codable>(json: String) -> Result<T, ParserError>
 }
 
-public class Parser: ParserProtocol {
+public class Parser: ParserType {
   public func decode<T: Codable>(json: String) -> Result<T, ParserError> {
     guard
       let data = json.data(using: .utf8)

@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol ClientMetaDataResolving {
+public protocol ClientMetaDataResolverType {
   associatedtype InputType
   associatedtype OutputType: Codable, Equatable
   associatedtype ErrorType: Error
@@ -10,7 +10,7 @@ public protocol ClientMetaDataResolving {
   ) async -> Result<OutputType, ErrorType>
 }
 
-public class ClientMetaDataResolver: ClientMetaDataResolving {
+public class ClientMetaDataResolver: ClientMetaDataResolverType {
   public func resolve(
     fetcher: Fetcher<ClientMetaData> = Fetcher(),
     source: ClientMetaDataSource
