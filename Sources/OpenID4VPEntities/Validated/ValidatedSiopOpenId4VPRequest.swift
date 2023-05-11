@@ -101,9 +101,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       switch responseType {
       case .idToken:
         self = .idToken(request: .init(
-          idTokenType: [
-            try .init(authorizationRequestData: authorizationRequestData)
-          ],
+          idTokenType: try .init(authorizationRequestData: authorizationRequestData),
           clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
           clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
           clientId: clientId,
@@ -120,9 +118,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         )
       case .vpAndIdToken:
         self = .idAndVpToken(request: .init(
-          idTokenType: [
-            try .init(authorizationRequestData: authorizationRequestData)
-          ],
+          idTokenType: try .init(authorizationRequestData: authorizationRequestData),
           presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
           clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
           clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
@@ -161,9 +157,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     authorizationRequestObject: JSONObject
   ) throws -> ValidatedSiopOpenId4VPRequest {
     .idToken(request: .init(
-      idTokenType: [
-        try .init(authorizationRequestObject: authorizationRequestObject)
-      ],
+      idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
@@ -196,9 +190,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     authorizationRequestObject: JSONObject
   ) throws -> ValidatedSiopOpenId4VPRequest {
     .idAndVpToken(request: .init(
-      idTokenType: [
-        try .init(authorizationRequestObject: authorizationRequestObject)
-      ],
+      idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),

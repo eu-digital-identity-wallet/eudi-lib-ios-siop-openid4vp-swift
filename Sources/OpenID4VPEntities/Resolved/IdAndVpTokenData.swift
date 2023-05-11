@@ -2,7 +2,7 @@ import Foundation
 
 extension ResolvedSiopOpenId4VPRequestData {
   public struct IdAndVpTokenData {
-    let idTokenType: [IdTokenType]
+    let idTokenType: IdTokenType
     let presentationDefinition: PresentationDefinition
     let clientMetaData: ClientMetaData?
     let clientId: String
@@ -12,7 +12,7 @@ extension ResolvedSiopOpenId4VPRequestData {
     let scope: Scope?
 
     public init(
-      idTokenType: [IdTokenType],
+      idTokenType: IdTokenType,
       presentationDefinition: PresentationDefinition,
       clientMetaData: ClientMetaData?,
       clientId: String,

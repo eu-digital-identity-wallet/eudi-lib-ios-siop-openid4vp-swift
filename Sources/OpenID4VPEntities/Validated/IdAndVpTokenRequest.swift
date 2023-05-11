@@ -2,7 +2,7 @@ import Foundation
 
 extension ValidatedSiopOpenId4VPRequest {
   public struct IdAndVpTokenRequest {
-    let idTokenType: [IdTokenType]
+    let idTokenType: IdTokenType
     let presentationDefinitionSource: PresentationDefinitionSource
     let clientMetaDataSource: ClientMetaDataSource?
     let clientIdScheme: ClientIdScheme?
@@ -13,7 +13,7 @@ extension ValidatedSiopOpenId4VPRequest {
     let state: String?
 
     public init(
-      idTokenType: [IdTokenType],
+      idTokenType: IdTokenType,
       presentationDefinitionSource: PresentationDefinitionSource,
       clientMetaDataSource: ClientMetaDataSource?,
       clientIdScheme: ClientIdScheme?,
