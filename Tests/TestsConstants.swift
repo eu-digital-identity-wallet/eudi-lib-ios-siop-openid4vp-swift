@@ -1,5 +1,5 @@
 import Foundation
-@testable import OpenID4VP
+@testable import SiopOpenID4VP
 
 struct TestsConstants {
   

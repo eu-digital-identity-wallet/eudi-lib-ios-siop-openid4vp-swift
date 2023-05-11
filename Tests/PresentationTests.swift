@@ -1,7 +1,7 @@
 import XCTest
 import JSONSchema
 
-@testable import OpenID4VP
+@testable import SiopOpenID4VP
 
 final class PresentationTests: XCTestCase {
   

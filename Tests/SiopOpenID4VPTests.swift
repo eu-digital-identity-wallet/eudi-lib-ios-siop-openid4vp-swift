@@ -1,7 +1,7 @@
 import Foundation
 import XCTest
 
-@testable import OpenID4VP
+@testable import SiopOpenID4VP
 
 final class SiopOpenID4VPTests: XCTestCase {
   
