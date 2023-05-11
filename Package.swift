@@ -32,10 +32,10 @@ let package = Package(
       url: "https://github.com/birdrides/mockingbird.git",
       .upToNextMinor(from: "0.20.0")
     ),
-//    .package(
-//      url: "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
-//      .upToNextMinor(from: "0.0.3")
-//    )
+    .package(
+      url: "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
+      .upToNextMinor(from: "0.0.3")
+    )
   ],
   targets: [
     .target(
@@ -53,10 +53,10 @@ let package = Package(
           name: "JOSESwift",
           package: "JOSESwift"
         ),
-//        .product(
-//          name: "PresentationExchange",
-//          package: "presentation-exchange-swift"
-//        )
+        .product(
+          name: "PresentationExchange",
+          package: "presentation-exchange-swift"
+        )
       ],
       path: "Sources",
       resources: [
@@ -86,10 +86,10 @@ let package = Package(
           name: "JOSESwift",
           package: "JOSESwift"
         ),
-//        .product(
-//          name: "PresentationExchange",
-//          package: "presentation-exchange-swift"
-//        )
+        .product(
+          name: "PresentationExchange",
+          package: "presentation-exchange-swift"
+        )
       ],
       path: "Tests"
     ),

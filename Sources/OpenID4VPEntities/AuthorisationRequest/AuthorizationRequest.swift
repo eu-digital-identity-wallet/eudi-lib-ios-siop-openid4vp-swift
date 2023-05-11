@@ -19,7 +19,7 @@ public extension AuthorizationRequest {
     else {
       throw ValidatedAuthorizationError.conflictingData
     }
-    
+
     if let request = authorizationRequestData.request {
       let validatedAuthorizationRequestData = try ValidatedSiopOpenId4VPRequest(request: request)
 
