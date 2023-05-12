@@ -7,8 +7,8 @@ platform :ios do
 
   desc "Runs unit tests"
   lane :tests do
-    params = { 
-      package_path: '.', 
+    params = {
+      package_path: '.',
       scheme: 'SiopOpenID4VP',
       devices: ['iPhone 14'], 
       result_bundle: true

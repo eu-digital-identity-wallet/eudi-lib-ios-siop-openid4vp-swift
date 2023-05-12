@@ -29,7 +29,7 @@ Runs unit tests
 [bundle exec] fastlane ios just_build
 ```
 
-Just builds the package
+Builds the package
 
 ----
 
