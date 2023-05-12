@@ -21,7 +21,7 @@ platform :ios do
     run_tests(params)
   end
 
-  desc "Just builds the package"
+  desc "Builds the package"
   lane :just_build do
     xcodebuild(
       scheme: "SiopOpenID4VP",
