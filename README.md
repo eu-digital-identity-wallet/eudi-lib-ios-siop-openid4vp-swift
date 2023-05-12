@@ -1,4 +1,4 @@
-# OpenID4VP first release
+# SiopOpenID4VP first release
 
 ## Cross device & Same Device
 

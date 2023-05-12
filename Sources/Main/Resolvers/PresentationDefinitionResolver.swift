@@ -1,6 +1,17 @@
 import Foundation
 
-public class PresentationDefinitionResolver: Resolving {
+public protocol PresentationDefinitionResolverType {
+  associatedtype InputType
+  associatedtype OutputType: Codable
+  associatedtype ErrorType: Error
+  func resolve(
+    fetcher: Fetcher<OutputType>,
+    predefinedDefinitions: [String: OutputType],
+    source: InputType
+  ) async -> Result<OutputType, ErrorType>
+}
+
+public class PresentationDefinitionResolver: PresentationDefinitionResolverType {
   public func resolve(
     fetcher: Fetcher<PresentationDefinition> = Fetcher(),
     predefinedDefinitions: [String: PresentationDefinition] = [:],
@@ -16,7 +27,7 @@ public class PresentationDefinitionResolver: Resolving {
         return .success(presentationDefinition)
       }
       return .failure(.invalidSource)
-    case .scope(scope: let list):
+    case .implied(scope: let list):
       if let definition = predefinedDefinitions.first(where: { list.contains($0.key)}) {
         return .success(definition.value)
       }

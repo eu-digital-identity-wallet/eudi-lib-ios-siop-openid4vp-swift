@@ -6,11 +6,11 @@ public enum ClaimsEvaluation {
   case notFound
 }
 
-public protocol PresentationMatching {
+public protocol PresentationMatcherType {
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
 }
 
-public class PresentationMatcher: PresentationMatching {
+public class PresentationMatcher: PresentationMatcherType {
   public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation {
     var match: Match = [:]
     claims.forEach { claim in

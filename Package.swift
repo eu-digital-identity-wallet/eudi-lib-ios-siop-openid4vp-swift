@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-  name: "OpenID4VP",
+  name: "SiopOpenID4VP",
   platforms: [.iOS(.v14)],
   products: [
     .library(
-      name: "OpenID4VP",
-      targets: ["OpenID4VP"]),
+      name: "SiopOpenID4VP",
+      targets: ["SiopOpenID4VP"]),
   ],
   dependencies: [
     .package(
@@ -34,12 +34,12 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.3")
+      .upToNextMinor(from: "0.0.4")
     )
   ],
   targets: [
     .target(
-      name: "OpenID4VP",
+      name: "SiopOpenID4VP",
       dependencies: [
         .product(
           name: "Sextant",
@@ -67,9 +67,9 @@ let package = Package(
       ]
     ),
     .testTarget(
-      name: "OpenID4VPTests",
+      name: "SiopOpenID4VPTests",
       dependencies: [
-        "OpenID4VP",
+        "SiopOpenID4VP",
         .product(
           name: "Mockingbird",
           package: "mockingbird"

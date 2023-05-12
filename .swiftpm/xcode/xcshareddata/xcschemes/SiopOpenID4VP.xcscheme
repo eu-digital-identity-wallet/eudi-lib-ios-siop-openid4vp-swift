@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OpenID4VP_OpenID4VP"
-               BuildableName = "OpenID4VP_OpenID4VP"
-               BlueprintName = "OpenID4VP_OpenID4VP"
+               BlueprintIdentifier = "SiopOpenID4VP_SiopOpenID4VP"
+               BuildableName = "SiopOpenID4VP_SiopOpenID4VP"
+               BlueprintName = "SiopOpenID4VP_SiopOpenID4VP"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,23 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "git@github.com:niscy-eudiw/openid4vp-ios.git"
-               BuildableName = "git@github.com:niscy-eudiw/openid4vp-ios.git"
-               BlueprintName = "git@github.com:niscy-eudiw/openid4vp-ios.git"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OpenID4VP"
-               BuildableName = "OpenID4VP"
-               BlueprintName = "OpenID4VP"
+               BlueprintIdentifier = "SiopOpenID4VP"
+               BuildableName = "SiopOpenID4VP"
+               BlueprintName = "SiopOpenID4VP"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -56,37 +42,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OpenID4VPTests"
-               BuildableName = "OpenID4VPTests"
-               BlueprintName = "OpenID4VPTests"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "git@github.com:niscy-eudiw/siop-openid4vp-ios.git"
-               BuildableName = "git@github.com:niscy-eudiw/siop-openid4vp-ios.git"
-               BlueprintName = "git@github.com:niscy-eudiw/siop-openid4vp-ios.git"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "https://github.com/niscy-eudiw/siop-openid4vp-ios.git"
-               BuildableName = "https://github.com/niscy-eudiw/siop-openid4vp-ios.git"
-               BlueprintName = "https://github.com/niscy-eudiw/siop-openid4vp-ios.git"
+               BlueprintIdentifier = "SiopOpenID4VPTests"
+               BuildableName = "SiopOpenID4VPTests"
+               BlueprintName = "SiopOpenID4VPTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -96,16 +54,21 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:.swiftpm/SiopOpenID4VP.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "OpenID4VPTests"
-               BuildableName = "OpenID4VPTests"
-               BlueprintName = "OpenID4VPTests"
+               BlueprintIdentifier = "SiopOpenID4VPTests"
+               BuildableName = "SiopOpenID4VPTests"
+               BlueprintName = "SiopOpenID4VPTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
@@ -131,9 +94,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "OpenID4VP_OpenID4VP"
-            BuildableName = "OpenID4VP_OpenID4VP"
-            BlueprintName = "OpenID4VP_OpenID4VP"
+            BlueprintIdentifier = "SiopOpenID4VP_SiopOpenID4VP"
+            BuildableName = "SiopOpenID4VP_SiopOpenID4VP"
+            BlueprintName = "SiopOpenID4VP_SiopOpenID4VP"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>

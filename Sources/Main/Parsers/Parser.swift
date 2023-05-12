@@ -1,17 +1,28 @@
 import Foundation
 
-public enum ParserError: Error {
+public enum ParserError: LocalizedError {
   case notFound
   case invalidData
   case decodingFailure(String)
+
+  public var errorDescription: String? {
+    switch self {
+    case .notFound:
+      return ".notFound"
+    case .invalidData:
+      return ".invalidData"
+    case .decodingFailure(let failure):
+      return ".decodingFailure \(failure)"
+    }
+  }
 }
 
-public protocol ParserProtocol {
+public protocol ParserType {
   func decode<T: Codable>(path: String, type: String) -> Result<T, ParserError>
   func decode<T: Codable>(json: String) -> Result<T, ParserError>
 }
 
-public class Parser: ParserProtocol {
+public class Parser: ParserType {
   public func decode<T: Codable>(json: String) -> Result<T, ParserError> {
     guard
       let data = json.data(using: .utf8)

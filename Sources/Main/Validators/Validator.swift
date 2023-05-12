@@ -1,7 +1,7 @@
 import Foundation
 
-protocol Validating {
+protocol ValidatorType {
 }
 
-class Validator: Validating {
+class Validator: ValidatorType {
 }

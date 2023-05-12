@@ -3,11 +3,32 @@ import Foundation
 public enum PresentationDefinitionSource {
   case passByValue(presentationDefinition: PresentationDefinition)
   case fetchByReference(url: URL)
-  case scope(scope: [String])
+  case implied(scope: [String])
 }
 
 extension PresentationDefinitionSource {
-  init(authorizationRequestData: AuthorizationRequestData) throws {
+  init(authorizationRequestObject: JSONObject) throws {
+    if let presentationDefinitionObject = authorizationRequestObject[Constants.PRESENTATION_DEFINITION] as? JSONObject {
+
+      let jsonData = try JSONSerialization.data(withJSONObject: presentationDefinitionObject, options: [])
+      let presentationDefinition = try JSONDecoder().decode(PresentationDefinition.self, from: jsonData)
+
+      self = .passByValue(presentationDefinition: presentationDefinition)
+    } else if let uri = authorizationRequestObject[Constants.PRESENTATION_DEFINITION_URI] as? String,
+              let uri = URL(string: uri),
+              uri.scheme == Constants.HTTPS {
+      self = .fetchByReference(url: uri)
+    } else if let scope = authorizationRequestObject[Constants.SCOPE] as? String,
+              !scope.components(separatedBy: " ").isEmpty {
+      self = .implied(scope: scope.components(separatedBy: " "))
+
+    } else {
+
+      throw ValidatedAuthorizationError.invalidPresentationDefinition
+    }
+  }
+
+  init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
     if let presentationDefinitionString = authorizationRequestData.presentationDefinition {
       guard
         presentationDefinitionString.isValidJSONString
@@ -27,11 +48,11 @@ extension PresentationDefinitionSource {
       self = .passByValue(presentationDefinition: presentationDefinition)
     } else if let presentationDefinitionUri = authorizationRequestData.presentationDefinitionUri,
               let uri = URL(string: presentationDefinitionUri),
-              uri.scheme == "https" {
+              uri.scheme == Constants.HTTPS {
       self = .fetchByReference(url: uri)
     } else if let scopes = authorizationRequestData.scope?.components(separatedBy: " "),
               !scopes.isEmpty {
-      self = .scope(scope: scopes)
+      self = .implied(scope: scopes)
 
     } else {
 

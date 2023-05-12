@@ -8,16 +8,20 @@ public enum ResponseType: String, Codable {
 }
 
 extension ResponseType {
-  init(authorizationRequestData: AuthorizationRequestData) throws {
-
+  init(authorizationRequestObject: JSONObject) throws {
+    let type = authorizationRequestObject["response_type"] as? String ?? ""
     guard
-      let responseType = authorizationRequestData.responseType
+      let responseType = ResponseType(rawValue: type)
     else {
-      throw ValidatedAuthorizationError.invalidResponseType
+      throw ValidatedAuthorizationError.unsupportedResponseType(type.isEmpty ? "unknown" : type)
     }
 
+    self = responseType
+  }
+
+  init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
+
     guard
-      responseType == "vp_token",
       let responseType = ResponseType(rawValue: authorizationRequestData.responseType ?? "")
     else {
       throw ValidatedAuthorizationError.unsupportedResponseType(authorizationRequestData.responseType)

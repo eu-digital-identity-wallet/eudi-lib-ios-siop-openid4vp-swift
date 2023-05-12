@@ -7,14 +7,13 @@ import Foundation
    Reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html
  
  */
-
-public protocol OpenID4VPProtocol {
+public protocol SiopOpenID4VPType {
   func process(url: URL) async throws -> PresentationDefinition
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
   func submit()
 }
 
-public class OpenID4VP {
+public class SiopOpenID4VP {
 
   public init() {}
 
@@ -31,22 +30,30 @@ public class OpenID4VP {
    - Throws: An error if it cannot resolve a presentation definition
    */
   public func process(url: URL) async throws -> PresentationDefinition {
-    let authorizationRequestData = AuthorizationRequestData(from: url)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
 
-    let validAuthorizationData = try ValidatedAuthorizationRequestData(
-      authorizationRequestData: authorizationRequestData
-    )
+    let authorizationRequest = try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
 
-    guard let presentationDefinitionSource = validAuthorizationData.presentationDefinitionSource else {
-      throw ValidatedAuthorizationError.noAuthorizationData
+    switch authorizationRequest {
+    case .jwt(request: let data):
+      switch data {
+      case .idToken:
+        throw ValidatedAuthorizationError.unsupportedResponseType(".idToken")
+      case .vpToken(let request):
+        return request.presentationDefinition
+      case .idAndVpToken(let request):
+        return request.presentationDefinition
+      }
+    case .oauth2(let data):
+      switch data {
+      case .idToken:
+        throw ValidatedAuthorizationError.unsupportedResponseType(".idToken")
+      case .vpToken(let request):
+        return request.presentationDefinition
+      case .idAndVpToken(let request):
+        return request.presentationDefinition
+      }
     }
-
-    let resolvedValidAuthorizationData = try await ResolvedAuthorizationRequestData(
-      resolver: PresentationDefinitionResolver(),
-      source: presentationDefinitionSource
-    )
-
-    return resolvedValidAuthorizationData.presentationDefinition
   }
 
   /**
@@ -59,8 +66,7 @@ public class OpenID4VP {
    - Returns: A ClaimsEvaluation object, empty or with matches
    */
   public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation {
-    let matcher = PresentationMatcher()
-    return matcher.match(presentationDefinition: presentationDefinition, claims: claims)
+    return .notFound
   }
 
   /**

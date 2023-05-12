@@ -1,5 +1,30 @@
 import Foundation
 
+internal enum DictionaryError: LocalizedError {
+  case nilValue
+
+  var errorDescription: String? {
+    switch self {
+    case .nilValue:
+      return ".nilValue"
+    }
+  }
+}
+
+internal func getStringValue(from metaData: [String: Any], for key: String) throws -> String {
+  guard let value = metaData[key] as? String else {
+    throw DictionaryError.nilValue
+  }
+  return value
+}
+
+internal func getStringArrayValue(from metaData: [String: Any], for key: String) throws -> [String] {
+    guard let value = metaData[key] as? [String] else {
+        throw DictionaryError.nilValue
+    }
+    return value
+}
+
 public func == (lhs: [String: Any], rhs: [String: Any]) -> Bool {
     return NSDictionary(dictionary: lhs).isEqual(to: rhs)
 }
