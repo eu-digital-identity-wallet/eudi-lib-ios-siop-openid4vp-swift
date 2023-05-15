@@ -28,6 +28,7 @@ public struct PresentationDefinition: Codable {
   public let purpose: Purpose?
   public let format: Format?
   public let inputDescriptors: [InputDescriptor]
+  public let submissionRequirements: [SubmissionRequirements]?
 
   enum CodingKeys: String, CodingKey {
     case id
@@ -35,6 +36,7 @@ public struct PresentationDefinition: Codable {
     case purpose
     case format
     case inputDescriptors = "input_descriptors"
+    case submissionRequirements = "submission_requirements"
   }
 
   public init(
@@ -42,11 +44,13 @@ public struct PresentationDefinition: Codable {
     name: Name?,
     purpose: Purpose?,
     format: Format?,
-    inputDescriptors: [InputDescriptor]) {
+    inputDescriptors: [InputDescriptor],
+    submissionRequirements: [SubmissionRequirements]?) {
       self.id = id
       self.name = name
       self.purpose = purpose
       self.format = format
       self.inputDescriptors = inputDescriptors
+      self.submissionRequirements = submissionRequirements
   }
 }
