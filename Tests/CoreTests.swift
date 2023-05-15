@@ -125,6 +125,7 @@ final class CoreTests: XCTestCase {
     
     let passportClaim = Claim(
       id: "samplePassport",
+      format: .ldp(.ldp),
       jsonObject: [
         "credentialSchema":
           [
@@ -139,6 +140,7 @@ final class CoreTests: XCTestCase {
     
     let bankAccountClaim = Claim(
       id: "sampleBankAccount",
+      format: .ldp(.ldp),
       jsonObject: [
         "credentialSchema":
           [
@@ -179,6 +181,7 @@ final class CoreTests: XCTestCase {
     
     let nonMatchingClaim = Claim(
       id: "samplePassport",
+      format: .ldp(.ldp),
       jsonObject: [
         "squadName": "Super hero squad",
         "homeTown": "Metro City",
