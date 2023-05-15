@@ -14,6 +14,7 @@ public enum ValidatedAuthorizationError: LocalizedError {
   case missingRequiredField(String?)
   case invalidJwtPayload
   case invalidRequestUri(String?)
+  case invalidRequest
   case conflictingData
 
   public var errorDescription: String? {
@@ -46,6 +47,8 @@ public enum ValidatedAuthorizationError: LocalizedError {
       return ".invalidRequestUri \(uri ?? "")"
     case .conflictingData:
       return ".conflictingData"
+    case .invalidRequest:
+      return ".invalidRequest"
     }
   }
 }

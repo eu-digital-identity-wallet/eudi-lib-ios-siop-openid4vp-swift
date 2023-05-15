@@ -9,6 +9,7 @@ import Foundation
  */
 public protocol SiopOpenID4VPType {
   func process(url: URL) async throws -> PresentationDefinition
+  func process(request: JSONObject) async throws -> PresentationDefinition
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
   func submit()
 }
@@ -55,7 +56,11 @@ public class SiopOpenID4VP {
       }
     }
   }
-
+  
+  func process(request: JSONObject) async throws -> PresentationDefinition {
+    throw ValidatedAuthorizationError.invalidRequest
+  }
+  
   /**
    Matches a presentation definition to a list of claims.
 
