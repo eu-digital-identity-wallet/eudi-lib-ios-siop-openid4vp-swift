@@ -166,6 +166,59 @@ final class CoreTests: XCTestCase {
     }
   }
   
+  func testNewPresentationMatcherGivenMatchingClaims() {
+    let matcher = PresentationMatcher()
+    let parser = Parser()
+    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
+      path: "basic_example",
+      type: "json"
+    )
+    
+    guard let container = try? result.get() else {
+      XCTAssert(false, "Unable to decode presentation definition")
+      return
+    }
+    
+    let passportClaim = Claim(
+      id: "samplePassport",
+      format: .ldp(.ldp),
+      jsonObject: [
+        "credentialSchema":
+          [
+            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
+          ],
+        "credentialSubject":
+          [
+            "birth_date":"1974-11-11",
+          ]
+        ]
+      )
+    
+    let bankAccountClaim = Claim(
+      id: "sampleBankAccount",
+      format: .ldp(.ldp),
+      jsonObject: [
+        "credentialSchema":
+          [
+            "id": "https://bank-standards.example.com/fullaccountroute.json"
+          ],
+        "credentialSubject":
+          [
+            "account_number":"1234-5678",
+          ]
+        ]
+      )
+    
+    let match = matcher.match(claims: [
+      passportClaim,
+      bankAccountClaim
+    ], with: container.definition)
+    
+    print(match)
+    
+    XCTAssert(true)
+  }
+  
   func testPresentationMatcherGivenNonMatchingClaims() {
     let matcher = PresentationMatcher()
     let parser = Parser()
