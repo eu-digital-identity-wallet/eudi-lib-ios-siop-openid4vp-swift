@@ -47,8 +47,11 @@ public struct Field: Codable, Hashable {
   public func hash(into hasher: inout Hasher) {
     hasher.combine(paths)
     if let filter = filter {
-      for (key, _) in filter {
+      for (key, value) in filter {
         hasher.combine(key)
+        if let value = value as? String {
+          hasher.combine(value)
+        }
       }
     }
     hasher.combine(purpose)
@@ -56,6 +59,9 @@ public struct Field: Codable, Hashable {
   }
 
   public static func == (lhs: Field, rhs: Field) -> Bool {
-    return lhs.paths == rhs.paths && lhs.purpose == rhs.purpose
+    return lhs.paths == rhs.paths &&
+           lhs.purpose == rhs.purpose &&
+           lhs.intentToRetain == rhs.intentToRetain &&
+           lhs.filter ?? JSONObject() == rhs.filter ?? JSONObject()
   }
 }
