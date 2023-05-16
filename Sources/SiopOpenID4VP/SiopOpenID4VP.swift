@@ -73,7 +73,8 @@ public class SiopOpenID4VP {
    - Returns: A ClaimsEvaluation object, empty or with matches
    */
   public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match {
-    return .notMatched(details: .init())
+    let matcher = PresentationMatcher()
+    return matcher.match(claims: claims, with: presentationDefinition)
   }
 
   /**

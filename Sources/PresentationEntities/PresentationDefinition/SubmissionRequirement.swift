@@ -32,7 +32,7 @@ public struct SubmissionRequirement: Codable {
     }
     return []
   }
-  
+
   init(
     rule: Rule,
     count: Int?,
@@ -52,9 +52,8 @@ public struct SubmissionRequirement: Codable {
     self.name = name
     self.purpose = purpose
   }
-  
+
   public init(from decoder: Decoder) throws {
-    
     let container = try decoder.container(keyedBy: CodingKeys.self)
     rule = try container.decode(Rule.self, forKey: .rule)
     count = try? container.decode(Int.self, forKey: .count)
@@ -66,11 +65,11 @@ public struct SubmissionRequirement: Codable {
 
     name = try? container.decode(String.self, forKey: .name)
     purpose = try? container.decode(String.self, forKey: .purpose)
-    
+
     if from != nil && fromNested != nil {
       throw ValidatedAuthorizationError.conflictingData
     }
-    
+
     if from == nil && fromNested == nil {
       throw ValidatedAuthorizationError.conflictingData
     }
