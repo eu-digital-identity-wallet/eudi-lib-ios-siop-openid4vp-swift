@@ -216,11 +216,7 @@ extension PresentationMatcher: EvaluatorType {
   ) -> Match {
     if let submissionRequirements = definition.submissionRequirements {
       // TODO: Cater for this case properly
-      if candidateClaims.count == definition.inputDescriptors.count {
-        return .matched(matches: candidateClaims)
-      } else {
-        return .notMatched(details: notMatchingClaims)
-      }
+      return .notMatched(details: [:])
 
     } else {
       if candidateClaims.count == definition.inputDescriptors.count {
@@ -229,5 +225,37 @@ extension PresentationMatcher: EvaluatorType {
         return .notMatched(details: notMatchingClaims)
       }
     }
+  }
+
+  private func inputDescriptorsOf(
+    definition: PresentationDefinition,
+    submissionRequirement: SubmissionRequirement
+  ) -> [InputDescriptor] {
+    let allGroups = submissionRequirement.allGroups
+    return definition.inputDescriptors.filter { inputDescriptor in
+      inputDescriptor.groups?.allSatisfy { allGroups.contains($0) } ?? false
+    }
+  }
+
+  func match(
+    definition: PresentationDefinition,
+    submissionRequirement: SubmissionRequirement
+  ) -> Bool {
+    let inputDescriptors = inputDescriptorsOf(
+      definition: definition,
+      submissionRequirement: submissionRequirement)
+    if let from = submissionRequirement.from {
+      switch from {
+      case Rule.all.rawValue:
+        break
+      case Rule.pick.rawValue:
+        break
+      default:
+        return false
+      }
+    } else if let fromNested = submissionRequirement.fromNested {
+      return fromNested.allSatisfy { _ in match(definition: definition, submissionRequirement: submissionRequirement)}
+    }
+    return false
   }
 }
