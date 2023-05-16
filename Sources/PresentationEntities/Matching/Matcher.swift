@@ -13,44 +13,11 @@ private protocol EvaluatorType {
 public typealias ClaimsEvaluation = [ClaimId: [InputDescriptorId: InputDescriptorEvaluation]]
 public typealias InputDescriptorEvaluationPerClaim = [InputDescriptorId: [ClaimId: InputDescriptorEvaluation]]
 
-public enum MatchEvaluation {
-  case found(Conformity)
-  case notFound
-}
-
 public protocol PresentationMatcherType {
-  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> MatchEvaluation
+  func match(claims: [Claim], with definition: PresentationDefinition) -> Match
 }
 
 public class PresentationMatcher: PresentationMatcherType {
-  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> MatchEvaluation {
-    var match: Conformity = [:]
-    claims.forEach { claim in
-      let matches = presentationDefinition.inputDescriptors.compactMap { descriptor in
-        let matches = self.match(claim: claim, with: descriptor)
-        return matches.isEmpty ? nil : [descriptor.id: matches]
-      }
-      if !matches.isEmpty {
-        match[claim.id] = matches
-      }
-    }
-    return match.isEmpty ? .notFound : .found(match)
-  }
-
-  private func match(claim: Claim, with descriptor: InputDescriptor) -> [(String, Any)] {
-    var result: [(String, Any)] = []
-    descriptor.constraints.fields.forEach { field in
-      field.paths.forEach { query in
-        let json = claim.jsonObject.toJSONString()
-        if let values = json?.query(values: query)?.compactMap({ $0 }),
-           !values.isEmpty {
-          result.append((query, values))
-        }
-      }
-    }
-    return result
-  }
-
   public func match(claims: [Claim], with definition: PresentationDefinition) -> Match {
     let claimsEvaluation = claims.associate { claim in
       (
@@ -166,8 +133,10 @@ private extension PresentationMatcher {
       return true
     }
 
+    // Note: the JSONSchema validation library does not support
+    // date validation as of 0.6.0
     if let date = filter["format"] as? String, date == "date" {
-      return true
+      return value.isValidDate()
     }
 
     do {

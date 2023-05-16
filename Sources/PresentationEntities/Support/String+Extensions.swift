@@ -2,6 +2,13 @@ import Foundation
 
 public extension String {
 
+  func isValidDate(dateFormat: String = "yyyy-MM-dd") -> Bool {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = dateFormat
+
+    return dateFormatter.date(from: self) != nil
+  }
+
   func isValidJWT() -> Bool {
       let jwtPattern = "^([A-Za-z0-9-_=]+)\\.([A-Za-z0-9-_=]+)\\.([A-Za-z0-9-_.+/=]*)$"
     guard let jwtRegex = try? NSRegularExpression(pattern: jwtPattern, options: []) else { return false }

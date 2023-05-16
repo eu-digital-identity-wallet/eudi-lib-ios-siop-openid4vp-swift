@@ -110,62 +110,6 @@ final class CoreTests: XCTestCase {
       XCTAssertEqual(persons[2].age, 35)
   }
   
-  func testPresentationMatcherGivenMatchingClaims() {
-    let matcher = PresentationMatcher()
-    let parser = Parser()
-    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
-      path: "basic_example",
-      type: "json"
-    )
-    
-    guard let container = try? result.get() else {
-      XCTAssert(false, "Unable to decode presentation definition")
-      return
-    }
-    
-    let passportClaim = Claim(
-      id: "samplePassport",
-      format: .ldp(.ldp),
-      jsonObject: [
-        "credentialSchema":
-          [
-            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
-          ],
-        "credentialSubject":
-          [
-            "birth_date":"1974-02-11",
-          ]
-        ]
-      )
-    
-    let bankAccountClaim = Claim(
-      id: "sampleBankAccount",
-      format: .ldp(.ldp),
-      jsonObject: [
-        "credentialSchema":
-          [
-            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
-          ],
-        "credentialSubject":
-          [
-            "account_number":"1234-5678",
-          ]
-        ]
-      )
-    
-    let match = matcher.match(presentationDefinition: container.definition, claims: [
-      passportClaim,
-      bankAccountClaim
-      ]
-    )
-    
-    if case .found = match {
-      XCTAssert(true)
-    } else {
-      XCTFail("wrong match")
-    }
-  }
-  
   func testNewPresentationMatcherGivenMatchingClaims() {
     let matcher = PresentationMatcher()
     let parser = Parser()
@@ -188,46 +132,6 @@ final class CoreTests: XCTestCase {
     case .matched(let matches):
       XCTAssert(matches.count == 2)
     default: XCTAssert(false)
-    }
-  }
-  
-  func testPresentationMatcherGivenNonMatchingClaims() {
-    let matcher = PresentationMatcher()
-    let parser = Parser()
-    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
-      path: "basic_example",
-      type: "json"
-    )
-    
-    guard let container = try? result.get() else {
-      XCTAssert(false, "Unable to decode presentation definition")
-      return
-    }
-    
-    let nonMatchingClaim = Claim(
-      id: "samplePassport",
-      format: .ldp(.ldp),
-      jsonObject: [
-        "squadName": "Super hero squad",
-        "homeTown": "Metro City",
-        "formed": 2016,
-        "secretBase": "Super tower",
-        "active": true,
-        "members": [
-          "member-one"
-        ]
-      ]
-    )
-    
-    let match = matcher.match(presentationDefinition: container.definition, claims: [
-      nonMatchingClaim
-      ]
-    )
-    
-    if case .notFound = match {
-      XCTAssert(true)
-    } else {
-      XCTFail("wrong match")
     }
   }
   

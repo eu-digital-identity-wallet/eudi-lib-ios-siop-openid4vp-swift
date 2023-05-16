@@ -7,6 +7,3 @@ public typealias Name = String
 public typealias InputDescriptorId = String
 public typealias Group = String
 public typealias JSONPath = String
-public typealias Conformity = [ClaimId: [
-  [InputDescriptorId: [(JSONPath, Any)]]
-]]

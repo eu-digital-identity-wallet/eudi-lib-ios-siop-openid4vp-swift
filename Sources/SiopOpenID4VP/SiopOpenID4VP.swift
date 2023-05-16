@@ -10,7 +10,7 @@ import Foundation
 public protocol SiopOpenID4VPType {
   func process(url: URL) async throws -> PresentationDefinition
   func process(request: JSONObject) async throws -> PresentationDefinition
-  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> MatchEvaluation
+  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func submit()
 }
 
@@ -57,8 +57,10 @@ public class SiopOpenID4VP {
     }
   }
 
-  func process(request: JSONObject) async throws -> PresentationDefinition {
-    throw ValidatedAuthorizationError.invalidRequest
+  public func authorization(url: URL) async throws -> AuthorizationRequest {
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
+
+    return try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
   }
 
   /**
@@ -70,8 +72,8 @@ public class SiopOpenID4VP {
 
    - Returns: A ClaimsEvaluation object, empty or with matches
    */
-  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> MatchEvaluation {
-    return .notFound
+  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match {
+    return .notMatched(details: .init())
   }
 
   /**
