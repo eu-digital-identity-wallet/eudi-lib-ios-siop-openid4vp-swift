@@ -2,6 +2,9 @@ import Foundation
 import Sextant
 import JSONSchema
 
+public typealias ClaimsEvaluation = [ClaimId: [InputDescriptorId: InputDescriptorEvaluation]]
+public typealias InputDescriptorEvaluationPerClaim = [InputDescriptorId: [ClaimId: InputDescriptorEvaluation]]
+
 private protocol EvaluatorType {
   func evaluate(
     definition: PresentationDefinition,
@@ -9,9 +12,6 @@ private protocol EvaluatorType {
     notMatchingClaims: InputDescriptorEvaluationPerClaim
   ) -> Match
 }
-
-public typealias ClaimsEvaluation = [ClaimId: [InputDescriptorId: InputDescriptorEvaluation]]
-public typealias InputDescriptorEvaluationPerClaim = [InputDescriptorId: [ClaimId: InputDescriptorEvaluation]]
 
 public protocol PresentationMatcherType {
   func match(claims: [Claim], with definition: PresentationDefinition) -> Match
@@ -95,7 +95,7 @@ private extension PresentationMatcher {
 
     let matchedResults: [Field: CandidateField] =
     fieldConstraints.associateWith { field in
-      match(claim: claim, with: field)
+      matchClaim(claim: claim, with: field)
     }
 
     let notMatchedResults = matchedResults.filterValues { field in
@@ -107,7 +107,7 @@ private extension PresentationMatcher {
     : .candidateClaim(matches: matchedResults)
   }
 
-  private func match(
+  private func matchClaim(
     claim: Claim,
     with field: Field
   ) -> CandidateField {
@@ -215,7 +215,7 @@ extension PresentationMatcher: EvaluatorType {
     notMatchingClaims: InputDescriptorEvaluationPerClaim
   ) -> Match {
     if let submissionRequirements = definition.submissionRequirements {
-      // TODO: Cater for this case properly
+      // TODO: Handle this case properly
       return .notMatched(details: [:])
 
     } else {
@@ -237,7 +237,7 @@ extension PresentationMatcher: EvaluatorType {
     }
   }
 
-  func match(
+  func matchSubmissionRequirement(
     definition: PresentationDefinition,
     submissionRequirement: SubmissionRequirement
   ) -> Bool {
@@ -254,7 +254,7 @@ extension PresentationMatcher: EvaluatorType {
         return false
       }
     } else if let fromNested = submissionRequirement.fromNested {
-      return fromNested.allSatisfy { _ in match(definition: definition, submissionRequirement: submissionRequirement)}
+      return fromNested.allSatisfy { _ in matchSubmissionRequirement(definition: definition, submissionRequirement: submissionRequirement)}
     }
     return false
   }
