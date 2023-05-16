@@ -2,11 +2,19 @@ import Foundation
 import Sextant
 import JSONSchema
 
+private protocol EvaluatorType {
+  func evaluate(
+    definition: PresentationDefinition,
+    candidateClaims: InputDescriptorEvaluationPerClaim,
+    notMatchingClaims: InputDescriptorEvaluationPerClaim
+  ) -> Match
+}
+
 public typealias ClaimsEvaluation = [ClaimId: [InputDescriptorId: InputDescriptorEvaluation]]
-typealias InputDescriptorEvaluationPerClaim = [InputDescriptorId: [ClaimId: InputDescriptorEvaluation]]
+public typealias InputDescriptorEvaluationPerClaim = [InputDescriptorId: [ClaimId: InputDescriptorEvaluation]]
 
 public enum MatchEvaluation {
-  case found(Match)
+  case found(Conformity)
   case notFound
 }
 
@@ -16,7 +24,7 @@ public protocol PresentationMatcherType {
 
 public class PresentationMatcher: PresentationMatcherType {
   public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> MatchEvaluation {
-    var match: Match = [:]
+    var match: Conformity = [:]
     claims.forEach { claim in
       let matches = presentationDefinition.inputDescriptors.compactMap { descriptor in
         let matches = self.match(claim: claim, with: descriptor)
@@ -43,7 +51,7 @@ public class PresentationMatcher: PresentationMatcherType {
     return result
   }
 
-  public func match(claims: [Claim], with definition: PresentationDefinition) -> ClaimsEvaluation {
+  public func match(claims: [Claim], with definition: PresentationDefinition) -> Match {
     let claimsEvaluation = claims.associate { claim in
       (
         claim.id,
@@ -60,7 +68,11 @@ public class PresentationMatcher: PresentationMatcherType {
       claimsEvaluation: claimsEvaluation
     )
 
-    return claimsEvaluation
+    return evaluate(
+      definition: definition,
+      candidateClaims: candidateClaims,
+      notMatchingClaims: notMatchingClaims
+    )
   }
 }
 
@@ -224,5 +236,29 @@ private extension PresentationMatcher {
     }
 
     return (candidateClaimsPerDescriptor, notMatchingClaimsPerDescriptor)
+  }
+}
+
+extension PresentationMatcher: EvaluatorType {
+  func evaluate(
+    definition: PresentationDefinition,
+    candidateClaims: InputDescriptorEvaluationPerClaim,
+    notMatchingClaims: InputDescriptorEvaluationPerClaim
+  ) -> Match {
+    if let submissionRequirements = definition.submissionRequirements {
+      // TODO: Cater for this case properly
+      if candidateClaims.count == definition.inputDescriptors.count {
+        return .matched(matches: candidateClaims)
+      } else {
+        return .notMatched(details: notMatchingClaims)
+      }
+
+    } else {
+      if candidateClaims.count == definition.inputDescriptors.count {
+        return .matched(matches: candidateClaims)
+      } else {
+        return .notMatched(details: notMatchingClaims)
+      }
+    }
   }
 }

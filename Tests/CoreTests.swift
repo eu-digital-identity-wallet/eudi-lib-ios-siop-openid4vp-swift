@@ -179,44 +179,16 @@ final class CoreTests: XCTestCase {
       return
     }
     
-    let passportClaim = Claim(
-      id: "samplePassport",
-      format: .ldp(.ldp),
-      jsonObject: [
-        "credentialSchema":
-          [
-            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
-          ],
-        "credentialSubject":
-          [
-            "birth_date":"1974-11-11",
-          ]
-        ]
-      )
+    let match = matcher.match(
+      claims: TestsConstants.testClaimsBankAndPassport,
+      with: container.definition
+    )
     
-    let bankAccountClaim = Claim(
-      id: "sampleBankAccount",
-      format: .ldp(.ldp),
-      jsonObject: [
-        "credentialSchema":
-          [
-            "id": "https://bank-standards.example.com/fullaccountroute.json"
-          ],
-        "credentialSubject":
-          [
-            "account_number":"1234-5678",
-          ]
-        ]
-      )
-    
-    let match = matcher.match(claims: [
-      passportClaim,
-      bankAccountClaim
-    ], with: container.definition)
-    
-    print(match)
-    
-    XCTAssert(true)
+    switch match {
+    case .matched(let matches):
+      XCTAssert(matches.count == 2)
+    default: XCTAssert(false)
+    }
   }
   
   func testPresentationMatcherGivenNonMatchingClaims() {
