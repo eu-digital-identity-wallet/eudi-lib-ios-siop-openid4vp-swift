@@ -7,6 +7,7 @@ public enum JSONParseError: LocalizedError {
   case mappingFail(value: Any, toType: Any)
   case invalidJSON
   case invalidJWT
+  case notSupportedOperation
 
   public var errorDescription: String? {
     switch self {
@@ -22,6 +23,8 @@ public enum JSONParseError: LocalizedError {
       return ".invalidJSON"
     case .invalidJWT:
       return ".invalidJWT"
+    case .notSupportedOperation:
+      return ".notSupportedOperation"
     }
   }
 }

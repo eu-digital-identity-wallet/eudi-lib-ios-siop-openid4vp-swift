@@ -12,6 +12,7 @@ public protocol SiopOpenID4VPType {
   func process(request: JSONObject) async throws -> PresentationDefinition
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func submit()
+  func consent()
 }
 
 public class SiopOpenID4VP {
@@ -76,6 +77,11 @@ public class SiopOpenID4VP {
     let matcher = PresentationMatcher()
     return matcher.match(claims: claims, with: presentationDefinition)
   }
+
+  /**
+   WIP: Consent to matches
+   */
+  func consent() {}
 
   /**
    WIP: Submits a request

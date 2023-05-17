@@ -188,7 +188,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     let sdk = SiopOpenID4VP()
     let passportClaim = Claim(
       id: "samplePassport",
-      format: .ldp(.ldp),
+      format: .ldp,
       jsonObject: [
         "credentialSchema":
           [

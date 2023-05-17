@@ -26,7 +26,7 @@ public struct PresentationDefinition: Codable {
   public let id: String
   public let name: Name?
   public let purpose: Purpose?
-  public let format: Format?
+  public let formatContainer: FormatContainer?
   public let inputDescriptors: [InputDescriptor]
   public let submissionRequirements: [SubmissionRequirement]?
 
@@ -34,7 +34,7 @@ public struct PresentationDefinition: Codable {
     case id
     case name
     case purpose
-    case format
+    case formatContainer = "format"
     case inputDescriptors = "input_descriptors"
     case submissionRequirements = "submission_requirements"
   }
@@ -43,13 +43,13 @@ public struct PresentationDefinition: Codable {
     id: String,
     name: Name?,
     purpose: Purpose?,
-    format: Format?,
+    formatContainer: FormatContainer?,
     inputDescriptors: [InputDescriptor],
     submissionRequirements: [SubmissionRequirement]?) {
       self.id = id
       self.name = name
       self.purpose = purpose
-      self.format = format
+      self.formatContainer = formatContainer
       self.inputDescriptors = inputDescriptors
       self.submissionRequirements = submissionRequirements
   }

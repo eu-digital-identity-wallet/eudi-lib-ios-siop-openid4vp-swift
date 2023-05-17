@@ -16,7 +16,9 @@ public enum ValidatedAuthorizationError: LocalizedError {
   case invalidRequestUri(String?)
   case invalidRequest
   case conflictingData
-
+  case notSupportedOperation
+  case invalidFormat
+  
   public var errorDescription: String? {
     switch self {
     case .unsupportedClientIdScheme(let scheme):
@@ -49,6 +51,10 @@ public enum ValidatedAuthorizationError: LocalizedError {
       return ".conflictingData"
     case .invalidRequest:
       return ".invalidRequest"
+    case .notSupportedOperation:
+      return ".notSupportedOperation"
+    case .invalidFormat:
+      return ".invalidFormat"
     }
   }
 }

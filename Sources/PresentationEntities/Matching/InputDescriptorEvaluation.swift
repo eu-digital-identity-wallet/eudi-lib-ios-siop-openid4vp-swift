@@ -10,7 +10,7 @@ public enum InputDescriptorEvaluation: CustomDebugStringConvertible {
   public var debugDescription: String {
     switch self {
     case .candidateClaim(matches: let matches):
-      return "Matched \(matches.map {($0.key, $0.value)}.enumerated().map { "Field no:\($0) was matched \($1.1.debugDescription)"})"
+      return "Matched \(matches.map {($0.key, $0.value)}.enumerated().map { "Field no:\($0) was matched \($1.1.debugDescription)"})\n"
     case .notMatchingClaim:
       return "Not matched"
     case .notMatchedFieldConstraints:

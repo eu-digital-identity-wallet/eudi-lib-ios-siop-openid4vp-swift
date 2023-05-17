@@ -11,7 +11,8 @@ public enum Match {
       matches.forEach { (key: InputDescriptorId, value: [ClaimId: InputDescriptorEvaluation]) in
         print("Input descriptor: \(key)")
         value.forEach { (key: ClaimId, value: InputDescriptorEvaluation) in
-          print("Claim \(key) \(value)")
+          print("\tClaim \(key)")
+          print("\tEvaluation \(value)")
         }
       }
     case .notMatched(let details):

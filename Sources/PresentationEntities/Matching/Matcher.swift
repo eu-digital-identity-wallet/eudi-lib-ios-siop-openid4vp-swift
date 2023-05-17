@@ -23,7 +23,7 @@ public class PresentationMatcher: PresentationMatcherType {
       (
         claim.id,
         matchInputDescriptors(
-          presentationDefinitionFormat: definition.format,
+          presentationDefinitionFormat: definition.formatContainer?.formats,
           inputDescriptors: definition.inputDescriptors,
           claim: claim
         )
@@ -45,7 +45,7 @@ public class PresentationMatcher: PresentationMatcherType {
 
 private extension PresentationMatcher {
   private func matchInputDescriptors(
-    presentationDefinitionFormat: Format?,
+    presentationDefinitionFormat: [Format]?,
     inputDescriptors: [InputDescriptor],
     claim: Claim
   ) -> [InputDescriptorId: InputDescriptorEvaluation] {
@@ -62,7 +62,7 @@ private extension PresentationMatcher {
   }
 
   private func evaluate(
-    presentationDefinitionFormat: Format?,
+    presentationDefinitionFormat: [Format]?,
     inputDescriptor: InputDescriptor,
     claim: Claim
   ) -> InputDescriptorEvaluation {
@@ -82,10 +82,15 @@ private extension PresentationMatcher {
 
   private func isFormatSupported(
     inputDescriptor: InputDescriptor,
-    presentationDefinitionFormat: Format?,
-    claimFormat: ClaimFormat
+    presentationDefinitionFormat: [Format]?,
+    claimFormat: FormatDesignation
   ) -> Bool {
-    return true
+
+    guard let formats: [Format] = inputDescriptor.formatContainer?.formats ?? presentationDefinitionFormat else {
+      return true
+    }
+
+    return formats.map { $0.designation }.contains(where: { $0 == claimFormat })
   }
 
   private func checkFieldConstraints(
