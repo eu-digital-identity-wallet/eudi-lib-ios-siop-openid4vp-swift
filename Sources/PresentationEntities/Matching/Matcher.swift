@@ -19,13 +19,13 @@ public protocol PresentationMatcherType {
 
 public class PresentationMatcher: PresentationMatcherType {
   public func match(claims: [Claim], with definition: PresentationDefinition) -> Match {
-    let claimsEvaluation = claims.associate { claim in
+    let claimsEvaluation = claims.associate {
       (
-        claim.id,
+        $0.id,
         matchInputDescriptors(
           presentationDefinitionFormat: definition.formatContainer?.formats,
           inputDescriptors: definition.inputDescriptors,
-          claim: claim
+          claim: $0
         )
       )
     }
@@ -103,8 +103,8 @@ private extension PresentationMatcher {
       matchClaim(claim: claim, with: field)
     }
 
-    let notMatchedResults = matchedResults.filterValues { field in
-      field == .requiredFieldNotFound
+    let notMatchedResults = matchedResults.filterValues {
+      $0 == .requiredFieldNotFound
     }.keys
 
     return !notMatchedResults.isEmpty
@@ -165,8 +165,8 @@ private extension PresentationMatcher {
     var notMatchingClaimsPerDescriptor: [InputDescriptorId: [ClaimId: InputDescriptorEvaluation]] = [:]
 
     func updateCandidateClaims(inputDescriptor: InputDescriptor) {
-      let candidateClaims = claimsEvaluation.mapValues { element in
-        element[inputDescriptor.id]
+      let candidateClaims = claimsEvaluation.mapValues {
+        $0[inputDescriptor.id]
       }.filter {
         guard let value = $0.value else {
           return false
@@ -185,8 +185,8 @@ private extension PresentationMatcher {
     }
 
     func updateNotMatchingClaims(inputDescriptor: InputDescriptor) {
-      let candidateClaims = claimsEvaluation.mapValues { element in
-        element[inputDescriptor.id]
+      let candidateClaims = claimsEvaluation.mapValues {
+        $0[inputDescriptor.id]
       }.filter {
         guard let value = $0.value else {
           return false
@@ -259,7 +259,12 @@ extension PresentationMatcher: EvaluatorType {
         return false
       }
     } else if let fromNested = submissionRequirement.fromNested {
-      return fromNested.allSatisfy { _ in matchSubmissionRequirement(definition: definition, submissionRequirement: submissionRequirement)}
+      return fromNested.allSatisfy { _ in
+        matchSubmissionRequirement(
+          definition: definition,
+          submissionRequirement: submissionRequirement
+        )
+      }
     }
     return false
   }
