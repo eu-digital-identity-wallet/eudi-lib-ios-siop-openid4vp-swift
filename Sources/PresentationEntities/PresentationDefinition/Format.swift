@@ -1,6 +1,6 @@
 import Foundation
 
-public enum FormatSpecifier: Codable {
+public enum FormatSpecifier: Codable, Equatable {
   case alg(Set<FormatAlgorithm>)
   case proofType(Set<LdpProof>)
   case none
@@ -138,6 +138,6 @@ public struct Format: Codable, Equatable {
   }
 
   public static func == (lhs: Format, rhs: Format) -> Bool {
-    return true
+    return lhs.designation == rhs.designation && lhs.property == rhs.property
   }
 }

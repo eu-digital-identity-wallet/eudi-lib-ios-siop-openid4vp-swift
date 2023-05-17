@@ -18,7 +18,7 @@ public enum ValidatedAuthorizationError: LocalizedError {
   case conflictingData
   case notSupportedOperation
   case invalidFormat
-  
+
   public var errorDescription: String? {
     switch self {
     case .unsupportedClientIdScheme(let scheme):
