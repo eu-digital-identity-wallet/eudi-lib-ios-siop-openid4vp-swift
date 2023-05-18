@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public struct ResolvedAuthorizationRequestData {
   public let presentationDefinition: PresentationDefinition

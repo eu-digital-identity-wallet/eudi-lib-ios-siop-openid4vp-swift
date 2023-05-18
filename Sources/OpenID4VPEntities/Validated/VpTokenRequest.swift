@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 extension ValidatedSiopOpenId4VPRequest {
   public struct VpTokenRequest {

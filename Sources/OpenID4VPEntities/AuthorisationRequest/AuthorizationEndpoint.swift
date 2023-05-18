@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 enum OpenId4VPAuthorization {
   case url(URL)

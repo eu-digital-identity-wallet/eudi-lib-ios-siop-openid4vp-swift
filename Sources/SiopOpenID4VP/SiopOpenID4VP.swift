@@ -1,4 +1,5 @@
 import Foundation
+@_exported import PresentationExchange
 
 /**
  OpenID for Verifiable Presentations

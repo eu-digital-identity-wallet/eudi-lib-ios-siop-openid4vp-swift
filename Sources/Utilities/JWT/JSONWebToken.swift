@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public struct JSONWebToken {
   public let header: JSONWebTokenHeader

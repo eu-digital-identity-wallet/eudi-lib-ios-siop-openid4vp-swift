@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 // By OpenID Connect Dynamic Client Registration specification
 public struct ClientMetaData: Codable, Equatable {
