@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Hitch.git",
       "state" : {
-        "revision" : "627e9f79fb99a068abcd6f23ee0801acc5a6549c",
-        "version" : "0.4.101"
+        "revision" : "f775d6fb66472716b0c5080db13b1cacd29441f9",
+        "version" : "0.4.107"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
       "state" : {
-        "revision" : "20c1d1a005550e76ec9438d0817d490b9a478a0e",
-        "version" : "0.0.4"
+        "revision" : "353332552c890c9da1e45b37b1a61965bd043900",
+        "version" : "0.0.14"
       }
     },
     {
@@ -149,8 +149,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/drmohundro/SWXMLHash.git",
       "state" : {
-        "revision" : "4d0f62f561458cbe1f732171e625f03195151b60",
-        "version" : "7.0.1"
+        "revision" : "a853604c9e9a83ad9954c7e3d2a565273982471f",
+        "version" : "7.0.2"
       }
     },
     {

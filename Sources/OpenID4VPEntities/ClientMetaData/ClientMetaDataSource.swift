@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public enum ClientMetaDataSource {
   case passByValue(metaData: ClientMetaData)

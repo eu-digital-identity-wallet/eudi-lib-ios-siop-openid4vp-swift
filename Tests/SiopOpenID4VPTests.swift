@@ -1,43 +1,31 @@
 import Foundation
 import XCTest
+import PresentationExchange
 
 @testable import SiopOpenID4VP
 
 final class SiopOpenID4VPTests: XCTestCase {
+  
+  // MARK: - Presentation submission test
+  
+  func testPresentationSubmissionJsonStringDecoding() throws {
+    
+    let definition = try! Dictionary.from(
+      bundle: "presentation_submission_example"
+    ).get().toJSONString()!
+    
+    let result: Result<PresentationSubmissionContainer, ParserError> = Parser().decode(json: definition)
+    
+    let container = try! result.get()
+    
+    XCTAssert(container.submission.id == "a30e3b91-fb77-4d22-95fa-871689c322e2")
+  }
   
   // MARK: - Authorisation Request Testing
   
   func testAuthorizationRequestDataGivenValidDataInURL() throws {
     let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
-  }
-  
-  func testAuthorizationRequestDataGivenValidInput() throws {
-    
-    let parser = Parser()
-    let authorizationResult: Result<AuthorizationRequestUnprocessedData, ParserError> = parser.decode(
-      path: "valid_authorizaton_data_example",
-      type: "json"
-    )
-    
-    let authorization = try? authorizationResult.get()
-    guard
-      let authorization = authorization
-    else {
-      XCTAssert(false)
-      return
-    }
-    
-    let definitionContainerResult: Result<PresentationDefinitionContainer, ParserError> = parser.decode(json: authorization.presentationDefinition!)
-    let definitionContainer = try? definitionContainerResult.get()
-    guard
-      let definitionContainer = definitionContainer
-    else {
-      XCTAssert(false)
-      return
-    }
-    
-    XCTAssert(definitionContainer.definition.inputDescriptors.count == 1)
   }
   
   func testAuthorizationRequestDataGivenInvalidInput() throws {
@@ -50,17 +38,6 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     let container = try? result.get()
     XCTAssertNotNil(container)
-  }
-  
-  func testAuthorizationRequestDataGivenInvalidJSONInput() throws {
-    let parser = Parser()
-    let result: Result<AuthorizationRequestUnprocessedData, ParserError> = parser.decode(
-      path: "i-dont-know",
-      type: "json"
-    )
-    
-    let container = try? result.get()
-    XCTAssertNil(container)
   }
   
   // MARK: - Validated Authorisation Request Testing

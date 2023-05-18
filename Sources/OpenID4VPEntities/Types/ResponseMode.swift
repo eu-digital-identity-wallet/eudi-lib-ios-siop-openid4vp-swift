@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public enum ResponseMode {
   case directPost(responseURI: URL)

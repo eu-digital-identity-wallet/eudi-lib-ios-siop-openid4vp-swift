@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public enum AuthorizationRequest {
   case oauth2(data: ResolvedSiopOpenId4VPRequestData)

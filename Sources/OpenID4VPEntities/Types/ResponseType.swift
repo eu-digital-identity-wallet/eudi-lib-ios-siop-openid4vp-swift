@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public enum ResponseType: String, Codable {
   case vpToken = "vp_token"

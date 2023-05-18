@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 enum ClientConsent {
   case idTokenConsensus
