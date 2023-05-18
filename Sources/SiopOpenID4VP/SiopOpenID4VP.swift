@@ -9,8 +9,10 @@ import Foundation
  */
 public protocol SiopOpenID4VPType {
   func process(url: URL) async throws -> PresentationDefinition
-  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation
+  func process(request: JSONObject) async throws -> PresentationDefinition
+  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func submit()
+  func consent()
 }
 
 public class SiopOpenID4VP {
@@ -56,6 +58,12 @@ public class SiopOpenID4VP {
     }
   }
 
+  public func authorization(url: URL) async throws -> AuthorizationRequest {
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
+
+    return try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
+  }
+
   /**
    Matches a presentation definition to a list of claims.
 
@@ -65,9 +73,15 @@ public class SiopOpenID4VP {
 
    - Returns: A ClaimsEvaluation object, empty or with matches
    */
-  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> ClaimsEvaluation {
-    return .notFound
+  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match {
+    let matcher = PresentationMatcher()
+    return matcher.match(claims: claims, with: presentationDefinition)
   }
+
+  /**
+   WIP: Consent to matches
+   */
+  func consent() {}
 
   /**
    WIP: Submits a request

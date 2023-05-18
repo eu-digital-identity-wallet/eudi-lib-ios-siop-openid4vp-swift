@@ -4,7 +4,7 @@ public struct InputDescriptor: Codable {
   public let id: InputDescriptorId
   public let name: Name?
   public let purpose: Purpose?
-  public let format: Format?
+  public let formatContainer: FormatContainer?
   public let constraints: Constraints
   public let groups: [Group]?
 
@@ -12,7 +12,7 @@ public struct InputDescriptor: Codable {
     case id
     case name
     case purpose
-    case format
+    case formatContainer = "format"
     case constraints
     case groups = "group"
   }

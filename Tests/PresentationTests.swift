@@ -101,8 +101,24 @@ final class PresentationTests: XCTestCase {
     )
     
     let presentationDefinition = try! result.get()
-    XCTAssertTrue(presentationDefinition.inputDescriptors.first!.format!.msoMdoc!.alg.count == 2)
-    XCTAssertTrue(presentationDefinition.inputDescriptors.first!.format!.msoMdoc!.alg.last == "ES256")
+    let format = presentationDefinition.inputDescriptors.first!.formatContainer!.formats.first
+    
+    XCTAssertTrue(format!.designation == .msoMdoc)
+  }
+  
+  func testValidateFormatExamplePresentationDefinitionExpectedData() throws {
+    
+    let parser = Parser()
+    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
+      path: "format_example",
+      type: "json"
+    )
+    
+    let presentationDefinition = try! result.get().definition
+
+    let formats = presentationDefinition.formatContainer!.formats
+    
+    XCTAssert(!formats.filter { $0.designation == .jwt}.isEmpty)
   }
   
   // MARK: - Presentation submission
