@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public protocol PresentationDefinitionResolverType {
   associatedtype InputType

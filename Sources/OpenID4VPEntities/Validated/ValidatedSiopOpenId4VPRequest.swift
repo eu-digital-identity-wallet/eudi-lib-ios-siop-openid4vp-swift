@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public enum ValidatedSiopOpenId4VPRequest {
   case idToken(request: IdTokenRequest)

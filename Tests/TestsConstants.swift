@@ -1,4 +1,6 @@
 import Foundation
+import PresentationExchange
+
 @testable import SiopOpenID4VP
 
 struct TestsConstants {
@@ -32,6 +34,7 @@ struct TestsConstants {
         ]
       )
   ]
+  
   // MARK: - Client meta data by value, Presentation definition by reference
   
   static let validByClientByValuePresentationByReferenceUrlString =

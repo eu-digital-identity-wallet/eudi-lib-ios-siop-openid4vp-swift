@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 extension ResolvedSiopOpenId4VPRequestData {
   public struct VpTokenData {

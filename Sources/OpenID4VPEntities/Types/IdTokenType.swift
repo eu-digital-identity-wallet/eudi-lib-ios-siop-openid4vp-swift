@@ -1,4 +1,5 @@
 import Foundation
+import PresentationExchange
 
 public enum IdTokenType: String, Codable {
   case subjectSigned = "subject_signed"
