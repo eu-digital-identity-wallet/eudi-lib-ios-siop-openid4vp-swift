@@ -8,10 +8,11 @@
 
 // swiftlint:disable all
 
+@_exported import PresentationExchange
 @testable import Mockingbird
 @testable import SiopOpenID4VP
 import Foundation
-import Sextant
+import PresentationExchange
 import Swift
 import os
 
