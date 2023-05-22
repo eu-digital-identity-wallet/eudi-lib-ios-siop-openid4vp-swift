@@ -18,7 +18,9 @@ public protocol SiopOpenID4VPType {
 
 public class SiopOpenID4VP {
 
-  public init() {}
+  public init() {
+    registerDependencies()
+  }
 
   /**
    Processes an authorisation URL.
@@ -88,4 +90,12 @@ public class SiopOpenID4VP {
    WIP: Submits a request
    */
   public func submit() {}
+}
+
+private extension SiopOpenID4VP {
+  func registerDependencies() {
+    DependencyContainer.shared.register(type: Reporting.self, dependency: {
+      Reporter()
+    })
+  }
 }
