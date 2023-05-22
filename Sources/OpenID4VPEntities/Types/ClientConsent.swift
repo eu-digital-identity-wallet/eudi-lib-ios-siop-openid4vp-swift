@@ -11,14 +11,14 @@ enum ClientConsent {
     - Parameters:
      - idToken: The id_token produced by the wallet
     */
-  case idTokenConsensus(idToken: JWTString)
+  case idToken(idToken: JWTString)
 
   /**
    In response to an OpenId4VPAuthorization where the wallet has claims that fulfill Verifier's presentation definition
     - Parameters:
      - approvedClaims: The claims to include chosen by the holder
     */
-  case vpTokenConsensus(approvedClaims: [Claim])
+  case vpToken(approvedClaims: [Claim])
 
   /**
    In response to a SiopOpenId4VPAuthentication
@@ -26,7 +26,7 @@ enum ClientConsent {
      - idToken: The id_token produced by the wallet
      - approvedClaims: The claims to include chosen by the holder
     */
-  case idAndVPTokenConsensus(approvedClaims: [Claim])
+  case idAndVPToken(approvedClaims: [Claim])
 
   /**
    No consensus. Holder decided to reject the request
