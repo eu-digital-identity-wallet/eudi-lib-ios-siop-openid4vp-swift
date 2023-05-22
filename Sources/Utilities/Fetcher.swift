@@ -26,11 +26,19 @@ public protocol Fetching {
 }
 
 public struct Fetcher<Element: Codable>: Fetching {
+
+  @Injected var reporter: Reporting
+
   public init() {}
   public func fetch(url: URL) async -> Result<Element, FetchError> {
     do {
-      let (data, _) = try await URLSession.shared.data(from: url)
+      let (data, response) = try await URLSession.shared.data(from: url)
       let object = try JSONDecoder().decode(Element.self, from: data)
+
+      if let httpResponse = response as? HTTPURLResponse {
+        reporter.debug("Status code: \(httpResponse.statusCode)")
+      }
+
       return .success(object)
     } catch let error as NSError {
       if error.domain == NSURLErrorDomain {

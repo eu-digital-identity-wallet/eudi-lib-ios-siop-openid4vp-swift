@@ -6,6 +6,16 @@ import PresentationExchange
 
 final class SiopOpenID4VPTests: XCTestCase {
   
+  override func setUp() async throws {
+    overrideDependencies()
+    try await super.setUp()
+  }
+  
+  override func tearDown() {
+    DependencyContainer.shared.removeAll()
+    super.tearDown()
+  }
+  
   // MARK: - Presentation submission test
   
   func testPresentationSubmissionJsonStringDecoding() throws {
@@ -109,6 +119,8 @@ final class SiopOpenID4VPTests: XCTestCase {
   func testSDKValidationResolutionGivenDataByReferenceIsValid() async throws {
     
     let sdk = SiopOpenID4VP()
+    
+    overrideDependencies()
     let presentationDefinition = try await sdk.process(url: TestsConstants.validByReferenceAuthorizeUrl)
     
     XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
@@ -388,5 +400,13 @@ final class SiopOpenID4VPTests: XCTestCase {
     XCTAssert(presentationDefinition!.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
     XCTAssert(presentationDefinition!.inputDescriptors.count == 2)
     XCTAssert(presentationDefinition!.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSchema.id")
+  }
+}
+
+private extension SiopOpenID4VPTests {
+  func overrideDependencies() {
+    DependencyContainer.shared.register(type: Reporting.self, dependency: {
+      MockReporter()
+    })
   }
 }
