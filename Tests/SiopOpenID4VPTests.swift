@@ -401,6 +401,26 @@ final class SiopOpenID4VPTests: XCTestCase {
     XCTAssert(presentationDefinition!.inputDescriptors.count == 2)
     XCTAssert(presentationDefinition!.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSchema.id")
   }
+  
+  func testSDKAuthorisationValidationResolutionGivenDataByReferenceIsValid() async throws {
+    
+    let sdk = SiopOpenID4VP()
+
+    overrideDependencies()
+    let result = try await sdk.authorization(url: TestsConstants.validByReferenceAuthorizeUrl)
+    
+    switch result {
+    case .oauth2(let resolved):
+      switch resolved {
+      case .vpToken:
+        XCTAssert(true)
+      default:
+        XCTAssert(false, "Invalid resolution")
+      }
+    default:
+      XCTAssert(false, "Invalid resolution")
+    }
+  }
 }
 
 private extension SiopOpenID4VPTests {
