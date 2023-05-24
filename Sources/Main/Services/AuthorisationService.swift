@@ -17,6 +17,7 @@ public struct DirectPost: Request {
     var request = URLRequest(url: url)
     request.httpMethod = method.rawValue
     request.httpBody = body
+    request.allHTTPHeaderFields = additionalHeaders
     return request
   }
 }
@@ -33,7 +34,11 @@ public class AuthorisationService: AuthorisationServiceType {
     switch response {
     case .directPost(let url, let data):
       let poster = Poster()
-      let response = DirectPost(url: url, formData: try data.toDictionary())
+      let response = DirectPost(
+        additionalHeaders: ["Content-Type": "application/x-www-form-urlencoded"],
+        url: url,
+        formData: try data.toDictionary()
+      )
       let result: Result<T, PostError> = await poster.post(request: response.urlRequest)
       return try result.get()
     default: throw AuthorizationError.invalidResponseMode

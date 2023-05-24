@@ -14,7 +14,7 @@ public class AuthorizationResponseController {
     self.service = service
     self.authorizationResponse = authorizationResponse
   }
-  
+
   public func post<T: Codable>(response: AuthorizationResponse) async throws -> T {
     return try await service.post(response: response)
   }

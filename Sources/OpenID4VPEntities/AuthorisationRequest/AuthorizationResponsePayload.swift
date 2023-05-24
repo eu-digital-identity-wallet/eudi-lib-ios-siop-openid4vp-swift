@@ -24,14 +24,17 @@ public enum AuthorizationResponsePayload: Encodable {
     case failure
     case invalidRequest
     case noConsensusResponseData
+    case idToken = "id_token"
+    case state
   }
 
   public func encode(to encoder: Encoder) throws {
      var container = encoder.container(keyedBy: CodingKeys.self)
 
      switch self {
-     case .siopAuthenticationResponse(_, let state):
-       try container.encode(state, forKey: .siopAuthenticationResponse)
+     case .siopAuthenticationResponse(let idToken, let state):
+       try container.encode(state, forKey: .state)
+       try container.encode(idToken, forKey: .idToken)
      default: break
      }
    }
