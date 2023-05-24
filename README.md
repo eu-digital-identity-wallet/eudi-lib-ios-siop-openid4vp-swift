@@ -18,24 +18,20 @@ You can use this library to simplify the integration of OIDC4VP into your mobile
 
 ## Usage
 
-Entry point to the library is the interface [SiopOpenId4Vp](src/main/kotlin/eu/europa/ec/euidw/openid4vp/SiopOpenId4Vp.kt).
-Currently, the library offers an implementation of this interface based on [Ktor](https://ktor.io/) Http Client.
+Entry point to the library is the class [SiopOpenId4Vp](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/SiopOpenID4VP/SiopOpenID4VP.swift).
 
 
-An instance of the interface can be obtained with the following code
+You can add the library to your project using Swift Package Manager adding
 
-```kotlin
-// Include library in dependencies in build.gradle.kts
-dependencies {
-    api("eu.europa.ec.euidw:siop-openid4vp-kt:$version")
-}
-```
+https://github.com/niscy-eudiw/siop-openid4vp-ios.git or 
+git@github.com:niscy-eudiw/siop-openid4vp-ios.git
 
-```kotlin
-import eu.europa.ec.euidw.openid4vp.*
+to your project.
 
-val walletConfig: WalletOpenId4VPConfig =  ...
-val siopOpenId4Vp = SiopOpenId4Vp.ktor(walletConfig)
+```swift
+import SiopOpenID4VP
+
+val siopOpenId4Vp = SiopOpenID4VP()
 ```
 
 
@@ -55,20 +51,20 @@ authorization request and ask the SDK to validate the URI (that is to make sure 
 requests mentioned aforementioned) and in addition gather from Verifier additional information that may be included by
 reference (such as `presentation_definition_uri`, `client_metadata_uri` etc)
 
-The interface that captures the aforementioned functionality is 
-[AuthorizationRequestResolver](src/main/kotlin/eu/europa/ec/euidw/openid4vp/AuthorizationRequestResolver.kt)
+The object that captures the aforementioned functionality is 
+[ResolvedSiopOpenId4VPRequestData](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/OpenID4VPEntities/Resolved/ResolvedSiopOpenId4VPRequestData.swift)
 
-```kotlin
-import eu.europa.ec.euidw.openid4vp.*
+```swift
+import SiopOpenID4VP
 
-val authorizationRequestUri : String = ...
+let authorizationRequestUri : URL = ...
 
-val resolution = siopOpenId4Vp.resolveRequestUri(walletConfig, authorizationRequestUri)
-val requestObject = when (resolution) {
-    is Resolution.Invalid -> throw resolution.error.asException()
-    is Resolution.Success -> resolution.requestObject
+let sdk = SiopOpenID4VP()
+let result = try await sdk.authorization(url: authorizationRequestUri)
+
+switch result {
+    ...
 }
-
 ```
 
 ### Holder's consensus, Handling of a valid authorization request
@@ -88,16 +84,17 @@ This functionality is a wallet concern and it is not supported directly by the l
 
 
 After collecting holder's consensus, wallet can use the library to form an appropriate response.
-The interface that captures the aforementioned functionality is
-[AuthorizationResponseBuilder](src/main/kotlin/eu/europa/ec/euidw/openid4vp/AuthorizationResponseBuilder.kt)
 
-```kotlin
-import eu.europa.ec.euidw.openid4vp.*
+```swift
+import SiopOpenID4VP
 // Example assumes that requestObject is SiopAuthentication & holder's agreed to the issuance of id_token
-val requestObject // calculated in previous step
-val idToken : Jwt // provided by wallet
-val consensus =  Consensus.PositiveConsensus.IdTokenConsensus(idToken)
-val authorizationResponse = siopOpenId4Vp.build(requestObject, consensus)
+let resolved: ResolvedSiopOpenId4VPRequestData = ...
+let jwt: JWTString = ... // provided by wallet
+let consent: ClientConsent = .idToken(idToken: jwt)
+let response = try AuthorizationResponse(
+      resolvedRequest: resolved,
+      consent: consent
+    )
 ```
 
 ### Dispatch authorization response to verifier / RP
@@ -174,8 +171,9 @@ Library currently supports `response_type` equal to `id_token` or `vp_token id_t
 
 ## Dependencies (to other libs)
 
-* Presentation Exchange v2 [Presentation Exchange](https://github.com/eu-digital-identity-wallet/presentation-exchange-kt)
-* OAUTH2 & OIDC Support: [Nimbus OAuth 2.0 SDK with OpenID Connect extensions](https://connect2id.com/products/nimbus-oauth-openid-connect-sdk)
-* URI parsing: [Uri KMP](https://github.com/eygraber/uri-kmp)
-* Http Client: [Ktor](https://ktor.io/)
-* Json : [Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization)
+* Presentation Exchange [Presentation Exchange](https://github.com/niscy-eudiw/presentation-exchange-swift)
+* JSONSchema support: [JSON Schema](https://github.com/kylef/JSONSchema.swift)
+* JSONPath support: [Sextant](https://github.com/KittyMac/Sextant.git)
+* Lint support: [SwiftLint](https://github.com/realm/SwiftLint.git)
+* JWS, JWE, and JWK support: [JOSESwift](https://github.com/airsidemobile/JOSESwift.git)
+* Testing support: [Mockingbird](https://github.com/birdrides/mockingbird.git)
