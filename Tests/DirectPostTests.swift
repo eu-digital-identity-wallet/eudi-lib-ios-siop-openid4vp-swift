@@ -117,6 +117,7 @@ final class DirectPostTests: XCTestCase {
     let controller = AuthorizationResponseController(service: service, authorizationResponse: response!)
     await given(service.post(response: any())) ~> DirectPostResponse()
     let result: DirectPostResponse = try await controller.post(response: response!)
+    
     XCTAssertNotNil(result)
   }
 }
