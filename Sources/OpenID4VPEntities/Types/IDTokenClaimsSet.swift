@@ -10,7 +10,7 @@ struct IDTokenClaimsSet: Codable {
   let authTime: Int
   let acr: String
   let atHash: String
-  
+
   enum CodingKeys: String, CodingKey {
     case iss
     case sub

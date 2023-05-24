@@ -4,7 +4,7 @@ import PresentationExchange
 /**
  Consent. Holder decided to respond to a request
   */
-enum ClientConsent {
+public enum ClientConsent {
 
   /**
    In response to a SiopAuthentication, Holder/Wallet provides a JWT
