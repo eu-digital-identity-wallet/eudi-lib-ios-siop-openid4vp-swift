@@ -6,6 +6,9 @@ public enum AuthorizationError: LocalizedError {
   case missingPresentationDefinition
   case nonHttpsPresentationDefinitionUri
   case unsupportedURLScheme
+  case unsupportedResolution
+  case invalidState
+  case invalidResponseMode
 
   public var errorDescription: String? {
     switch self {
@@ -19,6 +22,12 @@ public enum AuthorizationError: LocalizedError {
       return ".nonHttpsPresentationDefinitionUri"
     case .unsupportedURLScheme:
       return ".unsupportedURLScheme"
+    case .unsupportedResolution:
+      return ".unsupportedResolution"
+    case .invalidState:
+      return ".invalidState"
+    case .invalidResponseMode:
+      return ".invalidResponseMode"
     }
   }
 }

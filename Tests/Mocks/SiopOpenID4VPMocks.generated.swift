@@ -11,11 +11,55 @@
 @_exported import PresentationExchange
 @testable import Mockingbird
 @testable import SiopOpenID4VP
+import CryptoKit
 import Foundation
+import JOSESwift
 import PresentationExchange
 import Swift
 import os
 
-// No mocks used in 'SiopOpenID4VPTests'. Mockingbird is configured to only generate mocks for types
-// that are explicitly initialized in your tests with `mock(SomeType.self)`. For more information,
-// see 'Thunk Pruning' in the README.
+private let mkbGenericStaticMockContext = Mockingbird.GenericStaticMockContext()
+
+// MARK: - Mocked AuthorisationServiceType
+public final class AuthorisationServiceTypeMock: AuthorisationServiceType, Mockingbird.Mock {
+  typealias MockingbirdSupertype = AuthorisationServiceType
+  public static let mockingbirdContext = Mockingbird.Context()
+  public let mockingbirdContext = Mockingbird.Context(["generator_version": "0.20.0", "module_name": "SiopOpenID4VP"])
+
+  fileprivate init(sourceLocation: Mockingbird.SourceLocation) {
+    self.mockingbirdContext.sourceLocation = sourceLocation
+    AuthorisationServiceTypeMock.mockingbirdContext.sourceLocation = sourceLocation
+  }
+
+  // MARK: Mocked `post`<T: Codable>(`response`: AuthorizationResponse)
+  public func `post`<T: Codable>(`response`: AuthorizationResponse) async throws -> T {
+    return try await self.mockingbirdContext.mocking.didInvoke(Mockingbird.SwiftInvocation(selectorName: "`post`<T: Codable>(`response`: AuthorizationResponse) async throws -> T", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.ArgumentMatcher(`response`)], returnType: Swift.ObjectIdentifier((T).self))) {
+      self.mockingbirdContext.recordInvocation($0)
+      let mkbImpl = self.mockingbirdContext.stubbing.implementation(for: $0)
+      if let mkbImpl = mkbImpl as? (AuthorizationResponse) async throws -> T { return try await mkbImpl(`response`) }
+      if let mkbImpl = mkbImpl as? () async throws -> T { return try await mkbImpl() }
+      for mkbTargetBox in self.mockingbirdContext.proxy.targets(for: $0) {
+        switch mkbTargetBox.target {
+        case .super:
+          break
+        case .object(let mkbObject):
+          guard var mkbObject = mkbObject as? MockingbirdSupertype else { break }
+          let mkbValue: T = try await mkbObject.`post`(response: `response`)
+          self.mockingbirdContext.proxy.updateTarget(&mkbObject, in: mkbTargetBox)
+          return mkbValue
+        }
+      }
+      if let mkbValue = self.mockingbirdContext.stubbing.defaultValueProvider.value.provideValue(for: (T).self) { return mkbValue }
+      self.mockingbirdContext.stubbing.failTest(for: $0, at: self.mockingbirdContext.sourceLocation)
+    }
+  }
+
+  public func `post`<T: Codable>(`response`: @autoclosure () -> AuthorizationResponse) async -> Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (AuthorizationResponse) async throws -> T, T> {
+    return Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (AuthorizationResponse) async throws -> T, T>(context: self.mockingbirdContext, invocation: Mockingbird.SwiftInvocation(selectorName: "`post`<T: Codable>(`response`: AuthorizationResponse) async throws -> T", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.resolve(`response`)], returnType: Swift.ObjectIdentifier((T).self)))
+  }
+}
+
+/// Returns a concrete mock of `AuthorisationServiceType`.
+public func mock(_ type: AuthorisationServiceType.Protocol, file: StaticString = #file, line: UInt = #line) -> AuthorisationServiceTypeMock {
+  return AuthorisationServiceTypeMock(sourceLocation: Mockingbird.SourceLocation(file, line))
+}

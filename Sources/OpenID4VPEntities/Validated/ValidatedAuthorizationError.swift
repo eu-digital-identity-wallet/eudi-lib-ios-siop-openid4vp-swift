@@ -18,6 +18,8 @@ public enum ValidatedAuthorizationError: LocalizedError {
   case conflictingData
   case notSupportedOperation
   case invalidFormat
+  case unsupportedConsent
+  case negativeConsent
 
   public var errorDescription: String? {
     switch self {
@@ -55,6 +57,10 @@ public enum ValidatedAuthorizationError: LocalizedError {
       return ".notSupportedOperation"
     case .invalidFormat:
       return ".invalidFormat"
+    case .unsupportedConsent:
+      return ".unsupportedConsent"
+    case .negativeConsent:
+      return ".negativeConsent"
     }
   }
 }

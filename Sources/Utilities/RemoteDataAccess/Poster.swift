@@ -6,15 +6,16 @@ public enum PostError: Error {
 }
 
 public protocol Posting {
-  func post(request: URLRequest) async -> Result<Bool, PostError>
+  func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError>
 }
 
 public struct Poster: Posting {
   public init() {}
-  public func post(request: URLRequest) async -> Result<Bool, PostError> {
+  public func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError> {
     do {
-      let (_, _) = try await URLSession.shared.data(for: request)
-      return .success(true)
+      let (data, _) = try await URLSession.shared.data(for: request)
+      let object = try JSONDecoder().decode(Response.self, from: data)
+      return .success(object)
     } catch let error as NSError {
       if error.domain == NSURLErrorDomain {
         return .failure(.networkError(error))
