@@ -20,13 +20,7 @@ You can use this library to simplify the integration of OIDC4VP into your mobile
 
 Entry point to the library is the class [SiopOpenId4Vp](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/SiopOpenID4VP/SiopOpenID4VP.swift).
 
-
-You can add the library to your project using Swift Package Manager adding
-
-https://github.com/niscy-eudiw/siop-openid4vp-ios.git or 
-git@github.com:niscy-eudiw/siop-openid4vp-ios.git
-
-to your project.
+You can add the library to your project using Swift Package Manager.
 
 ```swift
 import SiopOpenID4VP
