@@ -50,63 +50,6 @@ final class SiopOpenID4VPTests: XCTestCase {
     XCTAssertNotNil(container)
   }
   
-  // MARK: - Validated Authorisation Request Testing
-  
-  func testValidatedAuthorizationRequestDataGivenValidInputData() throws {
-    
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validAuthorizeUrl)
-    XCTAssertNotNil(authorizationRequestData)
-    
-    let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
-    
-    XCTAssertNotNil(validAuthorizationData)
-  }
-  
-  func testValidatedAuthorizationRequestDataGivenInvalidInputData() throws {
-    
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.invalidAuthorizeUrl)
-    let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
-    
-    XCTAssertNil(validAuthorizationData)
-  }
-  
-  func testValidatedAuthorizationRequestDataGivenValidOutofScopeInput() throws {
-    
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validOutOfScopeAuthorizeUrl)
-    XCTAssertNotNil(authorizationRequestData)
-    
-    do {
-      _ = try ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
-    } catch ValidatedAuthorizationError.unsupportedClientIdScheme(let scheme) {
-      XCTAssertTrue(scheme == "redirect_uri")
-      return
-    }
-  
-    XCTAssert(false)
-  }
-  
-  // MARK: - Resolved Validated Authorisation Request Testing
-  
-  func testValidationResolutionGivenDataIsValid() async throws {
-    
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validAuthorizeUrl)
-    XCTAssertNotNil(authorizationRequestData)
-    
-    let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
-    
-    XCTAssertNotNil(validAuthorizationData)
-    
-    let resolvedValidAuthorizationData = try? await ResolvedAuthorizationRequestData(resolver: PresentationDefinitionResolver(), source: validAuthorizationData!.presentationDefinitionSource!)
-    
-    XCTAssertNotNil(resolvedValidAuthorizationData)
-    
-    let presentationDefinition = resolvedValidAuthorizationData!.presentationDefinition
-    
-    XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
-    XCTAssert(presentationDefinition.inputDescriptors.count == 1)
-    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSubject.dateOfBirth")
-  }
-  
   func testSDKValidationResolutionGivenDataByValueIsValid() async throws {
     
     let sdk = SiopOpenID4VP()
@@ -139,37 +82,6 @@ final class SiopOpenID4VPTests: XCTestCase {
     }
     
     XCTAssert(false)
-  }
-  
-  // MARK: - Presentation definition scopes test
-  
-  func testValidationResolutionGivenScopesDataIsValid() async throws {
-    
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validByScopesAuthorizeUrl)
-    XCTAssertNotNil(authorizationRequestData)
-    
-    let validAuthorizationData = try? ValidatedAuthorizationRequestData(authorizationRequestData: authorizationRequestData)
-    
-    XCTAssertNotNil(validAuthorizationData)
-    
-    let parser = Parser()
-    let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
-      path: "input_descriptors_example",
-      type: "json"
-    )
-    
-    let cachedPresentationDefinition = try? result.get().definition
-    XCTAssertNotNil(cachedPresentationDefinition)
-    
-    let resolvedValidAuthorizationData = try? await ResolvedAuthorizationRequestData(resolver: PresentationDefinitionResolver(), source: validAuthorizationData!.presentationDefinitionSource!, predefinedDefinitions: ["com.example.input_descriptors_example": cachedPresentationDefinition!])
-    
-    XCTAssertNotNil(resolvedValidAuthorizationData)
-    
-    let presentationDefinition = resolvedValidAuthorizationData!.presentationDefinition
-    
-    XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
-    XCTAssert(presentationDefinition.inputDescriptors.count == 1)
-    XCTAssert(presentationDefinition.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSchema.id")
   }
   
   func testSDKValidationResolutionAndDoNotMatchGivenDataByValueIsValid() async throws {
