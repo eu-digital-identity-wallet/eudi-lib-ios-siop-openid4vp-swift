@@ -1,10 +1,13 @@
 import Foundation
+import Combine
 import XCTest
 import PresentationExchange
 
 @testable import SiopOpenID4VP
 
 final class SiopOpenID4VPTests: XCTestCase {
+  
+  var subscriptions = Set<AnyCancellable>()
   
   override func setUp() async throws {
     overrideDependencies()
@@ -314,12 +317,44 @@ final class SiopOpenID4VPTests: XCTestCase {
     XCTAssert(presentationDefinition!.inputDescriptors.first!.constraints.fields.first!.paths.first == "$.credentialSchema.id")
   }
   
-  func testSDKAuthorisationValidationResolutionGivenDataByReferenceIsValid() async throws {
+  func testSDKAuthorisationResolutionWithPublisherValidationResolutionGivenDataByReferenceIsValid() {
+    
+    let expectation = XCTestExpectation(description: "Authorisation request succesful")
+            
+    let sdk = SiopOpenID4VP()
+
+    overrideDependencies()
+    sdk.authorizationPublisher(for: TestsConstants.validByReferenceAuthorizeUrl)
+      .sink { completion in
+        switch completion {
+        case .failure(let error):
+          XCTFail("Authorisation request failed with error: \(error)")
+        case .finished:
+          expectation.fulfill()
+        }
+      } receiveValue: { value in
+        switch value {
+        case .oauth2(let resolved):
+          switch resolved {
+          case .vpToken:
+            XCTAssert(true)
+          default:
+            XCTAssert(false, "Invalid resolution")
+          }
+        default:
+          XCTAssert(false, "Invalid resolution")
+        }
+      }.store(in: &subscriptions)
+    
+    wait(for: [expectation], timeout: 2.0)
+  }
+  
+  func testSDKAuthorisationValidationGivenDataByReferenceIsValid() async throws {
     
     let sdk = SiopOpenID4VP()
 
     overrideDependencies()
-    let result = try await sdk.authorization(url: TestsConstants.validByReferenceAuthorizeUrl)
+    let result = try await sdk.authorize(url: TestsConstants.validByReferenceAuthorizeUrl)
     
     switch result {
     case .oauth2(let resolved):
