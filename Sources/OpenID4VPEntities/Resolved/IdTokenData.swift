@@ -1,6 +1,7 @@
 import Foundation
 
 extension ResolvedSiopOpenId4VPRequestData {
+  /// A structure representing the data related to the ID token.
   public struct IdTokenData {
     let idTokenType: IdTokenType
     let clientMetaData: ClientMetaData?
@@ -10,6 +11,15 @@ extension ResolvedSiopOpenId4VPRequestData {
     let state: String?
     let scope: Scope?
 
+    /// Initializes the `IdTokenData` structure with the provided values.
+    /// - Parameters:
+    ///   - idTokenType: The type of the ID token.
+    ///   - clientMetaData: The client metadata.
+    ///   - clientId: The client ID.
+    ///   - nonce: The nonce.
+    ///   - responseMode: The response mode.
+    ///   - state: The state.
+    ///   - scope: The scope.
     public init(
       idTokenType: IdTokenType,
       clientMetaData: ClientMetaData?,

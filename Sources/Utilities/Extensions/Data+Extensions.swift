@@ -1,6 +1,7 @@
 import Foundation
 
 extension Data {
+  // Generates random data of the specified length
   static func randomData(length: Int) -> Data {
     var data = Data(count: length)
     _ = data.withUnsafeMutableBytes { mutableBytes in
@@ -12,6 +13,7 @@ extension Data {
     return data
   }
 
+  // Encodes the data as a base64 URL-safe string
   func base64URLEncodedString() -> String {
     var base64String = self.base64EncodedString()
     base64String = base64String.replacingOccurrences(of: "/", with: "_")

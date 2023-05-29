@@ -1,13 +1,26 @@
 import Foundation
 
+/// An enumeration representing different types of authorization responses.
 public enum AuthorizationResponse: Encodable {
+  /// A direct POST authorization response.
   case directPost(url: URL, data: AuthorizationResponsePayload)
+
+  /// A direct POST JWT authorization response.
   case directPostJwt(url: URL, data: AuthorizationResponsePayload)
+
+  /// A query authorization response.
   case query(url: URL, data: AuthorizationResponsePayload)
+
+  /// A query JWT authorization response.
   case queryJwt(url: URL, data: AuthorizationResponsePayload)
+
+  /// A fragment authorization response.
   case fragment(url: URL, data: AuthorizationResponsePayload)
+
+  /// A fragment JWT authorization response.
   case fragmentJwt(url: URL, data: AuthorizationResponsePayload)
 
+  /// Coding keys for encoding the enumeration.
   enum CodingKeys: String, CodingKey {
     case directPost
     case directPostJwt
@@ -17,6 +30,7 @@ public enum AuthorizationResponse: Encodable {
     case fragmentJwt
   }
 
+  /// Encodes the enumeration using the given encoder.
   public func encode(to encoder: Encoder) throws {
      var container = encoder.container(keyedBy: CodingKeys.self)
 
@@ -28,7 +42,12 @@ public enum AuthorizationResponse: Encodable {
    }
 }
 
+/// An extension providing additional functionality to the `AuthorizationResponse` enumeration.
 public extension AuthorizationResponse {
+  /// Initializes an `AuthorizationResponse` based on the resolved request and consent.
+  /// - Parameters:
+  ///   - resolvedRequest: The resolved SIOP OpenID Connect 4 Verifiable Presentation request data.
+  ///   - consent: The client consent.
   init(
     resolvedRequest: ResolvedSiopOpenId4VPRequestData,
     consent: ClientConsent
@@ -49,8 +68,7 @@ public extension AuthorizationResponse {
         )
       default: throw AuthorizationError.unsupportedResolution
       }
-    case .vpToken,
-         .idAndVPToken:
+    case .vpToken, .idAndVPToken:
       throw ValidatedAuthorizationError.unsupportedConsent
     case .negative:
       throw ValidatedAuthorizationError.negativeConsent
@@ -58,7 +76,13 @@ public extension AuthorizationResponse {
   }
 }
 
+/// A private extension providing utility functions for the `AuthorizationResponse` enumeration.
 private extension AuthorizationResponse {
+  /// Builds an authorization response based on the response mode and payload.
+  /// - Parameters:
+  ///   - responseMode: The response mode.
+  ///   - payload: The authorization response payload.
+  /// - Returns: An `AuthorizationResponse` instance.
   static func buildAuthorizationResponse(
     responseMode: ResponseMode?,
     payload: AuthorizationResponsePayload

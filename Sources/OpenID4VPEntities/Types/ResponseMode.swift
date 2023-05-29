@@ -7,13 +7,14 @@ public enum ResponseMode {
   case query(responseURI: URL)
   case fragment(responseURI: URL)
   case none
-}
 
-extension ResponseMode {
-  init(authorizationRequestObject: JSONObject) throws {
-    guard
-      let responseMode = authorizationRequestObject["response_mode"] as? String
-    else {
+  /// Initializes a `ResponseMode` instance with the given authorization request object.
+  ///
+  /// - Parameter authorizationRequestObject: The authorization request object.
+  /// - Throws: A `ValidatedAuthorizationError.missingRequiredField` if the required fields are missing,
+  ///           or a `ValidatedAuthorizationError.unsupportedResponseMode` if the response mode is unsupported.
+  public init(authorizationRequestObject: JSONObject) throws {
+    guard let responseMode = authorizationRequestObject["response_mode"] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".responseMode")
     }
 
@@ -51,11 +52,13 @@ extension ResponseMode {
     }
   }
 
-  init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
-
-    guard
-      let responseMode = authorizationRequestData.responseMode
-    else {
+  /// Initializes a `ResponseMode` instance with the given authorization request data.
+  ///
+  /// - Parameter authorizationRequestData: The authorization request data.
+  /// - Throws: A `ValidatedAuthorizationError.missingRequiredField` if the required fields are missing,
+  ///           or a `ValidatedAuthorizationError.unsupportedResponseMode` if the response mode is unsupported.
+  public init(authorizationRequestData: AuthorizationRequestUnprocessedData) throws {
+    guard let responseMode = authorizationRequestData.responseMode else {
       throw ValidatedAuthorizationError.missingRequiredField(".responseMode")
     }
 

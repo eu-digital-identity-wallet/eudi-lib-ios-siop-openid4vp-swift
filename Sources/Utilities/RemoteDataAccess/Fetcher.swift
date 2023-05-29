@@ -6,6 +6,11 @@ public enum FetchError: LocalizedError {
   case invalidResponse
   case decodingError(Error)
 
+  /**
+   Provides a localized description of the fetch error.
+
+   - Returns: A string describing the fetch error.
+   */
   public var errorDescription: String? {
     switch self {
     case .invalidUrl:
@@ -22,14 +27,34 @@ public enum FetchError: LocalizedError {
 
 public protocol Fetching {
   associatedtype Element: Codable
+
+  /**
+   Fetches data from the provided URL.
+
+   - Parameters:
+      - url: The URL from which to fetch the data.
+
+   - Returns: A Result type with the fetched data or an error.
+   */
   func fetch(url: URL) async -> Result<Element, FetchError>
 }
 
 public struct Fetcher<Element: Codable>: Fetching {
-
   @Injected var reporter: Reporting
 
+  /**
+   Initializes a Fetcher instance.
+   */
   public init() {}
+
+  /**
+   Fetches data from the provided URL.
+
+   - Parameters:
+      - url: The URL from which to fetch the data.
+
+   - Returns: A Result type with the fetched data or an error.
+   */
   public func fetch(url: URL) async -> Result<Element, FetchError> {
     do {
       let (data, response) = try await URLSession.shared.data(from: url)
