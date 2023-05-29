@@ -8,6 +8,12 @@ public enum ResolvedSiopOpenId4VPRequestData {
 
 public extension ResolvedSiopOpenId4VPRequestData {
   // swiftlint:disable function_body_length
+  /// Initializes a `ResolvedSiopOpenId4VPRequestData` instance with the provided parameters.
+  ///
+  /// - Parameters:
+  ///   - clientMetaDataResolver: The resolver for client metadata.
+  ///   - presentationDefinitionResolver: The resolver for presentation definition.
+  ///   - validatedAuthorizationRequest: The validated SiopOpenId4VPRequest.
   init(
     clientMetaDataResolver: ClientMetaDataResolver,
     presentationDefinitionResolver: PresentationDefinitionResolver,

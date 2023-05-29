@@ -2,6 +2,7 @@ import Foundation
 import PresentationExchange
 
 extension ResolvedSiopOpenId4VPRequestData {
+  /// A structure representing the data related to ID token and verifiable presentation (VP) token.
   public struct IdAndVpTokenData {
     let idTokenType: IdTokenType
     let presentationDefinition: PresentationDefinition
@@ -12,6 +13,16 @@ extension ResolvedSiopOpenId4VPRequestData {
     let state: String?
     let scope: Scope?
 
+    /// Initializes the `IdAndVpTokenData` structure with the provided values.
+    /// - Parameters:
+    ///   - idTokenType: The type of the ID token.
+    ///   - presentationDefinition: The presentation definition.
+    ///   - clientMetaData: The client metadata.
+    ///   - clientId: The client ID.
+    ///   - nonce: The nonce.
+    ///   - responseMode: The response mode.
+    ///   - state: The state.
+    ///   - scope: The scope.
     public init(
       idTokenType: IdTokenType,
       presentationDefinition: PresentationDefinition,

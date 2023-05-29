@@ -6,6 +6,14 @@ public struct JSONWebToken {
   public let payload: JSONObject
   public let signature: String
 
+  /**
+   Initializes a JSONWebToken instance with the provided components.
+
+   - Parameters:
+      - header: The header component of the JSON Web Token.
+      - payload: The payload component of the JSON Web Token.
+      - signature: The signature component of the JSON Web Token.
+   */
   public init(header: JSONWebTokenHeader, payload: JSONObject, signature: String) {
     self.header = header
     self.payload = payload
@@ -14,6 +22,14 @@ public struct JSONWebToken {
 }
 
 public extension JSONWebToken {
+  /**
+   Initializes a JSONWebToken instance from a string representation of a JSON Web Token.
+
+   - Parameters:
+      - jsonWebToken: The string representation of the JSON Web Token.
+
+   - Returns: A new JSONWebToken instance, or `nil` if the initialization fails.
+   */
   init?(jsonWebToken: String) {
     let encodedData = { (string: String) -> Data? in
       var encodedString = string.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")

@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 @_exported import PresentationExchange
 
 /**
@@ -11,6 +12,8 @@ import Foundation
 public protocol SiopOpenID4VPType {
   func process(url: URL) async throws -> PresentationDefinition
   func process(request: JSONObject) async throws -> PresentationDefinition
+  func authorize(url: URL) async throws -> AuthorizationRequest
+  func authorizationPublisher(for url: URL) -> AnyPublisher<AuthorizationRequest, Error>
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func submit()
   func consent()
@@ -61,10 +64,25 @@ public class SiopOpenID4VP {
     }
   }
 
-  public func authorization(url: URL) async throws -> AuthorizationRequest {
+  public func authorize(url: URL) async throws -> AuthorizationRequest {
     let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
 
     return try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
+  }
+
+  public func authorizationPublisher(for url: URL) -> AnyPublisher<AuthorizationRequest, Error> {
+    Future<AuthorizationRequest, Error> { promise in
+      Task {
+        do {
+          let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
+          let result =  try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
+          promise(.success(result))
+        } catch {
+          promise(.failure(error))
+        }
+      }
+    }
+    .eraseToAnyPublisher()
   }
 
   /**
