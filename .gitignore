@@ -100,5 +100,5 @@ lib_InternalSwiftSyntaxParser.dylib
 project.json
 
 # Coverage reports
-./xcov_output
+xcov_output/
 
