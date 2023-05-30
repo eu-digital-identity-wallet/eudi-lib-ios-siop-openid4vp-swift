@@ -6,12 +6,29 @@ default_platform(:ios)
 platform :ios do
   desc "Code coverage"
   lane :code_coverage do
-    tests
+    
+    params = {
+      package_path: '.',
+      scheme: 'SiopOpenID4VP',
+      devices: ['iPhone 14'], 
+      output_directory: "xcov_output",
+      result_bundle: true
+    }
+
+    if ENV['CI'] 
+      params[:xcargs] = "-skipPackagePluginValidation"
+    end
+
+    run_tests(params)
+
     xcov(
-    scheme: "SiopOpenID4VP",
-    output_directory: "xcov_output",
-    is_swift_package: true
-  )
+      scheme: "SiopOpenID4VP",
+      output_directory: "xcov_output",
+      is_swift_package: true
+    )
+    if ENV['CI'] != 'true'
+      sh 'open ../xcov_output/index.html'
+    end
   end
 
   desc "Runs unit tests"
