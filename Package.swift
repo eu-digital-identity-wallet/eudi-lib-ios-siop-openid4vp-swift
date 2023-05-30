@@ -34,7 +34,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.15")
+      .upToNextMinor(from: "0.0.17")
     )
   ],
   targets: [
@@ -55,7 +55,8 @@ let package = Package(
         ),
         .product(
           name: "PresentationExchange",
-          package: "presentation-exchange-swift"
+          package: "presentation-exchange-swift",
+          moduleAliases: ["SwiftLintPlugin": "DepSwiftLintPlugin"]
         )
       ],
       path: "Sources",
@@ -88,7 +89,8 @@ let package = Package(
         ),
         .product(
           name: "PresentationExchange",
-          package: "presentation-exchange-swift"
+          package: "presentation-exchange-swift",
+          moduleAliases: ["SwiftLintPlugin": "DepSwiftLintPlugin"]
         )
       ],
       path: "Tests"
