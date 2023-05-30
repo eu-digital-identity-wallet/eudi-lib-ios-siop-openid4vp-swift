@@ -4,6 +4,16 @@
 default_platform(:ios)
 
 platform :ios do
+  
+  desc "Code coverage"
+  lane :code_coverage do
+    tests
+    xcov(
+    scheme: "SiopOpenID4VP",
+    output_directory: "xcov_output",
+    is_swift_package: true
+  )
+  end
 
   desc "Runs unit tests"
   lane :tests do
@@ -29,4 +39,9 @@ platform :ios do
       xcargs: "-skipPackagePluginValidation"
     )
   end
+
+  before_all do
+    FileUtils.remove_dir '../xcov_output', true
+  end
+
 end
