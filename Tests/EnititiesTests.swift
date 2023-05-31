@@ -90,4 +90,28 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     XCTAssertEqual(walletOpenId4VPConfiguration.supportedClientIdScheme, supportedClientIdScheme)
     XCTAssertEqual(walletOpenId4VPConfiguration.vpFormatsSupported, vpFormatsSupported)
   }
+  
+  func testSubjectSyntaxTypeInitWithThumbprint() {
+    let thumbprint = "thumbprint_example"
+    let subjectSyntaxType = SubjectSyntaxType(thumbprint: thumbprint)
+    
+    switch subjectSyntaxType {
+    case .jwkThumbprint(let value):
+      XCTAssertEqual(value, thumbprint)
+    default:
+      XCTFail("Wrong SubjectSyntaxType case for the input thumbprint.")
+    }
+  }
+
+  func testSubjectSyntaxTypeInitWithDecentralizedIdentifier() {
+    let decentralizedIdentifier = "did_example"
+    let subjectSyntaxType = SubjectSyntaxType(decentralizedIdentifier: decentralizedIdentifier)
+    
+    switch subjectSyntaxType {
+    case .decentralizedIdentifier(let value):
+      XCTAssertEqual(value, decentralizedIdentifier)
+    default:
+      XCTFail("Wrong SubjectSyntaxType case for the input decentralizedIdentifier.")
+    }
+  }
 }
