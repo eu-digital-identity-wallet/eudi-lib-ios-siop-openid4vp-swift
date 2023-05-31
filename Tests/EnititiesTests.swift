@@ -60,4 +60,34 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     XCTAssertEqual(request.scope, scope)
     XCTAssertEqual(request.state, state)
   }
+  
+  func testWalletOpenId4VPConfigurationInitialization() {
+    let subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.jwkThumbprint("")]
+    let preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint("")
+    let decentralizedIdentifier: String = "DID:example:12341512#$"
+    let idTokenTTL: TimeInterval = 600.0
+    let presentationDefinitionUriSupported: Bool = false
+    let supportedClientIdScheme: ClientIdScheme = .did
+    let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
+    let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
+
+    let walletOpenId4VPConfiguration = WalletOpenId4VPConfiguration(
+      subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
+      preferredSubjectSyntaxType: preferredSubjectSyntaxType,
+      decentralizedIdentifier: decentralizedIdentifier,
+      idTokenTTL: idTokenTTL,
+      presentationDefinitionUriSupported: presentationDefinitionUriSupported,
+      supportedClientIdScheme: supportedClientIdScheme,
+      vpFormatsSupported: vpFormatsSupported,
+      knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope
+    )
+    
+    XCTAssertEqual(walletOpenId4VPConfiguration.subjectSyntaxTypesSupported, subjectSyntaxTypesSupported)
+    XCTAssertEqual(walletOpenId4VPConfiguration.preferredSubjectSyntaxType, preferredSubjectSyntaxType)
+    XCTAssertEqual(walletOpenId4VPConfiguration.decentralizedIdentifier, decentralizedIdentifier)
+    XCTAssertEqual(walletOpenId4VPConfiguration.idTokenTTL, idTokenTTL)
+    XCTAssertEqual(walletOpenId4VPConfiguration.presentationDefinitionUriSupported, presentationDefinitionUriSupported)
+    XCTAssertEqual(walletOpenId4VPConfiguration.supportedClientIdScheme, supportedClientIdScheme)
+    XCTAssertEqual(walletOpenId4VPConfiguration.vpFormatsSupported, vpFormatsSupported)
+  }
 }

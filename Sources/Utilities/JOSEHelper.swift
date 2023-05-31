@@ -2,6 +2,11 @@ import Foundation
 import Security
 import JOSESwift
 
+public struct HolderInfo {
+  let email: String
+  let name: String
+}
+
 public class JOSEHelper {
 
   let error = NSError(
@@ -11,47 +16,6 @@ public class JOSEHelper {
   )
 
   public init() { }
-
-  func verifier(algorithhm: SignatureAlgorithm, publicKey: SecKey) throws -> Verifier {
-    guard let verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) else {
-      throw error
-    }
-    return verifier
-  }
-
-  func getJWS(compactSerialization: String) throws -> JWS {
-    guard let jws = try? JWS(compactSerialization: compactSerialization) else {
-      throw error
-    }
-    return jws
-  }
-
-  func getPublicKey(from privateKey: SecKey) throws -> SecKey {
-    guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
-      throw error
-    }
-    return publicKey
-  }
-
-  func getPrivateKey() throws -> SecKey {
-    let attributes: [String: Any] = [
-      kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
-      kSecAttrKeySizeInBits as String: 2048
-    ]
-
-    var error: Unmanaged<CFError>?
-    guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
-      throw error!.takeRetainedValue() as Error
-    }
-    return privateKey
-  }
-
-  func signer(algorithhm: SignatureAlgorithm, privateKey: SecKey) throws -> Signer<SecKey> {
-    guard let signer = Signer(signingAlgorithm: algorithhm, key: privateKey) else {
-      throw error
-    }
-    return signer
-  }
 
   func jwtLoop() throws -> JWS {
 
@@ -113,5 +77,55 @@ public class JOSEHelper {
     } catch {
       throw error
     }
+  }
+
+  func build(
+    request: ResolvedSiopOpenId4VPRequestData
+  ) {
+
+  }
+}
+
+private extension JOSEHelper {
+
+  func verifier(algorithhm: SignatureAlgorithm, publicKey: SecKey) throws -> Verifier {
+    guard let verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) else {
+      throw error
+    }
+    return verifier
+  }
+
+  func getJWS(compactSerialization: String) throws -> JWS {
+    guard let jws = try? JWS(compactSerialization: compactSerialization) else {
+      throw error
+    }
+    return jws
+  }
+
+  func getPublicKey(from privateKey: SecKey) throws -> SecKey {
+    guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
+      throw error
+    }
+    return publicKey
+  }
+
+  func getPrivateKey() throws -> SecKey {
+    let attributes: [String: Any] = [
+      kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
+      kSecAttrKeySizeInBits as String: 2048
+    ]
+
+    var error: Unmanaged<CFError>?
+    guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
+      throw error!.takeRetainedValue() as Error
+    }
+    return privateKey
+  }
+
+  func signer(algorithhm: SignatureAlgorithm, privateKey: SecKey) throws -> Signer<SecKey> {
+    guard let signer = Signer(signingAlgorithm: algorithhm, key: privateKey) else {
+      throw error
+    }
+    return signer
   }
 }
