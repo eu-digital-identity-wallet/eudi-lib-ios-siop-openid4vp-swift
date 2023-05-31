@@ -29,14 +29,15 @@ public protocol Fetching {
   associatedtype Element: Codable
 
   /**
-   Fetches data from the provided URL.
+    Fetches data from the provided URL.
 
-   - Parameters:
-      - url: The URL from which to fetch the data.
+    - Parameters:
+       - session: The URLSession to use for fetching the data.
+       - url: The URL from which to fetch the data.
 
-   - Returns: A Result type with the fetched data or an error.
+    - Returns: A `Result` type with the fetched data or an error.
    */
-  func fetch(url: URL) async -> Result<Element, FetchError>
+  func fetch(session: URLSession, url: URL) async -> Result<Element, FetchError>
 }
 
 public struct Fetcher<Element: Codable>: Fetching {
@@ -55,7 +56,7 @@ public struct Fetcher<Element: Codable>: Fetching {
 
    - Returns: A Result type with the fetched data or an error.
    */
-  public func fetch(url: URL) async -> Result<Element, FetchError> {
+  public func fetch(session: URLSession = URLSession.shared, url: URL) async -> Result<Element, FetchError> {
     do {
       let (data, response) = try await URLSession.shared.data(from: url)
       let object = try JSONDecoder().decode(Element.self, from: data)

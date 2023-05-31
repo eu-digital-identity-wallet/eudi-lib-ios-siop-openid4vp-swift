@@ -1,5 +1,29 @@
 import Foundation
 
+/**
+Extension to `Dictionary` where both the `Key` and `Value` conform to `Encodable`.
+
+This extension adds a `toJSONData()` method that attempts to convert the dictionary
+to JSON data using `JSONSerialization`.
+
+- Returns: The JSON `Data` if the conversion is successful; otherwise, nil.
+
+- Note: This function will fail and return nil if the dictionary contains keys or values that aren't encodable.
+*/
+public extension Dictionary where Key: Encodable {
+  func toJSONData() -> Data? {
+    do {
+      return try JSONSerialization.data(withJSONObject: self, options: [])
+    } catch {
+      return nil
+    }
+  }
+
+  func toThrowingJSONData() throws -> Data {
+    return try JSONSerialization.data(withJSONObject: self, options: [])
+  }
+}
+
 public extension Dictionary where Key == String, Value == Any {
   // Creates a dictionary from a JSON file in the specified bundle
   static func from(bundle name: String) -> Result<Self, JSONParseError> {
