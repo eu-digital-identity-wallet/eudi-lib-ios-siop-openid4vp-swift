@@ -162,4 +162,24 @@ class ErrorTests: XCTestCase {
     let error = ResolvedAuthorisationError.unsupportedResponseType("code")
     XCTAssertEqual(error.errorDescription, ".unsupportedResponseType code")
   }
+  
+  func testErrorDescription() {
+    // .invalidUrl
+    let invalidUrlError = FetchError.invalidUrl
+    XCTAssertEqual(invalidUrlError.errorDescription, ".invalidUrl")
+
+    // .networkError
+    let networkError = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Network error occurred"])
+    let networkFetchError = FetchError.networkError(networkError)
+    XCTAssertEqual(networkFetchError.errorDescription, ".networkError Network error occurred")
+
+    // .invalidResponse
+    let invalidResponseError = FetchError.invalidResponse
+    XCTAssertEqual(invalidResponseError.errorDescription, ".invalidResponse")
+
+    // .decodingError
+    let decodingError = NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Decoding error occurred"])
+    let decodingFetchError = FetchError.decodingError(decodingError)
+    XCTAssertEqual(decodingFetchError.errorDescription, ".decodingError Decoding error occurred")
+  }
 }

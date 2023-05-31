@@ -19,7 +19,7 @@ class Reporter: Reporting {
   }
 
   func info(_ message: String) {
-    Logger.lifecycle.debug("\(message)")
+    Logger.lifecycle.info("\(message)")
   }
 }
 

@@ -15,6 +15,7 @@ public protocol SiopOpenID4VPType {
   func authorize(url: URL) async throws -> AuthorizationRequest
   func authorizationPublisher(for url: URL) -> AnyPublisher<AuthorizationRequest, Error>
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
+  func dispatch(response: AuthorizationRequest) async throws -> DispatchOutcome
   func submit()
   func consent()
 }
@@ -99,6 +100,17 @@ public class SiopOpenID4VP {
     return matcher.match(claims: claims, with: presentationDefinition)
   }
 
+  /**
+   Dispatches an autorisation request.
+
+   - Parameters:
+    - response: An AuthorizationRequest
+
+   - Returns: A DispatchOutcome enum
+   */
+  func dispatch(response: AuthorizationRequest) async throws -> DispatchOutcome {
+    .none
+  }
   /**
    WIP: Consent to matches
    */

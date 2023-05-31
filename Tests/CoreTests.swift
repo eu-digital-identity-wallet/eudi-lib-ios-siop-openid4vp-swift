@@ -27,6 +27,27 @@ final class CoreTests: XCTestCase {
     let test = try! result.get()
     XCTAssert(test.title == "delectus aut autem")
   }
+  
+  func testFetcherCodableFailureDecodingGivenInvalidRemoteURL() async {
+    
+    struct TestCodable: Codable {
+      let title: String
+    }
+    
+    let fetcher = Fetcher<TestCodable>()
+    let result = await fetcher.fetch(url: URL(string: "https://example.com")!)
+    switch result {
+    case .failure(let error):
+      switch error {
+      case .decodingError:
+        XCTAssert(true)
+        return
+      default: break
+      }
+    default: break
+    }
+    XCTAssert(false)
+  }
 }
 
 private extension CoreTests {

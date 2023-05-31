@@ -121,9 +121,39 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   // MARK: - Resolved Validated Authorisation Request Testing
   
+  func testIdVpTokenValidationResolutionGivenReferenceDataIsValid() async throws {
+    
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validIdVpTokenByClientByValuePresentationByReferenceUrl)
+    
+    XCTAssertNotNil(authorizationRequestData)
+    
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
+    
+    XCTAssertNotNil(validatedAuthorizationRequestData)
+    
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+    
+    XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
+  }
+  
+  func testIdTokenValidationResolutionGivenReferenceDataIsValid() async throws {
+    
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
+    
+    XCTAssertNotNil(authorizationRequestData)
+    
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
+    
+    XCTAssertNotNil(validatedAuthorizationRequestData)
+    
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+    
+    XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
+  }
+  
   func testValidationResolutionGivenReferenceDataIsValid() async throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -138,7 +168,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   func testValidationResolutionWithAuthorisationRequestGivenDataIsValid() async throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -187,7 +217,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   func testSDKValidationResolutionGivenByValueDataIsValid() async throws {
     
     let sdk = SiopOpenID4VP()
-    let presentationDefinition = try await sdk.process(url: TestsConstants.validByClientByValuePresentationByReferenceUrl)
+    let presentationDefinition = try await sdk.process(url: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
@@ -195,7 +225,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   func testRequestObjectGivenValidJWT() async throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -223,7 +253,7 @@ final class SiopOpenID4VPTests: XCTestCase {
   
   func testRequestObjectGivenValidJWTUri() async throws {
     
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     

@@ -1,13 +1,13 @@
 import Foundation
 
 /// A protocol for an authorization response controller.
-public protocol AuthorizationResponseControllerType {
-  /// Posts a response and returns a generic result.
-  func post<T: Codable>(response: AuthorizationResponse) async throws -> T
+public protocol DispatcherType {
+  /// Dispatches a response and returns a generic result.
+  func dispatch<T: Codable>(response: AuthorizationResponse) async throws -> T
 }
 
-/// An implementation of the `AuthorizationResponseControllerType` protocol.
-public class AuthorizationResponseController {
+/// An implementation of the `DispatcherType` protocol.
+public class Dispatcher: DispatcherType {
   /// The authorization service used for posting responses.
   public let service: AuthorisationServiceType
 
@@ -24,7 +24,7 @@ public class AuthorizationResponseController {
   }
 
   /// Posts a response and returns a generic result.
-  public func post<T: Codable>(response: AuthorizationResponse) async throws -> T {
+  public func dispatch<T: Codable>(response: AuthorizationResponse) async throws -> T {
     return try await service.post(response: response)
   }
 }

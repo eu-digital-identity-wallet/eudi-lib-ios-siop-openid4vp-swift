@@ -114,9 +114,9 @@ final class DirectPostTests: XCTestCase {
     XCTAssertNotNil(response)
 
     let service = mock(AuthorisationServiceType.self)
-    let controller = AuthorizationResponseController(service: service, authorizationResponse: response!)
+    let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
     await given(service.post(response: any())) ~> DirectPostResponse()
-    let result: DirectPostResponse = try await controller.post(response: response!)
+    let result: DirectPostResponse = try await dispatcher.dispatch(response: response!)
     
     XCTAssertNotNil(result)
   }

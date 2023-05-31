@@ -20,7 +20,7 @@ You can use this library to simplify the integration of OIDC4VP into your mobile
 
 Entry point to the library is the class [SiopOpenId4Vp](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/SiopOpenID4VP/SiopOpenID4VP.swift).
 
-You can add the library to your project using Swift Package Manager.
+You can add the library to your project using Swift Package Manager. [Releases](https://github.com/niscy-eudiw/siop-openid4vp-ios/tags)
 
 ```swift
 import SiopOpenID4VP
@@ -48,6 +48,9 @@ reference (such as `presentation_definition_uri`, `client_metadata_uri` etc)
 The object that captures the aforementioned functionality is 
 [ResolvedSiopOpenId4VPRequestData](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/OpenID4VPEntities/Resolved/ResolvedSiopOpenId4VPRequestData.swift)
 
+
+async/await version:
+
 ```swift
 import SiopOpenID4VP
 
@@ -59,6 +62,23 @@ let result = try await sdk.authorization(url: authorizationRequestUri)
 switch result {
     ...
 }
+```
+
+Combine version:
+
+```swift
+import SiopOpenID4VP
+
+let authorizationRequestUri : URL = ...
+
+let sdk = SiopOpenID4VP()
+sdk.authorizationPublisher(for: authorizationRequestUri)
+    .sink { completion in
+    ...
+    } receiveValue: { authorizationRequest in
+    ...
+    }
+    .store(...)
 ```
 
 ### Holder's consensus, Handling of a valid authorization request
@@ -91,18 +111,18 @@ let response = try AuthorizationResponse(
     )
 ```
 
-### Dispatch authorization response to verifier / RP
+### Dispatch authorization response to verifier / RP (WIP)
 
 The final step, of processing an authorization request, is to dispatch to the verifier the authorization response.
 Depending on the `response_mode` that the verifier included in his authorization request, this is done either
 * via a direct post (when `response_mode` is `direct_post` or `direct_post.jwt`), or
 * by forming an appropriate `redirect_uri` (when response mode is `fragment` or `fragment.jwt`)
 
-Library tackles this dispatching via [Dispatcher](src/main/kotlin/eu/europa/ec/euidw/openid4vp/Dispatcher.kt)
+Library tackles this dispatching via the Dispatcher class.
 
-```kotlin
-val authorizationResponse // from previous step
-val dispatchOutcome = siopOpenId4Vp.dispatch(authorizationResponse)
+```swift
+let authorizationResponse // from previous step
+let dispatchResponse = dispatch.dispatch(response: authorizationResponse)
 ```
 
 ## SIOPv2 & OpenId4VP features supported

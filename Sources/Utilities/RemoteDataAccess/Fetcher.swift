@@ -62,17 +62,19 @@ public struct Fetcher<Element: Codable>: Fetching {
       let object = try JSONDecoder().decode(Element.self, from: data)
 
       if let httpResponse = response as? HTTPURLResponse {
-        reporter.debug("Status code: \(httpResponse.statusCode)")
+        reporter.info("Status code: \(httpResponse.statusCode)")
       }
 
       return .success(object)
     } catch let error as NSError {
+      reporter.debug("error: \(error.localizedDescription)")
       if error.domain == NSURLErrorDomain {
         return .failure(.networkError(error))
       } else {
         return .failure(.decodingError(error))
       }
     } catch {
+      reporter.debug("error: \(error.localizedDescription)")
       return .failure(.decodingError(error))
     }
   }
