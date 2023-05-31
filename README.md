@@ -97,7 +97,7 @@ This functionality is a wallet concern and it is not supported directly by the l
 ### Build an authorization response
 
 
-After collecting holder's consensus, wallet can use the library to form an appropriate response.
+After collecting holder's consensus, wallet can use the library to form an appropriate response [AuthorizationResponse](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/OpenID4VPEntities/AuthorisationRequest/AuthorizationResponse.swift).
 
 ```swift
 import SiopOpenID4VP
