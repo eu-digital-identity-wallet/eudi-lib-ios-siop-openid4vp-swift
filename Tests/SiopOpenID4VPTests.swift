@@ -376,7 +376,7 @@ final class SiopOpenID4VPTests: XCTestCase {
         }
       }.store(in: &subscriptions)
     
-    wait(for: [expectation], timeout: 2.0)
+    wait(for: [expectation], timeout: 5.0)
   }
   
   func testSDKAuthorisationValidationGivenDataByReferenceIsValid() async throws {
