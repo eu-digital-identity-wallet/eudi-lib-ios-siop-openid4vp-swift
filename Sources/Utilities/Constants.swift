@@ -2,7 +2,6 @@ import Foundation
 import CryptoKit
 import PresentationExchange
 
-// swiftlint:disable line_length
 public struct Constants {
   public static let CLIENT_ID = "client_id"
   public static let NONCE = "nonce"
@@ -63,4 +62,3 @@ public struct Constants {
     return base64URL
   }
 }
-// swiftlint:enable line_length
