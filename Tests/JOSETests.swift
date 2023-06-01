@@ -11,22 +11,60 @@ final class JOSETests: XCTestCase {
     overrideDependencies()
     try await super.setUp()
   }
-  
-  
+
   override func tearDown() {
     DependencyContainer.shared.removeAll()
     super.tearDown()
   }
   
-  func testJOSEStuff() throws {
+  func testJOSEBuildTokenGivenValidRequirements() async throws {
     
-    let helper = JOSEHelper()
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
     
-    let key = try helper.generateRandomPublicKey()
-    print(key)
+    XCTAssertNotNil(authorizationRequestData)
     
-    let jws = try helper.jwtLoop()
-    print(jws.compactSerializedString)
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
+    
+    XCTAssertNotNil(validatedAuthorizationRequestData)
+    
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+    
+    XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
+    
+    let kid = UUID()
+    let jose = JOSEController()
+    
+    let privateKey = try jose.generateHardcodedPrivateKey()
+    let publicKey = try jose.generatePublicKey(from: privateKey!)
+    let rsaJWK = try RSAPublicKey(
+      publicKey: publicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": kid.uuidString
+      ])
+    
+    let jws = try jose.build(
+      request: resolvedSiopOpenId4VPRequestData!,
+      holderInfo: .init(
+        email: "email@example.com",
+        name: "Bob"
+      ),
+      walletConfiguration: .init(
+        subjectSyntaxTypesSupported: [
+          .decentralizedIdentifier,
+          .jwkThumbprint
+        ],
+        preferredSubjectSyntaxType: .jwkThumbprint,
+        decentralizedIdentifier: .did("DID:example:12341512#$"),
+        supportedClientIdScheme: .did,
+        vpFormatsSupported: []
+      ),
+      rsaJWK: rsaJWK,
+      signingKey: privateKey!,
+      kid: kid
+    )
+    
+    XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
   }
 }
 

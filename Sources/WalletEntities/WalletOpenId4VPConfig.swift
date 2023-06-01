@@ -3,7 +3,7 @@ import Foundation
 public struct WalletOpenId4VPConfiguration {
   public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
   public let preferredSubjectSyntaxType: SubjectSyntaxType
-  public let decentralizedIdentifier: String
+  public let decentralizedIdentifier: DecentralizedIdentifier
   public let idTokenTTL: TimeInterval
   public let presentationDefinitionUriSupported: Bool
   public let supportedClientIdScheme: ClientIdScheme
@@ -13,7 +13,7 @@ public struct WalletOpenId4VPConfiguration {
   init(
     subjectSyntaxTypesSupported: [SubjectSyntaxType],
     preferredSubjectSyntaxType: SubjectSyntaxType,
-    decentralizedIdentifier: String,
+    decentralizedIdentifier: DecentralizedIdentifier,
     idTokenTTL: TimeInterval = 600.0,
     presentationDefinitionUriSupported: Bool = false,
     supportedClientIdScheme: ClientIdScheme,

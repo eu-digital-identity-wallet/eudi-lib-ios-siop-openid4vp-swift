@@ -4,6 +4,7 @@ import XCTest
 class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
   
   func testIdAndVpTokenDataInitialization() throws {
+
     let idTokenType: IdTokenType = .attesterSigned
     let presentationDefinition = PresentationExchange.Constants.presentationDefinitionPreview()
     let clientMetaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
@@ -13,7 +14,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     let state = "testState"
     let scope = "// Replace with an instance of `Scope`"
     
-    let tokenData = ResolvedSiopOpenId4VPRequestData.IdAndVpTokenData(
+    let tokenData = ResolvedRequestData.IdAndVpTokenData(
       idTokenType: idTokenType,
       presentationDefinition: presentationDefinition,
       clientMetaData: clientMetaData,
@@ -62,9 +63,9 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
   }
   
   func testWalletOpenId4VPConfigurationInitialization() {
-    let subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.jwkThumbprint("")]
-    let preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint("")
-    let decentralizedIdentifier: String = "DID:example:12341512#$"
+    let subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.jwkThumbprint]
+    let preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
+    let decentralizedIdentifier: DecentralizedIdentifier = .did("DID:example:12341512#$")
     let idTokenTTL: TimeInterval = 600.0
     let presentationDefinitionUriSupported: Bool = false
     let supportedClientIdScheme: ClientIdScheme = .did
@@ -92,26 +93,32 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
   }
   
   func testSubjectSyntaxTypeInitWithThumbprint() {
-    let thumbprint = "thumbprint_example"
-    let subjectSyntaxType = SubjectSyntaxType(thumbprint: thumbprint)
-    
-    switch subjectSyntaxType {
-    case .jwkThumbprint(let value):
-      XCTAssertEqual(value, thumbprint)
-    default:
-      XCTFail("Wrong SubjectSyntaxType case for the input thumbprint.")
-    }
+    let subjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
+    XCTAssert(subjectSyntaxType == .jwkThumbprint)
   }
 
   func testSubjectSyntaxTypeInitWithDecentralizedIdentifier() {
-    let decentralizedIdentifier = "did_example"
-    let subjectSyntaxType = SubjectSyntaxType(decentralizedIdentifier: decentralizedIdentifier)
-    
-    switch subjectSyntaxType {
-    case .decentralizedIdentifier(let value):
-      XCTAssertEqual(value, decentralizedIdentifier)
-    default:
-      XCTFail("Wrong SubjectSyntaxType case for the input decentralizedIdentifier.")
-    }
+    let subjectSyntaxType: SubjectSyntaxType = .decentralizedIdentifier
+    XCTAssert(subjectSyntaxType == .decentralizedIdentifier)
+  }
+  
+  func testValidDID() {
+    let did = DecentralizedIdentifier.did("did:example:123abc")
+    XCTAssertTrue(did.isValid())
+  }
+      
+  func testInvalidDID() {
+    let did = DecentralizedIdentifier.did("invalid_did")
+    XCTAssertFalse(did.isValid())
+  }
+  
+  func testEmptyDID() {
+    let did = DecentralizedIdentifier.did("")
+    XCTAssertFalse(did.isValid())
+  }
+  
+  func testWhitespaceDID() {
+    let did = DecentralizedIdentifier.did("  ")
+    XCTAssertFalse(did.isValid())
   }
 }

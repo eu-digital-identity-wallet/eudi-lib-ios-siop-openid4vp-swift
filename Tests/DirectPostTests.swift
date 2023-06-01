@@ -22,7 +22,7 @@ final class DirectPostTests: XCTestCase {
   func testValidDirectPostAuthorisationResponseGivenValidResolutionAndConsent() {
     
     // Obtain an id token resolution
-    let resolved: ResolvedSiopOpenId4VPRequestData = .idToken(
+    let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
         clientMetaData: Constants.testClientMetaData(),
@@ -52,7 +52,7 @@ final class DirectPostTests: XCTestCase {
   func testExpectedErrorGivenValidResolutionAndNegaticeConsent() {
     
     // Obtain an id token resolution
-    let resolved: ResolvedSiopOpenId4VPRequestData = .idToken(
+    let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
         clientMetaData: Constants.testClientMetaData(),
@@ -87,7 +87,7 @@ final class DirectPostTests: XCTestCase {
   func testPostDirectPostAuthorisationResponseGivenValidResolutionAndConsent() async throws {
     
     // Obtain an id token resolution
-    let resolved: ResolvedSiopOpenId4VPRequestData = .idToken(
+    let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
         clientMetaData: Constants.testClientMetaData(),
