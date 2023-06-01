@@ -1,7 +1,7 @@
 import Foundation
 import PresentationExchange
 
-extension ResolvedSiopOpenId4VPRequestData {
+extension ResolvedRequestData {
   public struct VpTokenData {
     let presentationDefinition: PresentationDefinition
     let clientMetaData: ClientMetaData?

@@ -42,7 +42,7 @@ struct TestsConstants {
   static let validVpTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token" +
-  "&client_id=MY_CLIENT_ID" +
+  "&client_id=https://client.example.org/" +
   "&client_id_scheme=pre-registered" +
   "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
@@ -59,7 +59,7 @@ struct TestsConstants {
   static let validIdTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=id_token" +
-  "&client_id=MY_CLIENT_ID" +
+  "&client_id=https://client.example.org/" +
   "&client_id_scheme=pre-registered" +
   "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
@@ -77,7 +77,7 @@ struct TestsConstants {
   static let validIdVpTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token id_token" +
-  "&client_id=MY_CLIENT_ID" +
+  "&client_id=https://client.example.org/" +
   "&client_id_scheme=pre-registered" +
   "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
@@ -97,7 +97,7 @@ struct TestsConstants {
   static let validByClientByReferencePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token" +
-  "&client_id=MY_CLIENT_ID" +
+  "&client_id=https://client.example.org/" +
   "&client_id_scheme=pre-registered" +
   "&client_meta_data_uri=https://client.example.org/redirect_me" +
   "&redirect_uri=https://client.example.org/redirect_me" +

@@ -1,7 +1,7 @@
 import Foundation
 import PresentationExchange
 
-extension ResolvedSiopOpenId4VPRequestData {
+extension ResolvedRequestData {
   /// A structure representing the data related to ID token and verifiable presentation (VP) token.
   public struct IdAndVpTokenData {
     let idTokenType: IdTokenType

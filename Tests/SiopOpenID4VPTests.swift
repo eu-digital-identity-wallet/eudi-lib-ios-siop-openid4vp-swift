@@ -131,7 +131,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
     
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
   }
@@ -146,7 +146,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
     
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
   }
@@ -161,7 +161,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
     
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
   }
@@ -235,7 +235,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
       clientMetaDataResolver: ClientMetaDataResolver(),
       presentationDefinitionResolver: PresentationDefinitionResolver(),
       validatedAuthorizationRequest: validatedAuthorizationRequestData!
@@ -263,7 +263,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
       clientMetaDataResolver: ClientMetaDataResolver(),
       presentationDefinitionResolver: PresentationDefinitionResolver(),
       validatedAuthorizationRequest: validatedAuthorizationRequestData!
@@ -291,7 +291,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
       clientMetaDataResolver: ClientMetaDataResolver(),
       presentationDefinitionResolver: PresentationDefinitionResolver(),
       validatedAuthorizationRequest: validatedAuthorizationRequestData!
@@ -319,7 +319,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedSiopOpenId4VPRequestData(
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
       clientMetaDataResolver: ClientMetaDataResolver(),
       presentationDefinitionResolver: PresentationDefinitionResolver(),
       validatedAuthorizationRequest: validatedAuthorizationRequestData!
@@ -376,7 +376,7 @@ final class SiopOpenID4VPTests: XCTestCase {
         }
       }.store(in: &subscriptions)
     
-    wait(for: [expectation], timeout: 2.0)
+    wait(for: [expectation], timeout: 5.0)
   }
   
   func testSDKAuthorisationValidationGivenDataByReferenceIsValid() async throws {

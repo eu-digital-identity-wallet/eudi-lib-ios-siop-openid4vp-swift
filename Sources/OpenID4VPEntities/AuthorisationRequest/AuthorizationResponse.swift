@@ -49,7 +49,7 @@ public extension AuthorizationResponse {
   ///   - resolvedRequest: The resolved SIOP OpenID Connect 4 Verifiable Presentation request data.
   ///   - consent: The client consent.
   init(
-    resolvedRequest: ResolvedSiopOpenId4VPRequestData,
+    resolvedRequest: ResolvedRequestData,
     consent: ClientConsent
   ) throws {
     switch consent {

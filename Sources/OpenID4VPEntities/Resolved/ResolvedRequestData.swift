@@ -1,14 +1,14 @@
 import Foundation
 
-public enum ResolvedSiopOpenId4VPRequestData {
+public enum ResolvedRequestData {
   case idToken(request: IdTokenData)
   case vpToken(request: VpTokenData)
   case idAndVpToken(request: IdAndVpTokenData)
 }
 
-public extension ResolvedSiopOpenId4VPRequestData {
+public extension ResolvedRequestData {
   // swiftlint:disable function_body_length
-  /// Initializes a `ResolvedSiopOpenId4VPRequestData` instance with the provided parameters.
+  /// Initializes a `ResolvedRequestData` instance with the provided parameters.
   ///
   /// - Parameters:
   ///   - clientMetaDataResolver: The resolver for client metadata.

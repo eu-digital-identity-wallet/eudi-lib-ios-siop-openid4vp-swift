@@ -1,6 +1,6 @@
 import Foundation
 
-extension ResolvedSiopOpenId4VPRequestData {
+extension ResolvedRequestData {
   /// A structure representing the data related to the ID token.
   public struct IdTokenData {
     let idTokenType: IdTokenType

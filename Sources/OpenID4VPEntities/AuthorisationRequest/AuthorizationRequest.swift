@@ -4,10 +4,10 @@ import PresentationExchange
 /// An enumeration representing different types of authorization requests.
 public enum AuthorizationRequest {
   /// An OAuth2 authorization request.
-  case oauth2(data: ResolvedSiopOpenId4VPRequestData)
+  case oauth2(data: ResolvedRequestData)
 
   /// A JWT authorization request.
-  case jwt(request: ResolvedSiopOpenId4VPRequestData)
+  case jwt(request: ResolvedRequestData)
 }
 
 /// An extension providing an initializer for the `AuthorizationRequest` enumeration.
@@ -27,7 +27,7 @@ public extension AuthorizationRequest {
     if let request = authorizationRequestData.request {
       let validatedAuthorizationRequestData = try ValidatedSiopOpenId4VPRequest(request: request)
 
-      let resolvedSiopOpenId4VPRequestData = try await ResolvedSiopOpenId4VPRequestData(
+      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
@@ -36,7 +36,7 @@ public extension AuthorizationRequest {
     } else if let requestUri = authorizationRequestData.requestUri {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(requestUri: requestUri)
 
-      let resolvedSiopOpenId4VPRequestData = try await ResolvedSiopOpenId4VPRequestData(
+      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
@@ -47,7 +47,7 @@ public extension AuthorizationRequest {
         authorizationRequestData: authorizationRequestData
       )
 
-      let resolvedSiopOpenId4VPRequestData = try await ResolvedSiopOpenId4VPRequestData(
+      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
