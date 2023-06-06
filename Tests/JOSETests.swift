@@ -43,19 +43,21 @@ final class JOSETests: XCTestCase {
         "kid": kid.uuidString
       ])
     
+    let holderInfo: HolderInfo = .init(
+      email: "email@example.com",
+      name: "Bob"
+    )
+    
     let jws = try jose.build(
       request: resolvedSiopOpenId4VPRequestData!,
-      holderInfo: .init(
-        email: "email@example.com",
-        name: "Bob"
-      ),
+      holderInfo: holderInfo,
       walletConfiguration: .init(
         subjectSyntaxTypesSupported: [
           .decentralizedIdentifier,
           .jwkThumbprint
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
-        decentralizedIdentifier: .did("DID:example:12341512#$"),
+        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
         supportedClientIdScheme: .did,
         vpFormatsSupported: []
       ),

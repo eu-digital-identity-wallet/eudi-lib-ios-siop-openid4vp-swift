@@ -3,7 +3,7 @@ import Security
 import JOSESwift
 import PresentationExchange
 
-public struct HolderInfo {
+public struct HolderInfo: Codable {
   let email: String
   let name: String
 }
@@ -39,9 +39,9 @@ public class JOSEController {
     }
   }
 
-  public func build(
+  public func build<T: Codable>(
     request: ResolvedRequestData,
-    holderInfo: HolderInfo,
+    holderInfo: T,
     walletConfiguration: WalletOpenId4VPConfiguration,
     rsaJWK: RSAPublicKey,
     signingKey: SecKey,
@@ -74,10 +74,12 @@ public class JOSEController {
       JWTClaimNames.audience: idTokenData.clientId,
       JWTClaimNames.issuedAt: Int(iat.timeIntervalSince1970.rounded()),
       JWTClaimNames.expirationTime: Int(exp.timeIntervalSince1970.rounded()),
-      "sub_jwk": subjectJwk.toDictionary(),
-      "email": holderInfo.email,
-      "name": holderInfo.name
-    ] as [String: Any]).toThrowingJSONData()
+      "sub_jwk": subjectJwk.toDictionary()
+    ] as [String: Any])
+      .merging(holderInfo.toDictionary(), uniquingKeysWith: { _, new in
+        new
+      })
+    .toThrowingJSONData()
 
     return try sign(
       payload: Payload(claimSet),

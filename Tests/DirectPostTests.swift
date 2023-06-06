@@ -4,6 +4,7 @@ import XCTest
 import JSONSchema
 import Sextant
 import Mockingbird
+import JOSESwift
 
 @testable import SiopOpenID4VP
 
@@ -99,11 +100,45 @@ final class DirectPostTests: XCTestCase {
       )
     )
     
-    // Generate a random JWT
-    let jwt = Constants.generateRandomJWT()
+    let kid = UUID()
+    let jose = JOSEController()
+    
+    let privateKey = try jose.generateHardcodedPrivateKey()
+    let publicKey = try jose.generatePublicKey(from: privateKey!)
+    let rsaJWK = try RSAPublicKey(
+      publicKey: publicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": kid.uuidString
+      ])
+    
+    let holderInfo: HolderInfo = .init(
+      email: "email@example.com",
+      name: "Bob"
+    )
+    
+    let jws = try jose.build(
+      request: resolved,
+      holderInfo: holderInfo,
+      walletConfiguration: .init(
+        subjectSyntaxTypesSupported: [
+          .decentralizedIdentifier,
+          .jwkThumbprint
+        ],
+        preferredSubjectSyntaxType: .jwkThumbprint,
+        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+        supportedClientIdScheme: .did,
+        vpFormatsSupported: []
+      ),
+      rsaJWK: rsaJWK,
+      signingKey: privateKey!,
+      kid: kid
+    )
+    
+    XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
     
     // Obtain consent
-    let consent: ClientConsent = .idToken(idToken: jwt)
+    let consent: ClientConsent = .idToken(idToken: jws)
     
     // Generate a direct post authorisation response
     let response = try? AuthorizationResponse(
@@ -115,7 +150,7 @@ final class DirectPostTests: XCTestCase {
 
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.post(response: any())) ~> DirectPostResponse()
+    await given(service.post(poster: any(), response: any())) ~> DirectPostResponse()
     let result: DirectPostResponse = try await dispatcher.dispatch(response: response!)
     
     XCTAssertNotNil(result)

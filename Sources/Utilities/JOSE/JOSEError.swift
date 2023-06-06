@@ -12,6 +12,7 @@ public enum JOSEError: LocalizedError {
   case invalidJWS
   case invalidSigner
   case invalidVerifier
+  case invalidDidIdentifier
 
   // A computed property to provide a description for each error case
   public var errorDescription: String? {
@@ -28,6 +29,8 @@ public enum JOSEError: LocalizedError {
       return ".invalidSigner"
     case .invalidVerifier:
       return ".invalidVerifier"
+    case .invalidDidIdentifier:
+      return ".invalidDidIdentifier"
     }
   }
 }

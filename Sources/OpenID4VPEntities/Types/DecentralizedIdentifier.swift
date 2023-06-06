@@ -3,6 +3,14 @@ import Foundation
 public enum DecentralizedIdentifier: Equatable {
   case did(String)
 
+  init(rawValue: String) throws {
+    self = .did(rawValue)
+
+    if !isValid() {
+      throw JOSEError.invalidDidIdentifier
+    }
+  }
+
   /// Returns the string representation of the Decentralized Identifier.
   var stringValue: String {
     switch self {

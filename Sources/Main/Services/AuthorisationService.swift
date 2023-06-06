@@ -40,7 +40,7 @@ public struct DirectPostResponse: Codable, Equatable { }
 /// A protocol for an authorization service.
 public protocol AuthorisationServiceType {
   /// Posts a response and returns a generic result.
-  func post<T: Codable>(response: AuthorizationResponse) async throws -> T
+  func post<T: Codable>(poster: Posting, response: AuthorizationResponse) async throws -> T
 }
 
 /// An implementation of the `AuthorisationServiceType` protocol.
@@ -48,10 +48,12 @@ public class AuthorisationService: AuthorisationServiceType {
   public init() { }
 
   /// Posts a response and returns a generic result.
-  public func post<T: Codable>(response: AuthorizationResponse) async throws -> T {
+  public func post<T: Codable>(
+    poster: Posting = Poster(),
+    response: AuthorizationResponse
+  ) async throws -> T {
     switch response {
     case .directPost(let url, let data):
-      let poster = Poster()
       let response = DirectPost(
         additionalHeaders: ["Content-Type": "application/x-www-form-urlencoded"],
         url: url,

@@ -27,7 +27,8 @@ platform :ios do
     xcov(
       scheme: "SiopOpenID4VP",
       output_directory: "xcov_output",
-      is_swift_package: true
+      is_swift_package: true,
+      minimum_coverage_percentage: 70.0
     )
     if ENV['CI'] != 'true'
       sh 'open ../xcov_output/index.html'
