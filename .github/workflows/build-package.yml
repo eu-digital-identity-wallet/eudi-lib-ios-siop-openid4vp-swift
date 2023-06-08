@@ -14,4 +14,4 @@ jobs:
           }}@github.com/niscy-eudiw/presentation-exchange-swift.git".insteadof
           https://github.com/niscy-eudiw/presentation-exchange-swift.git
 
-          fastlane tests # fastlane just_build
+          fastlane tests
