@@ -3,7 +3,7 @@ import Foundation
 public enum DecentralizedIdentifier: Equatable {
   case did(String)
 
-  init(rawValue: String) throws {
+  public init(rawValue: String) throws {
     self = .did(rawValue)
 
     if !isValid() {
@@ -12,7 +12,7 @@ public enum DecentralizedIdentifier: Equatable {
   }
 
   /// Returns the string representation of the Decentralized Identifier.
-  var stringValue: String {
+  public var stringValue: String {
     switch self {
     case .did(let value):
       return value
@@ -22,7 +22,7 @@ public enum DecentralizedIdentifier: Equatable {
   /// Validates the format of the Decentralized Identifier.
   ///
   /// - Returns: A Boolean value indicating whether the DID is valid.
-  func isValid() -> Bool {
+  public func isValid() -> Bool {
     switch self {
     case .did(let value):
       let regexPattern = "^did:[a-z0-9]+:[a-zA-Z0-9_.-]+$"
