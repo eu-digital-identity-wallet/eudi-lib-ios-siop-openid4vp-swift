@@ -272,7 +272,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
     
     switch resolvedSiopOpenId4VPRequestData! {
-    case .vpToken:
+    case .vpToken, .idToken:
       XCTAssert(true)
     default:
       XCTAssert(false)
@@ -328,7 +328,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
     
     switch resolvedSiopOpenId4VPRequestData! {
-    case .vpToken:
+    case .vpToken, .idToken:
       XCTAssert(true)
     default:
       XCTAssert(false)

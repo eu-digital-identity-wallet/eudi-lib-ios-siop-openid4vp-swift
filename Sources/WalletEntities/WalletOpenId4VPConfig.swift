@@ -10,7 +10,7 @@ public struct WalletOpenId4VPConfiguration {
   public let vpFormatsSupported: [ClaimFormat]
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition]
 
-  init(
+  public init(
     subjectSyntaxTypesSupported: [SubjectSyntaxType],
     preferredSubjectSyntaxType: SubjectSyntaxType,
     decentralizedIdentifier: DecentralizedIdentifier,

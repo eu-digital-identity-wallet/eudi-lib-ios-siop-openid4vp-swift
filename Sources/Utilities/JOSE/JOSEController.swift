@@ -6,6 +6,11 @@ import PresentationExchange
 public struct HolderInfo: Codable {
   let email: String
   let name: String
+  
+  public init(email: String, name: String) {
+    self.email = email
+    self.name = name
+  }
 }
 
 public class JOSEController {
@@ -17,7 +22,7 @@ public class JOSEController {
     return try jws.validate(using: verifier).isValid(for: verifier)
   }
 
-  func generateRandomPublicKey() throws -> RSAPublicKey {
+  public func generateRandomPublicKey() throws -> RSAPublicKey {
     let attributes: [String: Any] = [
       kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
       kSecAttrKeySizeInBits as String: 2048
