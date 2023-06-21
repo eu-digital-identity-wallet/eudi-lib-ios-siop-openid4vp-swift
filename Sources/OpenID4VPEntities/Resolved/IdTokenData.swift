@@ -3,13 +3,13 @@ import Foundation
 extension ResolvedRequestData {
   /// A structure representing the data related to the ID token.
   public struct IdTokenData {
-    let idTokenType: IdTokenType
-    let clientMetaData: ClientMetaData?
-    let clientId: String
-    let nonce: String
-    let responseMode: ResponseMode?
-    let state: String?
-    let scope: Scope?
+    public let idTokenType: IdTokenType
+    public let clientMetaData: ClientMetaData?
+    public let clientId: String
+    public let nonce: String
+    public let responseMode: ResponseMode?
+    public let state: String?
+    public let scope: Scope?
 
     /// Initializes the `IdTokenData` structure with the provided values.
     /// - Parameters:
