@@ -17,13 +17,34 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.invalidRequestUri(requestUri)
     }
 
-    // Fetch the remote JWT using Fetcher
-    guard let token: RemoteJWT = try await Fetcher().fetch(url: requestUrl).get() else {
+    struct ResultType: Codable {}
+    let fetcher = Fetcher<ResultType>()
+    let jwtResult = await fetcher.fetchString(url: requestUrl)
+    var jwt: String
+
+    switch jwtResult {
+    case .success(let string):
+      if string.isValidJSONString {
+        if let jsonData = string.data(using: .utf8) {
+          do {
+            let decodedObject = try JSONDecoder().decode(RemoteJWT.self, from: jsonData)
+            jwt = decodedObject.jwt
+          } catch {
+            throw error
+          }
+        } else {
+          throw ValidatedAuthorizationError.invalidJwtPayload
+        }
+      } else {
+        jwt = string
+      }
+
+    case .failure:
       throw ValidatedAuthorizationError.invalidJwtPayload
     }
 
     // Extract the payload from the JSON Web Token
-    guard let payload = JSONWebToken(jsonWebToken: token.jwt)?.payload else {
+    guard let payload = JSONWebToken(jsonWebToken: jwt)?.payload else {
       throw ValidatedAuthorizationError.invalidAuthorizationData
     }
 
@@ -31,6 +52,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     guard let clientId = payload[Constants.CLIENT_ID] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".clientId")
     }
+
     guard let nonce = payload[Constants.NONCE] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
@@ -132,16 +154,21 @@ public extension ValidatedSiopOpenId4VPRequest {
       // Initialize the validated request based on the response type
       switch responseType {
       case .idToken:
-        self = .idToken(request: .init(
-          idTokenType: try .init(authorizationRequestData: authorizationRequestData),
-          clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
-          clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
-          clientId: clientId,
-          nonce: nonce,
-          scope: authorizationRequestData.scope,
-          responseMode: try? .init(authorizationRequestData: authorizationRequestData),
-          state: authorizationRequestData.state
-        ))
+        do {
+          self = .idToken(request: .init(
+            idTokenType: try .init(authorizationRequestData: authorizationRequestData),
+            clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
+            clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
+            clientId: clientId,
+            nonce: nonce,
+            scope: authorizationRequestData.scope,
+            responseMode: try? .init(authorizationRequestData: authorizationRequestData),
+            state: authorizationRequestData.state
+          ))
+        } catch {
+          print(error.localizedDescription)
+          throw ValidatedAuthorizationError.conflictingData
+        }
       case .vpToken:
         self = try ValidatedSiopOpenId4VPRequest.createVpToken(
           clientId: clientId,

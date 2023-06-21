@@ -78,4 +78,33 @@ public struct Fetcher<Element: Codable>: Fetching {
       return .failure(.decodingError(error))
     }
   }
+
+  public func fetchString(url: URL) async -> Result<String, FetchError> {
+    do {
+      let (data, _) = try await URLSession.shared.data(from: url)
+      if let string = String(data: data, encoding: .utf8) {
+        return .success(string)
+
+      } else {
+
+        let error = NSError(
+          domain: "com.example.networking",
+          code: 0,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to convert data to string"]
+        )
+
+        return .failure(.decodingError(error))
+      }
+    } catch let error as NSError {
+      reporter.debug("error: \(error.localizedDescription)")
+      if error.domain == NSURLErrorDomain {
+        return .failure(.networkError(error))
+      } else {
+        return .failure(.decodingError(error))
+      }
+    } catch {
+      reporter.debug("error: \(error.localizedDescription)")
+      return .failure(.decodingError(error))
+    }
+  }
 }
