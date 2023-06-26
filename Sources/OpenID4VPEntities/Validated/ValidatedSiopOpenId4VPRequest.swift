@@ -24,20 +24,7 @@ public extension ValidatedSiopOpenId4VPRequest {
 
     switch jwtResult {
     case .success(let string):
-      if string.isValidJSONString {
-        if let jsonData = string.data(using: .utf8) {
-          do {
-            let decodedObject = try JSONDecoder().decode(RemoteJWT.self, from: jsonData)
-            jwt = decodedObject.jwt
-          } catch {
-            throw error
-          }
-        } else {
-          throw ValidatedAuthorizationError.invalidJwtPayload
-        }
-      } else {
-        jwt = string
-      }
+      jwt = try ValidatedSiopOpenId4VPRequest.extractJWT(string)
 
     case .failure:
       throw ValidatedAuthorizationError.invalidJwtPayload
@@ -265,5 +252,22 @@ private extension ValidatedSiopOpenId4VPRequest {
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       state: authorizationRequestObject[Constants.STATE] as? String
     ))
+  }
+
+  private static func extractJWT(_ string: String) throws -> String {
+    if string.isValidJSONString {
+      if let jsonData = string.data(using: .utf8) {
+        do {
+          let decodedObject = try JSONDecoder().decode(RemoteJWT.self, from: jsonData)
+          return decodedObject.jwt
+        } catch {
+          throw error
+        }
+      } else {
+        throw ValidatedAuthorizationError.invalidJwtPayload
+      }
+    } else {
+      return string
+    }
   }
 }

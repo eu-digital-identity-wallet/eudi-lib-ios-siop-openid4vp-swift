@@ -183,3 +183,66 @@ class ErrorTests: XCTestCase {
     XCTAssertEqual(decodingFetchError.errorDescription, ".decodingError Decoding error occurred")
   }
 }
+
+class JOSEErrorTests: XCTestCase {
+    
+  func testErrorDescription() {
+    XCTAssertEqual(JOSEError.notSupportedRequest.errorDescription, ".notSupportedRequest")
+    XCTAssertEqual(JOSEError.invalidIdTokenRequest.errorDescription, ".invalidIdTokenRequest")
+    XCTAssertEqual(JOSEError.invalidPublicKey.errorDescription, ".invalidPublicKey")
+    XCTAssertEqual(JOSEError.invalidJWS.errorDescription, ".invalidJWS")
+    XCTAssertEqual(JOSEError.invalidSigner.errorDescription, ".invalidSigner")
+    XCTAssertEqual(JOSEError.invalidVerifier.errorDescription, ".invalidVerifier")
+    XCTAssertEqual(JOSEError.invalidDidIdentifier.errorDescription, ".invalidDidIdentifier")
+  }
+}
+
+class DispatchOutcomeTests: XCTestCase {
+
+  func testInit() {
+    let outcome = DispatchOutcome()
+    XCTAssertEqual(outcome, .accepted(redirectURI: nil))
+  }
+  
+  func testInitFromDecoder_accepted() throws {
+    let json = """
+    { "accepted": "https://www.example.com" }
+    """
+    let data = Data(json.utf8)
+    let decoder = JSONDecoder()
+    
+    let outcome = try decoder.decode(DispatchOutcome.self, from: data)
+    XCTAssertEqual(outcome, .accepted(redirectURI: URL(string: "https://www.example.com")))
+  }
+  
+  func testInitFromDecoder_rejected() throws {
+    let json = """
+    { "rejected": "reason" }
+    """
+    let data = Data(json.utf8)
+    let decoder = JSONDecoder()
+    
+    let outcome = try decoder.decode(DispatchOutcome.self, from: data)
+    XCTAssertEqual(outcome, .rejected(reason: "reason"))
+  }
+  
+  func testInitFromDecoder_invalid() throws {
+    let json = """
+    { "unknown": "value" }
+    """
+    let data = Data(json.utf8)
+    let decoder = JSONDecoder()
+    
+    XCTAssertThrowsError(try decoder.decode(DispatchOutcome.self, from: data))
+  }
+  
+  func testEncode() throws {
+    let outcome = DispatchOutcome.accepted(redirectURI: URL(string: "https://www.example.com"))
+    let encoder = JSONEncoder()
+    
+    let data = try encoder.encode(outcome)
+    let decodedOutcome = try JSONDecoder().decode(DispatchOutcome.self, from: data)
+    
+    XCTAssertEqual(decodedOutcome, outcome)
+  }
+}

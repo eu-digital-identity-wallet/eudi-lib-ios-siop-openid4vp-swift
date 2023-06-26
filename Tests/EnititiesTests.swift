@@ -122,3 +122,65 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     XCTAssertFalse(did.isValid())
   }
 }
+
+class VerifierFormPostTests: XCTestCase {
+    
+  func testUrlRequest() {
+    let url = URL(string: "https://www.example.com")!
+    let formData: [String: Any] = [
+        "param1": "value1",
+        "param2": 123,
+        "param3": true
+    ]
+    let formPost = VerifierFormPost(url: url, formData: formData)
+    
+    var expectedRequest = URLRequest(url: url)
+    expectedRequest.httpMethod = "POST"
+    expectedRequest.httpBody = "param1=value1&param2=123&param3=true".data(using: .utf8)
+    
+    XCTAssertEqual(formPost.urlRequest, expectedRequest)
+  }
+  
+  func testMethod() {
+    let formPost = VerifierFormPost(url: URL(string: "https://www.example.com")!, formData: [:])
+    XCTAssertEqual(formPost.method, HTTPMethod.POST)
+  }
+  
+  func testAdditionalHeaders() {
+    var formPost = VerifierFormPost(url: URL(string: "https://www.example.com")!, formData: [:])
+    XCTAssertTrue(formPost.additionalHeaders.isEmpty)
+    
+    // Add test cases to cover other scenarios for additionalHeaders
+    formPost.additionalHeaders = ["Authorization": "Bearer token"]
+    XCTAssertEqual(formPost.additionalHeaders["Authorization"], "Bearer token")
+  }
+  
+  func testBody() {
+    let formData: [String: Any] = ["param": "value"]
+    let formPost = VerifierFormPost(url: URL(string: "https://www.example.com")!, formData: formData)
+    
+    let expectedBody = "param=value".data(using: .utf8)
+    XCTAssertEqual(formPost.body, expectedBody)
+    
+    // Add test cases to cover other scenarios for body
+    let emptyFormData = [String: Any]()
+    let emptyFormPost = VerifierFormPost(url: URL(string: "https://www.example.com")!, formData: emptyFormData)
+    XCTAssertNotNil(emptyFormPost.body)
+  }
+  
+  func testURLRequest() {
+    let url = URL(string: "https://www.example.com")!
+    let formData: [String: Any] = ["param": "value"]
+    let formPost = VerifierFormPost(url: url, formData: formData)
+      
+    var expectedRequest = URLRequest(url: url)
+    expectedRequest.httpMethod = "POST"
+    expectedRequest.httpBody = "param=value".data(using: .utf8)
+    
+    XCTAssertEqual(formPost.urlRequest, expectedRequest)
+    
+    // Add test cases to cover other scenarios for urlRequest
+    let request = formPost.urlRequest
+    XCTAssertEqual(request.allHTTPHeaderFields, formPost.additionalHeaders)
+  }
+}

@@ -59,7 +59,7 @@ public extension AuthorizationResponse {
         let payload: AuthorizationResponsePayload = .siopAuthenticationResponse(
           idToken: idToken,
           state: try request.state ?? {
-            throw AuthorizationError.missingPresentationDefinition
+            throw AuthorizationError.invalidState
           }()
         )
         self = try .buildAuthorizationResponse(
@@ -71,7 +71,18 @@ public extension AuthorizationResponse {
     case .vpToken, .idAndVPToken:
       throw ValidatedAuthorizationError.unsupportedConsent
     case .negative:
-      throw ValidatedAuthorizationError.negativeConsent
+      switch resolvedRequest {
+      case .idToken(request: let request):
+        let payload: AuthorizationResponsePayload = .noConsensusResponseData(state: try request.state ?? {
+          throw AuthorizationError.invalidState
+        }())
+        self = try .buildAuthorizationResponse(
+          responseMode: request.responseMode,
+          payload: payload
+        )
+      case .vpToken, .idAndVpToken:
+        throw AuthorizationError.unsupportedResolution
+      }
     }
   }
 }

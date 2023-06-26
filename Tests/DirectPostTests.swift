@@ -70,10 +70,21 @@ final class DirectPostTests: XCTestCase {
     
     do {
       // Generate an error since consent was not given
-      _ = try AuthorizationResponse(
+      let response = try AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent
       )
+      
+      switch response {
+      case .directPost(_, data: let data):
+        switch data {
+        case .noConsensusResponseData(state: let state):
+          XCTAssert(true, state)
+          return
+        default: XCTAssert(false, "Incorrect response type")
+        }
+      default: XCTAssert(false, "Incorrect response type")
+      }
     } catch ValidatedAuthorizationError.negativeConsent {
       XCTAssert(true)
       return
@@ -150,8 +161,8 @@ final class DirectPostTests: XCTestCase {
 
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.post(poster: any(), response: any())) ~> DirectPostResponse()
-    let result: DirectPostResponse = try await dispatcher.dispatch(response: response!)
+    await given(service.formPost(poster: any(), response: any())) ~> DispatchOutcome()
+    let result: DispatchOutcome = try await dispatcher.dispatch()
     
     XCTAssertNotNil(result)
   }

@@ -33,9 +33,9 @@ public final class AuthorisationServiceTypeMock: AuthorisationServiceType, Mocki
     AuthorisationServiceTypeMock.mockingbirdContext.sourceLocation = sourceLocation
   }
 
-  // MARK: Mocked `post`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse)
-  public func `post`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse) async throws -> T {
-    return try await self.mockingbirdContext.mocking.didInvoke(Mockingbird.SwiftInvocation(selectorName: "`post`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse) async throws -> T", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.ArgumentMatcher(`poster`), Mockingbird.ArgumentMatcher(`response`)], returnType: Swift.ObjectIdentifier((T).self))) {
+  // MARK: Mocked `formPost`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse)
+  public func `formPost`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse) async throws -> T {
+    return try await self.mockingbirdContext.mocking.didInvoke(Mockingbird.SwiftInvocation(selectorName: "`formPost`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse) async throws -> T", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.ArgumentMatcher(`poster`), Mockingbird.ArgumentMatcher(`response`)], returnType: Swift.ObjectIdentifier((T).self))) {
       self.mockingbirdContext.recordInvocation($0)
       let mkbImpl = self.mockingbirdContext.stubbing.implementation(for: $0)
       if let mkbImpl = mkbImpl as? (Posting, AuthorizationResponse) async throws -> T { return try await mkbImpl(`poster`, `response`) }
@@ -46,7 +46,7 @@ public final class AuthorisationServiceTypeMock: AuthorisationServiceType, Mocki
           break
         case .object(let mkbObject):
           guard var mkbObject = mkbObject as? MockingbirdSupertype else { break }
-          let mkbValue: T = try await mkbObject.`post`(poster: `poster`, response: `response`)
+          let mkbValue: T = try await mkbObject.`formPost`(poster: `poster`, response: `response`)
           self.mockingbirdContext.proxy.updateTarget(&mkbObject, in: mkbTargetBox)
           return mkbValue
         }
@@ -56,8 +56,8 @@ public final class AuthorisationServiceTypeMock: AuthorisationServiceType, Mocki
     }
   }
 
-  public func `post`<T: Codable>(`poster`: @autoclosure () -> Posting, `response`: @autoclosure () -> AuthorizationResponse) async -> Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (Posting, AuthorizationResponse) async throws -> T, T> {
-    return Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (Posting, AuthorizationResponse) async throws -> T, T>(context: self.mockingbirdContext, invocation: Mockingbird.SwiftInvocation(selectorName: "`post`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse) async throws -> T", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.resolve(`poster`), Mockingbird.resolve(`response`)], returnType: Swift.ObjectIdentifier((T).self)))
+  public func `formPost`<T: Codable>(`poster`: @autoclosure () -> Posting, `response`: @autoclosure () -> AuthorizationResponse) async -> Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (Posting, AuthorizationResponse) async throws -> T, T> {
+    return Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (Posting, AuthorizationResponse) async throws -> T, T>(context: self.mockingbirdContext, invocation: Mockingbird.SwiftInvocation(selectorName: "`formPost`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse) async throws -> T", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.resolve(`poster`), Mockingbird.resolve(`response`)], returnType: Swift.ObjectIdentifier((T).self)))
   }
 }
 

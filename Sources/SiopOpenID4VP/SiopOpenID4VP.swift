@@ -109,7 +109,13 @@ public class SiopOpenID4VP {
    - Returns: A DispatchOutcome enum
    */
   public func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome {
-    .directPost(.init())
+
+    let dispatcher = Dispatcher(
+      authorizationResponse: response
+    )
+
+    let outcome: DispatchOutcome = try await dispatcher.dispatch()
+    return outcome
   }
 
   /**
