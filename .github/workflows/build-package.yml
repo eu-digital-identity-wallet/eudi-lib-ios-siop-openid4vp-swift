@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: extractions/netrc@v1
         with:
-          machine: github.com
+          machine: github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git
           username: ${{ secrets.USER_NAME }}
           password: ${{ secrets.USER_GITHUB_TOKEN }}
 
