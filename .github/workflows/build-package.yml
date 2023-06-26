@@ -8,10 +8,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: extractions/netrc@v1
-          with:
-            machine: github.com
-            username: ${{ secrets.USER_NAME }}
-            password: ${{ secrets.USER_GITHUB_TOKEN }}
+        with:
+          machine: github.com
+          username: ${{ secrets.USER_NAME }}
+          password: ${{ secrets.USER_GITHUB_TOKEN }}
 
       - uses: actions/checkout@v2
       - run:
