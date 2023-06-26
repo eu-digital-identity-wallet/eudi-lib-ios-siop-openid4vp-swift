@@ -33,8 +33,8 @@ let package = Package(
       .upToNextMinor(from: "0.20.0")
     ),
     .package(
-      url: "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.19")
+      url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
+      .upToNextMinor(from: "0.0.20")
     )
   ],
   targets: [
@@ -55,7 +55,7 @@ let package = Package(
         ),
         .product(
           name: "PresentationExchange",
-          package: "presentation-exchange-swift",
+          package: "eudi-lib-ios-presentation-exchange-swift",
           moduleAliases: ["SwiftLintPlugin": "DepSwiftLintPlugin"]
         )
       ],
@@ -89,7 +89,7 @@ let package = Package(
         ),
         .product(
           name: "PresentationExchange",
-          package: "presentation-exchange-swift",
+          package: "eudi-lib-ios-presentation-exchange-swift",
           moduleAliases: ["SwiftLintPlugin": "DepSwiftLintPlugin"]
         )
       ],

@@ -48,7 +48,16 @@ public struct Poster: Posting {
   public func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError> {
     do {
       let (data, _) = try await URLSession.shared.data(for: request)
+      if let stringData = String(data: data, encoding: .utf8) {
+        print("*** post response string \(stringData)")
+      } else {
+
+        print("*** failed to convert data to string")
+      }
+
       let object = try JSONDecoder().decode(Response.self, from: data)
+      print("*** post response object\(object)")
+
       return .success(object)
     } catch let error as NSError {
       if error.domain == NSURLErrorDomain {

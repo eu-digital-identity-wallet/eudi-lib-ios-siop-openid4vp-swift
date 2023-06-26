@@ -11,7 +11,6 @@ jobs:
       - run: >
           git config --global --add url."https://${{ secrets.USER_NAME }}:${{
           secrets.USER_GITHUB_TOKEN
-          }}@github.com/niscy-eudiw/presentation-exchange-swift.git".insteadof
-          https://github.com/niscy-eudiw/presentation-exchange-swift.git
-
+          }}@github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git".insteadof
+          https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git
           fastlane tests

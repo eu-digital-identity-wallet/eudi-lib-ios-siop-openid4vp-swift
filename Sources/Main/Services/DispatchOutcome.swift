@@ -33,10 +33,10 @@ public extension DispatchOutcome {
       )
     }
   }
-  
-  public func encode(to encoder: Encoder) throws {
+
+  func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
-    
+
     switch self {
     case .accepted(let redirectURI):
       try container.encode(redirectURI, forKey: .accepted)

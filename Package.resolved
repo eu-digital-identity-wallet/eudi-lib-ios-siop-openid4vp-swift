@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "eudi-lib-ios-presentation-exchange-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
+      "state" : {
+        "revision" : "9eae39b567793283e925e62d91f654813b929014",
+        "version" : "0.0.20"
+      }
+    },
+    {
       "identity" : "hitch",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Hitch.git",
@@ -61,15 +70,6 @@
       "state" : {
         "revision" : "3bfd2737b700b9a36565a8c94f4ad2b050a5e574",
         "version" : "1.0.1"
-      }
-    },
-    {
-      "identity" : "presentation-exchange-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/niscy-eudiw/presentation-exchange-swift.git",
-      "state" : {
-        "revision" : "5ad075073117221bfa5b68b3c9859b7eaf89d029",
-        "version" : "0.0.19"
       }
     },
     {

@@ -17,12 +17,13 @@ public class AuthorisationService: AuthorisationServiceType {
   ) async throws -> T {
     switch response {
     case .directPost(let url, let data):
-      let response = VerifierFormPost(
+      let post = VerifierFormPost(
         additionalHeaders: ["Content-Type": ContentType.form.rawValue],
         url: url,
         formData: try data.toDictionary()
       )
-      let result: Result<T, PostError> = await poster.post(request: response.urlRequest)
+      print("*** post \(post)")
+      let result: Result<T, PostError> = await poster.post(request: post.urlRequest)
       return try result.get()
     default: throw AuthorizationError.invalidResponseMode
     }
