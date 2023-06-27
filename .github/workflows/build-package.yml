@@ -7,12 +7,11 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - uses: extractions/netrc@v1
-        with:
-          machine: github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git
-          username: ${{ secrets.USER_NAME }}
-          password: ${{ secrets.USER_GITHUB_TOKEN }}
+      - name: Configure git
+        run:
+          git config --global --add url."https://${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github.com/niscy-eudiw/presentation-exchange-swift.git".insteadof https://github.com/niscy-eudiw/presentation-exchange-swift.git
 
-      - uses: actions/checkout@v2
-      - run:
-          fastlane tests
+      - name: Fastlane
+        uses: actions/checkout@v2
+        run:
+          fastlane just_build
