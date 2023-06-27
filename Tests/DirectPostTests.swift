@@ -237,6 +237,73 @@ final class DirectPostTests: XCTestCase {
     
     XCTAssertNotNil(result)
   }
+  
+  func testEndtoEndDirectPost() async throws {
+    
+    let sdk = SiopOpenID4VP()
+
+    overrideDependencies()
+    let r = try await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/K-ENX3Uv3YuFS4WQXixbVwKOwOLKAbODncJHNwaPhmG9RGdDiE-cxJvxTQ4cWIz0170DnK0EcrgNyS8lotOAuw")!)
+    
+    switch r {
+    case .oauth2: break
+    case .jwt(request: let request):
+      let resolved = request
+      
+      let kid = UUID()
+      let jose = JOSEController()
+      
+      let privateKey = try jose.generateHardcodedPrivateKey()
+      let publicKey = try jose.generatePublicKey(from: privateKey!)
+      let rsaJWK = try RSAPublicKey(
+        publicKey: publicKey,
+        additionalParameters: [
+          "use": "sig",
+          "kid": kid.uuidString
+        ])
+      
+      let holderInfo: HolderInfo = .init(
+        email: "email@example.com",
+        name: "Bob"
+      )
+      
+      let jws = try jose.build(
+        request: resolved,
+        holderInfo: holderInfo,
+        walletConfiguration: .init(
+          subjectSyntaxTypesSupported: [
+            .decentralizedIdentifier,
+            .jwkThumbprint
+          ],
+          preferredSubjectSyntaxType: .jwkThumbprint,
+          decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+          supportedClientIdScheme: .did,
+          vpFormatsSupported: []
+        ),
+        rsaJWK: rsaJWK,
+        signingKey: privateKey!,
+        kid: kid
+      )
+      
+      XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
+      
+      // Obtain consent
+      let consent: ClientConsent = .idToken(idToken: jws)
+      
+      // Generate a direct post authorisation response
+      let response = try? AuthorizationResponse(
+        resolvedRequest: resolved,
+        consent: consent
+      )
+      
+      XCTAssertNotNil(response)
+
+      let dispatcher = Dispatcher(authorizationResponse: response!)
+      let result: DispatchOutcome = try await dispatcher.dispatch()
+      
+      XCTAssertNotNil(result)
+    }
+  }
 }
 
 private extension DirectPostTests {
