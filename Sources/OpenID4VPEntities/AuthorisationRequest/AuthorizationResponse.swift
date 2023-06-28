@@ -75,7 +75,7 @@ public extension AuthorizationResponse {
       case .idToken(request: let request):
         let payload: AuthorizationResponsePayload = .noConsensusResponseData(state: try request.state ?? {
           throw AuthorizationError.invalidState
-        }())
+        }(), error: "user_cancelled")
         self = try .buildAuthorizationResponse(
           responseMode: request.responseMode,
           payload: payload

@@ -78,7 +78,7 @@ final class DirectPostTests: XCTestCase {
       switch response {
       case .directPost(_, data: let data):
         switch data {
-        case .noConsensusResponseData(state: let state):
+        case .noConsensusResponseData(state: let state, error: let message):
           XCTAssert(true, state)
           return
         default: XCTAssert(false, "Incorrect response type")
@@ -243,7 +243,7 @@ final class DirectPostTests: XCTestCase {
     let sdk = SiopOpenID4VP()
     
     overrideDependencies()
-    let r = try await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/SOvVnj2MqlFmQ4EJ8Qq4wmnvESmDD7aIMU16gt4YSk2VR3gNjUAyPNlHOHp6Q-6lXus-jQd6USluoUFXpXAMJg")!)
+    let r = try await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/F8A-ATfyaGlyqlMDZWe1Ge6l-1CO6D_pEnb7QTygw5CkjCBHNMbB3baQizVt4iBZvnsz4My13309F_0qA4MvmQ")!)
     
     switch r {
     case .oauth2: break

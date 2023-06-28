@@ -27,7 +27,7 @@ public enum AuthorizationResponsePayload: Encodable {
   case invalidRequest(error: AuthorizationError, state: String)
 
   /// A response payload indicating no consensus response data.
-  case noConsensusResponseData(state: String)
+  case noConsensusResponseData(state: String, error: String)
 
   /// Coding keys for encoding the enumeration.
   enum CodingKeys: String, CodingKey {
@@ -39,6 +39,7 @@ public enum AuthorizationResponsePayload: Encodable {
     case noConsensusResponseData
     case idToken = "id_token"
     case state
+    case error
   }
 
   /// Encodes the enumeration using the given encoder.
@@ -49,6 +50,9 @@ public enum AuthorizationResponsePayload: Encodable {
      case .siopAuthenticationResponse(let idToken, let state):
        try container.encode(state, forKey: .state)
        try container.encode(idToken, forKey: .idToken)
+     case .noConsensusResponseData(let state, let message):
+       try container.encode(state, forKey: .state)
+       try container.encode(message, forKey: .error)
      default: break
      }
    }

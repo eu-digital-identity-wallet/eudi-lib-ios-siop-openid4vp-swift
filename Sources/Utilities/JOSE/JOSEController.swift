@@ -4,8 +4,8 @@ import JOSESwift
 import PresentationExchange
 
 public struct HolderInfo: Codable {
-  let email: String
-  let name: String
+  public let email: String
+  public let name: String
 
   public init(email: String, name: String) {
     self.email = email
