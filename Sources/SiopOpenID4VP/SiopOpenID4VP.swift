@@ -11,16 +11,15 @@ import Combine
  */
 public protocol SiopOpenID4VPType {
   func process(url: URL) async throws -> PresentationDefinition
-  func process(request: JSONObject) async throws -> PresentationDefinition
   func authorize(url: URL) async throws -> AuthorizationRequest
   func authorizationPublisher(for url: URL) -> AnyPublisher<AuthorizationRequest, Error>
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
-  func dispatch(response: AuthorizationRequest) async throws -> DispatchOutcome
+  func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome
   func submit()
   func consent()
 }
 
-public class SiopOpenID4VP {
+public class SiopOpenID4VP: SiopOpenID4VPType {
 
   public init() {
     registerDependencies()
@@ -121,7 +120,7 @@ public class SiopOpenID4VP {
   /**
    WIP: Consent to matches
    */
-  func consent() {}
+  public func consent() {}
 
   /**
    WIP: Submits a request
