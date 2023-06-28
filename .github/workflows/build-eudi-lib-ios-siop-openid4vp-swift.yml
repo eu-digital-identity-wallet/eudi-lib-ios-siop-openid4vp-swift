@@ -8,5 +8,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - run:
-        fastlane tests # fastlane just_build
+      - run: >
+          echo "tests"
+
+          fastlane tests # fastlane just_build
