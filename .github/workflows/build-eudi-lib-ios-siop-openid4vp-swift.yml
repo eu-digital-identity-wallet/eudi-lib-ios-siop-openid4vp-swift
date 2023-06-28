@@ -13,4 +13,4 @@ jobs:
         # Add personal access token to all private repo URLs 
         run: find . -type f \( -name 'Package.swift' -o -name 'Package.resolved' \) -exec sed -i '' "s/https:\/\/github.com\/niscy-eudiw/https:\/\/${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github.com\/niscy-eudiw/g" {} \;
       - name: Build for iOS
-        run: fastlane tests # fastlane just_build
+        run: swift test # fastlane tests # fastlane just_build
