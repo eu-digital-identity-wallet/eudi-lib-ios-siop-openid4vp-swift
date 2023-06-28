@@ -104,13 +104,20 @@ public class SiopOpenID4VP {
    Dispatches an autorisation request.
 
    - Parameters:
-    - response: An AuthorizationRequest
+    - response: An AuthorizationResponse
 
    - Returns: A DispatchOutcome enum
    */
-  func dispatch(response: AuthorizationRequest) async throws -> DispatchOutcome {
-    .none
+  public func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome {
+
+    let dispatcher = Dispatcher(
+      authorizationResponse: response
+    )
+
+    let outcome: DispatchOutcome = try await dispatcher.dispatch()
+    return outcome
   }
+
   /**
    WIP: Consent to matches
    */

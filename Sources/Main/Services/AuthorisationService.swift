@@ -1,65 +1,48 @@
 import Foundation
 
-/// A struct representing a direct POST request.
-public struct DirectPost: Request {
-  public typealias Response = DirectPostResponse
-
-  /// The HTTP method for the request.
-  public var method: HTTPMethod { .POST }
-
-  /// Additional headers to include in the request.
-  public var additionalHeaders: [String: String] = [:]
-
-  /// The URL for the request.
-  public var url: URL
-
-  /// The request body as data.
-  public var body: Data? {
-    var formDataComponents = URLComponents()
-    formDataComponents.queryItems = formData.toQueryItems()
-    let formDataString = formDataComponents.query
-    return formDataString?.data(using: .utf8)
-  }
-
-  /// The form data for the request.
-  let formData: [String: Any]
-
-  /// The URL request representation of the DirectPost.
-  var urlRequest: URLRequest {
-    var request = URLRequest(url: url)
-    request.httpMethod = method.rawValue
-    request.httpBody = body
-    request.allHTTPHeaderFields = additionalHeaders
-    return request
-  }
-}
-
-/// A struct representing the response to a direct POST request.
-public struct DirectPostResponse: Codable, Equatable { }
-
 /// A protocol for an authorization service.
 public protocol AuthorisationServiceType {
   /// Posts a response and returns a generic result.
-  func post<T: Codable>(poster: Posting, response: AuthorizationResponse) async throws -> T
+  func formPost<T: Codable>(poster: Posting, response: AuthorizationResponse) async throws -> T
+  /// Posts a response and returns a success boolean.
+  func formCheck(poster: Posting, response: AuthorizationResponse) async throws -> Bool
 }
 
 /// An implementation of the `AuthorisationServiceType` protocol.
 public class AuthorisationService: AuthorisationServiceType {
+
   public init() { }
 
   /// Posts a response and returns a generic result.
-  public func post<T: Codable>(
+  public func formPost<T: Codable>(
     poster: Posting = Poster(),
     response: AuthorizationResponse
   ) async throws -> T {
     switch response {
     case .directPost(let url, let data):
-      let response = DirectPost(
-        additionalHeaders: ["Content-Type": "application/x-www-form-urlencoded"],
+      let post = VerifierFormPost(
+        additionalHeaders: ["Content-Type": ContentType.form.rawValue],
         url: url,
         formData: try data.toDictionary()
       )
-      let result: Result<T, PostError> = await poster.post(request: response.urlRequest)
+
+      let result: Result<T, PostError> = await poster.post(request: post.urlRequest)
+      return try result.get()
+    default: throw AuthorizationError.invalidResponseMode
+    }
+  }
+
+  /// Posts a response and returns a success boolean.
+  public func formCheck(poster: Posting, response: AuthorizationResponse) async throws -> Bool {
+    switch response {
+    case .directPost(let url, let data):
+      let post = VerifierFormPost(
+        additionalHeaders: ["Content-Type": ContentType.form.rawValue],
+        url: url,
+        formData: try data.toDictionary()
+      )
+
+      let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
       return try result.get()
     default: throw AuthorizationError.invalidResponseMode
     }

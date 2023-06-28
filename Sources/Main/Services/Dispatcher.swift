@@ -3,7 +3,7 @@ import Foundation
 /// A protocol for an authorization response controller.
 public protocol DispatcherType {
   /// Dispatches a response and returns a generic result.
-  func dispatch<T: Codable>(poster: Posting, response: AuthorizationResponse) async throws -> T
+  func dispatch(poster: Posting) async throws -> DispatchOutcome
 }
 
 /// An implementation of the `DispatcherType` protocol.
@@ -16,7 +16,7 @@ public class Dispatcher: DispatcherType {
 
   /// Initializes an `AuthorizationResponseController` with the provided service and authorization response.
   public init(
-    service: AuthorisationServiceType,
+    service: AuthorisationServiceType = AuthorisationService(),
     authorizationResponse: AuthorizationResponse
   ) {
     self.service = service
@@ -24,13 +24,14 @@ public class Dispatcher: DispatcherType {
   }
 
   /// Posts a response and returns a generic result.
-  public func dispatch<T: Codable>(
-    poster: Posting = Poster(),
-    response: AuthorizationResponse
-  ) async throws -> T {
-    return try await service.post(
+  public func dispatch(
+    poster: Posting = Poster()
+  ) async throws -> DispatchOutcome {
+    let result = try await service.formCheck(
       poster: poster,
-      response: response
+      response: self.authorizationResponse
     )
+
+    return result == true ? .accepted(redirectURI: nil) : .rejected(reason: "")
   }
 }

@@ -6,7 +6,7 @@ import PresentationExchange
 public struct HolderInfo: Codable {
   let email: String
   let name: String
-  
+
   public init(email: String, name: String) {
     self.email = email
     self.name = name
