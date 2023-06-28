@@ -25,7 +25,7 @@ public class AuthorisationService: AuthorisationServiceType {
         url: url,
         formData: try data.toDictionary()
       )
-      print("*** post \(post)")
+
       let result: Result<T, PostError> = await poster.post(request: post.urlRequest)
       return try result.get()
     default: throw AuthorizationError.invalidResponseMode
@@ -41,7 +41,7 @@ public class AuthorisationService: AuthorisationServiceType {
         url: url,
         formData: try data.toDictionary()
       )
-      print("*** post \(post)")
+
       let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
       return try result.get()
     default: throw AuthorizationError.invalidResponseMode

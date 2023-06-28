@@ -110,12 +110,10 @@ public class SiopOpenID4VP {
    */
   public func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome {
 
-    print("*** commence dispath initialisation")
     let dispatcher = Dispatcher(
       authorizationResponse: response
     )
 
-    print("*** commence dispath outcome")
     let outcome: DispatchOutcome = try await dispatcher.dispatch()
     return outcome
   }

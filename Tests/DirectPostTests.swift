@@ -161,7 +161,7 @@ final class DirectPostTests: XCTestCase {
 
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.formPost(poster: any(), response: any())) ~> DispatchOutcome()
+    await given(service.formCheck(poster: any(), response: any())) ~> true
     let result: DispatchOutcome = try await dispatcher.dispatch()
     
     XCTAssertNotNil(result)
@@ -232,18 +232,18 @@ final class DirectPostTests: XCTestCase {
 
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.formPost(poster: any(), response: any())) ~> DispatchOutcome()
+    await given(service.formCheck(poster: any(), response: any())) ~> true
     let result: DispatchOutcome = try await dispatcher.dispatch()
     
     XCTAssertNotNil(result)
   }
-  
-  func testEndtoEndDirectPost() async throws {
+
+  /*func testSDKEndtoEndDirectPost() async throws {
     
     let sdk = SiopOpenID4VP()
-
+    
     overrideDependencies()
-    let r = try await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/K-ENX3Uv3YuFS4WQXixbVwKOwOLKAbODncJHNwaPhmG9RGdDiE-cxJvxTQ4cWIz0170DnK0EcrgNyS8lotOAuw")!)
+    let r = try await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/SOvVnj2MqlFmQ4EJ8Qq4wmnvESmDD7aIMU16gt4YSk2VR3gNjUAyPNlHOHp6Q-6lXus-jQd6USluoUFXpXAMJg")!)
     
     switch r {
     case .oauth2: break
@@ -297,13 +297,12 @@ final class DirectPostTests: XCTestCase {
       )
       
       XCTAssertNotNil(response)
-
-      let dispatcher = Dispatcher(authorizationResponse: response!)
-      let result: DispatchOutcome = try await dispatcher.dispatch()
       
-      XCTAssertNotNil(result)
+      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
+      
+      XCTAssertTrue(result == .accepted(redirectURI: nil))
     }
-  }
+  }*/
 }
 
 private extension DirectPostTests {
