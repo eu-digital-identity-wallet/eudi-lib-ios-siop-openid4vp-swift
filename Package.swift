@@ -42,10 +42,6 @@ let package = Package(
       name: "SiopOpenID4VP",
       dependencies: [
         .product(
-          name: "Sextant",
-          package: "Sextant"
-        ),
-        .product(
           name: "JSONSchema",
           package: "JSONSchema.swift"
         ),
