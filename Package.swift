@@ -76,10 +76,6 @@ let package = Package(
           package: "JSONSchema.swift"
         ),
         .product(
-          name: "Sextant",
-          package: "Sextant"
-        ),
-        .product(
           name: "JOSESwift",
           package: "JOSESwift"
         ),
