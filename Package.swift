@@ -17,10 +17,6 @@ let package = Package(
       from: "0.6.0"
     ),
     .package(
-      url: "https://github.com/KittyMac/Sextant.git",
-      .upToNextMinor(from: "0.4.0")
-    ),
-    .package(
       url: "https://github.com/realm/SwiftLint.git",
       .upToNextMinor(from: "0.51.0")
     ),
