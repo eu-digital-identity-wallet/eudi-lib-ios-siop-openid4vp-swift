@@ -31,5 +31,5 @@ public enum ClientConsent {
   /**
    No consensus. Holder decided to reject the request
     */
-  case negative
+  case negative(message: String)
 }
