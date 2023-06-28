@@ -7,12 +7,11 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - name: Repository checkout
-        uses: actions/checkout@v2
-      - name: Fix Up Private GitHub URLs
-        # Add personal access token to all private repo URLs 
-        run: find . -type f \( -name '*.pbxproj' -o -name 'Package.swift' -o -name 'Package.resolved' \) -exec sed -i '' "s/https:\/\/github.com\/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git/https:\/\/${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github.com\/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git/g" {} \;
-      - name: Build for iOS
-        run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild build-for-testing -scheme SiopOpenID4VP -destination "platform=iOS Simulator,OS=16.2,name=iPhone 8" | xcpretty
-      - name: Run iOS tests
-        run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild test-without-building -scheme SiopOpenID4VP -destination "platform=iOS Simulator,OS=16.2,name=iPhone 8" | xcpretty
+      - uses: actions/checkout@v2
+      - run: >
+          git config --add url."https://${{ secrets.USER_NAME }}:${{
+          secrets.USER_GITHUB_TOKEN
+          }}@github.com/niscy-eudiw/presentation-exchange-swift.git".insteadof
+          https://github.com/niscy-eudiw/presentation-exchange-swift.git
+
+          fastlane tests # fastlane just_build
