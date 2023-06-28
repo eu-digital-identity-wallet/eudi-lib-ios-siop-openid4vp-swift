@@ -7,6 +7,13 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
+      - name: Configure git
+        run:
+          git config --global --add url."https://${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git".insteadof https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git
+
       - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.7.0
+              with:
+                  ssh-private-key: ${{ secrets.SSH_KEY }}
       - run:
           fastlane just_build
