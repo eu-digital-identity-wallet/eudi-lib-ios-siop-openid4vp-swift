@@ -1,5 +1,5 @@
 ---
-name: build-siop-openid4vp-ios
+name: eudi-lib-ios-siop-openid4vp-swift
 on:
   - push
   - pull_request
