@@ -81,7 +81,11 @@ public struct Fetcher<Element: Codable>: Fetching {
 
   public func fetchString(url: URL) async -> Result<String, FetchError> {
     do {
-      let (data, _) = try await URLSession.shared.data(from: url)
+      let delegate = SelfSignedSessionDelegate()
+      let configuration = URLSessionConfiguration.default
+      let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+
+      let (data, _) = try await session.data(from: url)
       if let string = String(data: data, encoding: .utf8) {
         return .success(string)
 

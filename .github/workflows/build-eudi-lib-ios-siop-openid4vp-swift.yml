@@ -1,0 +1,15 @@
+---
+name: eudi-lib-ios-siop-openid4vp-swift
+on:
+  - pull_request
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Repository checkout
+        uses: actions/checkout@v2
+      - name: Fix Up Private GitHub URLs
+        # Add personal access token to all private repo URLs 
+        run: find . -type f \( -name 'Package.swift' -o -name 'Package.resolved' \) -exec sed -i '' "s/https:\/\/github.com\/niscy-eudiw/https:\/\/${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github.com\/niscy-eudiw/g" {} \;
+      - name: Run tests
+        run: fastlane tests

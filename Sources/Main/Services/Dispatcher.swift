@@ -7,7 +7,7 @@ public protocol DispatcherType {
 }
 
 /// An implementation of the `DispatcherType` protocol.
-public class Dispatcher: DispatcherType {
+public actor Dispatcher: DispatcherType {
   /// The authorization service used for posting responses.
   public let service: AuthorisationServiceType
 
