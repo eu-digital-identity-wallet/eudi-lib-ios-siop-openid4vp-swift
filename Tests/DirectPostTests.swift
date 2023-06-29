@@ -66,7 +66,7 @@ final class DirectPostTests: XCTestCase {
     )
     
     // Do not obtain consent
-    let consent: ClientConsent = .negative
+    let consent: ClientConsent = .negative(message: "user_cancelled")
     
     do {
       // Generate an error since consent was not given
@@ -78,7 +78,7 @@ final class DirectPostTests: XCTestCase {
       switch response {
       case .directPost(_, data: let data):
         switch data {
-        case .noConsensusResponseData(state: let state, error: let message):
+        case .noConsensusResponseData(state: let state, error: _):
           XCTAssert(true, state)
           return
         default: XCTAssert(false, "Incorrect response type")
@@ -220,7 +220,7 @@ final class DirectPostTests: XCTestCase {
     XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
     
     // Obtain consent
-    let consent: ClientConsent = .negative
+    let consent: ClientConsent = .negative(message: "user_cancelled")
     
     // Generate a direct post authorisation response
     let response = try? AuthorizationResponse(

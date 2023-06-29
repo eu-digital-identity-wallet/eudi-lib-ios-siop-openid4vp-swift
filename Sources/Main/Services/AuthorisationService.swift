@@ -9,7 +9,7 @@ public protocol AuthorisationServiceType {
 }
 
 /// An implementation of the `AuthorisationServiceType` protocol.
-public class AuthorisationService: AuthorisationServiceType {
+public actor AuthorisationService: AuthorisationServiceType {
 
   public init() { }
 

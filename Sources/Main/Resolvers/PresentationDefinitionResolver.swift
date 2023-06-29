@@ -25,7 +25,7 @@ public protocol PresentationDefinitionResolverType {
   ) async -> Result<OutputType, ErrorType>
 }
 
-public class PresentationDefinitionResolver: PresentationDefinitionResolverType {
+public actor PresentationDefinitionResolver: PresentationDefinitionResolverType {
   /// Resolves presentation definitions asynchronously.
   ///
   /// - Parameters:

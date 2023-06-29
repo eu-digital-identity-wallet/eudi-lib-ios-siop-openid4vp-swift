@@ -22,7 +22,7 @@ public protocol ClientMetaDataResolverType {
   ) async -> Result<OutputType?, ErrorType>
 }
 
-public class ClientMetaDataResolver: ClientMetaDataResolverType {
+public actor ClientMetaDataResolver: ClientMetaDataResolverType {
   /// Resolves client metadata asynchronously.
   ///
   /// - Parameters:

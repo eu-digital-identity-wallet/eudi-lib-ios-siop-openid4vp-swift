@@ -56,7 +56,7 @@ platform :ios do
     xcodebuild(
       scheme: "SiopOpenID4VP",
       destination: "platform=iOS Simulator,OS=16.2,name=iPhone 8",
-      xcargs: "-skipPackagePluginValidation"
+      xcargs: "-skipPackagePluginValidation -disableAutomaticPackageResolution"
     )
   end
 

@@ -17,10 +17,6 @@ let package = Package(
       from: "0.6.0"
     ),
     .package(
-      url: "https://github.com/KittyMac/Sextant.git",
-      .upToNextMinor(from: "0.4.0")
-    ),
-    .package(
       url: "https://github.com/realm/SwiftLint.git",
       .upToNextMinor(from: "0.51.0")
     ),
@@ -41,10 +37,6 @@ let package = Package(
     .target(
       name: "SiopOpenID4VP",
       dependencies: [
-        .product(
-          name: "Sextant",
-          package: "Sextant"
-        ),
         .product(
           name: "JSONSchema",
           package: "JSONSchema.swift"
@@ -78,10 +70,6 @@ let package = Package(
         .product(
           name: "JSONSchema",
           package: "JSONSchema.swift"
-        ),
-        .product(
-          name: "Sextant",
-          package: "Sextant"
         ),
         .product(
           name: "JOSESwift",
