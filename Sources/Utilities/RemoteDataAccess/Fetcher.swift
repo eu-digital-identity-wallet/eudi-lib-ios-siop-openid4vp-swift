@@ -58,7 +58,10 @@ public struct Fetcher<Element: Codable>: Fetching {
    */
   public func fetch(session: URLSession = URLSession.shared, url: URL) async -> Result<Element, FetchError> {
     do {
-      let (data, response) = try await URLSession.shared.data(from: url)
+      let delegate = SelfSignedSessionDelegate()
+      let configuration = URLSessionConfiguration.default
+      let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+      let (data, response) = try await session.data(from: url)
       let object = try JSONDecoder().decode(Element.self, from: data)
 
       if let httpResponse = response as? HTTPURLResponse {

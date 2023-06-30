@@ -57,7 +57,10 @@ public struct Poster: Posting {
    */
   public func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError> {
     do {
-      let (data, _) = try await URLSession.shared.data(for: request)
+      let delegate = SelfSignedSessionDelegate()
+      let configuration = URLSessionConfiguration.default
+      let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+      let (data, _) = try await session.data(for: request)
       let object = try JSONDecoder().decode(Response.self, from: data)
 
       return .success(object)
@@ -82,7 +85,10 @@ public struct Poster: Posting {
    */
   public func check(request: URLRequest) async -> Result<Bool, PostError> {
     do {
-      let (_, response) = try await URLSession.shared.data(for: request)
+      let delegate = SelfSignedSessionDelegate()
+      let configuration = URLSessionConfiguration.default
+      let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+      let (_, response) = try await session.data(for: request)
       return .success((response as? HTTPURLResponse)?.statusCode.isWithinRange(200...299) ?? false)
     } catch let error as NSError {
       if error.domain == NSURLErrorDomain {
