@@ -19,7 +19,7 @@ public extension ValidatedSiopOpenId4VPRequest {
 
     struct ResultType: Codable {}
     let fetcher = Fetcher<ResultType>()
-    let jwtResult = await fetcher.fetchString(url: requestUrl)
+    let jwtResult = try await fetcher.fetchString(url: requestUrl)
     var jwt: String
 
     switch jwtResult {
@@ -267,7 +267,11 @@ private extension ValidatedSiopOpenId4VPRequest {
         throw ValidatedAuthorizationError.invalidJwtPayload
       }
     } else {
-      return string
+      if string.isValidJWT() {
+        return string
+      } else {
+        throw ValidatedAuthorizationError.invalidJwtPayload
+      }
     }
   }
 }

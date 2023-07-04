@@ -313,7 +313,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     
     XCTAssertNotNil(authorizationRequestData)
     
-    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
+    let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
       authorizationRequestData: authorizationRequestData!
     )
     
@@ -322,7 +322,7 @@ final class SiopOpenID4VPTests: XCTestCase {
     let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
       clientMetaDataResolver: ClientMetaDataResolver(),
       presentationDefinitionResolver: PresentationDefinitionResolver(),
-      validatedAuthorizationRequest: validatedAuthorizationRequestData!
+      validatedAuthorizationRequest: validatedAuthorizationRequestData
     )
     
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
@@ -333,6 +333,32 @@ final class SiopOpenID4VPTests: XCTestCase {
     default:
       XCTAssert(false)
     }
+  }
+  
+  func testSDKValidationResolutionGivenDataRequestObjectByReferenceIsNotFoundURL() async throws {
+    
+    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: TestsConstants.requestExpiredUrl)
+    
+    XCTAssertNotNil(authorizationRequestData)
+    
+    do {
+      _ = try await ValidatedSiopOpenId4VPRequest(
+        authorizationRequestData: authorizationRequestData!
+      )
+    } catch let error as FetchError {
+      print(error.localizedDescription)
+      switch error {
+      case .invalidStatusCode(_, let status):
+        XCTAssert(status == 404)
+        return
+      default: break
+      }
+    } catch {
+      XCTAssert(true)
+      return
+    }
+    
+    XCTAssert(false)
   }
   
   func testSDKInstanceValidationResolutionGivenDataRequestObjectByValueIsValid() async throws {

@@ -5,6 +5,7 @@ public enum FetchError: LocalizedError {
   case networkError(Error)
   case invalidResponse
   case decodingError(Error)
+  case invalidStatusCode(URL, Int)
 
   /**
    Provides a localized description of the fetch error.
@@ -21,6 +22,8 @@ public enum FetchError: LocalizedError {
       return ".invalidResponse"
     case .decodingError(let error):
       return ".decodingError \(error.localizedDescription)"
+    case .invalidStatusCode(let code, let url):
+      return ".invalidStatusCode \(code) \(url)"
     }
   }
 }
@@ -62,6 +65,10 @@ public struct Fetcher<Element: Codable>: Fetching {
       let configuration = URLSessionConfiguration.default
       let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
       let (data, response) = try await session.data(from: url)
+      let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+      if !statusCode.isWithinRange(200...299) {
+        throw FetchError.invalidStatusCode(url, statusCode)
+      }
       let object = try JSONDecoder().decode(Element.self, from: data)
 
       if let httpResponse = response as? HTTPURLResponse {
@@ -82,13 +89,18 @@ public struct Fetcher<Element: Codable>: Fetching {
     }
   }
 
-  public func fetchString(url: URL) async -> Result<String, FetchError> {
+  public func fetchString(url: URL) async throws -> Result<String, FetchError> {
     do {
       let delegate = SelfSignedSessionDelegate()
       let configuration = URLSessionConfiguration.default
       let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
 
-      let (data, _) = try await session.data(from: url)
+      let (data, response) = try await session.data(from: url)
+      let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+      if !statusCode.isWithinRange(200...299) {
+        throw FetchError.invalidStatusCode(url, statusCode)
+      }
+
       if let string = String(data: data, encoding: .utf8) {
         return .success(string)
 
@@ -102,16 +114,6 @@ public struct Fetcher<Element: Codable>: Fetching {
 
         return .failure(.decodingError(error))
       }
-    } catch let error as NSError {
-      reporter.debug("error: \(error.localizedDescription)")
-      if error.domain == NSURLErrorDomain {
-        return .failure(.networkError(error))
-      } else {
-        return .failure(.decodingError(error))
-      }
-    } catch {
-      reporter.debug("error: \(error.localizedDescription)")
-      return .failure(.decodingError(error))
     }
   }
 }

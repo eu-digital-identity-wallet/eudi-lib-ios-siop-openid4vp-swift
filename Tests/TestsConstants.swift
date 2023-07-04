@@ -124,8 +124,16 @@ struct TestsConstants {
   static let requestUriUrlString =
   "eudi-wallet://authorized?request_uri=https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/request_jwt/mock_001"
   
+  // https://10.240.174.10?client_id=Verifier&request_uri=https://10.240.174.10/wallet/request.jwt/T9ZNgzH5XckvyABisd5lja-5PfUSn9or52Qg4sjb8s3qjb5gi9B1oSOtlU6XI4Y13YISeiHRlcVoSWpFafOI8g
   static var requestUriUrl: URL {
     return URL(string: requestUriUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
+  }
+  
+  static let requestExpiredUrlString =
+  "eudi-wallet://authorized?request_uri=https://10.240.174.10/wallet/request.jwt/T9ZNgzH5XckvyABisd5lja-5PfUSn9or52Qg4sjb8s3qjb5gi9B1oSOtlU6XI4Y13YISeiHRlcVoSWpFafOI8g"
+  
+  static var requestExpiredUrl: URL {
+    return URL(string: requestExpiredUrlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!)!
   }
   
   static let requestObjectUrlString =

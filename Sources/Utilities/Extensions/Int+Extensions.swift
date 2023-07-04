@@ -1,7 +1,7 @@
 import Foundation
 
-extension Int {
-  func isWithinRange(_ range: ClosedRange<Int>) -> Bool {
+public extension Int {
+  public func isWithinRange(_ range: ClosedRange<Int>) -> Bool {
     return range.contains(self)
   }
 }
