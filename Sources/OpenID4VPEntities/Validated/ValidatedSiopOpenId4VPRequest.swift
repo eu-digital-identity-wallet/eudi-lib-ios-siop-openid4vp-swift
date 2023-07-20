@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2023 European Commission
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import Foundation
 import PresentationExchange
 
@@ -11,7 +26,7 @@ public enum ValidatedSiopOpenId4VPRequest {
 // Extension for ValidatedSiopOpenId4VPRequest
 public extension ValidatedSiopOpenId4VPRequest {
   // Initialize with a request URI
-  init(requestUri: JWTURI) async throws {
+  init(requestUri: JWTURI, clientId: String?) async throws {
     // Convert request URI to URL
     guard let requestUrl = URL(string: requestUri) else {
       throw ValidatedAuthorizationError.invalidRequestUri(requestUri)
@@ -36,7 +51,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     }
 
     // Extract the client ID and nonce from the payload
-    guard let clientId = payload[Constants.CLIENT_ID] as? String else {
+    guard let payloadcClientId = payload[Constants.CLIENT_ID] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".clientId")
     }
 
@@ -44,6 +59,11 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
 
+    if let clientId = clientId {
+      if payloadcClientId != clientId {
+        throw ValidatedAuthorizationError.clientIdMismatch(clientId, payloadcClientId)
+      }
+    }
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
 
@@ -51,19 +71,19 @@ public extension ValidatedSiopOpenId4VPRequest {
     switch responseType {
     case .idToken:
       self = try ValidatedSiopOpenId4VPRequest.createIdToken(
-        clientId: clientId,
+        clientId: payloadcClientId,
         nonce: nonce,
         authorizationRequestObject: payload
       )
     case .vpToken:
       self = try ValidatedSiopOpenId4VPRequest.createVpToken(
-        clientId: clientId,
+        clientId: payloadcClientId,
         nonce: nonce,
         authorizationRequestObject: payload
       )
     case .vpAndIdToken:
       self = try ValidatedSiopOpenId4VPRequest.createIdVpToken(
-        clientId: clientId,
+        clientId: payloadcClientId,
         nonce: nonce,
         authorizationRequestObject: payload
       )
@@ -118,12 +138,12 @@ public extension ValidatedSiopOpenId4VPRequest {
     }
   }
 
-  // Initialize with an AuthorizationRequestUnprocessedData object
-  init(authorizationRequestData: AuthorizationRequestUnprocessedData) async throws {
+  // Initialize with an AuthorisationRequestObject object
+  init(authorizationRequestData: AuthorisationRequestObject) async throws {
     if let request = authorizationRequestData.request {
       try self.init(request: request)
     } else if let requestUrl = authorizationRequestData.requestUri {
-      try await self.init(requestUri: requestUrl)
+      try await self.init(requestUri: requestUrl, clientId: authorizationRequestData.clientId)
     } else {
       // Determine the response type from the authorization request data
       let responseType = try ResponseType(authorizationRequestData: authorizationRequestData)
@@ -187,7 +207,7 @@ private extension ValidatedSiopOpenId4VPRequest {
   static func createVpToken(
     clientId: String,
     nonce: String,
-    authorizationRequestData: AuthorizationRequestUnprocessedData
+    authorizationRequestData: AuthorisationRequestObject
   ) throws -> ValidatedSiopOpenId4VPRequest {
     .vpToken(request: .init(
       presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),

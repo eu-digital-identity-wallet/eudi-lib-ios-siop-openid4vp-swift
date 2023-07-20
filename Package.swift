@@ -30,7 +30,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.21")
+      .upToNextMinor(from: "0.0.24")
     )
   ],
   targets: [

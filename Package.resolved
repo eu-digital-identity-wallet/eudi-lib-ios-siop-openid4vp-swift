@@ -21,10 +21,10 @@
     {
       "identity" : "eudi-lib-ios-presentation-exchange-swift",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
+      "location" : "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "revision" : "982e6f891e19ce83fdd74b0c2f556fb8c54bdd14",
-        "version" : "0.0.21"
+        "revision" : "1bcaada0bab80e44e1af74d91c5d7b56a5e04e80",
+        "version" : "0.0.24"
       }
     },
     {

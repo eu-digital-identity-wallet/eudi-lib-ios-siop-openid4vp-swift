@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2023 European Commission
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import XCTest
 @testable import SiopOpenID4VP
 
@@ -68,7 +83,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     let decentralizedIdentifier: DecentralizedIdentifier = .did("DID:example:12341512#$")
     let idTokenTTL: TimeInterval = 600.0
     let presentationDefinitionUriSupported: Bool = false
-    let supportedClientIdScheme: ClientIdScheme = .did
+    let supportedClientIdSchemes: [SupportedClientIdScheme] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
     let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
 
@@ -78,7 +93,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
       decentralizedIdentifier: decentralizedIdentifier,
       idTokenTTL: idTokenTTL,
       presentationDefinitionUriSupported: presentationDefinitionUriSupported,
-      supportedClientIdScheme: supportedClientIdScheme,
+      supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,
       knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope
     )
@@ -88,7 +103,6 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     XCTAssertEqual(walletOpenId4VPConfiguration.decentralizedIdentifier, decentralizedIdentifier)
     XCTAssertEqual(walletOpenId4VPConfiguration.idTokenTTL, idTokenTTL)
     XCTAssertEqual(walletOpenId4VPConfiguration.presentationDefinitionUriSupported, presentationDefinitionUriSupported)
-    XCTAssertEqual(walletOpenId4VPConfiguration.supportedClientIdScheme, supportedClientIdScheme)
     XCTAssertEqual(walletOpenId4VPConfiguration.vpFormatsSupported, vpFormatsSupported)
   }
   

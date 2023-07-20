@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2023 European Commission
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import Foundation
 import Combine
 @_exported import PresentationExchange
@@ -38,7 +53,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
    - Throws: An error if it cannot resolve a presentation definition
    */
   public func process(url: URL) async throws -> PresentationDefinition {
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
+    let authorizationRequestData = AuthorisationRequestObject(from: url)
 
     let authorizationRequest = try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
 
@@ -65,7 +80,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
   }
 
   public func authorize(url: URL) async throws -> AuthorizationRequest {
-    let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
+    let authorizationRequestData = AuthorisationRequestObject(from: url)
 
     return try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
   }
@@ -74,7 +89,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
     Future<AuthorizationRequest, Error> { promise in
       Task {
         do {
-          let authorizationRequestData = AuthorizationRequestUnprocessedData(from: url)
+          let authorizationRequestData = AuthorisationRequestObject(from: url)
           let result =  try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
           promise(.success(result))
         } catch {
