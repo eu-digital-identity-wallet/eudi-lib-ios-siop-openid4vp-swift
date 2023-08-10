@@ -37,8 +37,8 @@ struct TestsConstants {
           [
             "birth_date":"1974-11-11",
           ]
-        ]
-      ),
+      ]
+    ),
     Claim(
       id: "sampleBankAccount",
       format: .jwt,
@@ -48,8 +48,8 @@ struct TestsConstants {
           [
             "id": "https://bank-standards.example.com/fullaccountroute.json"
           ]
-        ]
-      )
+      ]
+    )
   ]
   
   // MARK: - Client meta data by value, Presentation definition by reference
@@ -260,5 +260,26 @@ struct TestsConstants {
       )!
     
     return URL(string: encodedUrlString)!
+  }
+  
+  static let webKeyJson = """
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "e": "AQAB",
+      "use": "sig",
+      "kid": "9556a7a5-bb4f-4354-9208-74789528d1c7",
+      "iat": 1691595131,
+      "n": "087NDoY9u7QUYAd-hjzx0B7k5_jofB1-wgRWGpFtpFmBkWMPCHtH72E240xkEO_nrgyEPJvh5-K6V--9MHevBCw1ihR-GtiCK4LEtY6alTWJx90yFEwiwHqVTzWpGDZSyRb3QGgjSgqWlYeIHkro58EykYyVCXr9m5PuyiM1Uekt6PXAZdWYFBeT8v1bjwe8knVEayC7U5eVkScabGcGGUWRFeOVbkS6vR18PCJ8nokHQipISpgD2pdD29Vn39Aped3hd7tdVJj-C7qZwIuAEUeRzxXeKdLRxmZvj_oX_Q39XzNVpMVO8IQSrKvqPKvQUNABboxb24L7pK1b9F0S4w"
+    }
+  ]
+}
+"""
+  
+  static var webKeySet: WebKeySet = try! .init(webKeyJson)
+  
+  static var validByReferenceWebKeyUrl: URL {
+    return URL(string: "https://eudi.netcompany-intrasoft.com/wallet/public-keys.json")!
   }
 }

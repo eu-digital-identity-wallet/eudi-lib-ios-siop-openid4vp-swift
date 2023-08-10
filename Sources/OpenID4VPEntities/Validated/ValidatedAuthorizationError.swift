@@ -26,6 +26,7 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
   case invalidAuthorizationData
   case invalidPresentationDefinition
   case invalidClientMetadata
+  case invalidJWTWebKeySet
   case missingRequiredField(String?)
   case invalidJwtPayload
   case invalidRequestUri(String?)
@@ -60,6 +61,8 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
       return ".invalidAuthorizationData"
     case .invalidClientMetadata:
       return ".invalidClientMetadata"
+    case .invalidJWTWebKeySet:
+      return ".invalidJWTWebKeySet"
     case .missingRequiredField(let field):
       return ".missingRequiredField \(field ?? "")"
     case .invalidJwtPayload:
