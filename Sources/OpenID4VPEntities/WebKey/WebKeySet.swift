@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 public struct WebKeySet: Codable, Equatable {
   public let keys: [Key]
@@ -85,30 +84,37 @@ fileprivate extension WebKeySet {
   static func transformToKey(_ keys: [JSONObject]) throws -> [WebKeySet.Key] {
     for key in keys {
       WebKeySet.Key(
-        kty: try getStringValue(from: key, for: "kty"),
-        use: try getStringValue(from: key, for: "use"),
-        kid: try getStringValue(from: key, for: "kid"),
-        iat: try getNumericValue(from: key, for: "iat"),
-        exponent: try getStringValue(from: key, for: "e"),
-        modulus: try getStringValue(from: key, for: "n")
+        kty: try getStringValue(
+          from: key,
+          for: "kty",
+          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+        ),
+        use: try getStringValue(
+          from: key,
+          for: "use",
+          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+        ),
+        kid: try getStringValue(
+          from: key,
+          for: "kid",
+          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+        ),
+        iat: try getNumericValue(
+          from: key,
+          for: "iat",
+          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+        ),
+        exponent: try getStringValue(
+          from: key,
+          for: "e",
+          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+        ),
+        modulus: try getStringValue(
+          from: key,
+          for: "n",
+          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+        )
       )
     }
-  }
-}
-
-fileprivate extension WebKeySet {
-
-  static func getStringValue(from dictionary: [String: Any], for key: String) throws -> String {
-    guard let value = dictionary[key] as? String else {
-      throw ValidatedAuthorizationError.invalidJWTWebKeySet
-    }
-    return value
-  }
-
-  static func getNumericValue(from dictionary: [String: Any], for key: String) throws -> Int64 {
-    guard let value = dictionary[key] as? Int64 else {
-      throw ValidatedAuthorizationError.invalidJWTWebKeySet
-    }
-    return value
   }
 }
