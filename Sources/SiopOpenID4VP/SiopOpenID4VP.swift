@@ -67,7 +67,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       case .idAndVpToken(let request):
         return request.presentationDefinition
       }
-    case .oauth2(let data):
+    case .notSecured(let data):
       switch data {
       case .idToken:
         throw ValidatedAuthorizationError.unsupportedResponseType(".idToken")

@@ -59,7 +59,8 @@ public actor AuthorisationService: AuthorisationServiceType {
 
       let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
       return try result.get()
-    default: throw AuthorizationError.invalidResponseMode
+    case .directPostJwt, .query, .queryJwt, .fragment, .fragmentJwt:
+      throw AuthorizationError.invalidResponseMode
     }
   }
 }

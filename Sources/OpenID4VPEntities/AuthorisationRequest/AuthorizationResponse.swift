@@ -52,6 +52,8 @@ public enum AuthorizationResponse: Encodable {
      switch self {
      case .directPost(_, let data):
        try container.encode(data, forKey: .directPost)
+     case .directPostJwt(url: _, data: let data):
+       try container.encode(data, forKey: .directPostJwt)
      default: break
      }
    }
@@ -115,6 +117,7 @@ private extension AuthorizationResponse {
     guard let responseMode = responseMode else {
       throw AuthorizationError.invalidResponseMode
     }
+    
     switch responseMode {
     case .directPost(let responseURI):
       return .directPost(url: responseURI, data: payload)

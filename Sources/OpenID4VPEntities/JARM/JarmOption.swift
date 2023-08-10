@@ -15,21 +15,20 @@
  */
 import Foundation
 
-public enum JwkSetSource {
+public enum JarmOption {
+  case signedResponse
+  case encryptedResponse
+  case signedAndEncryptedResponse
 }
 
-public struct PreregisteredClient {
-  public let clientId: String
-  public let jarSigningAlg: String
-  public let jwkSetSource: JwkSetSource
-
-  public init(
-    clientId: String,
-    jarSigningAlg: String,
-    jwkSetSource: JwkSetSource
+public extension JarmOption {
+  init(
+    clientMetaData: ClientMetaData,
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration
   ) {
-    self.clientId = clientId
-    self.jarSigningAlg = jarSigningAlg
-    self.jwkSetSource = jwkSetSource
+    
+    let alg = clientMetaData.authorizationSignedResponseAlg
+    let signed: JarmOption = .signedResponse
+    self = .encryptedResponse
   }
 }

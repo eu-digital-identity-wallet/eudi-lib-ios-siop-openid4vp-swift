@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 import Foundation
+import XCTest
 
-public enum JwkSetSource {
-}
+@testable import SiopOpenID4VP
 
-public struct PreregisteredClient {
-  public let clientId: String
-  public let jarSigningAlg: String
-  public let jwkSetSource: JwkSetSource
-
-  public init(
-    clientId: String,
-    jarSigningAlg: String,
-    jwkSetSource: JwkSetSource
-  ) {
-    self.clientId = clientId
-    self.jarSigningAlg = jarSigningAlg
-    self.jwkSetSource = jwkSetSource
-  }
+final class DirectPostJWTTests: XCTestCase {
+  
 }

@@ -18,8 +18,8 @@ import PresentationExchange
 
 /// An enumeration representing different types of authorization requests.
 public enum AuthorizationRequest {
-  /// An OAuth2 authorization request.
-  case oauth2(data: ResolvedRequestData)
+  /// A not secured authorization request.
+  case notSecured(data: ResolvedRequestData)
 
   /// A JWT authorization request.
   case jwt(request: ResolvedRequestData)
@@ -68,7 +68,7 @@ public extension AuthorizationRequest {
         validatedAuthorizationRequest: validatedAuthorizationRequestData
       )
 
-      self = .oauth2(data: resolvedSiopOpenId4VPRequestData)
+      self = .notSecured(data: resolvedSiopOpenId4VPRequestData)
     }
   }
 }

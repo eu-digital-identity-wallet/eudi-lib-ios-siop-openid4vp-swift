@@ -261,7 +261,7 @@ final class DirectPostTests: XCTestCase {
     let r = try await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/F8A-ATfyaGlyqlMDZWe1Ge6l-1CO6D_pEnb7QTygw5CkjCBHNMbB3baQizVt4iBZvnsz4My13309F_0qA4MvmQ")!)
     
     switch r {
-    case .oauth2: break
+    case .notSecured: break
     case .jwt(request: let request):
       let resolved = request
       

@@ -26,7 +26,10 @@ public enum ValidatedSiopOpenId4VPRequest {
 // Extension for ValidatedSiopOpenId4VPRequest
 public extension ValidatedSiopOpenId4VPRequest {
   // Initialize with a request URI
-  init(requestUri: JWTURI, clientId: String?) async throws {
+  init(
+    requestUri: JWTURI,
+    clientId: String?
+  ) async throws {
     // Convert request URI to URL
     guard let requestUrl = URL(string: requestUri) else {
       throw ValidatedAuthorizationError.invalidRequestUri(requestUri)

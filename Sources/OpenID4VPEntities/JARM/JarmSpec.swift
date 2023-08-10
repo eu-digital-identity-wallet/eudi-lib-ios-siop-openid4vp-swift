@@ -15,7 +15,22 @@
  */
 import Foundation
 
-public enum JwkSetSource {
-  case byValue(jwks: JSONObject)
-  case byReference(jwksUri: URL)
+public enum JarmSpec {
+  case resolution(holderId: String, jarmOption: JarmOption)
+}
+
+public extension JarmSpec {
+  init(
+    clientMetaData: ClientMetaData,
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration
+  ) {
+    
+    self = .resolution(
+      holderId: walletOpenId4VPConfig.decentralizedIdentifier.stringValue,
+      jarmOption: .init(
+        clientMetaData: clientMetaData,
+        walletOpenId4VPConfig: walletOpenId4VPConfig
+      )
+    )
+  }
 }

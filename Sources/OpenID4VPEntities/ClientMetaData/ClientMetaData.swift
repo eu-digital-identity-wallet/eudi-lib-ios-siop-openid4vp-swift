@@ -18,41 +18,58 @@ import PresentationExchange
 
 /// By OpenID Connect Dynamic Client Registration specification
 /// A structure representing client metadata.
-public struct ClientMetaData: Codable, Equatable {
-  public let jwksUri: String
+public struct ClientMetaData: Codable {
+  public let jwksUri: String?
+  public let jwks: String?
   public let idTokenSignedResponseAlg: String
   public let idTokenEncryptedResponseAlg: String
   public let idTokenEncryptedResponseEnc: String
   public let subjectSyntaxTypesSupported: [String]
+  public let authorizationSignedResponseAlg: String?
+  public let authorizationEncryptedResponseAlg: String?
+  public let authorizationEncryptedResponseEnc: String?
 
   /// Coding keys for encoding and decoding the structure.
   enum CodingKeys: String, CodingKey {
     case jwksUri = "jwks_uri"
+    case jwks = "jwks"
     case idTokenSignedResponseAlg = "id_token_signed_response_alg"
     case idTokenEncryptedResponseAlg = "id_token_encrypted_response_alg"
     case idTokenEncryptedResponseEnc = "id_token_encrypted_response_enc"
     case subjectSyntaxTypesSupported = "subject_syntax_types_supported"
+    case authorizationSignedResponseAlg = "authorization_signed_response_alg"
+    case authorizationEncryptedResponseAlg = "authorization_encrypted_response_alg"
+    case authorizationEncryptedResponseEnc = "authorization_encrypted_response_enc"
   }
 
   /// Initializes a `ClientMetaData` instance with the provided values.
   /// - Parameters:
   ///   - jwksUri: The JWKS URI.
+  ///   - jwks: A JWK set.
   ///   - idTokenSignedResponseAlg: The ID token signed response algorithm.
   ///   - idTokenEncryptedResponseAlg: The ID token encrypted response algorithm.
   ///   - idTokenEncryptedResponseEnc: The ID token encrypted response encryption.
   ///   - subjectSyntaxTypesSupported: The subject syntax types supported.
   public init(
     jwksUri: String,
+    jwks: String,
     idTokenSignedResponseAlg: String,
     idTokenEncryptedResponseAlg: String,
     idTokenEncryptedResponseEnc: String,
-    subjectSyntaxTypesSupported: [String]
+    subjectSyntaxTypesSupported: [String],
+    authorizationSignedResponseAlg: String,
+    authorizationEncryptedResponseAlg: String,
+    authorizationEncryptedResponseEnc: String
   ) {
     self.jwksUri = jwksUri
+    self.jwks = jwks
     self.idTokenSignedResponseAlg = idTokenSignedResponseAlg
     self.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg
     self.idTokenEncryptedResponseEnc = idTokenEncryptedResponseEnc
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
+    self.authorizationSignedResponseAlg = authorizationSignedResponseAlg
+    self.authorizationEncryptedResponseAlg = authorizationEncryptedResponseAlg
+    self.authorizationEncryptedResponseEnc = authorizationEncryptedResponseEnc
   }
 
   /// Initializes a `ClientMetaData` instance with the provided JSON object representing metadata.
@@ -60,10 +77,20 @@ public struct ClientMetaData: Codable, Equatable {
   /// - Throws: An error if the required values are missing or invalid in the metadata.
   public init(metaData: JSONObject) throws {
     self.jwksUri = try getStringValue(from: metaData, for: "jwks_uri")
+    self.jwks = try getStringValue(from: metaData, for: "jwks")
     self.idTokenSignedResponseAlg = try getStringValue(from: metaData, for: "id_token_signed_response_alg")
     self.idTokenEncryptedResponseAlg = try getStringValue(from: metaData, for: "id_token_encrypted_response_alg")
     self.idTokenEncryptedResponseEnc = try getStringValue(from: metaData, for: "id_token_encrypted_response_enc")
     self.subjectSyntaxTypesSupported = try getStringArrayValue(from: metaData, for: "subject_syntax_types_supported")
+    self.authorizationSignedResponseAlg = try getStringValue(from: metaData, for: "authorization_signed_response_alg")
+    self.authorizationEncryptedResponseAlg = try getStringValue(
+      from: metaData,
+      for: "authorization_encrypted_response_alg"
+    )
+    self.authorizationEncryptedResponseEnc = try getStringValue(
+      from: metaData,
+      for: "authorization_encrypted_response_enc"
+    )
   }
 
   /// Initializes a `ClientMetaData` instance with the provided metadata string.
@@ -75,9 +102,19 @@ public struct ClientMetaData: Codable, Equatable {
     }
 
     self.jwksUri = try getStringValue(from: metaData, for: "jwks_uri")
+    self.jwks = try getStringValue(from: metaData, for: "jwks")
     self.idTokenSignedResponseAlg = try getStringValue(from: metaData, for: "id_token_signed_response_alg")
     self.idTokenEncryptedResponseAlg = try getStringValue(from: metaData, for: "id_token_encrypted_response_alg")
     self.idTokenEncryptedResponseEnc = try getStringValue(from: metaData, for: "id_token_encrypted_response_enc")
     self.subjectSyntaxTypesSupported = try getStringArrayValue(from: metaData, for: "subject_syntax_types_supported")
+    self.authorizationSignedResponseAlg = try getStringValue(from: metaData, for: "authorization_signed_response_alg")
+    self.authorizationEncryptedResponseAlg = try getStringValue(
+      from: metaData,
+      for: "authorization_encrypted_response_alg"
+    )
+    self.authorizationEncryptedResponseEnc = try getStringValue(
+      from: metaData,
+      for: "authorization_encrypted_response_enc"
+    )
   }
 }
