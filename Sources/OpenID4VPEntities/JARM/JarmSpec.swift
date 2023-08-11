@@ -21,13 +21,21 @@ public enum JarmSpec {
 
 public extension JarmSpec {
   init(
-    clientMetaData: ClientMetaData,
-    walletOpenId4VPConfig: WalletOpenId4VPConfiguration
-  ) {
-    
+    clientMetaData: ClientMetaData?,
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
+  ) throws {
+
+    guard let clientMetaData = clientMetaData else {
+      throw ValidatedAuthorizationError.invalidJarmClientMetadata
+    }
+
+    guard let walletOpenId4VPConfig = walletOpenId4VPConfig else {
+      throw ValidatedAuthorizationError.invalidWalletConfiguration
+    }
+
     self = .resolution(
       holderId: walletOpenId4VPConfig.decentralizedIdentifier.stringValue,
-      jarmOption: .init(
+      jarmOption: try .init(
         clientMetaData: clientMetaData,
         walletOpenId4VPConfig: walletOpenId4VPConfig
       )

@@ -21,6 +21,8 @@ public struct WalletOpenId4VPConfiguration {
   public let decentralizedIdentifier: DecentralizedIdentifier
   public let idTokenTTL: TimeInterval
   public let presentationDefinitionUriSupported: Bool
+  public let signingKey: WebKeySet.Key
+  public let signingKeySet: WebKeySet
   public let supportedClientIdSchemes: [SupportedClientIdScheme]
   public let vpFormatsSupported: [ClaimFormat]
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition]
@@ -31,6 +33,8 @@ public struct WalletOpenId4VPConfiguration {
     decentralizedIdentifier: DecentralizedIdentifier,
     idTokenTTL: TimeInterval = 600.0,
     presentationDefinitionUriSupported: Bool = false,
+    signingKey: WebKeySet.Key,
+    signingKeySet: WebKeySet,
     supportedClientIdSchemes: [SupportedClientIdScheme],
     vpFormatsSupported: [ClaimFormat],
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
@@ -40,8 +44,23 @@ public struct WalletOpenId4VPConfiguration {
     self.decentralizedIdentifier = decentralizedIdentifier
     self.idTokenTTL = idTokenTTL
     self.presentationDefinitionUriSupported = presentationDefinitionUriSupported
+    self.signingKey = signingKey
+    self.signingKeySet = signingKeySet
     self.supportedClientIdSchemes = supportedClientIdSchemes
     self.vpFormatsSupported = vpFormatsSupported
     self.knownPresentationDefinitionsPerScope = knownPresentationDefinitionsPerScope
+  }
+
+  internal init() throws {
+    subjectSyntaxTypesSupported = []
+    preferredSubjectSyntaxType = .decentralizedIdentifier
+    decentralizedIdentifier = try DecentralizedIdentifier(rawValue: "did:example:123|did:example:456")
+    idTokenTTL = 600.0
+    presentationDefinitionUriSupported = false
+    signingKey = WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: "")
+    signingKeySet = WebKeySet(keys: [])
+    supportedClientIdSchemes = []
+    vpFormatsSupported = []
+    knownPresentationDefinitionsPerScope = [:]
   }
 }

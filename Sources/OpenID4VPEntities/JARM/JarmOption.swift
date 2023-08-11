@@ -15,20 +15,50 @@
  */
 import Foundation
 
-public enum JarmOption {
-  case signedResponse
-  case encryptedResponse
-  case signedAndEncryptedResponse
+public indirect enum JarmOption {
+  case signedResponse(responseSigningAlg: String, signingKeySet: WebKeySet)
+  case encryptedResponse(responseSigningAlg: String, responseEncryptionEnc: EncryptionMethod, signingKeySet: WebKeySet)
+  case signedAndEncryptedResponse(signed: JarmOption, encrypted: JarmOption)
 }
 
 public extension JarmOption {
   init(
     clientMetaData: ClientMetaData,
     walletOpenId4VPConfig: WalletOpenId4VPConfiguration
-  ) {
-    
-    let alg = clientMetaData.authorizationSignedResponseAlg
-    let signed: JarmOption = .signedResponse
-    self = .encryptedResponse
+  ) throws {
+    var signed: JarmOption?
+    if let signingAlgorithm = clientMetaData.authorizationSignedResponseAlg {
+      signed = .signedResponse(
+        responseSigningAlg: signingAlgorithm,
+        signingKeySet: walletOpenId4VPConfig.signingKeySet
+      )
+    }
+
+    var encrypted: JarmOption?
+    if let jweAlg = clientMetaData.authorizationEncryptedResponseAlg,
+       let authorizationEncryptedResponseEnc = clientMetaData.authorizationEncryptedResponseEnc,
+       let encMethod = EncryptionMethod(rawValue: authorizationEncryptedResponseEnc),
+       let jwkSet = clientMetaData.jwks,
+       let webKeySet = try? WebKeySet(jwkSet) {
+
+      encrypted = .encryptedResponse(
+        responseSigningAlg: jweAlg,
+        responseEncryptionEnc: encMethod,
+        signingKeySet: webKeySet
+      )
+    }
+
+    if let signed = signed, let encrypted = encrypted {
+      self = .signedAndEncryptedResponse(signed: signed, encrypted: encrypted)
+      return
+    } else if let signed = signed {
+      self = signed
+      return
+    } else if let encrypted = encrypted {
+      self = encrypted
+      return
+    }
+
+    throw ValidatedAuthorizationError.invalidJarmOption
   }
 }

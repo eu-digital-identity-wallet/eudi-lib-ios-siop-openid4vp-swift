@@ -49,7 +49,10 @@ public extension AuthorizationRequest {
       )
       self = .jwt(request: resolvedSiopOpenId4VPRequestData)
     } else if let requestUri = authorizationRequestData.requestUri {
-      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(requestUri: requestUri, clientId: authorizationRequestData.clientId)
+      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
+        requestUri: requestUri,
+        clientId: authorizationRequestData.clientId
+      )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
         clientMetaDataResolver: ClientMetaDataResolver(),

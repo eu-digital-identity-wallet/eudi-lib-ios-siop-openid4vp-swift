@@ -59,7 +59,8 @@ final class DirectPostTests: XCTestCase {
     // Generate a direct post authorisation response
     let response = try? AuthorizationResponse(
       resolvedRequest: resolved,
-      consent: consent
+      consent: consent,
+      walletOpenId4VPConfig: nil
     )
     
     XCTAssertNotNil(response)
@@ -87,7 +88,8 @@ final class DirectPostTests: XCTestCase {
       // Generate an error since consent was not given
       let response = try AuthorizationResponse(
         resolvedRequest: resolved,
-        consent: consent
+        consent: consent,
+        walletOpenId4VPConfig: nil
       )
       
       switch response {
@@ -153,6 +155,8 @@ final class DirectPostTests: XCTestCase {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+        signingKey: WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: ""),
+        signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
         vpFormatsSupported: []
       ),
@@ -169,7 +173,8 @@ final class DirectPostTests: XCTestCase {
     // Generate a direct post authorisation response
     let response = try? AuthorizationResponse(
       resolvedRequest: resolved,
-      consent: consent
+      consent: consent,
+      walletOpenId4VPConfig: nil
     )
     
     XCTAssertNotNil(response)
@@ -224,6 +229,8 @@ final class DirectPostTests: XCTestCase {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+        signingKey: WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: ""),
+        signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
         vpFormatsSupported: []
       ),
@@ -240,7 +247,8 @@ final class DirectPostTests: XCTestCase {
     // Generate a direct post authorisation response
     let response = try? AuthorizationResponse(
       resolvedRequest: resolved,
-      consent: consent
+      consent: consent,
+      walletOpenId4VPConfig: nil
     )
     
     XCTAssertNotNil(response)

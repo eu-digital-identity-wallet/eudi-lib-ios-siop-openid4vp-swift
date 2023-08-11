@@ -26,6 +26,7 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
   case invalidAuthorizationData
   case invalidPresentationDefinition
   case invalidClientMetadata
+  case invalidJWTWebKeySet
   case missingRequiredField(String?)
   case invalidJwtPayload
   case invalidRequestUri(String?)
@@ -37,6 +38,9 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
   case negativeConsent
   case clientIdMismatch(String?, String?)
   case invalidClientId
+  case invalidJarmOption
+  case invalidJarmClientMetadata
+  case invalidWalletConfiguration
 
   public var errorDescription: String? {
     switch self {
@@ -60,6 +64,8 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
       return ".invalidAuthorizationData"
     case .invalidClientMetadata:
       return ".invalidClientMetadata"
+    case .invalidJWTWebKeySet:
+      return ".invalidJWTWebKeySet"
     case .missingRequiredField(let field):
       return ".missingRequiredField \(field ?? "")"
     case .invalidJwtPayload:
@@ -82,6 +88,12 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
       return ".clientIdMismatch \(String(describing: lhs)) \(String(describing: rhs))"
     case .invalidClientId:
       return ".invalidClientId"
+    case .invalidJarmOption:
+      return ".invalidJarmOption"
+    case .invalidJarmClientMetadata:
+      return ".invalidJarmClientMetadata"
+    case .invalidWalletConfiguration:
+      return ".invalidWalletConfiguration"
     }
   }
 }

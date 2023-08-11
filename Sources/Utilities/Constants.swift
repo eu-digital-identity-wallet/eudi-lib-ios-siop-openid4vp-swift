@@ -29,10 +29,14 @@ public struct Constants {
   public static func testClientMetaData() -> ClientMetaData {
     .init(
       jwksUri: "https://jwks.uri",
+      jwks: "{\"name\":\"Jane Doe\"",
       idTokenSignedResponseAlg: ".idTokenSignedResponseAlg",
       idTokenEncryptedResponseAlg: ".idTokenEncryptedResponseAlg",
       idTokenEncryptedResponseEnc: ".idTokenEncryptedResponseEnc",
-      subjectSyntaxTypesSupported: []
+      subjectSyntaxTypesSupported: [],
+      authorizationSignedResponseAlg: ".authorizationSignedResponseAlg",
+      authorizationEncryptedResponseAlg: ".authorizationEncryptedResponseAlg",
+      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc"
     )
   }
 
