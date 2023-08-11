@@ -16,15 +16,15 @@
 import Foundation
 
 /**
-Extension to `Dictionary` where both the `Key` and `Value` conform to `Encodable`.
+ Extension to `Dictionary` where both the `Key` and `Value` conform to `Encodable`.
 
-This extension adds a `toJSONData()` method that attempts to convert the dictionary
-to JSON data using `JSONSerialization`.
+ This extension adds a `toJSONData()` method that attempts to convert the dictionary
+ to JSON data using `JSONSerialization`.
 
-- Returns: The JSON `Data` if the conversion is successful; otherwise, nil.
+ - Returns: The JSON `Data` if the conversion is successful; otherwise, nil.
 
-- Note: This function will fail and return nil if the dictionary contains keys or values that aren't encodable.
-*/
+ - Note: This function will fail and return nil if the dictionary contains keys or values that aren't encodable.
+ */
 public extension Dictionary where Key: Encodable {
   func toJSONData() -> Data? {
     do {
@@ -66,5 +66,15 @@ public extension Dictionary where Key == String, Value == Any {
       }
     }
     return queryItems
+  }
+
+  func getValue<T: Codable>(
+    for key: String,
+    error: LocalizedError
+  ) throws -> T {
+    guard let value = self[key] as? T else {
+      throw error
+    }
+    return value
   }
 }
