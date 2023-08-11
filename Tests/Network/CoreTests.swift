@@ -19,17 +19,7 @@ import Sextant
 
 @testable import SiopOpenID4VP
 
-final class CoreTests: XCTestCase {
-  
-  override func setUp() async throws {
-    overrideDependencies()
-    try await super.setUp()
-  }
-  
-  override func tearDown() {
-    DependencyContainer.shared.removeAll()
-    super.tearDown()
-  }
+final class CoreTests: DiXCTest {
   
   func testFetcherCodableDecodingGivenValidRemoteURL() async {
     
@@ -62,13 +52,5 @@ final class CoreTests: XCTestCase {
     default: break
     }
     XCTAssert(false)
-  }
-}
-
-private extension CoreTests {
-  func overrideDependencies() {
-    DependencyContainer.shared.register(type: Reporting.self, dependency: {
-      MockReporter()
-    })
   }
 }

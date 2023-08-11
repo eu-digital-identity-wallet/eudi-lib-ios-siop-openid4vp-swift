@@ -75,43 +75,46 @@ public struct ClientMetaData: Codable, Equatable {
   /// - Parameter metaData: The JSON object representing the metadata.
   /// - Throws: An error if the required values are missing or invalid in the metadata.
   public init(metaData: JSONObject) throws {
-    self.jwksUri = try getStringValue(
-      from: metaData,
+    self.jwksUri = try metaData.getValue(
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.jwks = try? getStringValue(from: metaData, for: "jwks")
+    self.jwks = try? metaData.getValue(
+      for: "jwks",
+      error: ValidatedAuthorizationError.invalidClientMetadata
+    )
 
-    self.idTokenSignedResponseAlg = try getStringValue(
-      from: metaData,
+    self.idTokenSignedResponseAlg = try metaData.getValue(
       for: "id_token_signed_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.idTokenEncryptedResponseAlg = try getStringValue(
-      from: metaData,
+    self.idTokenEncryptedResponseAlg = try metaData.getValue(
       for: "id_token_encrypted_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.idTokenEncryptedResponseEnc = try getStringValue(
-      from: metaData,
+    self.idTokenEncryptedResponseEnc = try metaData.getValue(
       for: "id_token_encrypted_response_enc",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.subjectSyntaxTypesSupported = try getStringArrayValue(
-      from: metaData,
+    self.subjectSyntaxTypesSupported = try metaData.getValue(
       for: "subject_syntax_types_supported",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.authorizationSignedResponseAlg = try getStringValue(from: metaData, for: "authorization_signed_response_alg")
-    self.authorizationEncryptedResponseAlg = try getStringValue(
-      from: metaData,
-      for: "authorization_encrypted_response_alg"
+    self.authorizationSignedResponseAlg = try metaData.getValue(
+      for: "authorization_signed_response_alg",
+      error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.authorizationEncryptedResponseEnc = try getStringValue(
-      from: metaData,
-      for: "authorization_encrypted_response_enc"
+
+    self.authorizationEncryptedResponseAlg = try metaData.getValue(
+      for: "authorization_encrypted_response_alg",
+      error: ValidatedAuthorizationError.invalidClientMetadata
+    )
+
+    self.authorizationEncryptedResponseEnc = try metaData.getValue(
+      for: "authorization_encrypted_response_enc",
+      error: ValidatedAuthorizationError.invalidClientMetadata
     )
   }
 
@@ -123,43 +126,45 @@ public struct ClientMetaData: Codable, Equatable {
       throw ValidatedAuthorizationError.invalidClientMetadata
     }
 
-    self.jwksUri = try getStringValue(
-      from: metaData,
+    self.jwksUri = try metaData.getValue(
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.jwks = try? getStringValue(from: metaData, for: "jwks")
+    self.jwks = try? metaData.getValue(
+      for: "jwks",
+      error: ValidatedAuthorizationError.invalidClientMetadata
+    )
 
-    self.idTokenSignedResponseAlg = try getStringValue(
-      from: metaData,
+    self.idTokenSignedResponseAlg = try metaData.getValue(
       for: "id_token_signed_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.idTokenEncryptedResponseAlg = try getStringValue(
-      from: metaData,
+    self.idTokenEncryptedResponseAlg = try metaData.getValue(
       for: "id_token_encrypted_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.idTokenEncryptedResponseEnc = try getStringValue(
-      from: metaData,
+    self.idTokenEncryptedResponseEnc = try metaData.getValue(
       for: "id_token_encrypted_response_enc",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.subjectSyntaxTypesSupported = try getStringArrayValue(
-      from: metaData,
+    self.subjectSyntaxTypesSupported = try metaData.getValue(
       for: "subject_syntax_types_supported",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.authorizationSignedResponseAlg = try? getStringValue(from: metaData, for: "authorization_signed_response_alg")
-    self.authorizationEncryptedResponseAlg = try? getStringValue(
-      from: metaData,
-      for: "authorization_encrypted_response_alg"
+    self.authorizationSignedResponseAlg = try? metaData.getValue(
+      for: "authorization_signed_response_alg",
+      error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.authorizationEncryptedResponseEnc = try? getStringValue(
-      from: metaData,
-      for: "authorization_encrypted_response_enc"
+
+    self.authorizationEncryptedResponseAlg = try? metaData.getValue(
+      for: "authorization_encrypted_response_alg",
+      error: ValidatedAuthorizationError.invalidClientMetadata
+    )
+    self.authorizationEncryptedResponseEnc = try? metaData.getValue(
+      for: "authorization_encrypted_response_enc",
+      error: ValidatedAuthorizationError.invalidClientMetadata
     )
   }
 }

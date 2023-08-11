@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
+import XCTest
+import JSONSchema
+import Sextant
 
-public enum EncryptionMethod: String {
-  case a128Cbc_hs256
-  case a192Cbc_hs384
-  case a256Cbc_hs512
-  case a128gcm
-  case a192gcm
-  case a256gcm
-  case xc20p
+@testable import SiopOpenID4VP
+
+final class JWTTests: DiXCTest {
+  
+  func testJWTIsValidGivenValidString() throws {
+    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+
+    let jsonWebToken = JSONWebToken(
+      jsonWebToken: token
+    )
+    
+    let name = jsonWebToken!.payload["name"] as? String
+    XCTAssert(name! == "John Doe")
+  }
 }

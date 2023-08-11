@@ -20,17 +20,7 @@ import JOSESwift
 
 @testable import SiopOpenID4VP
 
-final class JOSETests: XCTestCase {
-  
-  override func setUp() async throws {
-    overrideDependencies()
-    try await super.setUp()
-  }
-
-  override func tearDown() {
-    DependencyContainer.shared.removeAll()
-    super.tearDown()
-  }
+final class JOSETests: DiXCTest {
   
   func testJOSEBuildTokenGivenValidRequirements() async throws {
     
@@ -84,13 +74,5 @@ final class JOSETests: XCTestCase {
     )
     
     XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
-  }
-}
-
-private extension JOSETests {
-  func overrideDependencies() {
-    DependencyContainer.shared.register(type: Reporting.self, dependency: {
-      Reporter()
-    })
   }
 }

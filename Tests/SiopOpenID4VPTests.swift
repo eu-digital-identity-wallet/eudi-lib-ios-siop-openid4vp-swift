@@ -20,19 +20,9 @@ import PresentationExchange
 
 @testable import SiopOpenID4VP
 
-final class SiopOpenID4VPTests: XCTestCase {
+final class SiopOpenID4VPTests: DiXCTest {
   
   var subscriptions = Set<AnyCancellable>()
-  
-  override func setUp() async throws {
-    overrideDependencies()
-    try await super.setUp()
-  }
-  
-  override func tearDown() {
-    DependencyContainer.shared.removeAll()
-    super.tearDown()
-  }
   
   // MARK: - Presentation submission test
   
@@ -494,13 +484,5 @@ final class SiopOpenID4VPTests: XCTestCase {
     } catch {
       XCTAssert(true)
     }
-  }
-}
-
-private extension SiopOpenID4VPTests {
-  func overrideDependencies() {
-    DependencyContainer.shared.register(type: Reporting.self, dependency: {
-      MockReporter()
-    })
   }
 }

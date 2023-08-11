@@ -84,33 +84,27 @@ fileprivate extension WebKeySet {
   static func transformToKey(_ keys: [JSONObject]) throws -> [WebKeySet.Key] {
     for key in keys {
       WebKeySet.Key(
-        kty: try getStringValue(
-          from: key,
+        kty: try key.getValue(
           for: "kty",
           error: ValidatedAuthorizationError.invalidJWTWebKeySet
         ),
-        use: try getStringValue(
-          from: key,
+        use: try key.getValue(
           for: "use",
           error: ValidatedAuthorizationError.invalidJWTWebKeySet
         ),
-        kid: try getStringValue(
-          from: key,
+        kid: try key.getValue(
           for: "kid",
           error: ValidatedAuthorizationError.invalidJWTWebKeySet
         ),
-        iat: try getNumericValue(
-          from: key,
+        iat: try key.getValue(
           for: "iat",
           error: ValidatedAuthorizationError.invalidJWTWebKeySet
         ),
-        exponent: try getStringValue(
-          from: key,
+        exponent: try key.getValue(
           for: "e",
           error: ValidatedAuthorizationError.invalidJWTWebKeySet
         ),
-        modulus: try getStringValue(
-          from: key,
+        modulus: try key.getValue(
           for: "n",
           error: ValidatedAuthorizationError.invalidJWTWebKeySet
         )
