@@ -19,17 +19,11 @@ import XCTest
 
 @testable import SiopOpenID4VP
 
-final class WebKeyResolverTests: XCTestCase {
+final class WebKeyResolverTests: DiXCTest {
   
   var webKeyResolver: WebKeyResolver!
   
-  override func setUp() async throws {
-    overrideDependencies()
-    try await super.setUp()
-  }
-  
   override func tearDown() {
-    DependencyContainer.shared.removeAll()
     self.webKeyResolver = nil
     super.tearDown()
   }
@@ -84,13 +78,5 @@ final class WebKeyResolverTests: XCTestCase {
     case .failure(let error):
       XCTAssertEqual(error.localizedDescription, ResolvingError.invalidSource.localizedDescription)
     }
-  }
-}
-
-private extension WebKeyResolverTests {
-  func overrideDependencies() {
-    DependencyContainer.shared.register(type: Reporting.self, dependency: {
-      Reporter()
-    })
   }
 }

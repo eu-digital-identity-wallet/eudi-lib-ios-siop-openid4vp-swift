@@ -17,7 +17,7 @@ import XCTest
 
 @testable import SiopOpenID4VP
 
-class SelfSignedSessionDelegateTests: XCTestCase {
+class SelfSignedSessionDelegateTests: DiXCTest {
 
   func testSelfSignedCertificateChallenge() {
 

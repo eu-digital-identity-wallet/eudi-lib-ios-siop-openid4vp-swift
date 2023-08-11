@@ -23,17 +23,7 @@ import JOSESwift
 
 @testable import SiopOpenID4VP
 
-final class DirectPostTests: XCTestCase {
-  
-  override func setUp() async throws {
-    overrideDependencies()
-    try await super.setUp()
-  }
-  
-  override func tearDown() {
-    DependencyContainer.shared.removeAll()
-    super.tearDown()
-  }
+final class DirectPostTests: DiXCTest {
   
   func testValidDirectPostAuthorisationResponseGivenValidResolutionAndConsent() {
     
@@ -318,12 +308,4 @@ final class DirectPostTests: XCTestCase {
       XCTAssertTrue(result == .accepted(redirectURI: nil))
     }
   }*/
-}
-
-private extension DirectPostTests {
-  func overrideDependencies() {
-    DependencyContainer.shared.register(type: Reporting.self, dependency: {
-      MockReporter()
-    })
-  }
 }
