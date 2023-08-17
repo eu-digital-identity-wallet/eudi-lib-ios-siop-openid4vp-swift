@@ -15,14 +15,10 @@
  */
 import Foundation
 
-public class JoseAlgorithmFamily<T: JoseAlgorithm>: Hashable {
+public class JoseAlgorithmFamily<T: JoseAlgorithm>: Equatable {
   
   public static func == (lhs: JoseAlgorithmFamily<T>, rhs: JoseAlgorithmFamily<T>) -> Bool {
-    lhs.hashValue == rhs.hashValue
-  }
-  
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(self.algorithms)
+    return lhs.algorithms == rhs.algorithms
   }
   
   private var algorithms: [T]
