@@ -39,14 +39,9 @@ public class JoseAlgorithm: Hashable {
     self.requirement = .OPTIONAL
   }
   
-  public func toJson() throws -> String {
-    let data = try JSONSerialization.data(withJSONObject: [self.name])
-    guard let value = String(data: data, encoding: .utf8) else {
-      throw ValidatedAuthorizationError.invalidFormat
-    }
-    return value
+  public func toJsonData() throws -> Data {
+    return try JSONSerialization.data(withJSONObject: [self.name])
   }
-  
 }
 
 public extension JoseAlgorithm {
