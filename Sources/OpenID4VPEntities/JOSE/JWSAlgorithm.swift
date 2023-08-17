@@ -17,7 +17,7 @@ import Foundation
 
 public class JWSAlgorithm: JoseAlgorithm {
   
-  fileprivate init(_ type: JWSAlgorithmType) {
+  fileprivate init(_ type: AlgorithmType) {
     super.init(name: type.name, requirement: type.requirement)
   }
   
@@ -32,7 +32,7 @@ public class JWSAlgorithm: JoseAlgorithm {
 
 public extension JWSAlgorithm {
   static func parse(_ s: String) -> JWSAlgorithm {
-    if let type = JWSAlgorithmType(rawValue: s) {
+    if let type = AlgorithmType(rawValue: s) {
       return .init(type)
     }
     return .init(name: s)
@@ -40,7 +40,7 @@ public extension JWSAlgorithm {
 }
 
 fileprivate extension JWSAlgorithm {
-  enum JWSAlgorithmType: String {
+  enum AlgorithmType: String {
     case HS256
     case HS384
     case HS512
@@ -101,7 +101,7 @@ public extension JWSAlgorithm {
 
 public extension JWSAlgorithm.Family {
   
-  enum JWSAlgorithmFamilyType {
+  enum FamilyType {
     case HMAC_SHA
     case RSA
     case EC
@@ -109,7 +109,7 @@ public extension JWSAlgorithm.Family {
     case SIGNATURE
   }
   
-  static func parse(_ type: JWSAlgorithmFamilyType) -> JWSAlgorithm.Family {
+  static func parse(_ type: FamilyType) -> JWSAlgorithm.Family {
     
     var RSA: [JWSAlgorithm] {
       return [
