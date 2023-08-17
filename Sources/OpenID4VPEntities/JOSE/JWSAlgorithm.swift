@@ -100,6 +100,7 @@ public extension JWSAlgorithm {
 }
 
 public extension JWSAlgorithm.Family {
+  
   enum JWSAlgorithmFamilyType {
     case HMAC_SHA
     case RSA
@@ -107,6 +108,7 @@ public extension JWSAlgorithm.Family {
     case ED
     case SIGNATURE
   }
+  
   static func parse(_ type: JWSAlgorithmFamilyType) -> JWSAlgorithm.Family {
     
     var RSA: [JWSAlgorithm] {
