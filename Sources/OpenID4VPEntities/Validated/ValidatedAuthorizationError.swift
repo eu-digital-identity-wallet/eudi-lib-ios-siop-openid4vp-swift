@@ -16,6 +16,7 @@
 import Foundation
 
 public enum ValidatedAuthorizationError: LocalizedError, Equatable {
+  case validationError(String)
   case unsupportedClientIdScheme(String?)
   case unsupportedResponseType(String?)
   case unsupportedResponseMode(String?)
@@ -41,9 +42,13 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
   case invalidJarmOption
   case invalidJarmClientMetadata
   case invalidWalletConfiguration
+  case unsupportedAlgorithm(String?)
+  case invalidSigningKey
 
   public var errorDescription: String? {
     switch self {
+    case .validationError(let message):
+      return "\(message)"
     case .unsupportedClientIdScheme(let scheme):
       return ".unsupportedClientIdScheme \(scheme ?? "")"
     case .unsupportedResponseType(let type):
@@ -94,6 +99,10 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
       return ".invalidJarmClientMetadata"
     case .invalidWalletConfiguration:
       return ".invalidWalletConfiguration"
+    case .unsupportedAlgorithm(let algorithm):
+      return "unsupportedAlgorithm \(algorithm ?? "-")"
+    case .invalidSigningKey:
+      return ".invalidSigningKey"
     }
   }
 }

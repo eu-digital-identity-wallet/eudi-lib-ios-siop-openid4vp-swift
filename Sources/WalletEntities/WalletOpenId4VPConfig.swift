@@ -57,7 +57,7 @@ public struct WalletOpenId4VPConfiguration {
     decentralizedIdentifier = try DecentralizedIdentifier(rawValue: "did:example:123|did:example:456")
     idTokenTTL = 600.0
     presentationDefinitionUriSupported = false
-    signingKey = WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: "")
+    signingKey = WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: "", alg: "alg")
     signingKeySet = WebKeySet(keys: [])
     supportedClientIdSchemes = []
     vpFormatsSupported = []

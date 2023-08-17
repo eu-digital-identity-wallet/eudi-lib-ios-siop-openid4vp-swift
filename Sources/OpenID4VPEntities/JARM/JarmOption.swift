@@ -15,9 +15,16 @@
  */
 import Foundation
 
+public typealias JWSAlgorithm = String
+public typealias JWEAlgorithm = String
+
 public indirect enum JarmOption {
-  case signedResponse(responseSigningAlg: String, signingKeySet: WebKeySet)
-  case encryptedResponse(responseSigningAlg: String, responseEncryptionEnc: EncryptionMethod, signingKeySet: WebKeySet)
+  case signedResponse(responseSigningAlg: JWSAlgorithm, signingKeySet: WebKeySet)
+  case encryptedResponse(
+    responseSigningAlg: JWEAlgorithm,
+    responseEncryptionEnc: EncryptionMethod,
+    signingKeySet: WebKeySet
+  )
   case signedAndEncryptedResponse(signed: JarmOption, encrypted: JarmOption)
 }
 

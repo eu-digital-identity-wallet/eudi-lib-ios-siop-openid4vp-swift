@@ -145,7 +145,7 @@ final class DirectPostTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-        signingKey: WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: ""),
+        signingKey: WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: "", alg: ""),
         signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
         vpFormatsSupported: []
@@ -219,7 +219,7 @@ final class DirectPostTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-        signingKey: WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: ""),
+        signingKey: WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: "", alg: ""),
         signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
         vpFormatsSupported: []
