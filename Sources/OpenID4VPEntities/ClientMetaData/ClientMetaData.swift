@@ -109,3 +109,37 @@ public struct ClientMetaData: Codable, Equatable {
     )
   }
 }
+
+public extension ClientMetaData {
+
+  struct Validated: Equatable {
+    public let jwkSet: WebKeySet?
+    public let idTokenJWSAlg: JWSAlgorithm
+    public let idTokenJWEAlg: JWEAlgorithm
+    public let idTokenJWEEnc: JoseEncryptionMethod
+    public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
+    public let authorizationSignedResponseAlg: JWSAlgorithm?
+    public let authorizationEncryptedResponseAlg: JWEAlgorithm?
+    public let authorizationEncryptedResponseEnc: JoseEncryptionMethod?
+
+    public init(
+      jwkSet: WebKeySet?,
+      idTokenJWSAlg: JWSAlgorithm,
+      idTokenJWEAlg: JWEAlgorithm,
+      idTokenJWEEnc: JoseEncryptionMethod,
+      subjectSyntaxTypesSupported: [SubjectSyntaxType],
+      authorizationSignedResponseAlg: JWSAlgorithm?,
+      authorizationEncryptedResponseAlg: JWEAlgorithm?,
+      authorizationEncryptedResponseEnc: JoseEncryptionMethod?
+    ) {
+      self.jwkSet = jwkSet
+      self.idTokenJWSAlg = idTokenJWSAlg
+      self.idTokenJWEAlg = idTokenJWEAlg
+      self.idTokenJWEEnc = idTokenJWEEnc
+      self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
+      self.authorizationSignedResponseAlg = authorizationSignedResponseAlg
+      self.authorizationEncryptedResponseAlg = authorizationEncryptedResponseAlg
+      self.authorizationEncryptedResponseEnc = authorizationEncryptedResponseEnc
+    }
+  }
+}

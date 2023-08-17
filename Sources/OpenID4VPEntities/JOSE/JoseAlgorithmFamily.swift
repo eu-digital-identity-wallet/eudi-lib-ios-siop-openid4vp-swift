@@ -15,12 +15,33 @@
  */
 import Foundation
 
-public struct Constants {
-  public static let CLIENT_ID = "client_id"
-  public static let NONCE = "nonce"
-  public static let SCOPE = "scope"
-  public static let STATE = "state"
-  public static let HTTPS = "https"
-  public static let PRESENTATION_DEFINITION = "presentation_definition"
-  public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
+public class JoseAlgorithmFamily<T: JoseAlgorithm>: Equatable {
+  
+  public static func == (lhs: JoseAlgorithmFamily<T>, rhs: JoseAlgorithmFamily<T>) -> Bool {
+    return lhs.algorithms == rhs.algorithms
+  }
+  
+  private var algorithms: [T]
+  
+  public init(_ algorithms: T...) {
+    self.algorithms = algorithms
+  }
+  
+  public init(_ algorithms: [T]) {
+    self.algorithms = algorithms
+  }
+}
+
+public extension JoseAlgorithmFamily {
+  func append(_ item: T) {
+    self.algorithms.append(item)
+  }
+  
+  func all() -> [T] {
+    return self.algorithms
+  }
+  
+  func clear() {
+    self.algorithms = []
+  }
 }

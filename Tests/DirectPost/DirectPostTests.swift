@@ -31,17 +31,17 @@ final class DirectPostTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: Constants.testClientMetaData(),
-        clientId: Constants.testClientId,
-        nonce: Constants.testNonce,
-        responseMode: Constants.testResponseMode,
-        state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope
+        clientMetaData: TestsConstants.testClientMetaData(),
+        clientId: TestsConstants.testClientId,
+        nonce: TestsConstants.testNonce,
+        responseMode: TestsConstants.testResponseMode,
+        state: TestsConstants.generateRandomBase64String(),
+        scope: TestsConstants.testScope
       )
     )
     
     // Generate a random JWT
-    let jwt = Constants.generateRandomJWT()
+    let jwt = TestsConstants.generateRandomJWT()
     
     // Obtain consent
     let consent: ClientConsent = .idToken(idToken: jwt)
@@ -61,12 +61,12 @@ final class DirectPostTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: Constants.testClientMetaData(),
-        clientId: Constants.testClientId,
-        nonce: Constants.testNonce,
-        responseMode: Constants.testResponseMode,
-        state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope
+        clientMetaData: TestsConstants.testClientMetaData(),
+        clientId: TestsConstants.testClientId,
+        nonce: TestsConstants.testNonce,
+        responseMode: TestsConstants.testResponseMode,
+        state: TestsConstants.generateRandomBase64String(),
+        scope: TestsConstants.testScope
       )
     )
     
@@ -107,12 +107,12 @@ final class DirectPostTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: Constants.testClientMetaData(),
-        clientId: Constants.testClientId,
-        nonce: Constants.testNonce,
-        responseMode: Constants.testResponseMode,
-        state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope
+        clientMetaData: TestsConstants.testClientMetaData(),
+        clientId: TestsConstants.testClientId,
+        nonce: TestsConstants.testNonce,
+        responseMode: TestsConstants.testResponseMode,
+        state: TestsConstants.generateRandomBase64String(),
+        scope: TestsConstants.testScope
       )
     )
     
@@ -178,12 +178,12 @@ final class DirectPostTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: Constants.testClientMetaData(),
-        clientId: Constants.testClientId,
-        nonce: Constants.testNonce,
-        responseMode: Constants.testResponseMode,
-        state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope
+        clientMetaData: TestsConstants.testClientMetaData(),
+        clientId: TestsConstants.testClientId,
+        nonce: TestsConstants.testNonce,
+        responseMode: TestsConstants.testResponseMode,
+        state: TestsConstants.generateRandomBase64String(),
+        scope: TestsConstants.testScope
       )
     )
     
