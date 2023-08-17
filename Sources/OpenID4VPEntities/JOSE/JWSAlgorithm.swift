@@ -17,7 +17,7 @@ import Foundation
 
 public class JWSAlgorithm: JoseAlgorithm {
   
-  fileprivate init(_ type: AlgorithmType) {
+  public init(_ type: AlgorithmType) {
     super.init(name: type.name, requirement: type.requirement)
   }
   
@@ -39,7 +39,7 @@ public extension JWSAlgorithm {
   }
 }
 
-fileprivate extension JWSAlgorithm {
+public extension JWSAlgorithm {
   enum AlgorithmType: String {
     case HS256
     case HS384

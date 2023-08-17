@@ -19,7 +19,7 @@ public class JoseEncryptionMethod: JoseAlgorithm {
   
   public private(set) var cekBitLength: Int = 0
   
-  fileprivate init(_ type: EncryptionMethodType) {
+  public init(_ type: EncryptionMethodType) {
     let options = type.options
     super.init(name: type.name, requirement: options.requirement)
     self.cekBitLength = options.cekBitLength
@@ -52,7 +52,7 @@ public extension JoseEncryptionMethod {
   }
 }
 
-fileprivate extension JoseEncryptionMethod {
+public extension JoseEncryptionMethod {
   enum EncryptionMethodType: String {
     case A128CBC_HS256 = "A128CBC-HS256"
     case A192CBC_HS384 = "A192CBC-HS384"
