@@ -16,18 +16,18 @@
 import Foundation
 
 public class JoseAlgorithmFamily<T: JoseAlgorithm>: Equatable {
-  
+
   public static func == (lhs: JoseAlgorithmFamily<T>, rhs: JoseAlgorithmFamily<T>) -> Bool {
     return lhs.algorithms == rhs.algorithms
   }
-  
+
   private var algorithms: [T]
-  
-  public init(_ algorithms: T...) {
+
+  init(_ algorithms: T...) {
     self.algorithms = algorithms
   }
-  
-  public init(_ algorithms: [T]) {
+
+  init(_ algorithms: [T]) {
     self.algorithms = algorithms
   }
 }
@@ -36,11 +36,11 @@ public extension JoseAlgorithmFamily {
   func append(_ item: T) {
     self.algorithms.append(item)
   }
-  
+
   func all() -> [T] {
     return self.algorithms
   }
-  
+
   func clear() {
     self.algorithms = []
   }

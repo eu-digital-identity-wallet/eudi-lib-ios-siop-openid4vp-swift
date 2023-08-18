@@ -16,11 +16,11 @@
 import Foundation
 
 public enum JoseObjectType: String {
-  
+
   case JOSE = "JOSE"
   case JOSE_JSON = "JOSE+JSON"
   case JWT = "JWT"
-  
+
   public var type: String {
     return self.rawValue
   }

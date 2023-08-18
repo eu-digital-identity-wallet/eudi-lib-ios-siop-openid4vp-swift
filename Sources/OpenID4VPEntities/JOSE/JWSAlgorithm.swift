@@ -16,15 +16,15 @@
 import Foundation
 
 public class JWSAlgorithm: JoseAlgorithm {
-  
+
   public init(_ type: AlgorithmType) {
     super.init(name: type.name, requirement: type.requirement)
   }
-  
+
   public override init(name: String) {
     super.init(name: name)
   }
-  
+
   public override init(name: String, requirement: JoseAlgorithm.Requirement) {
     super.init(name: name, requirement: requirement)
   }
@@ -55,11 +55,11 @@ public extension JWSAlgorithm {
     case PS384
     case PS512
     case EdDSA
-    
+  
     var name: String {
       return self.rawValue
     }
-    
+  
     var requirement: Requirement {
       switch self {
       case .HS256:
@@ -100,7 +100,7 @@ public extension JWSAlgorithm {
 }
 
 public extension JWSAlgorithm.Family {
-  
+
   enum FamilyType {
     case HMAC_SHA
     case RSA
@@ -108,9 +108,8 @@ public extension JWSAlgorithm.Family {
     case ED
     case SIGNATURE
   }
-  
   static func parse(_ type: FamilyType) -> JWSAlgorithm.Family {
-    
+
     var RSA: [JWSAlgorithm] {
       return [
         .init(.RS256),
@@ -121,7 +120,7 @@ public extension JWSAlgorithm.Family {
         .init(.PS512)
       ]
     }
-    
+
     var EC: [JWSAlgorithm] {
       return [
         .init(.ES256),
@@ -130,17 +129,17 @@ public extension JWSAlgorithm.Family {
         .init(.ES512)
       ]
     }
-    
+
     var ED: [JWSAlgorithm] {
       return [
         .init(.EdDSA)
       ]
     }
-    
+
     var SIGNATURE: [JWSAlgorithm] {
       return RSA + EC + ED
     }
-    
+
     switch type {
     case .HMAC_SHA:
       return .init(

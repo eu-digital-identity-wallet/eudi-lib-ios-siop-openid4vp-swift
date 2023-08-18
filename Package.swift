@@ -21,10 +21,6 @@ let package = Package(
       .upToNextMinor(from: "0.51.0")
     ),
     .package(
-      url: "https://github.com/airsidemobile/JOSESwift.git",
-      .upToNextMinor(from: "2.4.0")
-    ),
-    .package(
       url: "https://github.com/birdrides/mockingbird.git",
       .upToNextMinor(from: "0.20.0")
     ),
@@ -42,10 +38,6 @@ let package = Package(
           package: "JSONSchema.swift"
         ),
         .product(
-          name: "JOSESwift",
-          package: "JOSESwift"
-        ),
-        .product(
           name: "PresentationExchange",
           package: "eudi-lib-ios-presentation-exchange-swift",
           moduleAliases: ["SwiftLintPlugin": "DepSwiftLintPlugin"]
@@ -54,9 +46,6 @@ let package = Package(
       path: "Sources",
       resources: [
         .process("Resources")
-      ],
-      plugins: [
-        .plugin(name: "SwiftLintPlugin", package: "SwiftLint")
       ]
     ),
     .testTarget(
@@ -70,10 +59,6 @@ let package = Package(
         .product(
           name: "JSONSchema",
           package: "JSONSchema.swift"
-        ),
-        .product(
-          name: "JOSESwift",
-          package: "JOSESwift"
         ),
         .product(
           name: "PresentationExchange",

@@ -16,23 +16,23 @@
 import Foundation
 
 public class JoseEncryptionMethod: JoseAlgorithm {
-  
+
   public private(set) var cekBitLength: Int = 0
-  
+
   public init(_ type: EncryptionMethodType) {
     let options = type.options
     super.init(name: type.name, requirement: options.requirement)
     self.cekBitLength = options.cekBitLength
   }
-  
+
   public override init(name: String) {
     super.init(name: name)
   }
-  
+
   public override init(name: String, requirement: JoseAlgorithm.Requirement) {
     super.init(name: name, requirement: requirement)
   }
-  
+
   public init(
     name: String,
     requirement: JoseAlgorithm.Requirement,
@@ -92,12 +92,12 @@ public extension JoseEncryptionMethod {
 }
 
 public extension JoseEncryptionMethod.Family {
-  
+
   enum JoseEncryptionMethodFamilyType {
     case AES_CBC_HMAC_SHA
     case AES_GCM
   }
-  
+
   static func parse(_ type: JoseEncryptionMethodFamilyType) -> JoseEncryptionMethod.Family {
     switch type {
     case .AES_CBC_HMAC_SHA:
