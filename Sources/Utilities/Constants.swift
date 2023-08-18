@@ -15,7 +15,6 @@
  */
 import Foundation
 import CryptoKit
-import PresentationExchange
 
 public struct Constants {
   public static let CLIENT_ID = "client_id"

@@ -15,10 +15,79 @@
  */
 import Foundation
 import PresentationExchange
+import CryptoKit
 
 @testable import SiopOpenID4VP
 
 struct TestsConstants {
+  
+  public static func testClientMetaData() -> ClientMetaData {
+    .init(
+      jwksUri: "https://jwks.uri",
+      jwks: "jwks",
+      idTokenSignedResponseAlg: ".idTokenSignedResponseAlg",
+      idTokenEncryptedResponseAlg: ".idTokenEncryptedResponseAlg",
+      idTokenEncryptedResponseEnc: ".idTokenEncryptedResponseEnc",
+      subjectSyntaxTypesSupported: [],
+      authorizationSignedResponseAlg: ".authorizationSignedResponseAlg",
+      authorizationEncryptedResponseAlg: ".authorizationEncryptedResponseAlg",
+      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc"
+    )
+  }
+  
+  public static func testValidatedClientMetaData() -> ClientMetaData.Validated {
+    .init(
+      jwkSet: webKeySet,
+      idTokenJWSAlg: .init(.ES256),
+      idTokenJWEAlg: .init(.A128GCMKW),
+      idTokenJWEEnc: .init(.A128CBC_HS256),
+      subjectSyntaxTypesSupported: [.decentralizedIdentifier],
+      authorizationSignedResponseAlg: .init(.ES256),
+      authorizationEncryptedResponseAlg: .init(.A128GCMKW),
+      authorizationEncryptedResponseEnc: .init(.A128CBC_HS256)
+    )
+  }
+
+  public static let testClientId = "https%3A%2F%2Fclient.example.org%2Fcb"
+  public static let testNonce = "0S6_WzA2Mj"
+  public static let testScope = "one two three"
+
+  public static let testResponseMode: ResponseMode = .directPost(responseURI: URL(string: "https://respond.here")!)
+
+  static func generateRandomJWT() -> String {
+    // Define the header
+    let header = #"{"alg":"HS256","typ":"JWT"}"#
+
+    // Define the claims
+    let claims = #"{"iss":"issuer","sub":"subject","aud":["audience"],"exp":1679911600,"iat":1657753200}"#
+
+    // Create the base64url-encoded segments
+    let encodedHeader = header.base64urlEncode
+    let encodedClaims = claims.base64urlEncode
+
+    // Concatenate the header and claims segments with a dot separator
+    let encodedToken = "\(encodedHeader).\(encodedClaims)"
+
+    // Define the secret key for signing
+    let secretKey = "your_secret_key".data(using: .utf8)!
+
+    // Sign the token with HMAC-SHA256
+    let signature = HMAC<SHA256>.authenticationCode(for: Data(encodedToken.utf8), using: SymmetricKey(data: secretKey))
+
+    // Base64url-encode the signature
+    let encodedSignature = Data(signature).base64EncodedString()
+
+    // Concatenate the encoded token and signature with a dot separator
+    let jwt = "\(encodedToken).\(encodedSignature)"
+
+    return jwt
+  }
+
+  static func generateRandomBase64String() -> String? {
+    let randomData = Data.randomData(length: 32)
+    let base64URL = randomData.base64URLEncodedString()
+    return base64URL
+  }
   
   // MARK: - Claims
   

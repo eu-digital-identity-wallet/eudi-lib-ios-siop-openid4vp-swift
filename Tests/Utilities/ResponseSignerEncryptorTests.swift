@@ -32,12 +32,12 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let controller = JOSEController()
     let privateKey = try controller.generatePrivateKey()
     let publicKey = try controller.generatePublicKey(from: privateKey)
-    let alg = "RS256"
+    let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
-        "alg": alg,
-        "use": "enc",
+        "alg": alg.name,
+        "use": "sig",
         "kid": UUID().uuidString
       ])
     
@@ -62,7 +62,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let jarmSpec: JarmSpec = .resolution(
       holderId: UUID().uuidString,
       jarmOption: .signedResponse(
-        responseSigningAlg: "RS256",
+        responseSigningAlg: alg,
         signingKeySet: wallet.signingKeySet,
         signingKey: wallet.signingKey
       )
@@ -78,11 +78,11 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let controller = JOSEController()
     let privateKey = try controller.generatePrivateKey()
     let publicKey = try controller.generatePublicKey(from: privateKey)
-    let alg = "RS256"
+    let alg = JWEAlgorithm(.RSA_OAEP_256)
     let publicKeyJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
-        "alg": alg,
+        "alg": alg.name,
         "use": "enc",
         "kid": UUID().uuidString
       ])
@@ -108,10 +108,9 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let jarmSpec: JarmSpec = .resolution(
       holderId: UUID().uuidString,
       jarmOption: .encryptedResponse(
-        responseSigningAlg: "RSA256",
+        responseSigningAlg: alg,
         responseEncryptionEnc: .a128Cbc_hs256,
-        signingKeySet: wallet.signingKeySet,
-        signingKey: privateKey
+        signingKeySet: wallet.signingKeySet
       )
     )
     
@@ -125,11 +124,14 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let controller = JOSEController()
     let privateKey = try controller.generatePrivateKey()
     let publicKey = try controller.generatePublicKey(from: privateKey)
-    let alg = "RS256"
+    
+    let signingAlg = JWSAlgorithm(.RS256)
+    let encryptionAlg = JWEAlgorithm(.RSA_OAEP_256)
+    
     let publicKeyJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
-        "alg": alg,
+        "alg": signingAlg.name,
         "use": "enc",
         "kid": UUID().uuidString
       ])
@@ -152,14 +154,13 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     )
     
     let encrypted: JarmOption = .encryptedResponse(
-      responseSigningAlg: "RSA256",
+      responseSigningAlg: encryptionAlg,
       responseEncryptionEnc: .a128Cbc_hs256,
-      signingKeySet: wallet.signingKeySet,
-      signingKey: privateKey
+      signingKeySet: wallet.signingKeySet
     )
     
     let signed: JarmOption = .signedResponse(
-      responseSigningAlg: "RS256",
+      responseSigningAlg: signingAlg,
       signingKeySet: wallet.signingKeySet,
       signingKey: wallet.signingKey
     )

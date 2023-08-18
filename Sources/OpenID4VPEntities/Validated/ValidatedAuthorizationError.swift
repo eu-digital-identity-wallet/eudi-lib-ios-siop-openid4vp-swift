@@ -48,7 +48,7 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
   public var errorDescription: String? {
     switch self {
     case .validationError(let message):
-      return "\(message)"
+      return "Validation Error \(message)"
     case .unsupportedClientIdScheme(let scheme):
       return ".unsupportedClientIdScheme \(scheme ?? "")"
     case .unsupportedResponseType(let type):

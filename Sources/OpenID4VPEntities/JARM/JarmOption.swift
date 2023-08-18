@@ -15,9 +15,6 @@
  */
 import Foundation
 
-public typealias JWSAlgorithm = String
-public typealias JWEAlgorithm = String
-
 public indirect enum JarmOption {
   case signedResponse(
     responseSigningAlg: JWSAlgorithm,
@@ -27,8 +24,7 @@ public indirect enum JarmOption {
   case encryptedResponse(
     responseSigningAlg: JWEAlgorithm,
     responseEncryptionEnc: EncryptionMethod,
-    signingKeySet: WebKeySet,
-    signingKey: SecKey
+    signingKeySet: WebKeySet
   )
   case signedAndEncryptedResponse(signed: JarmOption, encrypted: JarmOption)
 }
@@ -41,7 +37,7 @@ public extension JarmOption {
     var signed: JarmOption?
     if let signingAlgorithm = clientMetaData.authorizationSignedResponseAlg {
       signed = .signedResponse(
-        responseSigningAlg: signingAlgorithm,
+        responseSigningAlg: JWSAlgorithm(name: signingAlgorithm),
         signingKeySet: walletOpenId4VPConfig.signingKeySet,
         signingKey: walletOpenId4VPConfig.signingKey
       )
@@ -55,10 +51,9 @@ public extension JarmOption {
        let webKeySet = try? WebKeySet(jwkSet) {
 
       encrypted = .encryptedResponse(
-        responseSigningAlg: jweAlg,
+        responseSigningAlg: JWEAlgorithm(name: jweAlg),
         responseEncryptionEnc: encMethod,
-        signingKeySet: webKeySet,
-        signingKey: walletOpenId4VPConfig.signingKey
+        signingKeySet: webKeySet
       )
     }
 
