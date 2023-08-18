@@ -13,28 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Foundation
 import XCTest
-import JSONSchema
-import Sextant
 import JOSESwift
+import Mockingbird
 
 @testable import SiopOpenID4VP
 
-final class JOSETests: DiXCTest {
+final class DirectPostJWTTests: DiXCTest {
   
-  func testJOSEBuildTokenGivenValidRequirements() async throws {
+  func testPostDirectPostJwtAuthorisationResponseGivenValidResolutionAndNegativeConsent() async throws {
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
-    
-    XCTAssertNotNil(authorizationRequestData)
-    
-    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
-    
-    XCTAssertNotNil(validatedAuthorizationRequestData)
-    
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
-    
-    XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
+    // Obtain an id token resolution
+    let resolved: ResolvedRequestData = .idToken(
+      request: .init(
+        idTokenType: .attesterSigned,
+        clientMetaData: Constants.testClientMetaData(),
+        clientId: Constants.testClientId,
+        nonce: Constants.testNonce,
+        responseMode: Constants.testDirectPostJwtResponseMode,
+        state: Constants.generateRandomBase64String(),
+        scope: Constants.testScope
+      )
+    )
     
     let kid = UUID()
     let jose = JOSEController()
@@ -54,7 +55,7 @@ final class JOSETests: DiXCTest {
     )
     
     let jws = try jose.build(
-      request: resolvedSiopOpenId4VPRequestData!,
+      request: resolved,
       holderInfo: holderInfo,
       walletConfiguration: .init(
         subjectSyntaxTypesSupported: [
@@ -64,7 +65,7 @@ final class JOSETests: DiXCTest {
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
         signingKey: try JOSEController().generatePrivateKey(),
-        signingKeySet: WebKeySet(keys: []),
+        signingKeySet: TestsConstants.webKeySet,
         supportedClientIdSchemes: [],
         vpFormatsSupported: []
       ),
@@ -74,5 +75,36 @@ final class JOSETests: DiXCTest {
     )
     
     XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
+    
+    // Obtain consent
+    let consent: ClientConsent = .negative(message: "user_cancelled")
+    
+    let wallet: WalletOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      signingKey: try JOSEController().generatePrivateKey(),
+      signingKeySet: TestsConstants.webKeySet,
+      supportedClientIdSchemes: [],
+      vpFormatsSupported: []
+    )
+    
+    // Generate a direct post authorisation response
+    let response = try? AuthorizationResponse(
+      resolvedRequest: resolved,
+      consent: consent,
+      walletOpenId4VPConfig: wallet
+    )
+    
+    XCTAssertNotNil(response)
+    
+    let service = AuthorisationService()
+    let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
+    _ = try? await dispatcher.dispatch()
+    
+    XCTAssert(true)
   }
 }

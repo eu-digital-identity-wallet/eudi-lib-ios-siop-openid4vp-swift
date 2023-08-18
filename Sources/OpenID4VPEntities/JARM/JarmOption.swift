@@ -19,11 +19,16 @@ public typealias JWSAlgorithm = String
 public typealias JWEAlgorithm = String
 
 public indirect enum JarmOption {
-  case signedResponse(responseSigningAlg: JWSAlgorithm, signingKeySet: WebKeySet)
+  case signedResponse(
+    responseSigningAlg: JWSAlgorithm,
+    signingKeySet: WebKeySet,
+    signingKey: SecKey
+  )
   case encryptedResponse(
     responseSigningAlg: JWEAlgorithm,
     responseEncryptionEnc: EncryptionMethod,
-    signingKeySet: WebKeySet
+    signingKeySet: WebKeySet,
+    signingKey: SecKey
   )
   case signedAndEncryptedResponse(signed: JarmOption, encrypted: JarmOption)
 }
@@ -37,12 +42,13 @@ public extension JarmOption {
     if let signingAlgorithm = clientMetaData.authorizationSignedResponseAlg {
       signed = .signedResponse(
         responseSigningAlg: signingAlgorithm,
-        signingKeySet: walletOpenId4VPConfig.signingKeySet
+        signingKeySet: walletOpenId4VPConfig.signingKeySet,
+        signingKey: walletOpenId4VPConfig.signingKey
       )
     }
 
     var encrypted: JarmOption?
-    if let jweAlg = clientMetaData.authorizationEncryptedResponseAlg,
+    if let jweAlg = clientMetaData.authorizationEncryptedResponseEnc,
        let authorizationEncryptedResponseEnc = clientMetaData.authorizationEncryptedResponseEnc,
        let encMethod = EncryptionMethod(rawValue: authorizationEncryptedResponseEnc),
        let jwkSet = clientMetaData.jwks,
@@ -51,7 +57,8 @@ public extension JarmOption {
       encrypted = .encryptedResponse(
         responseSigningAlg: jweAlg,
         responseEncryptionEnc: encMethod,
-        signingKeySet: webKeySet
+        signingKeySet: webKeySet,
+        signingKey: walletOpenId4VPConfig.signingKey
       )
     }
 

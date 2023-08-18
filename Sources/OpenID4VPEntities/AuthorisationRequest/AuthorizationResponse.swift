@@ -16,7 +16,7 @@
 import Foundation
 
 /// An enumeration representing different types of authorization responses.
-public enum AuthorizationResponse: Encodable {
+public enum AuthorizationResponse {
   /// A direct POST authorization response.
   case directPost(url: URL, data: AuthorizationResponsePayload)
 
@@ -44,19 +44,6 @@ public enum AuthorizationResponse: Encodable {
     case fragment
     case fragmentJwt
   }
-
-  /// Encodes the enumeration using the given encoder.
-  public func encode(to encoder: Encoder) throws {
-     var container = encoder.container(keyedBy: CodingKeys.self)
-
-     switch self {
-     case .directPost(_, let data):
-       try container.encode(data, forKey: .directPost)
-     case .directPostJwt(url: _, data: let data, jarmSpec: let jarmSpec):
-       try container.encode(data, forKey: .directPostJwt)
-     default: break
-     }
-   }
 }
 
 /// An extension providing additional functionality to the `AuthorizationResponse` enumeration.

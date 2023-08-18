@@ -16,11 +16,11 @@
 import Foundation
 
 public enum EncryptionMethod: String {
-  case a128Cbc_hs256
-  case a192Cbc_hs384
-  case a256Cbc_hs512
-  case a128gcm
-  case a192gcm
-  case a256gcm
-  case xc20p
+  case a128Cbc_hs256 = "A128CBC-HS256"
+  case a192Cbc_hs384 = "A192CBC-HS384"
+  case a256Cbc_hs512 = "A256CBC-HS512"
+  case a128gcm = "A128GCM"
+  case a192gcm = "A192GCM"
+  case a256gcm = "A256GCM"
+  case xc20p = "XC20P"
 }

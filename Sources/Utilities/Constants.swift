@@ -26,17 +26,32 @@ public struct Constants {
   public static let PRESENTATION_DEFINITION = "presentation_definition"
   public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
 
+  // swiftlint:disable line_length
+  public static let clientMetaDataJWKSString = """
+  {
+    "keys": [{
+      "kty": "RSA",
+      "e": "AQAB",
+      "use": "sig",
+      "kid": "a4e1bbe6-26e8-480b-a364-f43497894453",
+      "iat": 1683559586,
+    "n": "xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew"
+    }]
+  }
+  """
+  // swiftlint:enable line_length
+
   public static func testClientMetaData() -> ClientMetaData {
     .init(
-      jwksUri: "https://jwks.uri",
-      jwks: "{\"name\":\"Jane Doe\"",
+      jwksUri: "",
+      jwks: Constants.clientMetaDataJWKSString,
       idTokenSignedResponseAlg: ".idTokenSignedResponseAlg",
-      idTokenEncryptedResponseAlg: ".idTokenEncryptedResponseAlg",
-      idTokenEncryptedResponseEnc: ".idTokenEncryptedResponseEnc",
-      subjectSyntaxTypesSupported: [],
-      authorizationSignedResponseAlg: ".authorizationSignedResponseAlg",
-      authorizationEncryptedResponseAlg: ".authorizationEncryptedResponseAlg",
-      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc"
+      idTokenEncryptedResponseAlg: "RS256",
+      idTokenEncryptedResponseEnc: "A128CBC-HS256",
+      subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
+      authorizationSignedResponseAlg: "RS256",
+      authorizationEncryptedResponseAlg: "RSA-OAEP-256",
+      authorizationEncryptedResponseEnc: "A128CBC-HS256"
     )
   }
 
@@ -45,6 +60,10 @@ public struct Constants {
   public static let testScope = "one two three"
 
   public static let testResponseMode: ResponseMode = .directPost(responseURI: URL(string: "https://respond.here")!)
+
+  public static let testDirectPostJwtResponseMode: ResponseMode = .directPostJWT(
+    responseURI: URL(string: "https://respond.here")!
+  )
 
   static func generateRandomJWT() -> String {
     // Define the header

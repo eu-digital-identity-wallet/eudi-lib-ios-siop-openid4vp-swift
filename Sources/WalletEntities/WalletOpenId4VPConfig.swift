@@ -21,7 +21,7 @@ public struct WalletOpenId4VPConfiguration {
   public let decentralizedIdentifier: DecentralizedIdentifier
   public let idTokenTTL: TimeInterval
   public let presentationDefinitionUriSupported: Bool
-  public let signingKey: WebKeySet.Key
+  public let signingKey: SecKey
   public let signingKeySet: WebKeySet
   public let supportedClientIdSchemes: [SupportedClientIdScheme]
   public let vpFormatsSupported: [ClaimFormat]
@@ -33,7 +33,7 @@ public struct WalletOpenId4VPConfiguration {
     decentralizedIdentifier: DecentralizedIdentifier,
     idTokenTTL: TimeInterval = 600.0,
     presentationDefinitionUriSupported: Bool = false,
-    signingKey: WebKeySet.Key,
+    signingKey: SecKey,
     signingKeySet: WebKeySet,
     supportedClientIdSchemes: [SupportedClientIdScheme],
     vpFormatsSupported: [ClaimFormat],
@@ -57,7 +57,7 @@ public struct WalletOpenId4VPConfiguration {
     decentralizedIdentifier = try DecentralizedIdentifier(rawValue: "did:example:123|did:example:456")
     idTokenTTL = 600.0
     presentationDefinitionUriSupported = false
-    signingKey = WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: "", alg: "alg")
+    signingKey = try JOSEController().generatePrivateKey()
     signingKeySet = WebKeySet(keys: [])
     supportedClientIdSchemes = []
     vpFormatsSupported = []

@@ -77,13 +77,13 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     XCTAssertEqual(request.state, state)
   }
   
-  func testWalletOpenId4VPConfigurationInitialization() {
+  func testWalletOpenId4VPConfigurationInitialization() throws {
     let subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.jwkThumbprint]
     let preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
     let decentralizedIdentifier: DecentralizedIdentifier = .did("DID:example:12341512#$")
     let idTokenTTL: TimeInterval = 600.0
     let presentationDefinitionUriSupported: Bool = false
-    let signingKey = WebKeySet.Key(kty: "", use: "", kid: "", iat: 0, exponent: "", modulus: "", alg: "")
+    let signingKey = try JOSEController().generatePrivateKey()
     let signingKeySet = WebKeySet(keys: [])
     let supportedClientIdSchemes: [SupportedClientIdScheme] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]

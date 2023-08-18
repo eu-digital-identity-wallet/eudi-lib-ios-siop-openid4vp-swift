@@ -46,7 +46,7 @@ public extension WebKeySet {
     public let kty: String
     public let use: String
     public let kid: String
-    public let iat: Int64
+    public let iat: Int64?
     public let exponent: String
     public let modulus: String
     public let alg: String?
@@ -66,7 +66,7 @@ public extension WebKeySet {
       kty: String,
       use: String,
       kid: String,
-      iat: Int64,
+      iat: Int64?,
       exponent: String,
       modulus: String,
       alg: String?
@@ -100,31 +100,31 @@ fileprivate extension WebKeySet {
       WebKeySet.Key(
         kty: try key.getValue(
           for: "kty",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key \"kty\" not found")
         ),
         use: try key.getValue(
           for: "use",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"use\" not found")
         ),
         kid: try key.getValue(
           for: "kid",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"kid\" not found")
         ),
         iat: try key.getValue(
           for: "iat",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"iat\" not found")
         ),
         exponent: try key.getValue(
           for: "e",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"e\" not found")
         ),
         modulus: try key.getValue(
           for: "n",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"n\" not found")
         ),
-        alg: try key.getValue(
+        alg: try? key.getValue(
           for: "alg",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"alg\" not found")
         )
       )
     }
