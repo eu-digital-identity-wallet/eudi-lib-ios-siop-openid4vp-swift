@@ -17,8 +17,8 @@ let package = Package(
       from: "0.6.0"
     ),
     .package(
-      url: "https://github.com/realm/SwiftLint.git",
-      .upToNextMinor(from: "0.51.0")
+      url: "https://github.com/airsidemobile/JOSESwift.git",
+      .upToNextMinor(from: "2.4.0")
     ),
     .package(
       url: "https://github.com/birdrides/mockingbird.git",
@@ -36,6 +36,10 @@ let package = Package(
         .product(
           name: "JSONSchema",
           package: "JSONSchema.swift"
+        ),
+        .product(
+          name: "JOSESwift",
+          package: "JOSESwift"
         ),
         .product(
           name: "PresentationExchange",
@@ -59,6 +63,10 @@ let package = Package(
         .product(
           name: "JSONSchema",
           package: "JSONSchema.swift"
+        ),
+        .product(
+          name: "JOSESwift",
+          package: "JOSESwift"
         ),
         .product(
           name: "PresentationExchange",
