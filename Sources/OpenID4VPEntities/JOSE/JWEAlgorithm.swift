@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public class JWEAlgorithm: JoseAlgorithm {
+public class JWEAlgorithm: JOSEAlgorithm {
 
   public init(_ type: AlgorithmType) {
     super.init(name: type.name, requirement: type.requirement)
@@ -25,7 +25,7 @@ public class JWEAlgorithm: JoseAlgorithm {
     super.init(name: name)
   }
 
-  public override init(name: String, requirement: JoseAlgorithm.Requirement) {
+  public override init(name: String, requirement: JOSEAlgorithm.Requirement) {
     super.init(name: name, requirement: requirement)
   }
 }
@@ -123,7 +123,7 @@ public extension JWEAlgorithm {
 }
 
 public extension JWEAlgorithm {
-  class Family: JoseAlgorithmFamily<JWEAlgorithm> {}
+  class Family: JOSEAlgorithmFamily<JWEAlgorithm> {}
 }
 
 public extension JWEAlgorithm.Family {

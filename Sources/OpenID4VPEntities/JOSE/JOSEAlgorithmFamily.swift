@@ -15,22 +15,33 @@
  */
 import Foundation
 
-public enum JoseObjectType: String {
+public class JOSEAlgorithmFamily<T: JOSEAlgorithm>: Equatable {
 
-  case JOSE = "JOSE"
-  case JOSE_JSON = "JOSE+JSON"
-  case JWT = "JWT"
+  public static func == (lhs: JOSEAlgorithmFamily<T>, rhs: JOSEAlgorithmFamily<T>) -> Bool {
+    return lhs.algorithms == rhs.algorithms
+  }
 
-  public var type: String {
-    return self.rawValue
+  private var algorithms: [T]
+
+  init(_ algorithms: T...) {
+    self.algorithms = algorithms
+  }
+
+  init(_ algorithms: [T]) {
+    self.algorithms = algorithms
   }
 }
 
-public extension JoseObjectType {
-  static func parse(_ type: String) throws -> JoseObjectType {
-    guard let objectType = JoseObjectType(rawValue: type) else {
-      throw JOSEError.invalidObjectType
-    }
-    return objectType
+public extension JOSEAlgorithmFamily {
+  func append(_ item: T) {
+    self.algorithms.append(item)
+  }
+
+  func all() -> [T] {
+    return self.algorithms
+  }
+
+  func clear() {
+    self.algorithms = []
   }
 }

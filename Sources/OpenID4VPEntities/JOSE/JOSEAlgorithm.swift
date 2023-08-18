@@ -15,9 +15,9 @@
  */
 import Foundation
 
-public class JoseAlgorithm: Hashable {
+public class JOSEAlgorithm: Hashable {
 
-  public static func == (lhs: JoseAlgorithm, rhs: JoseAlgorithm) -> Bool {
+  public static func == (lhs: JOSEAlgorithm, rhs: JOSEAlgorithm) -> Bool {
     lhs.hashValue == rhs.hashValue
   }
 
@@ -44,7 +44,7 @@ public class JoseAlgorithm: Hashable {
   }
 }
 
-public extension JoseAlgorithm {
+public extension JOSEAlgorithm {
   enum Requirement: Hashable {
     case REQUIRED
     case RECOMMENDED
