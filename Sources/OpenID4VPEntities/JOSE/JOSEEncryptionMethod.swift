@@ -15,27 +15,27 @@
  */
 import Foundation
 
-public class JoseEncryptionMethod: JoseAlgorithm {
-  
+public class JOSEEncryptionMethod: JOSEAlgorithm {
+
   public private(set) var cekBitLength: Int = 0
-  
+
   public init(_ type: EncryptionMethodType) {
     let options = type.options
     super.init(name: type.name, requirement: options.requirement)
     self.cekBitLength = options.cekBitLength
   }
-  
+
   public override init(name: String) {
     super.init(name: name)
   }
-  
-  public override init(name: String, requirement: JoseAlgorithm.Requirement) {
+
+  public override init(name: String, requirement: JOSEAlgorithm.Requirement) {
     super.init(name: name, requirement: requirement)
   }
-  
+
   public init(
     name: String,
-    requirement: JoseAlgorithm.Requirement,
+    requirement: JOSEAlgorithm.Requirement,
     cekBitLength: Int
   ) {
     super.init(name: name, requirement: requirement)
@@ -43,8 +43,8 @@ public class JoseEncryptionMethod: JoseAlgorithm {
   }
 }
 
-public extension JoseEncryptionMethod {
-  static func parse(_ s: String) -> JoseEncryptionMethod {
+public extension JOSEEncryptionMethod {
+  static func parse(_ s: String) -> JOSEEncryptionMethod {
     if let type = EncryptionMethodType(rawValue: s) {
       return .init(type)
     }
@@ -52,7 +52,7 @@ public extension JoseEncryptionMethod {
   }
 }
 
-public extension JoseEncryptionMethod {
+public extension JOSEEncryptionMethod {
   enum EncryptionMethodType: String {
     case A128CBC_HS256 = "A128CBC-HS256"
     case A192CBC_HS384 = "A192CBC-HS384"
@@ -87,18 +87,18 @@ public extension JoseEncryptionMethod {
   }
 }
 
-public extension JoseEncryptionMethod {
-  class Family: JoseAlgorithmFamily<JoseEncryptionMethod> {}
+public extension JOSEEncryptionMethod {
+  class Family: JOSEAlgorithmFamily<JOSEEncryptionMethod> {}
 }
 
-public extension JoseEncryptionMethod.Family {
-  
+public extension JOSEEncryptionMethod.Family {
+
   enum JoseEncryptionMethodFamilyType {
     case AES_CBC_HMAC_SHA
     case AES_GCM
   }
-  
-  static func parse(_ type: JoseEncryptionMethodFamilyType) -> JoseEncryptionMethod.Family {
+
+  static func parse(_ type: JoseEncryptionMethodFamilyType) -> JOSEEncryptionMethod.Family {
     switch type {
     case .AES_CBC_HMAC_SHA:
       return .init(

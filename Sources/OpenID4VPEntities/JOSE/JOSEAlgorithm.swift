@@ -15,36 +15,36 @@
  */
 import Foundation
 
-public class JoseAlgorithm: Hashable {
-  
-  public static func == (lhs: JoseAlgorithm, rhs: JoseAlgorithm) -> Bool {
+public class JOSEAlgorithm: Hashable {
+
+  public static func == (lhs: JOSEAlgorithm, rhs: JOSEAlgorithm) -> Bool {
     lhs.hashValue == rhs.hashValue
   }
-  
+
   public func hash(into hasher: inout Hasher) {
     hasher.combine(self.name)
     hasher.combine(self.requirement)
   }
-  
+
   public let name: String
   public let requirement: Requirement
-  
-  public init(name: String, requirement: Requirement) {
+
+  init(name: String, requirement: Requirement) {
     self.name = name
     self.requirement = requirement
   }
-  
-  public init(name: String) {
+
+  init(name: String) {
     self.name = name
     self.requirement = .OPTIONAL
   }
-  
+
   public func toJsonData() throws -> Data {
     return try JSONSerialization.data(withJSONObject: [self.name])
   }
 }
 
-public extension JoseAlgorithm {
+public extension JOSEAlgorithm {
   enum Requirement: Hashable {
     case REQUIRED
     case RECOMMENDED

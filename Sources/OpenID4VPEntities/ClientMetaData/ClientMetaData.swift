@@ -116,21 +116,21 @@ public extension ClientMetaData {
     public let jwkSet: WebKeySet?
     public let idTokenJWSAlg: JWSAlgorithm
     public let idTokenJWEAlg: JWEAlgorithm
-    public let idTokenJWEEnc: JoseEncryptionMethod
+    public let idTokenJWEEnc: JOSEEncryptionMethod
     public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
     public let authorizationSignedResponseAlg: JWSAlgorithm?
     public let authorizationEncryptedResponseAlg: JWEAlgorithm?
-    public let authorizationEncryptedResponseEnc: JoseEncryptionMethod?
+    public let authorizationEncryptedResponseEnc: JOSEEncryptionMethod?
 
     public init(
       jwkSet: WebKeySet?,
       idTokenJWSAlg: JWSAlgorithm,
       idTokenJWEAlg: JWEAlgorithm,
-      idTokenJWEEnc: JoseEncryptionMethod,
+      idTokenJWEEnc: JOSEEncryptionMethod,
       subjectSyntaxTypesSupported: [SubjectSyntaxType],
       authorizationSignedResponseAlg: JWSAlgorithm?,
       authorizationEncryptedResponseAlg: JWEAlgorithm?,
-      authorizationEncryptedResponseEnc: JoseEncryptionMethod?
+      authorizationEncryptedResponseEnc: JOSEEncryptionMethod?
     ) {
       self.jwkSet = jwkSet
       self.idTokenJWSAlg = idTokenJWSAlg
