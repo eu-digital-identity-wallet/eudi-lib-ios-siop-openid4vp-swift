@@ -26,7 +26,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.24")
+      .upToNextMinor(from: "0.0.25")
     )
   ],
   targets: [
@@ -43,8 +43,7 @@ let package = Package(
         ),
         .product(
           name: "PresentationExchange",
-          package: "eudi-lib-ios-presentation-exchange-swift",
-          moduleAliases: ["SwiftLintPlugin": "DepSwiftLintPlugin"]
+          package: "eudi-lib-ios-presentation-exchange-swift"
         )
       ],
       path: "Sources",
