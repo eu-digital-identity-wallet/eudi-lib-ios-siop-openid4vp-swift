@@ -13,10 +13,6 @@ let package = Package(
   ],
   dependencies: [
     .package(
-      url: "https://github.com/kylef/JSONSchema.swift",
-      from: "0.6.0"
-    ),
-    .package(
       url: "https://github.com/airsidemobile/JOSESwift.git",
       .upToNextMinor(from: "2.4.0")
     ),
@@ -33,10 +29,6 @@ let package = Package(
     .target(
       name: "SiopOpenID4VP",
       dependencies: [
-        .product(
-          name: "JSONSchema",
-          package: "JSONSchema.swift"
-        ),
         .product(
           name: "JOSESwift",
           package: "JOSESwift"
@@ -58,10 +50,6 @@ let package = Package(
         .product(
           name: "Mockingbird",
           package: "mockingbird"
-        ),
-        .product(
-          name: "JSONSchema",
-          package: "JSONSchema.swift"
         ),
         .product(
           name: "JOSESwift",

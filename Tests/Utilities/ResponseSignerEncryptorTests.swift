@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 import XCTest
-import JSONSchema
-import Sextant
 import JOSESwift
 
 @testable import SiopOpenID4VP

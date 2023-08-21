@@ -16,8 +16,6 @@
 import Foundation
 
 import XCTest
-import JSONSchema
-import Sextant
 import Mockingbird
 import JOSESwift
 
