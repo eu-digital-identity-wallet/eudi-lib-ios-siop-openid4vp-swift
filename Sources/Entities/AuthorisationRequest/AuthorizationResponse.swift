@@ -16,24 +16,24 @@
 import Foundation
 
 /// An enumeration representing different types of authorization responses.
-public enum AuthorizationResponse: Encodable {
+public enum AuthorizationResponse {
   /// A direct POST authorization response.
   case directPost(url: URL, data: AuthorizationResponsePayload)
 
   /// A direct POST JWT authorization response.
-  case directPostJwt(url: URL, data: AuthorizationResponsePayload)
+  case directPostJwt(url: URL, data: AuthorizationResponsePayload, jarmSpec: JarmSpec)
 
   /// A query authorization response.
   case query(url: URL, data: AuthorizationResponsePayload)
 
   /// A query JWT authorization response.
-  case queryJwt(url: URL, data: AuthorizationResponsePayload)
+  case queryJwt(url: URL, data: AuthorizationResponsePayload, jarmSpec: JarmSpec)
 
   /// A fragment authorization response.
   case fragment(url: URL, data: AuthorizationResponsePayload)
 
   /// A fragment JWT authorization response.
-  case fragmentJwt(url: URL, data: AuthorizationResponsePayload)
+  case fragmentJwt(url: URL, data: AuthorizationResponsePayload, jarmSpec: JarmSpec)
 
   /// Coding keys for encoding the enumeration.
   enum CodingKeys: String, CodingKey {
@@ -44,17 +44,6 @@ public enum AuthorizationResponse: Encodable {
     case fragment
     case fragmentJwt
   }
-
-  /// Encodes the enumeration using the given encoder.
-  public func encode(to encoder: Encoder) throws {
-     var container = encoder.container(keyedBy: CodingKeys.self)
-
-     switch self {
-     case .directPost(_, let data):
-       try container.encode(data, forKey: .directPost)
-     default: break
-     }
-   }
 }
 
 /// An extension providing additional functionality to the `AuthorizationResponse` enumeration.
@@ -65,7 +54,8 @@ public extension AuthorizationResponse {
   ///   - consent: The client consent.
   init(
     resolvedRequest: ResolvedRequestData,
-    consent: ClientConsent
+    consent: ClientConsent,
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
   ) throws {
     switch consent {
     case .idToken(let idToken):
@@ -77,7 +67,9 @@ public extension AuthorizationResponse {
         )
         self = try .buildAuthorizationResponse(
           responseMode: request.responseMode,
-          payload: payload
+          payload: payload,
+          clientMetaData: request.clientMetaData,
+          walletOpenId4VPConfig: walletOpenId4VPConfig
         )
       default: throw AuthorizationError.unsupportedResolution
       }
@@ -92,7 +84,9 @@ public extension AuthorizationResponse {
         )
         self = try .buildAuthorizationResponse(
           responseMode: request.responseMode,
-          payload: payload
+          payload: payload,
+          clientMetaData: request.clientMetaData,
+          walletOpenId4VPConfig: walletOpenId4VPConfig
         )
       case .vpToken, .idAndVpToken:
         throw AuthorizationError.unsupportedResolution
@@ -110,16 +104,26 @@ private extension AuthorizationResponse {
   /// - Returns: An `AuthorizationResponse` instance.
   static func buildAuthorizationResponse(
     responseMode: ResponseMode?,
-    payload: AuthorizationResponsePayload
+    payload: AuthorizationResponsePayload,
+    clientMetaData: ClientMetaData?,
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
   ) throws -> AuthorizationResponse {
     guard let responseMode = responseMode else {
       throw AuthorizationError.invalidResponseMode
     }
+
+    func jarmSpec() throws -> JarmSpec {
+      try JarmSpec(
+        clientMetaData: clientMetaData,
+        walletOpenId4VPConfig: walletOpenId4VPConfig
+      )
+    }
+
     switch responseMode {
     case .directPost(let responseURI):
       return .directPost(url: responseURI, data: payload)
     case .directPostJWT(let responseURI):
-      return .directPostJwt(url: responseURI, data: payload)
+      return .directPostJwt(url: responseURI, data: payload, jarmSpec: try jarmSpec())
     case .query(let responseURI):
       return .query(url: responseURI, data: payload)
     case .fragment(let responseURI):

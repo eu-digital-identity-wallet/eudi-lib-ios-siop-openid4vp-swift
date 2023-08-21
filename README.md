@@ -25,7 +25,7 @@ You can add the library to your project using Swift Package Manager. [Releases](
 ```swift
 import SiopOpenID4VP
 
-val siopOpenId4Vp = SiopOpenID4VP()
+let siopOpenId4Vp = SiopOpenID4VP()
 ```
 
 

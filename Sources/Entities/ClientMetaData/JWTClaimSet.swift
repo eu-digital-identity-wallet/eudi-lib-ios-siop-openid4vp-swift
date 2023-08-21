@@ -36,7 +36,16 @@ public struct JWTClaimsSet {
   public let jwtID: String?
   public let claims: [String: Any]
 
-  public init(issuer: String?, subject: String?, audience: [String], expirationTime: Date?, notBeforeTime: Date?, issueTime: Date?, jwtID: String?, claims: [String: Any]) {
+  public init(
+    issuer: String?,
+    subject: String?,
+    audience: [String],
+    expirationTime: Date?,
+    notBeforeTime: Date?,
+    issueTime: Date?,
+    jwtID: String?,
+    claims: [String: Any]
+  ) {
     self.issuer = issuer
     self.subject = subject
     self.audience = audience

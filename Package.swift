@@ -13,10 +13,6 @@ let package = Package(
   ],
   dependencies: [
     .package(
-      url: "https://github.com/kylef/JSONSchema.swift",
-      from: "0.6.0"
-    ),
-    .package(
       url: "https://github.com/airsidemobile/JOSESwift.git",
       .upToNextMinor(from: "2.4.0")
     ),
@@ -26,7 +22,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.24")
+      .upToNextMinor(from: "0.0.25")
     )
   ],
   targets: [
@@ -34,17 +30,12 @@ let package = Package(
       name: "SiopOpenID4VP",
       dependencies: [
         .product(
-          name: "JSONSchema",
-          package: "JSONSchema.swift"
-        ),
-        .product(
           name: "JOSESwift",
           package: "JOSESwift"
         ),
         .product(
           name: "PresentationExchange",
-          package: "eudi-lib-ios-presentation-exchange-swift",
-          moduleAliases: ["SwiftLintPlugin": "DepSwiftLintPlugin"]
+          package: "eudi-lib-ios-presentation-exchange-swift"
         )
       ],
       path: "Sources",
@@ -59,10 +50,6 @@ let package = Package(
         .product(
           name: "Mockingbird",
           package: "mockingbird"
-        ),
-        .product(
-          name: "JSONSchema",
-          package: "JSONSchema.swift"
         ),
         .product(
           name: "JOSESwift",

@@ -36,7 +36,10 @@ public protocol SiopOpenID4VPType {
 
 public class SiopOpenID4VP: SiopOpenID4VPType {
 
-  public init() {
+  let wallet: WalletOpenId4VPConfiguration?
+
+  public init(wallet: WalletOpenId4VPConfiguration? = nil) {
+    self.wallet = wallet
     registerDependencies()
   }
 
@@ -67,7 +70,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       case .idAndVpToken(let request):
         return request.presentationDefinition
       }
-    case .oauth2(let data):
+    case .notSecured(let data):
       switch data {
       case .idToken:
         throw ValidatedAuthorizationError.unsupportedResponseType(".idToken")

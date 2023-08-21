@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import XCTest
+import Foundation
+import JOSESwift
 
-@testable import SiopOpenID4VP
+public enum EncryptionMethod: String {
+  case a128Cbc_hs256 = "A128CBC-HS256"
+  case a192Cbc_hs384 = "A192CBC-HS384"
+  case a256Cbc_hs512 = "A256CBC-HS512"
+  case a128gcm = "A128GCM"
+  case a192gcm = "A192GCM"
+  case a256gcm = "A256GCM"
+  case xc20p = "XC20P"
+}
 
-final class JWTTests: DiXCTest {
-  
-  func testJWTIsValidGivenValidString() throws {
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-
-    let jsonWebToken = JSONWebToken(
-      jsonWebToken: token
-    )
-    
-    let name = jsonWebToken!.payload["name"] as? String
-    XCTAssert(name! == "John Doe")
+public extension ContentEncryptionAlgorithm {
+  init?(encryptionMethod: EncryptionMethod) {
+    self.init(rawValue: encryptionMethod.rawValue)
   }
 }

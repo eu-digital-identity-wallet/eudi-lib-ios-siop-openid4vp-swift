@@ -24,10 +24,14 @@ struct TestsConstants {
   public static func testClientMetaData() -> ClientMetaData {
     .init(
       jwksUri: "https://jwks.uri",
+      jwks: "jwks",
       idTokenSignedResponseAlg: ".idTokenSignedResponseAlg",
       idTokenEncryptedResponseAlg: ".idTokenEncryptedResponseAlg",
       idTokenEncryptedResponseEnc: ".idTokenEncryptedResponseEnc",
-      subjectSyntaxTypesSupported: []
+      subjectSyntaxTypesSupported: [],
+      authorizationSignedResponseAlg: ".authorizationSignedResponseAlg",
+      authorizationEncryptedResponseAlg: ".authorizationEncryptedResponseAlg",
+      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc"
     )
   }
   
@@ -88,6 +92,10 @@ struct TestsConstants {
   // MARK: - Claims
   
   static let sampleClientMetaData = #"{"jwks_uri":"value_jwks_uri","id_token_signed_response_alg":"value_id_token_signed_response_alg","id_token_encrypted_response_alg":"value_id_token_encrypted_response_alg","id_token_encrypted_response_enc":"value_id_token_encrypted_response_enc","subject_syntax_types_supported":["value_subject_syntax_types_supported"]}"#
+  
+  static let sampleValidClientMetaData = #"{"jwks":{"keys":[{"kty":"RSA", "e":"AQAB", "use":"sig", "kid":"a4e1bbe6-26e8-480b-a364-f43497894453", "iat":1683559586, "n":"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew"}]},"id_token_signed_response_alg":"value_id_token_signed_response_alg","id_token_encrypted_response_alg":"value_id_token_encrypted_response_alg","id_token_encrypted_response_enc":"value_id_token_encrypted_response_enc","subject_syntax_types_supported":["value_subject_syntax_types_supported"]}"#
+  
+  static let sampleValidJWKS = #"{"keys":[{"kty":"RSA", "e":"AQAB", "use":"sig", "kid":"9556a7a5-bb4f-4354-9208-74789528d1c7", "iat":1691595131, "n":"087NDoY9u7QUYAd-hjzx0B7k5_jofB1-wgRWGpFtpFmBkWMPCHtH72E240xkEO_nrgyEPJvh5-K6V--9MHevBCw1ihR-GtiCK4LEtY6alTWJx90yFEwiwHqVTzWpGDZSyRb3QGgjSgqWlYeIHkro58EykYyVCXr9m5PuyiM1Uekt6PXAZdWYFBeT8v1bjwe8knVEayC7U5eVkScabGcGGUWRFeOVbkS6vR18PCJ8nokHQipISpgD2pdD29Vn39Aped3hd7tdVJj-C7qZwIuAEUeRzxXeKdLRxmZvj_oX_Q39XzNVpMVO8IQSrKvqPKvQUNABboxb24L7pK1b9F0S4w"}]}"#
   
   static let testClaimsBankAndPassport = [
     Claim(
@@ -337,6 +345,15 @@ struct TestsConstants {
       "kid": "9556a7a5-bb4f-4354-9208-74789528d1c7",
       "iat": 1691595131,
       "n": "087NDoY9u7QUYAd-hjzx0B7k5_jofB1-wgRWGpFtpFmBkWMPCHtH72E240xkEO_nrgyEPJvh5-K6V--9MHevBCw1ihR-GtiCK4LEtY6alTWJx90yFEwiwHqVTzWpGDZSyRb3QGgjSgqWlYeIHkro58EykYyVCXr9m5PuyiM1Uekt6PXAZdWYFBeT8v1bjwe8knVEayC7U5eVkScabGcGGUWRFeOVbkS6vR18PCJ8nokHQipISpgD2pdD29Vn39Aped3hd7tdVJj-C7qZwIuAEUeRzxXeKdLRxmZvj_oX_Q39XzNVpMVO8IQSrKvqPKvQUNABboxb24L7pK1b9F0S4w"
+    },
+    {
+      "kty": "RSA",
+      "e": "AQAB",
+      "use": "sig",
+      "kid": "9556a7a5-bb4f-4354-9208-74789528d1c7",
+      "iat": 1691595131,
+      "n": "087NDoY9u7QUYAd-hjzx0B7k5_jofB1-wgRWGpFtpFmBkWMPCHtH72E240xkEO_nrgyEPJvh5-K6V--9MHevBCw1ihR-GtiCK4LEtY6alTWJx90yFEwiwHqVTzWpGDZSyRb3QGgjSgqWlYeIHkro58EykYyVCXr9m5PuyiM1Uekt6PXAZdWYFBeT8v1bjwe8knVEayC7U5eVkScabGcGGUWRFeOVbkS6vR18PCJ8nokHQipISpgD2pdD29Vn39Aped3hd7tdVJj-C7qZwIuAEUeRzxXeKdLRxmZvj_oX_Q39XzNVpMVO8IQSrKvqPKvQUNABboxb24L7pK1b9F0S4w",
+      "alg": "RS256"
     }
   ]
 }
@@ -347,4 +364,13 @@ struct TestsConstants {
   static var validByReferenceWebKeyUrl: URL {
     return URL(string: "https://eudi.netcompany-intrasoft.com/wallet/public-keys.json")!
   }
+  
+  static var validByReferenceWebKeyUrlString: String {
+    return "https://eudi.netcompany-intrasoft.com/wallet/public-keys.json"
+  }
+  
+  static var signedResponseAlg = "RS256"
+  static var encryptedResponseAlg = "RSA-OAEP-256"
+  static var encryptedResponseEnc = "A128CBC-HS256"
+  static var subjectSyntaxTypesSupported = "urn:ietf:params:oauth:jwk-thumbprint"
 }

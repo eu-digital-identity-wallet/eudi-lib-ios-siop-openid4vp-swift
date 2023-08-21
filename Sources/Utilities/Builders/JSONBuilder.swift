@@ -54,7 +54,7 @@ struct Arr: JSONBuilderElement {
     let contents = fragments
         .map { $0.json }
         .joined(separator: ", ")
-  
+
     return "[\(contents)]"
   }
 }

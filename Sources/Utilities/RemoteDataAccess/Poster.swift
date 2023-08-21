@@ -44,7 +44,7 @@ public protocol Posting {
    - Returns: A Result type with the response data or an error.
    */
   func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError>
-  
+
   /**
    Performs a POST request with the provided URLRequest.
 

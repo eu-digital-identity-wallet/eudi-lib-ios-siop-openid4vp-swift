@@ -202,7 +202,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       XCTAssertNotNil(authorizationRequest)
       
       switch authorizationRequest {
-      case .oauth2(let resolved):
+      case .notSecured(let resolved):
         switch resolved {
         case .vpToken:
           XCTAssert(true)
@@ -446,7 +446,7 @@ final class SiopOpenID4VPTests: DiXCTest {
         expectation.fulfill()
       } receiveValue: { value in
         switch value {
-        case .oauth2(let resolved):
+        case .notSecured(let resolved):
           switch resolved {
           case .vpToken:
             XCTAssert(true)
@@ -471,7 +471,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       let result = try await sdk.authorize(url: TestsConstants.validByReferenceAuthorizeUrl)
       
       switch result {
-      case .oauth2(let resolved):
+      case .notSecured(let resolved):
         switch resolved {
         case .vpToken:
           XCTAssert(true)

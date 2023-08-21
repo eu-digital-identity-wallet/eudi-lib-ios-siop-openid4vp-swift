@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import CryptoKit
 
 public struct Constants {
   public static let CLIENT_ID = "client_id"
@@ -23,4 +24,78 @@ public struct Constants {
   public static let HTTPS = "https"
   public static let PRESENTATION_DEFINITION = "presentation_definition"
   public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
+
+  // swiftlint:disable line_length
+  public static let clientMetaDataJWKSString = """
+  {
+    "keys": [{
+      "kty": "RSA",
+      "e": "AQAB",
+      "use": "sig",
+      "kid": "a4e1bbe6-26e8-480b-a364-f43497894453",
+      "iat": 1683559586,
+    "n": "xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew"
+    }]
+  }
+  """
+  // swiftlint:enable line_length
+
+  public static func testClientMetaData() -> ClientMetaData {
+    .init(
+      jwksUri: "",
+      jwks: Constants.clientMetaDataJWKSString,
+      idTokenSignedResponseAlg: ".idTokenSignedResponseAlg",
+      idTokenEncryptedResponseAlg: "RS256",
+      idTokenEncryptedResponseEnc: "A128CBC-HS256",
+      subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
+      authorizationSignedResponseAlg: "RS256",
+      authorizationEncryptedResponseAlg: "RSA-OAEP-256",
+      authorizationEncryptedResponseEnc: "A128CBC-HS256"
+    )
+  }
+
+  public static let testClientId = "https%3A%2F%2Fclient.example.org%2Fcb"
+  public static let testNonce = "0S6_WzA2Mj"
+  public static let testScope = "one two three"
+
+  public static let testResponseMode: ResponseMode = .directPost(responseURI: URL(string: "https://respond.here")!)
+
+  public static let testDirectPostJwtResponseMode: ResponseMode = .directPostJWT(
+    responseURI: URL(string: "https://respond.here")!
+  )
+
+  static func generateRandomJWT() -> String {
+    // Define the header
+    let header = #"{"alg":"HS256","typ":"JWT"}"#
+
+    // Define the claims
+    let claims = #"{"iss":"issuer","sub":"subject","aud":["audience"],"exp":1679911600,"iat":1657753200}"#
+
+    // Create the base64url-encoded segments
+    let encodedHeader = header.base64urlEncode
+    let encodedClaims = claims.base64urlEncode
+
+    // Concatenate the header and claims segments with a dot separator
+    let encodedToken = "\(encodedHeader).\(encodedClaims)"
+
+    // Define the secret key for signing
+    let secretKey = "your_secret_key".data(using: .utf8)!
+
+    // Sign the token with HMAC-SHA256
+    let signature = HMAC<SHA256>.authenticationCode(for: Data(encodedToken.utf8), using: SymmetricKey(data: secretKey))
+
+    // Base64url-encode the signature
+    let encodedSignature = Data(signature).base64EncodedString()
+
+    // Concatenate the encoded token and signature with a dot separator
+    let jwt = "\(encodedToken).\(encodedSignature)"
+
+    return jwt
+  }
+
+  static func generateRandomBase64String() -> String? {
+    let randomData = Data.randomData(length: 32)
+    let base64URL = randomData.base64URLEncodedString()
+    return base64URL
+  }
 }

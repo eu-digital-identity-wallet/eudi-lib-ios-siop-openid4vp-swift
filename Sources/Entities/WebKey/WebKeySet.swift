@@ -41,14 +41,15 @@ public struct WebKeySet: Codable, Equatable {
 }
 
 public extension WebKeySet {
-  struct Key: Codable, Equatable {
+  struct Key: Codable, Equatable, Hashable {
 
     public let kty: String
     public let use: String
     public let kid: String
-    public let iat: Int64
+    public let iat: Int64?
     public let exponent: String
     public let modulus: String
+    public let alg: String?
 
     /// Coding keys for encoding and decoding the structure.
     enum CodingKeys: String, CodingKey {
@@ -58,15 +59,17 @@ public extension WebKeySet {
       case iat
       case exponent = "e"
       case modulus = "n"
+      case alg
     }
 
     public init(
       kty: String,
       use: String,
       kid: String,
-      iat: Int64,
+      iat: Int64?,
       exponent: String,
-      modulus: String
+      modulus: String,
+      alg: String?
     ) {
       self.kty = kty
       self.use = use
@@ -74,6 +77,17 @@ public extension WebKeySet {
       self.iat = iat
       self.exponent = exponent
       self.modulus = modulus
+      self.alg = alg
+    }
+
+    public func hash(into hasher: inout Hasher) {
+      hasher.combine(kid)
+      hasher.combine(kty)
+      hasher.combine(use)
+      hasher.combine(iat)
+      hasher.combine(exponent)
+      hasher.combine(modulus)
+      hasher.combine(alg)
     }
   }
 }
@@ -86,27 +100,31 @@ fileprivate extension WebKeySet {
       WebKeySet.Key(
         kty: try key.getValue(
           for: "kty",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key \"kty\" not found")
         ),
         use: try key.getValue(
           for: "use",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"use\" not found")
         ),
         kid: try key.getValue(
           for: "kid",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"kid\" not found")
         ),
         iat: try key.getValue(
           for: "iat",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"iat\" not found")
         ),
         exponent: try key.getValue(
           for: "e",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"e\" not found")
         ),
         modulus: try key.getValue(
           for: "n",
-          error: ValidatedAuthorizationError.invalidJWTWebKeySet
+          error: ValidatedAuthorizationError.validationError("key set key  \"n\" not found")
+        ),
+        alg: try? key.getValue(
+          for: "alg",
+          error: ValidatedAuthorizationError.validationError("key set key  \"alg\" not found")
         )
       )
     }

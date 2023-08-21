@@ -16,6 +16,4 @@
 import Foundation
 
 public enum JwkSetSource {
-  case byValue(jwks: JSONObject)
-  case byReference(jwksUri: URL)
 }

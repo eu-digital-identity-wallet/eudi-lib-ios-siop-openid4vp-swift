@@ -18,50 +18,45 @@ import XCTest
 
 @testable import SiopOpenID4VP
 
-final class WebKeyResolverTests: DiXCTest {
+final class ClientMetaDataResolverTests: XCTestCase {
   
-  var webKeyResolver: WebKeyResolver!
+  var clientMetaDataResolver: ClientMetaDataResolver!
+  
+  override func setUp() async throws {
+    overrideDependencies()
+    try await super.setUp()
+  }
   
   override func tearDown() {
-    self.webKeyResolver = nil
+    DependencyContainer.shared.removeAll()
+    self.clientMetaDataResolver = nil
     super.tearDown()
   }
   
   override func setUp() {
-    self.webKeyResolver = WebKeyResolver()
+    self.clientMetaDataResolver = ClientMetaDataResolver()
   }
   
   func testResolve_WhenSourceIsNil_ThenReturnSuccessWithNilValue() async throws {
     
-    let response = await self.webKeyResolver.resolve(source: nil)
+    let response = await self.clientMetaDataResolver.resolve(source: nil)
     
     switch response {
-    case .success(let webKeys):
-      XCTAssertNil(webKeys)
+    case .success(let metaData):
+      XCTAssertNil(metaData)
     case .failure(let error):
       XCTFail(error.localizedDescription)
     }
   }
   
-  func testResolve_WhenPassByValue_ThenReturnSuccessWebKeySet() async throws {
+  func testResolve_WhenPassByValue_ThenReturnSuccessMetaData() async throws {
     
-    let response = await self.webKeyResolver.resolve(source: .passByValue(webKeys: TestsConstants.webKeySet))
-    
-    switch response {
-    case .success(let webKeys):
-      XCTAssertEqual(webKeys?.keys.first, TestsConstants.webKeySet.keys.first)
-    case .failure(let error):
-      XCTFail(error.localizedDescription)
-    }
-  }
-  
-  func testResolve_WhenFetchByReferenceWithValidURL_ThenRetrieveJsonRemotelyAndReturnSuccessWebKeySet() async throws {
-    
-    let response = await self.webKeyResolver.resolve(source: .fetchByReference(url: TestsConstants.validByReferenceWebKeyUrl))
+    let clientMetaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
+    let response = await self.clientMetaDataResolver.resolve(source: .passByValue(metaData: clientMetaData))
     
     switch response {
-    case .success(let webKeys):
-      XCTAssertEqual(webKeys?.keys.first, TestsConstants.webKeySet.keys.first)
+    case .success(let metaData):
+      XCTAssertEqual(metaData, clientMetaData)
     case .failure(let error):
       XCTFail(error.localizedDescription)
     }
@@ -69,7 +64,7 @@ final class WebKeyResolverTests: DiXCTest {
   
   func testResolve_WhenFetchByReferenceWithInvalidURL_ThenReturnFailure() async throws {
     
-    let response = await self.webKeyResolver.resolve(source: .fetchByReference(url: TestsConstants.invalidUrl))
+    let response = await self.clientMetaDataResolver.resolve(source: .fetchByReference(url: TestsConstants.invalidUrl))
     
     switch response {
     case .success:
@@ -77,5 +72,13 @@ final class WebKeyResolverTests: DiXCTest {
     case .failure(let error):
       XCTAssertEqual(error.localizedDescription, ResolvingError.invalidSource.localizedDescription)
     }
+  }
+}
+
+private extension ClientMetaDataResolverTests {
+  func overrideDependencies() {
+    DependencyContainer.shared.register(type: Reporting.self, dependency: {
+      Reporter()
+    })
   }
 }

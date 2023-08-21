@@ -13,20 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import XCTest
+import Foundation
 
-@testable import SiopOpenID4VP
-
-final class JWTTests: DiXCTest {
-  
-  func testJWTIsValidGivenValidString() throws {
-    let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-
-    let jsonWebToken = JSONWebToken(
-      jsonWebToken: token
-    )
-    
-    let name = jsonWebToken!.payload["name"] as? String
-    XCTAssert(name! == "John Doe")
+extension Optional where Wrapped == String {
+  var isNilOrEmpty: Bool {
+    return self?.isEmpty ?? true
   }
 }

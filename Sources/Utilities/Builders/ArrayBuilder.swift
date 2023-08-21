@@ -17,31 +17,31 @@ import Foundation
 
 @resultBuilder
 enum ArrayBuilder<OutputModel> {
-  
+
   static func buildEither(first component: [OutputModel]) -> [OutputModel] {
     return component
   }
-  
+
   static func buildEither(second component: [OutputModel]) -> [OutputModel] {
     return component
   }
-  
+
   static func buildOptional(_ component: [OutputModel]?) -> [OutputModel] {
     return component ?? []
   }
-  
+
   static func buildExpression(_ expression: OutputModel) -> [OutputModel] {
     return [expression]
   }
-  
+
   static func buildExpression(_ expression: ()) -> [OutputModel] {
     return []
   }
-  
+
   static func buildBlock(_ components: [OutputModel]...) -> [OutputModel] {
     return components.flatMap { $0 }
   }
-  
+
   static func buildArray(_ components: [[OutputModel]]) -> [OutputModel] {
     Array(components.joined())
   }

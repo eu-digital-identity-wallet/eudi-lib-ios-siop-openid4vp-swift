@@ -59,7 +59,23 @@ public actor AuthorisationService: AuthorisationServiceType {
 
       let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
       return try result.get()
-    default: throw AuthorizationError.invalidResponseMode
+    case .directPostJwt(let url, let data, let jarmSpec):
+      let encryptor = ResponseSignerEncryptor()
+      let joseResponse = try await encryptor.signEncryptResponse(spec: jarmSpec, data: data)
+      let post = VerifierFormPost(
+        additionalHeaders: ["Content-Type": ContentType.form.rawValue],
+        url: url,
+        formData: try data.toDictionary().merging([
+          "response": joseResponse
+        ], uniquingKeysWith: { _, new in
+          new
+        })
+      )
+
+      let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
+      return try result.get()
+    case .query, .queryJwt, .fragment, .fragmentJwt:
+      throw AuthorizationError.invalidResponseMode
     }
   }
 }

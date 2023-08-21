@@ -19,3 +19,16 @@ public enum SubjectSyntaxType: Equatable {
   case jwkThumbprint
   case decentralizedIdentifier
 }
+
+public extension SubjectSyntaxType {
+  init?(rawValue: String) {
+    switch rawValue {
+    case "urn:ietf:params:oauth:jwk-thumbprint":
+      self = .jwkThumbprint
+    case "did:example", "did:key":
+      self = .decentralizedIdentifier
+    default:
+      return nil
+    }
+  }
+}

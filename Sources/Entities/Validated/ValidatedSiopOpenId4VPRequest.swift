@@ -25,25 +25,18 @@ public enum ValidatedSiopOpenId4VPRequest {
 
 // Extension for ValidatedSiopOpenId4VPRequest
 public extension ValidatedSiopOpenId4VPRequest {
+
   // Initialize with a request URI
-  init(requestUri: JWTURI, clientId: String?) async throws {
+  init(
+    requestUri: JWTURI,
+    clientId: String?
+  ) async throws {
     // Convert request URI to URL
     guard let requestUrl = URL(string: requestUri) else {
       throw ValidatedAuthorizationError.invalidRequestUri(requestUri)
     }
 
-    struct ResultType: Codable {}
-    let fetcher = Fetcher<ResultType>()
-    let jwtResult = try await fetcher.fetchString(url: requestUrl)
-    var jwt: String
-
-    switch jwtResult {
-    case .success(let string):
-      jwt = try ValidatedSiopOpenId4VPRequest.extractJWT(string)
-
-    case .failure:
-      throw ValidatedAuthorizationError.invalidJwtPayload
-    }
+    let jwt = try await ValidatedSiopOpenId4VPRequest.fetchJwtString(requestUrl: requestUrl)
 
     // Extract the payload from the JSON Web Token
     guard let payload = JSONWebToken(jsonWebToken: jwt)?.payload else {
@@ -64,6 +57,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         throw ValidatedAuthorizationError.clientIdMismatch(clientId, payloadcClientId)
       }
     }
+
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
 
@@ -172,10 +166,7 @@ public extension ValidatedSiopOpenId4VPRequest {
             responseMode: try? .init(authorizationRequestData: authorizationRequestData),
             state: authorizationRequestData.state
           ))
-        } catch {
-          print(error.localizedDescription)
-          throw ValidatedAuthorizationError.conflictingData
-        }
+        } catch { throw ValidatedAuthorizationError.conflictingData }
       case .vpToken:
         self = try ValidatedSiopOpenId4VPRequest.createVpToken(
           clientId: clientId,
@@ -194,9 +185,20 @@ public extension ValidatedSiopOpenId4VPRequest {
           responseMode: try? .init(authorizationRequestData: authorizationRequestData),
           state: authorizationRequestData.state
         ))
-      case .code:
-        throw ValidatedAuthorizationError.unsupportedResponseType(".code")
+      case .code: throw ValidatedAuthorizationError.unsupportedResponseType(".code")
       }
+    }
+  }
+
+  fileprivate static func fetchJwtString(requestUrl: URL) async throws -> String {
+    struct ResultType: Codable {}
+    let fetcher = Fetcher<ResultType>()
+    let jwtResult = try await fetcher.fetchString(url: requestUrl)
+
+    switch jwtResult {
+    case .success(let string):
+      return try ValidatedSiopOpenId4VPRequest.extractJWT(string)
+    case .failure: throw ValidatedAuthorizationError.invalidJwtPayload
     }
   }
 }
