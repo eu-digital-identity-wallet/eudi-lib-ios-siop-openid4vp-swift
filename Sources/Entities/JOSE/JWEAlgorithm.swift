@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
 public class JWEAlgorithm: JOSEAlgorithm {
 
@@ -211,5 +212,11 @@ public extension JWEAlgorithm.Family {
     case .SYMMETRIC:
       return .init(SYMMETRIC)
     }
+  }
+}
+
+public extension KeyManagementAlgorithm {
+  init?(algorithm: JWEAlgorithm) {
+    self.init(rawValue: algorithm.name)
   }
 }

@@ -20,9 +20,9 @@ import Foundation
 public struct ClientMetaData: Codable, Equatable {
   public let jwksUri: String?
   public let jwks: String?
-  public let idTokenSignedResponseAlg: String
-  public let idTokenEncryptedResponseAlg: String
-  public let idTokenEncryptedResponseEnc: String
+  public let idTokenSignedResponseAlg: String?
+  public let idTokenEncryptedResponseAlg: String?
+  public let idTokenEncryptedResponseEnc: String?
   public let subjectSyntaxTypesSupported: [String]
   public let authorizationSignedResponseAlg: String?
   public let authorizationEncryptedResponseAlg: String?
@@ -50,15 +50,15 @@ public struct ClientMetaData: Codable, Equatable {
   ///   - idTokenEncryptedResponseEnc: The ID token encrypted response encryption.
   ///   - subjectSyntaxTypesSupported: The subject syntax types supported.
   public init(
-    jwksUri: String,
-    jwks: String,
-    idTokenSignedResponseAlg: String,
-    idTokenEncryptedResponseAlg: String,
-    idTokenEncryptedResponseEnc: String,
+    jwksUri: String?,
+    jwks: String?,
+    idTokenSignedResponseAlg: String?,
+    idTokenEncryptedResponseAlg: String?,
+    idTokenEncryptedResponseEnc: String?,
     subjectSyntaxTypesSupported: [String],
-    authorizationSignedResponseAlg: String,
-    authorizationEncryptedResponseAlg: String,
-    authorizationEncryptedResponseEnc: String
+    authorizationSignedResponseAlg: String?,
+    authorizationEncryptedResponseAlg: String?,
+    authorizationEncryptedResponseEnc: String?
   ) {
     self.jwksUri = jwksUri
     self.jwks = jwks

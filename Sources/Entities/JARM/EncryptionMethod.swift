@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
-public enum JwkSetSource {
+public enum EncryptionMethod: String {
+  case a128Cbc_hs256 = "A128CBC-HS256"
+  case a192Cbc_hs384 = "A192CBC-HS384"
+  case a256Cbc_hs512 = "A256CBC-HS512"
+  case a128gcm = "A128GCM"
+  case a192gcm = "A192GCM"
+  case a256gcm = "A256GCM"
+  case xc20p = "XC20P"
 }
 
-public struct PreregisteredClient {
-  public let clientId: String
-  public let jarSigningAlg: String
-  public let jwkSetSource: JwkSetSource
-
-  public init(
-    clientId: String,
-    jarSigningAlg: String,
-    jwkSetSource: JwkSetSource
-  ) {
-    self.clientId = clientId
-    self.jarSigningAlg = jarSigningAlg
-    self.jwkSetSource = jwkSetSource
+public extension ContentEncryptionAlgorithm {
+  init?(encryptionMethod: EncryptionMethod) {
+    self.init(rawValue: encryptionMethod.rawValue)
   }
 }

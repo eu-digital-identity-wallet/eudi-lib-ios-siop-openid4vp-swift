@@ -28,8 +28,10 @@ final class ResponseSignerEncryptorTests: DiXCTest {
   func testSignResponse() async throws {
     
     let controller = JOSEController()
+    
     let privateKey = try controller.generatePrivateKey()
     let publicKey = try controller.generatePublicKey(from: privateKey)
+    
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
       publicKey: publicKey,
@@ -69,6 +71,18 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
     
     XCTAssert(response.isValidJWT())
+    
+    // Verify signature
+    let jws = try JWS(compactSerialization: response)
+    guard let verifier: Verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) else {
+      XCTAssert(false, "Invalid Verifier")
+      return
+    }
+    
+    let payload = try jws.validate(using: verifier).payload
+    let message = String(data: payload.data(), encoding: .utf8)!
+
+    XCTAssert(message.isValidJSONString)
   }
   
   func testEncryptResponse() async throws {
@@ -175,5 +189,17 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
     
     XCTAssert(response.isValidJWT())
+    
+    // Decrypt payload
+    let jwe = try JWE(compactSerialization: response)
+    let decrypter = Decrypter(
+      keyManagementAlgorithm: KeyManagementAlgorithm(algorithm: encryptionAlg)!,
+      contentEncryptionAlgorithm: ContentEncryptionAlgorithm(encryptionMethod: .a128Cbc_hs256)!,
+      decryptionKey: privateKey
+    )!
+    let payload = try jwe.decrypt(using: decrypter)
+    let message = String(data: payload.data(), encoding: .utf8)!
+    
+    XCTAssert(message.isValidJWT())
   }
 }

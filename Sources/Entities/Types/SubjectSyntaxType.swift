@@ -15,12 +15,20 @@
  */
 import Foundation
 
-public enum EncryptionMethod: String {
-  case a128Cbc_hs256 = "A128CBC-HS256"
-  case a192Cbc_hs384 = "A192CBC-HS384"
-  case a256Cbc_hs512 = "A256CBC-HS512"
-  case a128gcm = "A128GCM"
-  case a192gcm = "A192GCM"
-  case a256gcm = "A256GCM"
-  case xc20p = "XC20P"
+public enum SubjectSyntaxType: Equatable {
+  case jwkThumbprint
+  case decentralizedIdentifier
+}
+
+public extension SubjectSyntaxType {
+  init?(rawValue: String) {
+    switch rawValue {
+    case "urn:ietf:params:oauth:jwk-thumbprint":
+      self = .jwkThumbprint
+    case "did:example", "did:key":
+      self = .decentralizedIdentifier
+    default:
+      return nil
+    }
+  }
 }
