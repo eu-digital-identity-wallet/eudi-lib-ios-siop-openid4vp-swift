@@ -44,10 +44,6 @@ platform :ios do
       result_bundle: true
     }
 
-    if ENV['CI'] 
-      params[:xcargs] = "-skipPackagePluginValidation"
-    end
-
     run_tests(params)
   end
 

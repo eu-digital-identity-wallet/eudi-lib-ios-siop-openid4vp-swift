@@ -136,8 +136,10 @@ public extension ValidatedSiopOpenId4VPRequest {
   init(authorizationRequestData: AuthorisationRequestObject) async throws {
     if let request = authorizationRequestData.request {
       try self.init(request: request)
+      
     } else if let requestUrl = authorizationRequestData.requestUri {
       try await self.init(requestUri: requestUrl, clientId: authorizationRequestData.clientId)
+      
     } else {
       // Determine the response type from the authorization request data
       let responseType = try ResponseType(authorizationRequestData: authorizationRequestData)
