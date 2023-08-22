@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
 public class JOSEEncryptionMethod: JOSEAlgorithm {
-
+  
   public private(set) var cekBitLength: Int = 0
-
+  
   public init(_ type: EncryptionMethodType) {
     let options = type.options
     super.init(name: type.name, requirement: options.requirement)
     self.cekBitLength = options.cekBitLength
   }
-
+  
   public override init(name: String) {
     super.init(name: name)
   }
-
+  
   public override init(name: String, requirement: JOSEAlgorithm.Requirement) {
     super.init(name: name, requirement: requirement)
   }
-
+  
   public init(
     name: String,
     requirement: JOSEAlgorithm.Requirement,
@@ -92,12 +93,12 @@ public extension JOSEEncryptionMethod {
 }
 
 public extension JOSEEncryptionMethod.Family {
-
+  
   enum JoseEncryptionMethodFamilyType {
     case AES_CBC_HMAC_SHA
     case AES_GCM
   }
-
+  
   static func parse(_ type: JoseEncryptionMethodFamilyType) -> JOSEEncryptionMethod.Family {
     switch type {
     case .AES_CBC_HMAC_SHA:
@@ -113,5 +114,11 @@ public extension JOSEEncryptionMethod.Family {
         .init(.A256GCM)
       )
     }
+  }
+}
+
+public extension ContentEncryptionAlgorithm {
+  init?(encryptionMethod: JOSEEncryptionMethod) {
+    self.init(rawValue: encryptionMethod.name)
   }
 }

@@ -22,7 +22,6 @@ public enum ResolvedRequestData {
 }
 
 public extension ResolvedRequestData {
-  // swiftlint:disable function_body_length
   /// Initializes a `ResolvedRequestData` instance with the provided parameters.
   ///
   /// - Parameters:
@@ -92,5 +91,4 @@ public extension ResolvedRequestData {
       ))
     }
   }
-  // swiftlint:enable function_body_length
 }
