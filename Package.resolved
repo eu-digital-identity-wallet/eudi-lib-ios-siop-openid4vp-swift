@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "revision" : "530058bf5a4dbcb4c227ffc8da27441f78ef274f",
-        "version" : "0.0.25"
+        "revision" : "5723f38d92320ecaad5d91e93e6c5b2adf93904a",
+        "version" : "0.0.26"
       }
     },
     {
@@ -30,10 +30,10 @@
     {
       "identity" : "joseswift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/airsidemobile/JOSESwift.git",
+      "location" : "https://github.com/niscy-eudiw/JOSESwift.git",
       "state" : {
-        "revision" : "10ed3b6736def7c26eb87135466b1cb46ea7e37f",
-        "version" : "2.4.0"
+        "revision" : "6af6dc327fa1bbc44c7e5d6501d4e1735c80ac8c",
+        "version" : "2.4.1"
       }
     },
     {

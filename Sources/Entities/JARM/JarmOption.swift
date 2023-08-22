@@ -23,7 +23,7 @@ public indirect enum JarmOption {
   )
   case encryptedResponse(
     responseSigningAlg: JWEAlgorithm,
-    responseEncryptionEnc: EncryptionMethod,
+    responseEncryptionEnc: JOSEEncryptionMethod,
     signingKeySet: WebKeySet
   )
   case signedAndEncryptedResponse(signed: JarmOption, encrypted: JarmOption)
@@ -46,13 +46,12 @@ public extension JarmOption {
     var encrypted: JarmOption?
     if let jweAlg = clientMetaData.authorizationEncryptedResponseEnc,
        let authorizationEncryptedResponseEnc = clientMetaData.authorizationEncryptedResponseEnc,
-       let encMethod = EncryptionMethod(rawValue: authorizationEncryptedResponseEnc),
        let jwkSet = clientMetaData.jwks,
        let webKeySet = try? WebKeySet(jwkSet) {
 
       encrypted = .encryptedResponse(
         responseSigningAlg: JWEAlgorithm(name: jweAlg),
-        responseEncryptionEnc: encMethod,
+        responseEncryptionEnc: JOSEEncryptionMethod.parse(authorizationEncryptedResponseEnc),
         signingKeySet: webKeySet
       )
     }
