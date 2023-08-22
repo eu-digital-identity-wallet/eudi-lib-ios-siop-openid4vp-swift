@@ -16,6 +16,7 @@
 import Foundation
 import Combine
 import XCTest
+import JOSESwift
 import PresentationExchange
 
 @testable import SiopOpenID4VP
@@ -23,6 +24,47 @@ import PresentationExchange
 final class SiopOpenID4VPTests: DiXCTest {
   
   var subscriptions = Set<AnyCancellable>()
+  
+  func preRegisteredWalletConfiguration() throws -> WalletOpenId4VPConfiguration {
+    let controller = JOSEController()
+    
+    let privateKey = try controller.generatePrivateKey()
+    let publicKey = try controller.generatePublicKey(from: privateKey)
+    
+    let alg = JWSAlgorithm(.RS256)
+    let publicKeyJWK = try RSAPublicKey(
+      publicKey: publicKey,
+      additionalParameters: [
+        "alg": alg.name,
+        "use": "sig",
+        "kid": UUID().uuidString
+      ])
+    
+    let keySet = try WebKeySet([
+      "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
+    ])
+    
+    return WalletOpenId4VPConfiguration(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      signingKey: privateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .isoX509,
+        .preregistered(clients: [
+          "Verifier": .init(
+            clientId: "Verifier",
+            jarSigningAlg: JWSAlgorithm(.RS256),
+            jwkSetSource: .fetchByReference(url: URL(string: "https://eudi.netcompany-intrasoft.com/wallet/public-keys.json")!)
+          )
+        ])],
+      vpFormatsSupported: []
+    )
+  }
   
   // MARK: - Presentation submission test
   
@@ -197,7 +239,9 @@ final class SiopOpenID4VPTests: DiXCTest {
     XCTAssertNotNil(authorizationRequestData)
     
     do {
-      let authorizationRequest = try await AuthorizationRequest(authorizationRequestData: authorizationRequestData!)
+      let authorizationRequest = try await AuthorizationRequest(
+        authorizationRequestData: authorizationRequestData!
+      )
       
       XCTAssertNotNil(authorizationRequest)
       
@@ -261,12 +305,15 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testRequestObjectGivenValidJWT() async throws {
     
+    let walletConfiguration = try preRegisteredWalletConfiguration()
+    
     let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
-    let validatedAuthorizationRequestData = try? ValidatedSiopOpenId4VPRequest(
-      request: TestsConstants.passByValueJWT
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
+      request: TestsConstants.passByValueJWT,
+      walletConfiguration: walletConfiguration
     )
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
