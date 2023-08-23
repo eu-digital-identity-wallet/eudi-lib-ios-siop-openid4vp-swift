@@ -59,7 +59,17 @@ final class SiopOpenID4VPTests: DiXCTest {
           "Verifier": .init(
             clientId: "Verifier",
             jarSigningAlg: JWSAlgorithm(.RS256),
-            jwkSetSource: .fetchByReference(url: URL(string: "https://eudi.netcompany-intrasoft.com/wallet/public-keys.json")!)
+            jwkSetSource: .passByValue(webKeys: .init(keys: [
+              .init(
+                kty: "RSA",
+                use: "sig",
+                kid: "6b011ae0-86cb-4732-9039-fb918875898c",
+                iat: 1691502634,
+                exponent: "AQAB",
+                modulus: "qT-f2yAL1pA-AFNYusDrkfJPZ9AGJT8-xfqszP90-i6wOd7vTf-OPtMjElZ6i2XpBJcbAX8ICjFn7Q2TeAyGeBieKRgXYd1ry18ae7bOu6lE_s7yg-O5PE4s1ZpTRl1W1RRcOo8ZICA0lGaucgn5eDMZqwBYyepIcndUlIWggeUJvekaZBsvBLe6RTEC_6OLiP-VZOu6F-jor69_J9Y5QzDGu3p27-LwcSpjy1i_cwDb9QzYqyPT3k72wmHIoHEgzVR32Y6E-LUSmJX7GZJ9MQNraf6ch-_Mg1pDZqlnSdK6XNLodU8YxelUIc9aAWKLxUFnSlUWjyqN-dDHBLgY9Q",
+                alg: "RS256"
+              )
+            ]))
           )
         ])],
       vpFormatsSupported: []
@@ -89,7 +99,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   }
   
   func testAuthorizationRequestDataGivenInvalidInput() throws {
-  
+    
     let parser = Parser()
     let result: Result<AuthorisationRequestObject, ParserError> = parser.decode(
       path: "input_descriptors_example",
@@ -156,8 +166,8 @@ final class SiopOpenID4VPTests: DiXCTest {
           [
             "birth_date":"1974-02-11",
           ]
-        ]
-      )
+      ]
+    )
     
     let presentationDefinition = try await sdk.process(url: TestsConstants.validAuthorizeUrl)
     let match = sdk.match(presentationDefinition: presentationDefinition, claims: [passportClaim])
@@ -483,9 +493,9 @@ final class SiopOpenID4VPTests: DiXCTest {
   func testSDKAuthorisationResolutionWithPublisherValidationResolutionGivenDataByReferenceIsValid() {
     
     let expectation = XCTestExpectation(description: "Authorisation request succesful")
-            
+    
     let sdk = SiopOpenID4VP()
-
+    
     overrideDependencies()
     
     sdk.authorizationPublisher(for: TestsConstants.validByReferenceAuthorizeUrl)
@@ -511,7 +521,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   func testSDKAuthorisationValidationGivenDataByReferenceIsValid() async throws {
     
     let sdk = SiopOpenID4VP()
-
+    
     overrideDependencies()
     
     do {

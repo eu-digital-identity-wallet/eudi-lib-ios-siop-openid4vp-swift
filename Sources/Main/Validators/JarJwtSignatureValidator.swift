@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
 public actor JarJwtSignatureValidator {
   
   public let walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
   private let resolver = WebKeyResolver()
+  private let objectType: JOSEObjectType
   
-  public init(walletOpenId4VPConfig: WalletOpenId4VPConfiguration?) {
+  public init(
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?,
+    objectType: JOSEObjectType = .REQ_JWT
+  ) {
     self.walletOpenId4VPConfig = walletOpenId4VPConfig
+    self.objectType = objectType
   }
   
   public func validate(clientId: String?, jwt: JWTString) async throws {
-    guard let jwt = JSONWebToken(jsonWebToken: jwt) else {
-      throw ValidatedAuthorizationError.invalidJwtPayload
-    }
-    
-    try await doValidate(clientId: clientId, jwt: jwt)
+    let jwt = try JWS(compactSerialization: jwt)
+    try await doValidate(clientId: clientId, jws: jwt)
   }
   
-  private func doValidate(clientId: String?, jwt: JSONWebToken) async throws {
-    let claimSet = jwt.payload
+  private func doValidate(clientId: String?, jws: JWS) async throws {
+    guard let dictionary = try JSONSerialization.jsonObject(with: jws.payload.data()) as? [String: Any] else {
+      throw ValidatedAuthorizationError.validationError("Invalid JWS payload")
+    }
+    let claimSet = dictionary
     
     guard let clientId = clientId else {
       throw ValidatedAuthorizationError.missingRequiredField("client_id")
@@ -61,7 +67,7 @@ public actor JarJwtSignatureValidator {
       try await validatePreregistered(
         supportedClientIdScheme: supported,
         clientId: clientId,
-        jwt: jwt
+        jws: jws
       )
     case .isox509: break
     default: break
@@ -71,7 +77,7 @@ public actor JarJwtSignatureValidator {
   private func validatePreregistered(
     supportedClientIdScheme: SupportedClientIdScheme?,
     clientId: String,
-    jwt: JSONWebToken
+    jws: JWS
   ) async throws {
     
     guard let supportedClientIdScheme = supportedClientIdScheme,
@@ -86,8 +92,8 @@ public actor JarJwtSignatureValidator {
       guard let client = clients[clientId] else {
         throw ValidatedAuthorizationError.validationError("Client with client_id \(clientId) is not pre-registered")
       }
-      await verifySignature(
-        jwt: jwt,
+      try await verifySignature(
+        jws: jws,
         client: client
       )
     default: throw ValidatedAuthorizationError.unsupportedClientIdScheme(
@@ -97,10 +103,34 @@ public actor JarJwtSignatureValidator {
   }
   
   private func verifySignature(
-    jwt: JSONWebToken,
+    jws: JWS,
     client: PreregisteredClient
-  ) async {
+  ) async throws {
+    
+    if jws.header.typ != objectType.rawValue {
+      throw ValidatedAuthorizationError.validationError("Header object type mismatch")
+    }
+    
     let jwk = await resolver.resolve(source: client.jwkSetSource)
-    print(jwk)
+    switch jwk {
+    case .success(let set):
+      guard let key = set?.keys.first(where: { $0.alg == jws.header.algorithm?.rawValue }),
+            let alg = key.alg,
+            let algorithm = SignatureAlgorithm(rawValue: alg)
+      else {
+        throw ValidatedAuthorizationError.validationError("Could not resolve key from JWK source")
+      }
+      
+      let publicKey = try RSAPublicKey(data: key.toDictionary().toThrowingJSONData())
+      let secKey = try publicKey.converted(to: SecKey.self)
+      if let verifier = Verifier(verifyingAlgorithm: algorithm, key: secKey) {
+        _ = try jws.validate(using: verifier)
+      } else {
+        throw ValidatedAuthorizationError.validationError("Unable to verify signature")
+      }
+
+    case .failure:
+      throw ValidatedAuthorizationError.validationError("Could not resolve key from JWK source")
+    }
   }
 }
