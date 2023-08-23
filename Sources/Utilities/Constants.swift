@@ -25,7 +25,6 @@ public struct Constants {
   public static let PRESENTATION_DEFINITION = "presentation_definition"
   public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
 
-  // swiftlint:disable line_length
   public static let clientMetaDataJWKSString = """
   {
     "keys": [{
@@ -38,7 +37,6 @@ public struct Constants {
     }]
   }
   """
-  // swiftlint:enable line_length
 
   public static func testClientMetaData() -> ClientMetaData {
     .init(

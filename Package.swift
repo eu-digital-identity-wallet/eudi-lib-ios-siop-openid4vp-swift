@@ -13,8 +13,8 @@ let package = Package(
   ],
   dependencies: [
     .package(
-      url: "https://github.com/airsidemobile/JOSESwift.git",
-      .upToNextMinor(from: "2.4.0")
+      url: "https://github.com/niscy-eudiw/JOSESwift.git",
+      .upToNextMinor(from: "2.4.1")
     ),
     .package(
       url: "https://github.com/birdrides/mockingbird.git",
@@ -22,7 +22,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.25")
+      .upToNextMinor(from: "0.0.26")
     )
   ],
   targets: [

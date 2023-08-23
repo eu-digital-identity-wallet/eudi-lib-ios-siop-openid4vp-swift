@@ -121,7 +121,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       holderId: UUID().uuidString,
       jarmOption: .encryptedResponse(
         responseSigningAlg: alg,
-        responseEncryptionEnc: .a128Cbc_hs256,
+        responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
         signingKeySet: wallet.signingKeySet
       )
     )
@@ -167,7 +167,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     
     let encrypted: JarmOption = .encryptedResponse(
       responseSigningAlg: encryptionAlg,
-      responseEncryptionEnc: .a128Cbc_hs256,
+      responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
       signingKeySet: wallet.signingKeySet
     )
     
@@ -194,7 +194,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let jwe = try JWE(compactSerialization: response)
     let decrypter = Decrypter(
       keyManagementAlgorithm: KeyManagementAlgorithm(algorithm: encryptionAlg)!,
-      contentEncryptionAlgorithm: ContentEncryptionAlgorithm(encryptionMethod: .a128Cbc_hs256)!,
+      contentEncryptionAlgorithm: ContentEncryptionAlgorithm(encryptionMethod: JOSEEncryptionMethod(.A128CBC_HS256))!,
       decryptionKey: privateKey
     )!
     let payload = try jwe.decrypt(using: decrypter)
