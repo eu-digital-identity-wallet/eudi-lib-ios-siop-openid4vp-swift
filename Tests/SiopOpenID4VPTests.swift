@@ -28,8 +28,8 @@ final class SiopOpenID4VPTests: DiXCTest {
   func preRegisteredWalletConfiguration() throws -> WalletOpenId4VPConfiguration {
     let controller = JOSEController()
     
-    let privateKey = try controller.generatePrivateKey()
-    let publicKey = try controller.generatePublicKey(from: privateKey)
+    let privateKey = try controller.generateRSAPrivateKey()
+    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
     
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(

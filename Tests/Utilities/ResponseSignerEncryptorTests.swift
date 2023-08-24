@@ -29,8 +29,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     
     let controller = JOSEController()
     
-    let privateKey = try controller.generatePrivateKey()
-    let publicKey = try controller.generatePublicKey(from: privateKey)
+    let privateKey = try controller.generateRSAPrivateKey()
+    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
     
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
@@ -88,8 +88,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
   func testEncryptResponse() async throws {
     
     let controller = JOSEController()
-    let privateKey = try controller.generatePrivateKey()
-    let publicKey = try controller.generatePublicKey(from: privateKey)
+    let privateKey = try controller.generateRSAPrivateKey()
+    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
     let alg = JWEAlgorithm(.RSA_OAEP_256)
     let publicKeyJWK = try RSAPublicKey(
       publicKey: publicKey,
@@ -134,8 +134,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
   func testSignEncryptResponse() async throws {
     
     let controller = JOSEController()
-    let privateKey = try controller.generatePrivateKey()
-    let publicKey = try controller.generatePublicKey(from: privateKey)
+    let privateKey = try controller.generateRSAPrivateKey()
+    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
     
     let signingAlg = JWSAlgorithm(.RS256)
     let encryptionAlg = JWEAlgorithm(.RSA_OAEP_256)

@@ -40,8 +40,8 @@ final class DirectPostJWTTests: DiXCTest {
     let kid = UUID()
     let jose = JOSEController()
     
-    let privateKey = try jose.generateHardcodedPrivateKey()
-    let publicKey = try jose.generatePublicKey(from: privateKey!)
+    let privateKey = try jose.generateHardcodedRSAPrivateKey()
+    let publicKey = try jose.generateRSAPublicKey(from: privateKey!)
     let rsaJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
@@ -64,7 +64,7 @@ final class DirectPostJWTTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-        signingKey: try JOSEController().generatePrivateKey(),
+        signingKey: try JOSEController().generateRSAPrivateKey(),
         signingKeySet: TestsConstants.webKeySet,
         supportedClientIdSchemes: [],
         vpFormatsSupported: []
@@ -86,7 +86,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-      signingKey: try JOSEController().generatePrivateKey(),
+      signingKey: try JOSEController().generateRSAPrivateKey(),
       signingKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: []
