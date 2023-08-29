@@ -25,7 +25,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     state: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
   )
   
-  func testSignResponse() async throws {
+  func testSignResponseUsingWalletConfiguration() async throws {
     
     let controller = JOSEController()
     
@@ -85,7 +85,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     XCTAssert(message.isValidJSONString)
   }
   
-  func testEncryptResponse() async throws {
+  func testRSAEncryptResponseWithoutWalletCongiguration() async throws {
     
     let controller = JOSEController()
     let privateKey = try controller.generateRSAPrivateKey()
@@ -103,26 +103,13 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-      signingKey: privateKey,
-      signingKeySet: keySet,
-      supportedClientIdSchemes: [],
-      vpFormatsSupported: []
-    )
-    
     let responseSignerEncryptor = ResponseSignerEncryptor()
     let jarmSpec: JarmSpec = .resolution(
       holderId: UUID().uuidString,
       jarmOption: .encryptedResponse(
         responseSigningAlg: alg,
         responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
-        signingKeySet: wallet.signingKeySet
+        signingKeySet: keySet
       )
     )
     
@@ -131,7 +118,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     XCTAssert(response.isValidJWT())
   }
   
-  func testSignEncryptResponse() async throws {
+  func testRSASignEncryptResponseWithWalletConfiguration() async throws {
     
     let controller = JOSEController()
     let privateKey = try controller.generateRSAPrivateKey()
@@ -196,6 +183,127 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       keyManagementAlgorithm: KeyManagementAlgorithm(algorithm: encryptionAlg)!,
       contentEncryptionAlgorithm: ContentEncryptionAlgorithm(encryptionMethod: JOSEEncryptionMethod(.A128CBC_HS256))!,
       decryptionKey: privateKey
+    )!
+    let payload = try jwe.decrypt(using: decrypter)
+    let message = String(data: payload.data(), encoding: .utf8)!
+    
+    XCTAssert(message.isValidJWT())
+  }
+  
+  func testECDHEncryptResponseWithoutWalletConfiguration() async throws {
+    
+    let controller = JOSEController()
+    let privateKey = try controller.generateECDHPrivateKey()
+    let publicKey = try controller.generateECDHPublicKey(from: privateKey)
+    
+    let alg = JWEAlgorithm(.ECDH_ES)
+    
+    let privateJWK = try ECPrivateKey(privateKey: privateKey)
+    let publicJWK = try ECPublicKey(
+      publicKey: publicKey,
+      additionalParameters: [
+        "alg": alg.name,
+        "use": "enc",
+        "kid": UUID().uuidString
+      ]
+    )
+    
+    let keySet = try WebKeySet([
+      "keys": [publicJWK.jsonString()?.convertToDictionary()]
+    ])
+    
+    let responseSignerEncryptor = ResponseSignerEncryptor()
+    let jarmSpec: JarmSpec = .resolution(
+      holderId: UUID().uuidString,
+      jarmOption: .encryptedResponse(
+        responseSigningAlg: alg,
+        responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
+        signingKeySet: keySet
+      )
+    )
+    
+    let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
+    
+    let encryptedJwe = try JWE(compactSerialization: response)
+    
+    let decrypter = Decrypter(
+      keyManagementAlgorithm: .init(algorithm: alg)!,
+      contentEncryptionAlgorithm: .A128CBCHS256,
+      decryptionKey: privateJWK
+    )!
+    
+    let decryptionPayload = try encryptedJwe.decrypt(using: decrypter)
+    let dictionary = try JSONSerialization.jsonObject(with: decryptionPayload.data(), options: []) as? [String: Any]
+    
+    XCTAssert(dictionary!["id_token"] as! String == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
+  }
+  
+  func testECDHSignEncryptResponseWithWalletConfiguration() async throws {
+    
+    let controller = JOSEController()
+    let rsaPrivateKey = try controller.generateRSAPrivateKey()
+    let ecdhPrivateKey = try controller.generateECDHPrivateKey()
+    let publicKey = try controller.generateECDHPublicKey(from: ecdhPrivateKey)
+    
+    let signingAlg = JWSAlgorithm(.RS256)
+    let encryptionAlg = JWEAlgorithm(.ECDH_ES)
+    
+    let privateJWK = try ECPrivateKey(privateKey: ecdhPrivateKey)
+    let publicJWK = try ECPublicKey(
+      publicKey: publicKey,
+      additionalParameters: [
+        "alg": signingAlg.name,
+        "use": "enc",
+        "kid": UUID().uuidString
+      ]
+    )
+    
+    let keySet = try WebKeySet([
+      "keys": [publicJWK.jsonString()?.convertToDictionary()]
+    ])
+    
+    let wallet: WalletOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      signingKey: rsaPrivateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [],
+      vpFormatsSupported: []
+    )
+    
+    let encrypted: JarmOption = .encryptedResponse(
+      responseSigningAlg: encryptionAlg,
+      responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
+      signingKeySet: wallet.signingKeySet
+    )
+    
+    let signed: JarmOption = .signedResponse(
+      responseSigningAlg: signingAlg,
+      signingKeySet: wallet.signingKeySet,
+      signingKey: wallet.signingKey
+    )
+    
+    let responseSignerEncryptor = ResponseSignerEncryptor()
+    let jarmSpec: JarmSpec = .resolution(
+      holderId: UUID().uuidString,
+      jarmOption: .signedAndEncryptedResponse(
+        signed: signed,
+        encrypted: encrypted
+      )
+    )
+    
+    let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
+    
+    // Decrypt payload
+    let jwe = try JWE(compactSerialization: response)
+    let decrypter = Decrypter(
+      keyManagementAlgorithm: KeyManagementAlgorithm(algorithm: encryptionAlg)!,
+      contentEncryptionAlgorithm: ContentEncryptionAlgorithm(encryptionMethod: JOSEEncryptionMethod(.A128CBC_HS256))!,
+      decryptionKey: privateJWK
     )!
     let payload = try jwe.decrypt(using: decrypter)
     let message = String(data: payload.data(), encoding: .utf8)!

@@ -247,8 +247,6 @@ private extension ResponseSignerEncryptor {
   ) throws -> Encrypter? {
     
     let data = try key.toDictionary().toThrowingJSONData()
-    let publicKey = try RSAPublicKey(data: data)
-    let secKey: SecKey = try publicKey.converted(to: SecKey.self)
     
     guard let keyAlgorithm: KeyManagementAlgorithm = .init(rawValue: jweAlgorithm.name) else {
       throw ValidatedAuthorizationError.validationError("Create encrypter - Unknown key management algorithm")
@@ -259,10 +257,19 @@ private extension ResponseSignerEncryptor {
     }
     
     if JWEAlgorithm.Family.parse(.RSA).contains(jweAlgorithm) {
+      let publicKey = try RSAPublicKey(data: data)
+      let secKey: SecKey = try publicKey.converted(to: SecKey.self)
       return Encrypter(
         keyManagementAlgorithm: keyAlgorithm,
         contentEncryptionAlgorithm: contentEncryptionAlgorithm,
         encryptionKey: secKey
+      )
+    } else if JWEAlgorithm.Family.parse(.ECDH_ES).contains(jweAlgorithm) {
+      let publicKey = try ECPublicKey(data: data)
+      return Encrypter(
+        keyManagementAlgorithm: keyAlgorithm,
+        contentEncryptionAlgorithm: contentEncryptionAlgorithm,
+        encryptionKey: publicKey
       )
     } else {
       throw ValidatedAuthorizationError.validationError("JWE Algorithm should be of the RSA family")

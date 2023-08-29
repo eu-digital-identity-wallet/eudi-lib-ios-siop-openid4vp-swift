@@ -47,8 +47,14 @@ public extension WebKeySet {
     public let use: String
     public let kid: String
     public let iat: Int64?
-    public let exponent: String
-    public let modulus: String
+    
+    public let crv: String?
+    public let x: String?
+    public let y: String?
+    
+    public let exponent: String?
+    public let modulus: String?
+    
     public let alg: String?
 
     /// Coding keys for encoding and decoding the structure.
@@ -57,8 +63,14 @@ public extension WebKeySet {
       case use
       case kid
       case iat
+      
+      case crv
+      case x
+      case y
+      
       case exponent = "e"
       case modulus = "n"
+      
       case alg
     }
 
@@ -67,17 +79,24 @@ public extension WebKeySet {
       use: String,
       kid: String,
       iat: Int64?,
-      exponent: String,
-      modulus: String,
+      crv: String?,
+      x: String?,
+      y: String?,
+      exponent: String?,
+      modulus: String?,
       alg: String?
     ) {
       self.kty = kty
       self.use = use
       self.kid = kid
       self.iat = iat
+      self.crv = crv
+      self.x = x
+      self.y = y
       self.exponent = exponent
       self.modulus = modulus
       self.alg = alg
+
     }
 
     public func hash(into hasher: inout Hasher) {
@@ -114,17 +133,29 @@ fileprivate extension WebKeySet {
           for: "iat",
           error: ValidatedAuthorizationError.validationError("key set key  \"iat\" not found")
         ),
-        exponent: try key.getValue(
-          for: "e",
-          error: ValidatedAuthorizationError.validationError("key set key  \"e\" not found")
+        crv: try? key.getValue(
+          for: "crv",
+          error: ValidatedAuthorizationError.validationError("key set key  \"crv\" not found")
         ),
-        modulus: try key.getValue(
+        x: try? key.getValue(
+          for: "x",
+          error: ValidatedAuthorizationError.validationError("key set key  \"x\" not found")
+        ),
+        y: try? key.getValue(
+          for: "y",
+          error: ValidatedAuthorizationError.validationError("key set key  \"y\" not found")
+        ),
+        exponent: try? key.getValue(
+          for: "e",
+          error: ValidatedAuthorizationError.validationError("key set key  \"x\" not found")
+        ),
+        modulus: try? key.getValue(
           for: "n",
-          error: ValidatedAuthorizationError.validationError("key set key  \"n\" not found")
+          error: ValidatedAuthorizationError.validationError("key set key  \"x\" not found")
         ),
         alg: try? key.getValue(
           for: "alg",
-          error: ValidatedAuthorizationError.validationError("key set key  \"alg\" not found")
+          error: ValidatedAuthorizationError.validationError("key set key  \"y\" not found")
         )
       )
     }

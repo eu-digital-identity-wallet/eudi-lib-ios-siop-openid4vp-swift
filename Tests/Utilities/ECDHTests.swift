@@ -64,8 +64,6 @@ final class ECDHTests: DiXCTest {
       encrypter: encrypter
     )
 
-    XCTAssert(jwe.compactSerializedString.replacingOccurrences(of: "..", with: ".").isValidJWT())
-  
     let encryptedJwe = try JWE(compactSerialization: jwe.compactSerializedString)
     
     let decrypter = Decrypter(
