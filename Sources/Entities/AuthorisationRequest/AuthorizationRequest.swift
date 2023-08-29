@@ -30,7 +30,10 @@ public extension AuthorizationRequest {
   /// Initializes an `AuthorizationRequest` using the provided authorization request data.
   /// - Parameters:
   ///   - authorizationRequestData: The authorization request data to process.
-  init(authorizationRequestData: AuthorisationRequestObject?) async throws {
+  init(
+    authorizationRequestData: AuthorisationRequestObject?,
+    walletConfiguration: WalletOpenId4VPConfiguration? = nil
+  ) async throws {
     guard let authorizationRequestData = authorizationRequestData else {
       throw ValidatedAuthorizationError.noAuthorizationData
     }
@@ -40,7 +43,10 @@ public extension AuthorizationRequest {
     }
 
     if let request = authorizationRequestData.request {
-      let validatedAuthorizationRequestData = try ValidatedSiopOpenId4VPRequest(request: request)
+      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
+        request: request,
+        walletConfiguration: walletConfiguration
+      )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
         clientMetaDataResolver: ClientMetaDataResolver(),
@@ -51,7 +57,8 @@ public extension AuthorizationRequest {
     } else if let requestUri = authorizationRequestData.requestUri {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
         requestUri: requestUri,
-        clientId: authorizationRequestData.clientId
+        clientId: authorizationRequestData.clientId,
+        walletConfiguration: walletConfiguration
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
@@ -62,7 +69,8 @@ public extension AuthorizationRequest {
       self = .jwt(request: resolvedSiopOpenId4VPRequestData)
     } else {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
-        authorizationRequestData: authorizationRequestData
+        authorizationRequestData: authorizationRequestData,
+        walletConfiguration: walletConfiguration
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(

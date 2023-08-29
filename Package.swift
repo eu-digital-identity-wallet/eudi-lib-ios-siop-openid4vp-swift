@@ -57,8 +57,7 @@ let package = Package(
         ),
         .product(
           name: "PresentationExchange",
-          package: "eudi-lib-ios-presentation-exchange-swift",
-          moduleAliases: ["SwiftLintPlugin": "DepSwiftLintPlugin"]
+          package: "eudi-lib-ios-presentation-exchange-swift"
         )
       ],
       path: "Tests"

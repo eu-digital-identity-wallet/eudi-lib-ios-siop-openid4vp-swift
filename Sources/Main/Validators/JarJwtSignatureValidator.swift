@@ -14,102 +14,123 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
-public class JarJwtSignatureValidator {
-
-  public let walletOpenId4VPConfig: WalletOpenId4VPConfiguration
-
-  public init(walletOpenId4VPConfig: WalletOpenId4VPConfiguration) {
+public actor JarJwtSignatureValidator {
+  
+  public let walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
+  private let resolver = WebKeyResolver()
+  private let objectType: JOSEObjectType
+  
+  public init(
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?,
+    objectType: JOSEObjectType = .REQ_JWT
+  ) {
     self.walletOpenId4VPConfig = walletOpenId4VPConfig
+    self.objectType = objectType
   }
-
-  public func validate(clientId: String, jwt: JWTString) async throws -> AuthorisationRequestObject? {
-    guard let jwt = JSONWebToken(jsonWebToken: jwt) else {
-      throw ValidatedAuthorizationError.invalidJwtPayload
+  
+  public func validate(clientId: String?, jwt: JWTString) async throws {
+    let jwt = try JWS(compactSerialization: jwt)
+    try await doValidate(clientId: clientId, jws: jwt)
+  }
+  
+  private func doValidate(clientId: String?, jws: JWS) async throws {
+    guard let dictionary = try JSONSerialization.jsonObject(with: jws.payload.data()) as? [String: Any] else {
+      throw ValidatedAuthorizationError.validationError("Invalid JWS payload")
     }
-
-    try await doValidate(clientId: clientId, jwt: jwt)
-
-    return requestObject(claimsSet: try JWTClaimsSet.parse(jwt.payload))
-  }
-
-  private func doValidate(clientId: String, jwt: JSONWebToken) async throws {
-    let claimSet = jwt.payload
-
+    let claimSet = dictionary
+    
+    guard let clientId = clientId else {
+      throw ValidatedAuthorizationError.missingRequiredField("client_id")
+    }
+    
     guard let jwtClientId = claimSet["client_id"] as? String else {
       throw ValidatedAuthorizationError.invalidClientId
     }
-
+    
     guard clientId == jwtClientId else {
       throw ValidatedAuthorizationError.clientIdMismatch(clientId, jwtClientId)
     }
-
-    guard let clientIdScheme = claimSet["client_id_scheme"] as? String else {
+    
+    guard let scheme = claimSet["client_id_scheme"] as? String else {
       throw ValidatedAuthorizationError.unsupportedClientIdScheme(nil)
     }
-
-    guard let supportedClientIdScheme = walletOpenId4VPConfig.supportedClientIdSchemes.first(where: {
-      $0.scheme == ClientIdScheme(rawValue: clientIdScheme)
-    }) else {
+    
+    guard let clientIdScheme = ClientIdScheme(rawValue: scheme) else {
       throw ValidatedAuthorizationError.unsupportedClientIdScheme(nil)
     }
-
-    switch supportedClientIdScheme.scheme {
+    
+    switch clientIdScheme {
     case .preRegistered:
-      try validatePreregistered(
-        supportedClientIdScheme: supportedClientIdScheme,
+      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
+      try await validatePreregistered(
+        supportedClientIdScheme: supported,
         clientId: clientId,
-        jwt: jwt
+        jws: jws
       )
-    default: throw ValidatedAuthorizationError.unsupportedClientIdScheme(
-        supportedClientIdScheme.scheme.rawValue
-      )
+    case .isox509: break
+    default: break
     }
   }
-
+  
   private func validatePreregistered(
-    supportedClientIdScheme: SupportedClientIdScheme,
+    supportedClientIdScheme: SupportedClientIdScheme?,
     clientId: String,
-    jwt: JSONWebToken
-  ) throws {
-
-    guard supportedClientIdScheme.scheme == .preRegistered else {
+    jws: JWS
+  ) async throws {
+    
+    guard let supportedClientIdScheme = supportedClientIdScheme,
+          supportedClientIdScheme.scheme == .preRegistered else {
       throw ValidatedAuthorizationError.unsupportedClientIdScheme(
-          supportedClientIdScheme.scheme.rawValue
-        )
-    }
-
-    switch supportedClientIdScheme {
-    case .preregistered: return
-    default: throw ValidatedAuthorizationError.unsupportedClientIdScheme(
-        supportedClientIdScheme.scheme.rawValue
+        supportedClientIdScheme?.scheme.rawValue
       )
     }
-  }
-
-  private func verifySignature(jwt: JSONWebToken) {
-  }
-
-  private func requestObject(claimsSet: JWTClaimsSet) -> AuthorisationRequestObject {
-    let claims = claimsSet.claims
-    return AuthorisationRequestObject(
-      responseType: claims["response_type"] as? String,
-      responseUri: claims["response_uri"] as? String,
-      redirectUri: claims["redirect_uri"] as? String,
-      presentationDefinition: claims["presentation_definition"] as? String,
-      presentationDefinitionUri: claims["presentation_definition_uri"] as? String,
-      request: claims["request"] as? String,
-      requestUri: claims["requestUri"] as? String,
-      clientMetaData: claims["client_metadata"] as? String,
-      clientId: claims["client_id"] as? String,
-      clientMetadataUri: claims["client_metadata_uri"] as? String,
-      clientIdScheme: claims["client_id_scheme"] as? String,
-      nonce: claims["nonce"] as? String,
-      scope: claims["scope"] as? String,
-      responseMode: claims["response_Mmode"] as? String,
-      state: claims["state"] as? String,
-      idTokenType: claims["id_token_type"] as? String,
-      supportedAlgorithm: claims["supported_algorithm"] as? String
+    
+    switch supportedClientIdScheme {
+    case .preregistered(let clients):
+      guard let client = clients[clientId] else {
+        throw ValidatedAuthorizationError.validationError("Client with client_id \(clientId) is not pre-registered")
+      }
+      try await verifySignature(
+        jws: jws,
+        client: client
+      )
+    default: throw ValidatedAuthorizationError.unsupportedClientIdScheme(
+      supportedClientIdScheme.scheme.rawValue
     )
+    }
+  }
+  
+  private func verifySignature(
+    jws: JWS,
+    client: PreregisteredClient
+  ) async throws {
+    
+    if jws.header.typ != objectType.rawValue {
+      throw ValidatedAuthorizationError.validationError("Header object type mismatch")
+    }
+    
+    let jwk = await resolver.resolve(source: client.jwkSetSource)
+    switch jwk {
+    case .success(let set):
+      guard let key = set?.keys.first(where: { $0.alg == jws.header.algorithm?.rawValue }),
+            let alg = key.alg,
+            let algorithm = SignatureAlgorithm(rawValue: alg)
+      else {
+        throw ValidatedAuthorizationError.validationError("Could not resolve key from JWK source")
+      }
+      
+      let publicKey = try RSAPublicKey(data: key.toDictionary().toThrowingJSONData())
+      let secKey = try publicKey.converted(to: SecKey.self)
+      if let verifier = Verifier(verifyingAlgorithm: algorithm, key: secKey) {
+        _ = try jws.validate(using: verifier)
+      } else {
+        throw ValidatedAuthorizationError.validationError("Unable to verify signature")
+      }
+
+    case .failure:
+      throw ValidatedAuthorizationError.validationError("Could not resolve key from JWK source")
+    }
   }
 }

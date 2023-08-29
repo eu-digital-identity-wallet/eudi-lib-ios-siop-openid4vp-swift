@@ -83,7 +83,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     let decentralizedIdentifier: DecentralizedIdentifier = .did("DID:example:12341512#$")
     let idTokenTTL: TimeInterval = 600.0
     let presentationDefinitionUriSupported: Bool = false
-    let signingKey = try JOSEController().generatePrivateKey()
+    let signingKey = try JOSEController().generateRSAPrivateKey()
     let signingKeySet = WebKeySet(keys: [])
     let supportedClientIdSchemes: [SupportedClientIdScheme] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]

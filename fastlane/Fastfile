@@ -41,12 +41,9 @@ platform :ios do
       package_path: '.',
       scheme: 'SiopOpenID4VP',
       devices: ['iPhone 14'], 
-      result_bundle: true
+      result_bundle: true,
+      output_style: 'raw'
     }
-
-    if ENV['CI'] 
-      params[:xcargs] = "-skipPackagePluginValidation"
-    end
 
     run_tests(params)
   end

@@ -29,7 +29,8 @@ public extension ValidatedSiopOpenId4VPRequest {
   // Initialize with a request URI
   init(
     requestUri: JWTURI,
-    clientId: String?
+    clientId: String?,
+    walletConfiguration: WalletOpenId4VPConfiguration? = nil
   ) async throws {
     // Convert request URI to URL
     guard let requestUrl = URL(string: requestUri) else {
@@ -61,6 +62,12 @@ public extension ValidatedSiopOpenId4VPRequest {
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
 
+    try await ValidatedSiopOpenId4VPRequest.validateSignature(
+      token: jwt,
+      clientId: clientId,
+      walletConfiguration: walletConfiguration
+    )
+    
     // Initialize the validated request based on the response type
     switch responseType {
     case .idToken:
@@ -87,7 +94,11 @@ public extension ValidatedSiopOpenId4VPRequest {
   }
 
   // Initialize with a JWT string
-  init(request: JWTString) throws {
+  init(
+    request: JWTString,
+    walletConfiguration: WalletOpenId4VPConfiguration? = nil
+  ) async throws {
+    
     // Create a JSONWebToken from the JWT string
     let jsonWebToken = JSONWebToken(jsonWebToken: request)
 
@@ -107,6 +118,12 @@ public extension ValidatedSiopOpenId4VPRequest {
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
 
+    try await ValidatedSiopOpenId4VPRequest.validateSignature(
+      token: request,
+      clientId: clientId,
+      walletConfiguration: walletConfiguration
+    )
+    
     // Initialize the validated request based on the response type
     switch responseType {
     case .idToken:
@@ -133,11 +150,16 @@ public extension ValidatedSiopOpenId4VPRequest {
   }
 
   // Initialize with an AuthorisationRequestObject object
-  init(authorizationRequestData: AuthorisationRequestObject) async throws {
+  init(
+    authorizationRequestData: AuthorisationRequestObject,
+    walletConfiguration: WalletOpenId4VPConfiguration? = nil
+  ) async throws {
     if let request = authorizationRequestData.request {
-      try self.init(request: request)
+      try await self.init(request: request, walletConfiguration: walletConfiguration)
+      
     } else if let requestUrl = authorizationRequestData.requestUri {
-      try await self.init(requestUri: requestUrl, clientId: authorizationRequestData.clientId)
+      try await self.init(requestUri: requestUrl, clientId: authorizationRequestData.clientId, walletConfiguration: walletConfiguration)
+      
     } else {
       // Determine the response type from the authorization request data
       let responseType = try ResponseType(authorizationRequestData: authorizationRequestData)
@@ -205,6 +227,17 @@ public extension ValidatedSiopOpenId4VPRequest {
 
 // Private extension for ValidatedSiopOpenId4VPRequest
 private extension ValidatedSiopOpenId4VPRequest {
+  
+  static func validateSignature(
+    token: JWTString,
+    clientId: String?,
+    walletConfiguration: WalletOpenId4VPConfiguration? = nil
+  ) async throws {
+    
+    let validator = JarJwtSignatureValidator(walletOpenId4VPConfig: walletConfiguration)
+    try? await validator.validate(clientId: clientId, jwt: token)
+  }
+  
   // Create a VP token request
   static func createVpToken(
     clientId: String,
@@ -276,6 +309,10 @@ private extension ValidatedSiopOpenId4VPRequest {
     ))
   }
 
+  /// Extracts the JWT token from a given JSON string or JWT string.
+  /// - Parameter string: The input string containing either a JSON object with a JWT field or a JWT string.
+  /// - Returns: The extracted JWT token.
+  /// - Throws: An error of type `ValidatedAuthorizationError` if the input string is not a valid JSON or JWT, or if there's a decoding error.
   private static func extractJWT(_ string: String) throws -> String {
     if string.isValidJSONString {
       if let jsonData = string.data(using: .utf8) {

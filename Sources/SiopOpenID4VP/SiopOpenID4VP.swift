@@ -36,10 +36,10 @@ public protocol SiopOpenID4VPType {
 
 public class SiopOpenID4VP: SiopOpenID4VPType {
 
-  let wallet: WalletOpenId4VPConfiguration?
+  let walletConfiguration: WalletOpenId4VPConfiguration?
 
-  public init(wallet: WalletOpenId4VPConfiguration? = nil) {
-    self.wallet = wallet
+  public init(walletConfiguration: WalletOpenId4VPConfiguration? = nil) {
+    self.walletConfiguration = walletConfiguration
     registerDependencies()
   }
 
@@ -58,7 +58,10 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
   public func process(url: URL) async throws -> PresentationDefinition {
     let authorizationRequestData = AuthorisationRequestObject(from: url)
 
-    let authorizationRequest = try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
+    let authorizationRequest = try await AuthorizationRequest(
+      authorizationRequestData: authorizationRequestData,
+      walletConfiguration: walletConfiguration
+    )
 
     switch authorizationRequest {
     case .jwt(request: let data):
@@ -85,7 +88,10 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
   public func authorize(url: URL) async throws -> AuthorizationRequest {
     let authorizationRequestData = AuthorisationRequestObject(from: url)
 
-    return try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
+    return try await AuthorizationRequest(
+      authorizationRequestData: authorizationRequestData,
+      walletConfiguration: walletConfiguration
+    )
   }
 
   public func authorizationPublisher(for url: URL) -> AnyPublisher<AuthorizationRequest, Error> {
@@ -93,7 +99,10 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       Task {
         do {
           let authorizationRequestData = AuthorisationRequestObject(from: url)
-          let result =  try await AuthorizationRequest(authorizationRequestData: authorizationRequestData)
+          let result =  try await AuthorizationRequest(
+            authorizationRequestData: authorizationRequestData,
+            walletConfiguration: self.walletConfiguration
+          )
           promise(.success(result))
         } catch {
           promise(.failure(error))
