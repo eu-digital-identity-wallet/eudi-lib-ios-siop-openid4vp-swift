@@ -26,6 +26,8 @@ public protocol AuthorisationServiceType {
 /// An implementation of the `AuthorisationServiceType` protocol.
 public actor AuthorisationService: AuthorisationServiceType {
 
+  var joseResponse: String?
+  
   public init() { }
 
   /// Posts a response and returns a generic result.
@@ -71,7 +73,9 @@ public actor AuthorisationService: AuthorisationServiceType {
           new
         })
       )
-
+      
+      self.joseResponse = joseResponse
+      
       let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
       return try result.get()
     case .query, .queryJwt, .fragment, .fragmentJwt:

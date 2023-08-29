@@ -119,8 +119,8 @@ final class DirectPostTests: DiXCTest {
     let kid = UUID()
     let jose = JOSEController()
     
-    let privateKey = try jose.generateHardcodedRSAPrivateKey()
-    let publicKey = try jose.generateRSAPublicKey(from: privateKey!)
+    let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
     let rsaJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
@@ -140,7 +140,7 @@ final class DirectPostTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-      signingKey: try JOSEController().generateRSAPrivateKey(),
+      signingKey: try KeyController.generateRSAPrivateKey(),
       signingKeySet: WebKeySet(keys: []),
       supportedClientIdSchemes: [],
       vpFormatsSupported: []
@@ -195,8 +195,8 @@ final class DirectPostTests: DiXCTest {
     let kid = UUID()
     let jose = JOSEController()
     
-    let privateKey = try jose.generateHardcodedRSAPrivateKey()
-    let publicKey = try jose.generateRSAPublicKey(from: privateKey!)
+    let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
     let rsaJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
@@ -219,7 +219,7 @@ final class DirectPostTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-        signingKey: try JOSEController().generateRSAPrivateKey(),
+        signingKey: try KeyController.generateRSAPrivateKey(),
         signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
         vpFormatsSupported: []
@@ -256,15 +256,15 @@ final class DirectPostTests: DiXCTest {
     let sdk = SiopOpenID4VP()
     
     overrideDependencies()
-    let r = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/0PRSzK2JLhoT9XxNjVf4zUcverdpMz3uLsk-fo20WPgzEiTvRIRt1rHfsOocVxi_qz1Ciw_Y16CSuLdpu1fYOg")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/Us82GWwQqj-SRg42JjymaWTjYwmrAzf05JwOyig1Qzz9NUTJrlvl04UqGQWqX6T3R7XpIS-muIGC51aeG9YFcQ")!)
     
     // Do not fail 404
-    guard let r = r else {
+    guard let result = result else {
       XCTAssert(true)
       return
     }
     
-    switch r {
+    switch result {
     case .notSecured: break
     case .jwt(request: let request):
       let resolved = request
@@ -272,8 +272,8 @@ final class DirectPostTests: DiXCTest {
       let kid = UUID()
       let jose = JOSEController()
       
-      let privateKey = try jose.generateHardcodedRSAPrivateKey()
-      let publicKey = try jose.generateRSAPublicKey(from: privateKey!)
+      let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
+      let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
       let rsaJWK = try RSAPublicKey(
         publicKey: publicKey,
         additionalParameters: [
@@ -293,7 +293,7 @@ final class DirectPostTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-        signingKey: try JOSEController().generateRSAPrivateKey(),
+        signingKey: try KeyController.generateRSAPrivateKey(),
         signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
         vpFormatsSupported: []

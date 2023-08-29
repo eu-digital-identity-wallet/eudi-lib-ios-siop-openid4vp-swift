@@ -50,13 +50,13 @@ public struct ClientMetaData: Codable, Equatable {
   ///   - idTokenEncryptedResponseEnc: The ID token encrypted response encryption.
   ///   - subjectSyntaxTypesSupported: The subject syntax types supported.
   public init(
-    jwksUri: String?,
-    jwks: String?,
-    idTokenSignedResponseAlg: String?,
+    jwksUri: String? = nil,
+    jwks: String? = nil,
+    idTokenSignedResponseAlg: String? = nil,
     idTokenEncryptedResponseAlg: String?,
     idTokenEncryptedResponseEnc: String?,
     subjectSyntaxTypesSupported: [String],
-    authorizationSignedResponseAlg: String?,
+    authorizationSignedResponseAlg: String? = nil,
     authorizationEncryptedResponseAlg: String?,
     authorizationEncryptedResponseEnc: String?
   ) {
@@ -173,7 +173,7 @@ public extension ClientMetaData {
 
   struct Validated: Equatable {
     public let jwkSet: WebKeySet?
-    public let idTokenJWSAlg: JWSAlgorithm
+    public let idTokenJWSAlg: JWSAlgorithm?
     public let idTokenJWEAlg: JWEAlgorithm
     public let idTokenJWEEnc: JOSEEncryptionMethod
     public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
@@ -183,7 +183,7 @@ public extension ClientMetaData {
 
     public init(
       jwkSet: WebKeySet?,
-      idTokenJWSAlg: JWSAlgorithm,
+      idTokenJWSAlg: JWSAlgorithm?,
       idTokenJWEAlg: JWEAlgorithm,
       idTokenJWEEnc: JOSEEncryptionMethod,
       subjectSyntaxTypesSupported: [SubjectSyntaxType],

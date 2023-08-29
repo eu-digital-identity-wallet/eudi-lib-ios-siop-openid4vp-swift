@@ -21,7 +21,6 @@ import JOSESwift
 
 final class ECDHTests: DiXCTest {
 
-  var controller: JOSEController!
   var privateKey: SecKey!
   var publicKey: SecKey!
   
@@ -30,9 +29,8 @@ final class ECDHTests: DiXCTest {
   }
   
   override func setUp() {
-    controller = JOSEController()
-    privateKey = try! controller.generateECDHPrivateKey()
-    publicKey = try! controller.generateECDHPublicKey(from: privateKey!)
+    privateKey = try! KeyController.generateECDHPrivateKey()
+    publicKey = try! KeyController.generateECDHPublicKey(from: privateKey!)
   }
   
   func testEncryptionThenDecryption() async throws {

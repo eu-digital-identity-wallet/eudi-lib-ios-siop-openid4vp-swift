@@ -272,7 +272,7 @@ private extension ResponseSignerEncryptor {
         encryptionKey: publicKey
       )
     } else {
-      throw ValidatedAuthorizationError.validationError("JWE Algorithm should be of the RSA family")
+      throw ValidatedAuthorizationError.validationError("JWE Algorithm should be of the RSA or ECDH family")
     }
   }
 

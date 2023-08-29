@@ -147,10 +147,9 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
 private extension JarJwtSignatureValidatorTests {
   
   func preRegisteredWalletConfiguration() throws -> WalletOpenId4VPConfiguration {
-    let controller = JOSEController()
     
-    let privateKey = try controller.generateRSAPrivateKey()
-    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
     
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
@@ -188,10 +187,9 @@ private extension JarJwtSignatureValidatorTests {
   }
   
   func iso509WalletConfiguration() throws -> WalletOpenId4VPConfiguration {
-    let controller = JOSEController()
     
-    let privateKey = try controller.generateRSAPrivateKey()
-    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
     
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(

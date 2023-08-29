@@ -73,7 +73,9 @@ public extension AuthorizationResponse {
         )
       default: throw AuthorizationError.unsupportedResolution
       }
-    case .vpToken, .idAndVPToken:
+    case .vpToken:
+      throw ValidatedAuthorizationError.unsupportedConsent
+    case .idAndVPToken:
       throw ValidatedAuthorizationError.unsupportedConsent
     case .negative(let error):
       switch resolvedRequest {

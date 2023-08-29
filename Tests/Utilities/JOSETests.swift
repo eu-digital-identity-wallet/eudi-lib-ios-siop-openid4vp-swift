@@ -25,8 +25,8 @@ final class JOSETests: DiXCTest {
     let kid = UUID()
     let jose = JOSEController()
     
-    let privateKey = try jose.generateHardcodedRSAPrivateKey()
-    let publicKey = try jose.generateRSAPublicKey(from: privateKey!)
+    let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
     let rsaJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
@@ -46,7 +46,7 @@ final class JOSETests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-      signingKey: try JOSEController().generateRSAPrivateKey(),
+      signingKey: try KeyController.generateRSAPrivateKey(),
       signingKeySet: WebKeySet(keys: []),
       supportedClientIdSchemes: [],
       vpFormatsSupported: []

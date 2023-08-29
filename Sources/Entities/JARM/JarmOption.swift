@@ -44,7 +44,7 @@ public extension JarmOption {
     }
 
     var encrypted: JarmOption?
-    if let jweAlg = clientMetaData.authorizationEncryptedResponseEnc,
+    if let jweAlg = clientMetaData.authorizationEncryptedResponseAlg,
        let authorizationEncryptedResponseEnc = clientMetaData.authorizationEncryptedResponseEnc,
        let jwkSet = clientMetaData.jwks,
        let webKeySet = try? WebKeySet(jwkSet) {

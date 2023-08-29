@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "revision" : "5723f38d92320ecaad5d91e93e6c5b2adf93904a",
-        "version" : "0.0.26"
+        "revision" : "4a6ee3e1115cf4dde7787d6a3eca1d333f2b53e0",
+        "version" : "0.0.27"
       }
     },
     {
