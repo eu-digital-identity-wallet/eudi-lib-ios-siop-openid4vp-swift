@@ -266,9 +266,10 @@ final class DirectPostTests: DiXCTest {
   func testSDKEndtoEndDirectPost() async throws {
     
     let sdk = SiopOpenID4VP()
+    let url = "http://localhost:8080/wallet/request.jwt/Ded7nfzIsGWXTIrWPPpGV8DTg_OhVCssd8Jkp79owiNNRTiCfRQHWIXw6Vdy8mbkTHBLVyks7GXckZITegzvag"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/51c0TG1NgGlbJTkxnK6oTLGtGZvy4vIEvnzNKtTgtD4DRiPxEhi24IK6x3gk4JwXHlQLqlK0fAsGDvDj61QJQQ")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=\(url)")!)
     
     // Do not fail 404
     guard let result = result else {
