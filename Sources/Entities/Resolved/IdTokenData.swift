@@ -19,7 +19,7 @@ extension ResolvedRequestData {
   /// A structure representing the data related to the ID token.
   public struct IdTokenData {
     public let idTokenType: IdTokenType
-    public let clientMetaData: ClientMetaData?
+    public let clientMetaData: ClientMetaData.Validated?
     public let clientId: String
     public let nonce: String
     public let responseMode: ResponseMode?
@@ -37,7 +37,7 @@ extension ResolvedRequestData {
     ///   - scope: The scope.
     public init(
       idTokenType: IdTokenType,
-      clientMetaData: ClientMetaData?,
+      clientMetaData: ClientMetaData.Validated?,
       clientId: String,
       nonce: String,
       responseMode: ResponseMode?,

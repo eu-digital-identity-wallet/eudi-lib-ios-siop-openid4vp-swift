@@ -23,13 +23,16 @@ import JOSESwift
 
 final class DirectPostTests: DiXCTest {
   
-  func testValidDirectPostAuthorisationResponseGivenValidResolutionAndConsent() {
+  func testValidDirectPostAuthorisationResponseGivenValidResolutionAndConsent() async throws {
+    
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
     
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: TestsConstants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -54,13 +57,16 @@ final class DirectPostTests: DiXCTest {
     XCTAssertNotNil(response)
   }
   
-  func testExpectedErrorGivenValidResolutionAndNegaticeConsent() {
+  func testExpectedErrorGivenValidResolutionAndNegaticeConsent() async throws {
+    
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
     
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: TestsConstants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -103,11 +109,14 @@ final class DirectPostTests: DiXCTest {
   
   func testPostDirectPostAuthorisationResponseGivenValidResolutionAndConsent() async throws {
     
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
+    
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: TestsConstants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -179,11 +188,14 @@ final class DirectPostTests: DiXCTest {
   
   func testPostDirectPostAuthorisationResponseGivenValidResolutionAndNegativeConsent() async throws {
     
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
+    
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: TestsConstants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -256,7 +268,7 @@ final class DirectPostTests: DiXCTest {
     let sdk = SiopOpenID4VP()
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/Us82GWwQqj-SRg42JjymaWTjYwmrAzf05JwOyig1Qzz9NUTJrlvl04UqGQWqX6T3R7XpIS-muIGC51aeG9YFcQ")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/51c0TG1NgGlbJTkxnK6oTLGtGZvy4vIEvnzNKtTgtD4DRiPxEhi24IK6x3gk4JwXHlQLqlK0fAsGDvDj61QJQQ")!)
     
     // Do not fail 404
     guard let result = result else {

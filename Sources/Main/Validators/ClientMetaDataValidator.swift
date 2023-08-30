@@ -18,7 +18,11 @@ import Foundation
 internal actor ClientMetaDataValidator {
   
   @discardableResult
-  func validate(clientMetaData: ClientMetaData) async throws -> ClientMetaData.Validated? {
+  func validate(clientMetaData: ClientMetaData?) async throws -> ClientMetaData.Validated? {
+    
+    guard let clientMetaData = clientMetaData else {
+      return nil
+    }
     
     let idTokenJWSAlg: JWSAlgorithm? = parseOptionJWSAlgorithm(algorithm: clientMetaData.idTokenSignedResponseAlg)
     

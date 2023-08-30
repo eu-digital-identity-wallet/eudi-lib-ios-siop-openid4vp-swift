@@ -24,11 +24,14 @@ final class DirectPostJWTTests: DiXCTest {
   
   func testPostDirectPostJwtAuthorisationResponseGivenValidResolutionAndNegativeConsent() async throws {
     
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
+    
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: Constants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: Constants.testClientId,
         nonce: Constants.testNonce,
         responseMode: Constants.testDirectPostJwtResponseMode,
@@ -143,7 +146,7 @@ final class DirectPostJWTTests: DiXCTest {
     )
     
     let validator = ClientMetaDataValidator()
-    try await validator.validate(clientMetaData: clientMetaData)
+    let metaData = try await validator.validate(clientMetaData: clientMetaData)
     
     let wallet: WalletOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -161,7 +164,7 @@ final class DirectPostJWTTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: clientMetaData,
+        clientMetaData: metaData,
         clientId: Constants.testClientId,
         nonce: Constants.testNonce,
         responseMode: Constants.testDirectPostJwtResponseMode,

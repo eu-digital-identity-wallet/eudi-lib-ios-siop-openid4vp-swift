@@ -107,7 +107,7 @@ private extension AuthorizationResponse {
   static func buildAuthorizationResponse(
     responseMode: ResponseMode?,
     payload: AuthorizationResponsePayload,
-    clientMetaData: ClientMetaData?,
+    clientMetaData: ClientMetaData.Validated?,
     walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
   ) throws -> AuthorizationResponse {
     guard let responseMode = responseMode else {

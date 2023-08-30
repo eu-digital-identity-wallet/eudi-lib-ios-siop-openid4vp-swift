@@ -31,13 +31,13 @@ public indirect enum JarmOption {
 
 public extension JarmOption {
   init(
-    clientMetaData: ClientMetaData,
+    clientMetaData: ClientMetaData.Validated,
     walletOpenId4VPConfig: WalletOpenId4VPConfiguration
   ) throws {
     var signed: JarmOption?
     if let signingAlgorithm = clientMetaData.authorizationSignedResponseAlg {
       signed = .signedResponse(
-        responseSigningAlg: JWSAlgorithm(name: signingAlgorithm),
+        responseSigningAlg: signingAlgorithm,
         signingKeySet: walletOpenId4VPConfig.signingKeySet,
         signingKey: walletOpenId4VPConfig.signingKey
       )
@@ -46,13 +46,12 @@ public extension JarmOption {
     var encrypted: JarmOption?
     if let jweAlg = clientMetaData.authorizationEncryptedResponseAlg,
        let authorizationEncryptedResponseEnc = clientMetaData.authorizationEncryptedResponseEnc,
-       let jwkSet = clientMetaData.jwks,
-       let webKeySet = try? WebKeySet(jwkSet) {
+       let jwkSet = clientMetaData.jwkSet {
 
       encrypted = .encryptedResponse(
-        responseSigningAlg: JWEAlgorithm(name: jweAlg),
-        responseEncryptionEnc: JOSEEncryptionMethod.parse(authorizationEncryptedResponseEnc),
-        signingKeySet: webKeySet
+        responseSigningAlg: jweAlg,
+        responseEncryptionEnc: authorizationEncryptedResponseEnc,
+        signingKeySet: jwkSet
       )
     }
 
