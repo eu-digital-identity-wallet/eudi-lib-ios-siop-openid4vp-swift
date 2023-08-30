@@ -49,7 +49,7 @@ final class SiopOpenID4VPTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [

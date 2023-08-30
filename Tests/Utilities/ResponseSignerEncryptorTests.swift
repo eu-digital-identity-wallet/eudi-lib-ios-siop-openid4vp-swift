@@ -49,7 +49,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
@@ -142,7 +142,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
@@ -263,7 +263,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: rsaPrivateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],

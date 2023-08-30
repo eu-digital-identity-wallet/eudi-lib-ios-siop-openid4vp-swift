@@ -67,7 +67,7 @@ final class DirectPostJWTTests: DiXCTest {
           .jwkThumbprint
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
-        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
         signingKey: try KeyController.generateRSAPrivateKey(),
         signingKeySet: TestsConstants.webKeySet,
         supportedClientIdSchemes: [],
@@ -89,7 +89,7 @@ final class DirectPostJWTTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: try KeyController.generateRSAPrivateKey(),
       signingKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
@@ -248,7 +248,7 @@ final class DirectPostJWTTests: DiXCTest {
           .jwkThumbprint
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
-        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
         signingKey: try KeyController.generateRSAPrivateKey(),
         signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
