@@ -75,15 +75,13 @@ public struct ClientMetaData: Codable, Equatable {
   /// - Parameter metaData: The JSON object representing the metadata.
   /// - Throws: An error if the required values are missing or invalid in the metadata.
   public init(metaData: JSONObject) throws {
-    self.jwksUri = try metaData.getValue(
+    self.jwksUri = try? metaData.getValue(
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.jwks = try? metaData.getValue(
-      for: "jwks",
-      error: ValidatedAuthorizationError.invalidClientMetadata
-    )
+    let jwks = metaData["jwks"] as? [String: Any]
+    self.jwks = jwks?.toJSONString()
 
     self.idTokenSignedResponseAlg = try metaData.getValue(
       for: "id_token_signed_response_alg",
@@ -126,15 +124,13 @@ public struct ClientMetaData: Codable, Equatable {
       throw ValidatedAuthorizationError.invalidClientMetadata
     }
 
-    self.jwksUri = try metaData.getValue(
+    self.jwksUri = try? metaData.getValue(
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.jwks = try? metaData.getValue(
-      for: "jwks",
-      error: ValidatedAuthorizationError.invalidClientMetadata
-    )
+    let jwks = metaData["jwks"] as? [String: Any]
+    self.jwks = jwks?.toJSONString()
 
     self.idTokenSignedResponseAlg = try metaData.getValue(
       for: "id_token_signed_response_alg",
