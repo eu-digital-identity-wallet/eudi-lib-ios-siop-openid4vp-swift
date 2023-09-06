@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
 public struct WebKeySet: Codable, Equatable {
   public let keys: [Key]
@@ -159,5 +160,15 @@ fileprivate extension WebKeySet {
         )
       )
     }
+  }
+}
+
+public extension WebKeySet {
+  init(jwk: JWK) throws {
+    self.keys = try WebKeySet.transformToKey([jwk.toDictionary()])
+  }
+  
+  init(jwks: [JWK]) throws {
+    self.keys = try WebKeySet.transformToKey(jwks.map { try $0.toDictionary() })
   }
 }
