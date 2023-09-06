@@ -35,9 +35,9 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
   
   func testJarJwtSignature_WhenInputsAreValid_ThenAssertSuccess() async throws {
     
-    self.validator = try! JarJwtSignatureValidator(
+    self.validator = try? XCTUnwrap(JarJwtSignatureValidator(
       walletOpenId4VPConfig: preRegisteredWalletConfiguration()
-    )
+    ))
     
     let walletConfig = await validator.walletOpenId4VPConfig!
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
