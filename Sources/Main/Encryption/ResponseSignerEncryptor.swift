@@ -149,6 +149,15 @@ private extension ResponseSignerEncryptor {
       "kid": keyAndEncryptor.key.kid
     ])
     
+    let d = try data
+      .toDictionary()
+      .merging([
+        JWTClaimNames.issuer: holderId,
+        JWTClaimNames.issuedAt: Int(Date().timeIntervalSince1970.rounded())
+      ], uniquingKeysWith: { _, new in
+        new
+      })
+    
     let jwe = try JWE(
       header: header,
       payload: Payload(data
@@ -158,8 +167,7 @@ private extension ResponseSignerEncryptor {
           JWTClaimNames.issuedAt: Int(Date().timeIntervalSince1970.rounded())
         ], uniquingKeysWith: { _, new in
           new
-        })
-          .toThrowingJSONData()
+        }).toThrowingJSONData()
       ),
       encrypter: keyAndEncryptor.encrypter
     )
@@ -272,7 +280,7 @@ private extension ResponseSignerEncryptor {
         encryptionKey: publicKey
       )
     } else {
-      throw ValidatedAuthorizationError.validationError("JWE Algorithm should be of the RSA family")
+      throw ValidatedAuthorizationError.validationError("JWE Algorithm should be of the RSA or ECDH family")
     }
   }
 

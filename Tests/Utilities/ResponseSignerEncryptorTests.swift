@@ -27,10 +27,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
   
   func testSignResponseUsingWalletConfiguration() async throws {
     
-    let controller = JOSEController()
-    
-    let privateKey = try controller.generateRSAPrivateKey()
-    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
     
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
@@ -43,7 +41,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     
     let keySet = try WebKeySet([
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
-    ])
+    ]) 
     
     let wallet: WalletOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -51,7 +49,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
@@ -87,9 +85,9 @@ final class ResponseSignerEncryptorTests: DiXCTest {
   
   func testRSAEncryptResponseWithoutWalletCongiguration() async throws {
     
-    let controller = JOSEController()
-    let privateKey = try controller.generateRSAPrivateKey()
-    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
+    
     let alg = JWEAlgorithm(.RSA_OAEP_256)
     let publicKeyJWK = try RSAPublicKey(
       publicKey: publicKey,
@@ -120,9 +118,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
   
   func testRSASignEncryptResponseWithWalletConfiguration() async throws {
     
-    let controller = JOSEController()
-    let privateKey = try controller.generateRSAPrivateKey()
-    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
     
     let signingAlg = JWSAlgorithm(.RS256)
     let encryptionAlg = JWEAlgorithm(.RSA_OAEP_256)
@@ -145,7 +142,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
@@ -192,9 +189,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
   
   func testECDHEncryptResponseWithoutWalletConfiguration() async throws {
     
-    let controller = JOSEController()
-    let privateKey = try controller.generateECDHPrivateKey()
-    let publicKey = try controller.generateECDHPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateECDHPrivateKey()
+    let publicKey = try KeyController.generateECDHPublicKey(from: privateKey)
     
     let alg = JWEAlgorithm(.ECDH_ES)
     
@@ -240,10 +236,9 @@ final class ResponseSignerEncryptorTests: DiXCTest {
   
   func testECDHSignEncryptResponseWithWalletConfiguration() async throws {
     
-    let controller = JOSEController()
-    let rsaPrivateKey = try controller.generateRSAPrivateKey()
-    let ecdhPrivateKey = try controller.generateECDHPrivateKey()
-    let publicKey = try controller.generateECDHPublicKey(from: ecdhPrivateKey)
+    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+    let ecdhPrivateKey = try KeyController.generateECDHPrivateKey()
+    let publicKey = try KeyController.generateECDHPublicKey(from: ecdhPrivateKey)
     
     let signingAlg = JWSAlgorithm(.RS256)
     let encryptionAlg = JWEAlgorithm(.ECDH_ES)
@@ -268,7 +263,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: rsaPrivateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],

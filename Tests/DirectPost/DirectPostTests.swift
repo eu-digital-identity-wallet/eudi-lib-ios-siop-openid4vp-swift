@@ -23,13 +23,16 @@ import JOSESwift
 
 final class DirectPostTests: DiXCTest {
   
-  func testValidDirectPostAuthorisationResponseGivenValidResolutionAndConsent() {
+  func testValidDirectPostAuthorisationResponseGivenValidResolutionAndConsent() async throws {
+    
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
     
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: TestsConstants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -54,13 +57,16 @@ final class DirectPostTests: DiXCTest {
     XCTAssertNotNil(response)
   }
   
-  func testExpectedErrorGivenValidResolutionAndNegaticeConsent() {
+  func testExpectedErrorGivenValidResolutionAndNegaticeConsent() async throws {
+    
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
     
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: TestsConstants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -103,11 +109,14 @@ final class DirectPostTests: DiXCTest {
   
   func testPostDirectPostAuthorisationResponseGivenValidResolutionAndConsent() async throws {
     
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
+    
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: TestsConstants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -119,8 +128,8 @@ final class DirectPostTests: DiXCTest {
     let kid = UUID()
     let jose = JOSEController()
     
-    let privateKey = try jose.generateHardcodedRSAPrivateKey()
-    let publicKey = try jose.generateRSAPublicKey(from: privateKey!)
+    let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
     let rsaJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
@@ -139,8 +148,8 @@ final class DirectPostTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-      signingKey: try JOSEController().generateRSAPrivateKey(),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
+      signingKey: try KeyController.generateRSAPrivateKey(),
       signingKeySet: WebKeySet(keys: []),
       supportedClientIdSchemes: [],
       vpFormatsSupported: []
@@ -179,11 +188,14 @@ final class DirectPostTests: DiXCTest {
   
   func testPostDirectPostAuthorisationResponseGivenValidResolutionAndNegativeConsent() async throws {
     
+    let validator = ClientMetaDataValidator()
+    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
+    
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        clientMetaData: TestsConstants.testClientMetaData(),
+        clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -195,8 +207,8 @@ final class DirectPostTests: DiXCTest {
     let kid = UUID()
     let jose = JOSEController()
     
-    let privateKey = try jose.generateHardcodedRSAPrivateKey()
-    let publicKey = try jose.generateRSAPublicKey(from: privateKey!)
+    let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
     let rsaJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
@@ -218,8 +230,8 @@ final class DirectPostTests: DiXCTest {
           .jwkThumbprint
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
-        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-        signingKey: try JOSEController().generateRSAPrivateKey(),
+        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
+        signingKey: try KeyController.generateRSAPrivateKey(),
         signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
         vpFormatsSupported: []
@@ -254,17 +266,18 @@ final class DirectPostTests: DiXCTest {
   func testSDKEndtoEndDirectPost() async throws {
     
     let sdk = SiopOpenID4VP()
+    let url = "http://localhost:8080/wallet/request.jwt/XDvKn587dP4vinhLGU0E2VgV8EyVUX2YgQZ_pR8I39cxRaOaDtXbx5kab--ruAocz3czYiRARnOumSe-GKCJOQ"
     
     overrideDependencies()
-    let r = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=http://localhost:8080/wallet/request.jwt/0PRSzK2JLhoT9XxNjVf4zUcverdpMz3uLsk-fo20WPgzEiTvRIRt1rHfsOocVxi_qz1Ciw_Y16CSuLdpu1fYOg")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=\(url)")!)
     
     // Do not fail 404
-    guard let r = r else {
+    guard let result = result else {
       XCTAssert(true)
       return
     }
     
-    switch r {
+    switch result {
     case .notSecured: break
     case .jwt(request: let request):
       let resolved = request
@@ -272,8 +285,8 @@ final class DirectPostTests: DiXCTest {
       let kid = UUID()
       let jose = JOSEController()
       
-      let privateKey = try jose.generateHardcodedRSAPrivateKey()
-      let publicKey = try jose.generateRSAPublicKey(from: privateKey!)
+      let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
+      let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
       let rsaJWK = try RSAPublicKey(
         publicKey: publicKey,
         additionalParameters: [
@@ -292,8 +305,8 @@ final class DirectPostTests: DiXCTest {
           .jwkThumbprint
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
-        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
-        signingKey: try JOSEController().generateRSAPrivateKey(),
+        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
+        signingKey: try KeyController.generateRSAPrivateKey(),
         signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [],
         vpFormatsSupported: []

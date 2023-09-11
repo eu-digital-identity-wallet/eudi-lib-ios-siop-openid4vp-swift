@@ -35,9 +35,9 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
   
   func testJarJwtSignature_WhenInputsAreValid_ThenAssertSuccess() async throws {
     
-    self.validator = try! JarJwtSignatureValidator(
+    self.validator = try? XCTUnwrap(JarJwtSignatureValidator(
       walletOpenId4VPConfig: preRegisteredWalletConfiguration()
-    )
+    ))
     
     let walletConfig = await validator.walletOpenId4VPConfig!
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
@@ -147,10 +147,9 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
 private extension JarJwtSignatureValidatorTests {
   
   func preRegisteredWalletConfiguration() throws -> WalletOpenId4VPConfiguration {
-    let controller = JOSEController()
     
-    let privateKey = try controller.generateRSAPrivateKey()
-    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
     
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
@@ -171,7 +170,7 @@ private extension JarJwtSignatureValidatorTests {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
@@ -188,10 +187,9 @@ private extension JarJwtSignatureValidatorTests {
   }
   
   func iso509WalletConfiguration() throws -> WalletOpenId4VPConfiguration {
-    let controller = JOSEController()
     
-    let privateKey = try controller.generateRSAPrivateKey()
-    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
     
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
@@ -212,7 +210,7 @@ private extension JarJwtSignatureValidatorTests {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [

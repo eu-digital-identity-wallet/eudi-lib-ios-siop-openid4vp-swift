@@ -26,10 +26,9 @@ final class SiopOpenID4VPTests: DiXCTest {
   var subscriptions = Set<AnyCancellable>()
   
   func preRegisteredWalletConfiguration() throws -> WalletOpenId4VPConfiguration {
-    let controller = JOSEController()
     
-    let privateKey = try controller.generateRSAPrivateKey()
-    let publicKey = try controller.generateRSAPublicKey(from: privateKey)
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
     
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
@@ -50,7 +49,7 @@ final class SiopOpenID4VPTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123456789abcdefghi"),
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [

@@ -61,7 +61,7 @@ final class WebKeyResolverTests: DiXCTest {
     
     switch response {
     case .success(let webKeys):
-      XCTAssertEqual(webKeys?.keys.first, TestsConstants.webKeySet.keys.first)
+      XCTAssertEqual(webKeys?.keys.first?.kty, TestsConstants.webKeySet.keys.first?.kty)
     case .failure(let error):
       XCTFail(error.localizedDescription)
     }

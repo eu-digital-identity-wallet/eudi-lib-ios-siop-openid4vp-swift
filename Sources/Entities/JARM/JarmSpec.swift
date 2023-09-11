@@ -21,7 +21,7 @@ public enum JarmSpec {
 
 public extension JarmSpec {
   init(
-    clientMetaData: ClientMetaData?,
+    clientMetaData: ClientMetaData.Validated?,
     walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
   ) throws {
 

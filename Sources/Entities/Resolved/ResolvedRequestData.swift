@@ -38,9 +38,12 @@ public extension ResolvedRequestData {
       let clientMetaDataSource = request.clientMetaDataSource
       let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
 
+      let validator = ClientMetaDataValidator()
+      let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData)
+      
       self = .idToken(request: .init(
         idTokenType: request.idTokenType,
-        clientMetaData: clientMetaData,
+        clientMetaData: validatedClientMetaData,
         clientId: request.clientId,
         nonce: request.nonce,
         responseMode: request.responseMode,
@@ -51,6 +54,9 @@ public extension ResolvedRequestData {
       let clientMetaDataSource = request.clientMetaDataSource
       let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
 
+      let validator = ClientMetaDataValidator()
+      let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData)
+      
       guard
         let presentationDefinition = try? await presentationDefinitionResolver.resolve(
           source: request.presentationDefinitionSource
@@ -61,7 +67,7 @@ public extension ResolvedRequestData {
 
       self = .vpToken(request: .init(
         presentationDefinition: presentationDefinition,
-        clientMetaData: clientMetaData,
+        clientMetaData: validatedClientMetaData,
         clientId: request.clientId,
         nonce: request.nonce,
         responseMode: request.responseMode,

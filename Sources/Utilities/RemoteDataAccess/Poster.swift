@@ -104,6 +104,9 @@ public struct Poster: Posting {
       let configuration = URLSessionConfiguration.default
       let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
       let (_, response) = try await session.data(for: request)
+      
+      print(response)
+      
       return .success((response as? HTTPURLResponse)?.statusCode.isWithinRange(200...299) ?? false)
     } catch let error as NSError {
       if error.domain == NSURLErrorDomain {

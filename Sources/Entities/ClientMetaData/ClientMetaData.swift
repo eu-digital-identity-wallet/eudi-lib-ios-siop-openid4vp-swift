@@ -50,13 +50,13 @@ public struct ClientMetaData: Codable, Equatable {
   ///   - idTokenEncryptedResponseEnc: The ID token encrypted response encryption.
   ///   - subjectSyntaxTypesSupported: The subject syntax types supported.
   public init(
-    jwksUri: String?,
-    jwks: String?,
-    idTokenSignedResponseAlg: String?,
+    jwksUri: String? = nil,
+    jwks: String? = nil,
+    idTokenSignedResponseAlg: String? = nil,
     idTokenEncryptedResponseAlg: String?,
     idTokenEncryptedResponseEnc: String?,
     subjectSyntaxTypesSupported: [String],
-    authorizationSignedResponseAlg: String?,
+    authorizationSignedResponseAlg: String? = nil,
     authorizationEncryptedResponseAlg: String?,
     authorizationEncryptedResponseEnc: String?
   ) {
@@ -75,15 +75,13 @@ public struct ClientMetaData: Codable, Equatable {
   /// - Parameter metaData: The JSON object representing the metadata.
   /// - Throws: An error if the required values are missing or invalid in the metadata.
   public init(metaData: JSONObject) throws {
-    self.jwksUri = try metaData.getValue(
+    self.jwksUri = try? metaData.getValue(
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.jwks = try? metaData.getValue(
-      for: "jwks",
-      error: ValidatedAuthorizationError.invalidClientMetadata
-    )
+    let jwks = metaData["jwks"] as? [String: Any]
+    self.jwks = jwks?.toJSONString()
 
     self.idTokenSignedResponseAlg = try metaData.getValue(
       for: "id_token_signed_response_alg",
@@ -126,15 +124,13 @@ public struct ClientMetaData: Codable, Equatable {
       throw ValidatedAuthorizationError.invalidClientMetadata
     }
 
-    self.jwksUri = try metaData.getValue(
+    self.jwksUri = try? metaData.getValue(
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.jwks = try? metaData.getValue(
-      for: "jwks",
-      error: ValidatedAuthorizationError.invalidClientMetadata
-    )
+    let jwks = metaData["jwks"] as? [String: Any]
+    self.jwks = jwks?.toJSONString()
 
     self.idTokenSignedResponseAlg = try metaData.getValue(
       for: "id_token_signed_response_alg",
@@ -173,7 +169,7 @@ public extension ClientMetaData {
 
   struct Validated: Equatable {
     public let jwkSet: WebKeySet?
-    public let idTokenJWSAlg: JWSAlgorithm
+    public let idTokenJWSAlg: JWSAlgorithm?
     public let idTokenJWEAlg: JWEAlgorithm
     public let idTokenJWEEnc: JOSEEncryptionMethod
     public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
@@ -183,7 +179,7 @@ public extension ClientMetaData {
 
     public init(
       jwkSet: WebKeySet?,
-      idTokenJWSAlg: JWSAlgorithm,
+      idTokenJWSAlg: JWSAlgorithm?,
       idTokenJWEAlg: JWEAlgorithm,
       idTokenJWEEnc: JOSEEncryptionMethod,
       subjectSyntaxTypesSupported: [SubjectSyntaxType],

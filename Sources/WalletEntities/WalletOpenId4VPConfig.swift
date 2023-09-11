@@ -57,7 +57,7 @@ public struct WalletOpenId4VPConfiguration {
     decentralizedIdentifier = try DecentralizedIdentifier(rawValue: "did:example:123|did:example:456")
     idTokenTTL = 600.0
     presentationDefinitionUriSupported = false
-    signingKey = try JOSEController().generateRSAPrivateKey()
+    signingKey = try KeyController.generateRSAPrivateKey()
     signingKeySet = WebKeySet(keys: [])
     supportedClientIdSchemes = []
     vpFormatsSupported = []

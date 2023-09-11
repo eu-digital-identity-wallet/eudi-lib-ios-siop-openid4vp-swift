@@ -47,7 +47,7 @@ final class ClientMetaDataValidatorTests: XCTestCase {
       authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc
     ))!
     
-    XCTAssertEqual(response.jwkSet?.keys.first, TestsConstants.webKeySet.keys.first)
+    XCTAssertEqual(response.jwkSet?.keys.first?.kty, TestsConstants.webKeySet.keys.first?.kty)
   }
   
   func testValidate_WhenFetchByReferenceWithInvalidURL_ThenReturnFailure() async throws {

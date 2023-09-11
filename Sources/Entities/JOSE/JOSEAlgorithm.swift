@@ -18,7 +18,7 @@ import Foundation
 public class JOSEAlgorithm: Hashable {
 
   public static func == (lhs: JOSEAlgorithm, rhs: JOSEAlgorithm) -> Bool {
-    lhs.hashValue == rhs.hashValue
+    lhs.name == rhs.name
   }
 
   public func hash(into hasher: inout Hasher) {

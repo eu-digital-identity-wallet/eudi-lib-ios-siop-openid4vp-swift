@@ -26,6 +26,8 @@ public protocol AuthorisationServiceType {
 /// An implementation of the `AuthorisationServiceType` protocol.
 public actor AuthorisationService: AuthorisationServiceType {
 
+  var joseResponse: String?
+  
   public init() { }
 
   /// Posts a response and returns a generic result.
@@ -62,18 +64,24 @@ public actor AuthorisationService: AuthorisationServiceType {
     case .directPostJwt(let url, let data, let jarmSpec):
       let encryptor = ResponseSignerEncryptor()
       let joseResponse = try await encryptor.signEncryptResponse(spec: jarmSpec, data: data)
+      
+      let payload = try data.toDictionary().merging([
+        "response": joseResponse
+      ], uniquingKeysWith: { _, new in
+        new
+      })
+      
       let post = VerifierFormPost(
         additionalHeaders: ["Content-Type": ContentType.form.rawValue],
         url: url,
-        formData: try data.toDictionary().merging([
-          "response": joseResponse
-        ], uniquingKeysWith: { _, new in
-          new
-        })
+        formData: payload
       )
-
+      
+      self.joseResponse = joseResponse
+      
       let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
       return try result.get()
+      
     case .query, .queryJwt, .fragment, .fragmentJwt:
       throw AuthorizationError.invalidResponseMode
     }
