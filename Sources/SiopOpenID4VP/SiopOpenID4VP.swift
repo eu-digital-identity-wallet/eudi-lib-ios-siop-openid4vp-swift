@@ -140,8 +140,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       authorizationResponse: response
     )
 
-    let outcome: DispatchOutcome = try await dispatcher.dispatch()
-    return outcome
+    return try await dispatcher.dispatch()
   }
 
   /**

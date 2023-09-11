@@ -74,7 +74,26 @@ public extension AuthorizationResponse {
       default: throw AuthorizationError.unsupportedResolution
       }
     case .vpToken:
-      throw ValidatedAuthorizationError.unsupportedConsent
+      switch resolvedRequest {
+      case .vpToken(let request):
+        let payload : AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
+          vpToken: "dummy_vp_token",
+          verifiableCredential: [],
+          presentationSubmission: .init(
+            id: "psId",
+            definitionID: "psId",
+            descriptorMap: []
+          ),
+          state: request.state ?? ""
+        )
+        self = try .buildAuthorizationResponse(
+          responseMode: request.responseMode,
+          payload: payload,
+          clientMetaData: request.clientMetaData,
+          walletOpenId4VPConfig: walletOpenId4VPConfig
+        )
+      default: throw AuthorizationError.unsupportedResolution
+      }
     case .idAndVPToken:
       throw ValidatedAuthorizationError.unsupportedConsent
     case .negative(let error):

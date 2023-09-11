@@ -31,17 +31,16 @@ public enum ClientConsent {
   /**
    In response to an OpenId4VPAuthorization where the wallet has claims that fulfill Verifier's presentation definition
     - Parameters:
-     - approvedClaims: The claims to include chosen by the holder
+     - TBD
     */
-  case vpToken(approvedClaims: [Claim])
+  case vpToken
 
   /**
    In response to a SiopOpenId4VPAuthentication
     - Parameters:
-     - idToken: The id_token produced by the wallet
-     - approvedClaims: The claims to include chosen by the holder
+     - TBD
     */
-  case idAndVPToken(approvedClaims: [Claim])
+  case idAndVPToken
 
   /**
    No consensus. Holder decided to reject the request
