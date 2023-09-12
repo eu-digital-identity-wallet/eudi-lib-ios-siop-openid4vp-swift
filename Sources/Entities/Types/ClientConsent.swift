@@ -31,16 +31,19 @@ public enum ClientConsent {
   /**
    In response to an OpenId4VPAuthorization where the wallet has claims that fulfill Verifier's presentation definition
     - Parameters:
-     - TBD
+     - vpToken the vp_token to be included in the authorization response
+     - presentationSubmission the presentation submission to be included in the authorization response
     */
-  case vpToken
+  case vpToken(vpToken: VpToken, presentationSubmission: PresentationSubmission)
 
   /**
    In response to a SiopOpenId4VPAuthentication
     - Parameters:
-     - TBD
+     - idToken The id_token produced by the wallet
+     - vpToken the vp_token to be included in the authorization response
+     - presentationSubmission the presentation submission to be included in the authorization response
     */
-  case idAndVPToken
+  case idAndVPToken(idToken: JWTString, vpToken: VpToken, presentationSubmission: PresentationSubmission)
 
   /**
    No consensus. Holder decided to reject the request

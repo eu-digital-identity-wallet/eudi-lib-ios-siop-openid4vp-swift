@@ -208,7 +208,7 @@ final class DirectPostJWTTests: DiXCTest {
   func testSDKEndtoEndDirectPostJwt() async throws {
     
     let sdk = SiopOpenID4VP()
-    let url = "http://localhost:8080/wallet/request.jwt/H2gxMSVqB_GYkyeoNVMtk7mNCkglKAjh88j3948D7H6gwqTeGWfkw-KqbRl1K8o4Ct96o6XQ78sm9ItbkmWFnA"
+    let url = "http://localhost:8080/wallet/request.jwt/Co60g67d_yx3TGq3uG8eeg2oznEGJ125DhzbLZKgCkc0o4tEUvX-Iu93BXbkBhj1YPhnSEZK70ir2oyKuJdnvA"
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=\(url)")!)
@@ -252,7 +252,14 @@ final class DirectPostJWTTests: DiXCTest {
       )
       
       // Obtain consent
-      let consent: ClientConsent = .vpToken
+      let consent: ClientConsent = .vpToken(
+        vpToken: "dummy_vp_token",
+        presentationSubmission: .init(
+          id: "psId",
+          definitionID: "psId",
+          descriptorMap: []
+        )
+      )
       
       // Generate a direct post authorisation response
       let response = try! AuthorizationResponse(
@@ -344,7 +351,14 @@ final class DirectPostJWTTests: DiXCTest {
         state: "state"
       ))
     
-    let consent: ClientConsent = .vpToken
+    let consent: ClientConsent = .vpToken(
+      vpToken: "dummy_vp_token",
+      presentationSubmission: .init(
+        id: "psId",
+        definitionID: "psId",
+        descriptorMap: []
+      )
+    )
     
     let response: AuthorizationResponse = try .init(
       resolvedRequest: resolved,
