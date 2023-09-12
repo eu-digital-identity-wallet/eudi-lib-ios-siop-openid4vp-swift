@@ -73,17 +73,13 @@ public extension AuthorizationResponse {
         )
       default: throw AuthorizationError.unsupportedResolution
       }
-    case .vpToken:
+    case .vpToken(let vpToken, let presentationSubmission):
       switch resolvedRequest {
       case .vpToken(let request):
         let payload : AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
-          vpToken: "dummy_vp_token",
+          vpToken: vpToken,
           verifiableCredential: [],
-          presentationSubmission: .init(
-            id: "psId",
-            definitionID: "psId",
-            descriptorMap: []
-          ),
+          presentationSubmission: presentationSubmission,
           state: request.state ?? ""
         )
         self = try .buildAuthorizationResponse(
