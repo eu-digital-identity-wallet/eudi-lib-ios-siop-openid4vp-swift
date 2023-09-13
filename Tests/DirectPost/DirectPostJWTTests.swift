@@ -208,12 +208,12 @@ final class DirectPostJWTTests: DiXCTest {
   func testSDKEndtoEndDirectPostJwt() async throws {
     
     let nonce = UUID().uuidString
-    let session = try await TestHelpers.getDirectPostJwtSession(nonce: nonce)
+    let session = try await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
     
     let sdk = SiopOpenID4VP()
     let url = session["request_uri"]
     let clientId = session["client_id"]
-    let presentationId = session["presentation_id"]
+    let presentationId = session["presentation_id"] as! String
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
@@ -284,9 +284,7 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
       }
       
-      let fetcher = Fetcher<String>()
-      let pollingUrl = URL(string: "http://localhost:8080/ui/presentations/\(presentationId!)?nonce=\(nonce)")!
-      let pollingResult = try await fetcher.fetchString(url: pollingUrl)
+      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
       
       switch pollingResult {
       case .success:

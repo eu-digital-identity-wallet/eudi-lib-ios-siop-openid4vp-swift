@@ -266,12 +266,12 @@ final class DirectPostTests: DiXCTest {
   func testSDKEndtoEndDirectPost() async throws {
     
     let nonce = UUID().uuidString
-    let session = try await TestHelpers.getDirectPostSession(nonce: nonce)
+    let session = try await TestsHelpers.getDirectPostSession(nonce: nonce)
     
     let sdk = SiopOpenID4VP()
     let url = session["request_uri"]
     let clientId = session["client_id"]
-    let presentationId = session["presentation_id"]
+    let presentationId = session["presentation_id"] as! String
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
@@ -344,12 +344,10 @@ final class DirectPostTests: DiXCTest {
       
       XCTAssertTrue(result == .accepted(redirectURI: nil))
       
-      let fetcher = Fetcher<String>()
-      let pollingUrl = URL(string: "http://localhost:8080/ui/presentations/\(presentationId!)?nonce=\(nonce)")!
-      let pollingResult = try await fetcher.fetchString(url: pollingUrl)
+      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
       
       switch pollingResult {
-      case .success(let string):
+      case .success:
         XCTAssert(true)
       case .failure:
         XCTAssert(false)

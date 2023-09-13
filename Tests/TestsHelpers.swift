@@ -15,7 +15,9 @@
  */
 import Foundation
 
-class TestHelpers {
+@testable import SiopOpenID4VP
+
+class TestsHelpers {
   static func getDirectPostSession(
     nonce: String
   ) async throws -> [String: Any] {
@@ -71,5 +73,11 @@ class TestHelpers {
     
     let (data, _) = try await URLSession.shared.data(for: request)
     return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+  }
+  
+  static func pollVerifier(presentationId: String, nonce: String) async throws -> Result<String, FetchError>{
+    let fetcher = Fetcher<String>()
+    let pollingUrl = URL(string: "http://localhost:8080/ui/presentations/\(presentationId)?nonce=\(nonce)")!
+    return try await fetcher.fetchString(url: pollingUrl)
   }
 }
