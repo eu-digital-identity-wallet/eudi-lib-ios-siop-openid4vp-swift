@@ -18,7 +18,7 @@ import Security
 
 public class KeyController {
   
-  static func generateHardcodedRSAPrivateKey() throws -> SecKey? {
+  public static func generateHardcodedRSAPrivateKey() throws -> SecKey? {
     
     // Convert PEM key to Data
     guard
@@ -48,7 +48,7 @@ public class KeyController {
     return secKey
   }
   
-  static func generateRSAPrivateKey() throws -> SecKey {
+  public static func generateRSAPrivateKey() throws -> SecKey {
     let attributes: [String: Any] = [
       kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
       kSecAttrKeySizeInBits as String: 2048
@@ -61,14 +61,14 @@ public class KeyController {
     return privateKey
   }
   
-  static func generateRSAPublicKey(from privateKey: SecKey) throws -> SecKey {
+  public static func generateRSAPublicKey(from privateKey: SecKey) throws -> SecKey {
     guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
       throw JOSEError.invalidPublicKey
     }
     return publicKey
   }
   
-  static func generateECDHPrivateKey() throws -> SecKey {
+  public static func generateECDHPrivateKey() throws -> SecKey {
     let attributes: [String: Any] = [
       kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
       kSecAttrKeySizeInBits as String: 256
@@ -81,14 +81,14 @@ public class KeyController {
     return privateKey
   }
   
-  static func generateECDHPublicKey(from privateKey: SecKey) throws -> SecKey {
+  public static func generateECDHPublicKey(from privateKey: SecKey) throws -> SecKey {
     guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
       throw NSError(domain: "YourDomain", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to generate public key"])
     }
     return publicKey
   }
   
-  static func convertRSAPrivateKeyToPEM(key: SecKey) throws -> String {
+  public static func convertRSAPrivateKeyToPEM(key: SecKey) throws -> String {
     
     // Convert to DER first
     var error: Unmanaged<CFError>?
