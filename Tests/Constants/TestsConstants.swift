@@ -373,4 +373,6 @@ struct TestsConstants {
   static var encryptedResponseAlg = "RSA-OAEP-256"
   static var encryptedResponseEnc = "A128CBC-HS256"
   static var subjectSyntaxTypesSupported = "urn:ietf:params:oauth:jwk-thumbprint"
+  
+  static var localhost = "http://localhost:8080"
 }
