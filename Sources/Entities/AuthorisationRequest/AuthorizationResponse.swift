@@ -55,7 +55,7 @@ public extension AuthorizationResponse {
   init(
     resolvedRequest: ResolvedRequestData,
     consent: ClientConsent,
-    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration? = nil
   ) throws {
     switch consent {
     case .idToken(let idToken):
