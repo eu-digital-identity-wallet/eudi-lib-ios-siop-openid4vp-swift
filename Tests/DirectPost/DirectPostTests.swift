@@ -177,7 +177,7 @@ final class DirectPostTests: DiXCTest {
     )
     
     XCTAssertNotNil(response)
-
+    
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
     await given(service.formCheck(poster: any(), response: any())) ~> true
@@ -254,7 +254,7 @@ final class DirectPostTests: DiXCTest {
     )
     
     XCTAssertNotNil(response)
-
+    
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
     await given(service.formCheck(poster: any(), response: any())) ~> true
@@ -262,14 +262,19 @@ final class DirectPostTests: DiXCTest {
     
     XCTAssertNotNil(result)
   }
-
+  
   func testSDKEndtoEndDirectPost() async throws {
     
+    let nonce = UUID().uuidString
+    let session = try await TestHelpers.getDirectPostSession(nonce: nonce)
+    
     let sdk = SiopOpenID4VP()
-    let url = "http://localhost:8080/wallet/request.jwt/XDvKn587dP4vinhLGU0E2VgV8EyVUX2YgQZ_pR8I39cxRaOaDtXbx5kab--ruAocz3czYiRARnOumSe-GKCJOQ"
+    let url = session["request_uri"]
+    let clientId = session["client_id"]
+    let presentationId = session["presentation_id"]
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
     
     // Do not fail 404
     guard let result = result else {
@@ -338,6 +343,17 @@ final class DirectPostTests: DiXCTest {
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       
       XCTAssertTrue(result == .accepted(redirectURI: nil))
+      
+      let fetcher = Fetcher<String>()
+      let pollingUrl = URL(string: "http://localhost:8080/ui/presentations/\(presentationId!)?nonce=\(nonce)")!
+      let pollingResult = try await fetcher.fetchString(url: pollingUrl)
+      
+      switch pollingResult {
+      case .success(let string):
+        XCTAssert(true)
+      case .failure:
+        XCTAssert(false)
+      }
     }
   }
 }
