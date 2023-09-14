@@ -73,9 +73,9 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
   
   func testJarJwtSignature_WhenInputsAreValidExceptClientId_ThenReturnFailure() async throws {
     
-    self.validator = try! JarJwtSignatureValidator(
+    self.validator = try? XCTUnwrap(JarJwtSignatureValidator(
       walletOpenId4VPConfig: preRegisteredWalletConfiguration()
-    )
+    ))
     
     let walletConfig = await validator.walletOpenId4VPConfig!
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
@@ -111,9 +111,9 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
   
   func testJarJwtSignature_WhenInputsAreValidWithoutPregistered_ThenAssertSuccess() async throws {
     
-    self.validator = try! JarJwtSignatureValidator(
+    self.validator = try? XCTUnwrap(JarJwtSignatureValidator(
       walletOpenId4VPConfig: iso509WalletConfiguration()
-    )
+    ))
     
     let walletConfig = await validator.walletOpenId4VPConfig!
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!

@@ -270,7 +270,7 @@ struct TestsConstants {
   "&nonce=n-0S6_WzA2Mj"
   
   static var validOutOfScopeAuthorizeUrl: URL {
-    // TODO: use definitition, not container
+
     let presentationDefinitionJson = try! String(
       contentsOf: Bundle.module.url(forResource: "minimal_example", withExtension: "json")!
     )
