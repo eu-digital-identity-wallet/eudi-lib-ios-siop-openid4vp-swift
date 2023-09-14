@@ -9,15 +9,7 @@
     }
   ],
   "defaultOptions" : {
-    "codeCoverage" : {
-      "targets" : [
-        {
-          "containerPath" : "container:",
-          "identifier" : "SiopOpenID4VP",
-          "name" : "SiopOpenID4VP"
-        }
-      ]
-    }
+    "codeCoverage" : false
   },
   "testTargets" : [
     {
