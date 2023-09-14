@@ -27,8 +27,8 @@ final class CoreTests: DiXCTest {
     
     let fetcher = Fetcher<TestCodable>()
     let result = await fetcher.fetch(url: URL(string: "https://jsonplaceholder.typicode.com/todos/1")!)
-    let test = try! result.get()
-    XCTAssert(test.title == "delectus aut autem")
+    let test = try? XCTUnwrap(result.get())
+    XCTAssert(test!.title == "delectus aut autem")
   }
   
   func testFetcherCodableFailureDecodingGivenInvalidRemoteURL() async {

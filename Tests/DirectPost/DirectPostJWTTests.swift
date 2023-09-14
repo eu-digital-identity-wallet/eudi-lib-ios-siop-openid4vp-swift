@@ -113,7 +113,7 @@ final class DirectPostJWTTests: DiXCTest {
   }
   
   func testPostDirectPostJwtAuthorisationResponseGivenValidResolutionAndIdTokenConsent() async throws {
-   
+    
     let token = "eyJhbGciOiJIUzI1NiJ9.eyIxIjoiMSJ9.aoHTuJmTqZDNNuHqw-O6Gp5HACYEYo4p7RwG0ZhGrKY"
     
     let privateKey = try KeyController.generateECDHPrivateKey()
@@ -185,7 +185,7 @@ final class DirectPostJWTTests: DiXCTest {
     let service = AuthorisationService()
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
     _ = try? await dispatcher.dispatch()
-
+    
     let joseResponse = await service.joseResponse
     
     XCTAssertNotNil(response)
@@ -272,16 +272,16 @@ final class DirectPostJWTTests: DiXCTest {
       )
       
       // Generate a direct post authorisation response
-      let response = try! AuthorizationResponse(
+      let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
-      )
+      ), "Expected a non-nil item")
       
       // Dispatch
       XCTAssertNotNil(response)
       
-      let result: DispatchOutcome = try await sdk.dispatch(response: response)
+      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
         XCTAssert(true)
@@ -314,7 +314,10 @@ final class DirectPostJWTTests: DiXCTest {
       ]
     )
     
-    let ecPublicJwkString = try! ecPublicJwk.toDictionary().toJSONString()
+    let ecPublicJwkString = try? XCTUnwrap(
+      ecPublicJwk.toDictionary().toJSONString(),
+      "Expected non-nil value"
+    )
     
     let ecPrivateJWK = try ECPrivateKey(
       privateKey: ecPrivateKey
@@ -331,7 +334,10 @@ final class DirectPostJWTTests: DiXCTest {
         "alg": "RS256"
       ])
     
-    let rsaPublicJwkString: String! = try! rsaJWK.toDictionary().toJSONString()
+    let rsaPublicJwkString: String! = try? XCTUnwrap(
+      rsaJWK.toDictionary().toJSONString(),
+      "Expected non-nil value"
+    )
     
     let rsaKeySet = try WebKeySet([
       "keys": [rsaJWK.jsonString()?.convertToDictionary()]
@@ -356,7 +362,10 @@ final class DirectPostJWTTests: DiXCTest {
     
     let validator = ClientMetaDataValidator()
     
-    let validatedClientMetaData = try! await validator.validate(clientMetaData: clientMetaData)
+    guard let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData) else {
+      XCTAssert(false, "Invalid client metadata")
+      return
+    }
     
     let resolved: ResolvedRequestData = .vpToken(
       request: .init(
@@ -404,8 +413,8 @@ final class DirectPostJWTTests: DiXCTest {
     let encryptedJwe = try JWE(compactSerialization: joseResponse!)
     
     let decrypter = Decrypter(
-      keyManagementAlgorithm: .init(algorithm: validatedClientMetaData!.authorizationEncryptedResponseAlg!)!,
-      contentEncryptionAlgorithm: .init(encryptionMethod: validatedClientMetaData!.authorizationEncryptedResponseEnc!)!,
+      keyManagementAlgorithm: .init(algorithm: validatedClientMetaData.authorizationEncryptedResponseAlg!)!,
+      contentEncryptionAlgorithm: .init(encryptionMethod: validatedClientMetaData.authorizationEncryptedResponseEnc!)!,
       decryptionKey: ecPrivateJWK
     )!
     

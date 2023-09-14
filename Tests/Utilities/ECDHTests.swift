@@ -38,7 +38,7 @@ final class ECDHTests: DiXCTest {
     let privateJWK = try ECPrivateKey(privateKey: privateKey)
     let publicJWK = try ECPublicKey(publicKey: publicKey)
     
-    let convertedPublicKey: SecKey = try! publicJWK.converted(to: SecKey.self)
+    let convertedPublicKey: SecKey? = try? XCTUnwrap(publicJWK.converted(to: SecKey.self))
     XCTAssert(publicKey == convertedPublicKey)
     
     let header = JWEHeader(

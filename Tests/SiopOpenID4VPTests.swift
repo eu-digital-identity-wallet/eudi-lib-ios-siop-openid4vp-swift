@@ -82,11 +82,11 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testPresentationSubmissionJsonStringDecoding() throws {
     
-    let definition = try! Dictionary.from(
+    let definition = try? XCTUnwrap(Dictionary.from(
       bundle: "presentation_submission_example"
-    ).get().toJSONString()!
+    ).get().toJSONString())
     
-    let result: Result<PresentationSubmissionContainer, ParserError> = Parser().decode(json: definition)
+    let result: Result<PresentationSubmissionContainer, ParserError> = Parser().decode(json: definition!)
     
     let container = try! result.get()
     
