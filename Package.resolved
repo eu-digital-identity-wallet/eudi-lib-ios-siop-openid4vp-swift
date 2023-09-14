@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "revision" : "306d041ecd937699350efc81bb33202348e20057",
-        "version" : "0.0.29"
+        "revision" : "8ecce68f81f91c6bfcf42b81268b05ecac96d8c6",
+        "version" : "0.0.35"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Hitch.git",
       "state" : {
-        "revision" : "90065f8f6900b389cbd4d3c73d94d50d172994cd",
-        "version" : "0.4.111"
+        "revision" : "de110dd6d2de0f41f4a4e7b7dea0bb769df7b12b",
+        "version" : "0.4.113"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Sextant.git",
       "state" : {
-        "revision" : "105afd7c8b7c44198a5625bf3175af666c7268e0",
-        "version" : "0.4.21"
+        "revision" : "49b567226e72ba4f22943e352e1ee3bf3bf4824e",
+        "version" : "0.4.24"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Spanker.git",
       "state" : {
-        "revision" : "6abde231ed31628d7ce542fefc21d6a4a79bba94",
-        "version" : "0.2.44"
+        "revision" : "6b0edd2996d1f3bebb534fb05e20eac6bf8c8739",
+        "version" : "0.2.46"
       }
     },
     {

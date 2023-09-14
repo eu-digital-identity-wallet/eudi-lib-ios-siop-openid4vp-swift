@@ -207,15 +207,25 @@ final class DirectPostJWTTests: DiXCTest {
   
   func testSDKEndtoEndDirectPostJwt() async throws {
     
+    let nonce = UUID().uuidString
+    let session = try? await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
+    
+    guard let session = session else {
+      XCTAssert(true, "this tests depends on a local verifier running")
+      return
+    }
+    
     let sdk = SiopOpenID4VP()
-    let url = "http://localhost:8080/wallet/request.jwt/Co60g67d_yx3TGq3uG8eeg2oznEGJ125DhzbLZKgCkc0o4tEUvX-Iu93BXbkBhj1YPhnSEZK70ir2oyKuJdnvA"
+    let url = session["request_uri"]
+    let clientId = session["client_id"]
+    let presentationId = session["presentation_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=Verifier&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
     
     // Do not fail 404
     guard let result = result else {
-      XCTAssert(true)
+      XCTAssert(true, "this tests depends on a local verifier running")
       return
     }
     
@@ -276,6 +286,15 @@ final class DirectPostJWTTests: DiXCTest {
       case .accepted:
         XCTAssert(true)
       default:
+        XCTAssert(false)
+      }
+      
+      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
+      
+      switch pollingResult {
+      case .success:
+        XCTAssert(true)
+      case .failure:
         XCTAssert(false)
       }
     }

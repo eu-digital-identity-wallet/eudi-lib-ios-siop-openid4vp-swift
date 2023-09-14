@@ -18,12 +18,12 @@ import PresentationExchange
 
 extension ResolvedRequestData {
   public struct VpTokenData {
-    let presentationDefinition: PresentationDefinition
-    let clientMetaData: ClientMetaData.Validated?
-    let clientId: String
-    let nonce: String
-    let responseMode: ResponseMode?
-    let state: String?
+    public let presentationDefinition: PresentationDefinition
+    public let clientMetaData: ClientMetaData.Validated?
+    public let clientId: String
+    public  let nonce: String
+    public let responseMode: ResponseMode?
+    public let state: String?
 
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///

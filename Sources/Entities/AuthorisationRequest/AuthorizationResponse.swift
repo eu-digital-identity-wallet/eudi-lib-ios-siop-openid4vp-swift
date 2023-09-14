@@ -55,7 +55,7 @@ public extension AuthorizationResponse {
   init(
     resolvedRequest: ResolvedRequestData,
     consent: ClientConsent,
-    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
+    walletOpenId4VPConfig: WalletOpenId4VPConfiguration? = nil
   ) throws {
     switch consent {
     case .idToken(let idToken):
@@ -105,8 +105,19 @@ public extension AuthorizationResponse {
           clientMetaData: request.clientMetaData,
           walletOpenId4VPConfig: walletOpenId4VPConfig
         )
-      case .vpToken, .idAndVpToken:
+      case .idAndVpToken:
         throw AuthorizationError.unsupportedResolution
+      case .vpToken(let request):
+        let payload: AuthorizationResponsePayload = .noConsensusResponseData(
+          state: try request.state ?? { throw AuthorizationError.invalidState }(),
+          error: error
+        )
+        self = try .buildAuthorizationResponse(
+          responseMode: request.responseMode,
+          payload: payload,
+          clientMetaData: request.clientMetaData,
+          walletOpenId4VPConfig: walletOpenId4VPConfig
+        )
       }
     }
   }
