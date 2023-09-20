@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: >
           find . -type f \( -name 'Package.swift' -o -name 'Package.resolved' \) -exec sed -i '' "s/https:\/\/github.com\/eu-digital-identity-wallet/https:\/\/${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github.com\/eu-digital-identity-wallet/g" {} \;
 
