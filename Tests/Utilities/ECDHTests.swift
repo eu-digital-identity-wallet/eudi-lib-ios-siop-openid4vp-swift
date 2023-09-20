@@ -39,7 +39,16 @@ final class ECDHTests: DiXCTest {
     let publicJWK = try ECPublicKey(publicKey: publicKey)
     
     let convertedPublicKey: SecKey? = try? XCTUnwrap(publicJWK.converted(to: SecKey.self))
-    XCTAssert(publicKey == convertedPublicKey)
+    
+    guard 
+      let key1Data = SecKeyCopyExternalRepresentation(publicKey, nil) as Data?,
+      let key2Data = SecKeyCopyExternalRepresentation(convertedPublicKey!, nil) as Data?
+    else {
+      XCTAssert(false, "Invalid keys")
+      return
+    }
+    
+    XCTAssert(key1Data == key2Data)
     
     let header = JWEHeader(
       keyManagementAlgorithm: .ECDH_ES,
