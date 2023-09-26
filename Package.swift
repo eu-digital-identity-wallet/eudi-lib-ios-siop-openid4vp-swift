@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.8
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -22,7 +22,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMinor(from: "0.0.36")
+      .upToNextMinor(from: "0.0.39")
     )
   ],
   targets: [
