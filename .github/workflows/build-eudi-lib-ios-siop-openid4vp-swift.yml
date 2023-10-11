@@ -4,7 +4,7 @@ on:
   - push
 jobs:
   build:
-    runs-on: macos-13
+    runs-on: "macos-13"
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -14,3 +14,5 @@ jobs:
           find . -type f \( -name 'Package.swift' -o -name 'Package.resolved' \) -exec sed -i '' "s/https:\/\/github.com\/eu-digital-identity-wallet/https:\/\/${{ secrets.USER_NAME }}:${{ secrets.USER_GITHUB_TOKEN }}@github.com\/eu-digital-identity-wallet/g" {} \;
 
           fastlane tests
+
+      

@@ -23,7 +23,7 @@ class TestsHelpers {
   ) async throws -> [String: Any] {
     
     // Replace this URL with the endpoint you want to send the POST request to
-    let url = URL(string: "\(TestsConstants.localhost)/ui/presentations")!
+    let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
     
     // Create a POST request
     var request = URLRequest(url: url)
@@ -49,7 +49,7 @@ class TestsHelpers {
   ) async throws -> [String: Any] {
     
     // Replace this URL with the endpoint you want to send the POST request to
-    let url = URL(string: "\(TestsConstants.localhost)/ui/presentations")!
+    let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
     
     // Create a POST request
     var request = URLRequest(url: url)
@@ -77,7 +77,7 @@ class TestsHelpers {
   
   static func pollVerifier(presentationId: String, nonce: String) async throws -> Result<String, FetchError>{
     let fetcher = Fetcher<String>()
-    let pollingUrl = URL(string: "\(TestsConstants.localhost)/ui/presentations/\(presentationId)?nonce=\(nonce)")!
+    let pollingUrl = URL(string: "\(TestsConstants.host)/ui/presentations/\(presentationId)?nonce=\(nonce)")!
     return try await fetcher.fetchString(url: pollingUrl)
   }
 }

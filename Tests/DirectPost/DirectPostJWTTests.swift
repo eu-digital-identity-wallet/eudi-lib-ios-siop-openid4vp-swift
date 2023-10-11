@@ -263,7 +263,7 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: "dummy_vp_token",
+        vpToken: TestsConstants.cbor,
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
