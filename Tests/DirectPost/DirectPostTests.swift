@@ -263,6 +263,100 @@ final class DirectPostTests: DiXCTest {
     XCTAssertNotNil(result)
   }
   
+  func testSDKEndtoEndDirectPostVpToken() async throws {
+    
+    let nonce = UUID().uuidString
+    let session = try? await TestsHelpers.getDirectPostVpTokenSession(nonce: nonce)
+    
+    guard let session = session else {
+      XCTAssert(true, "this tests depends on a local verifier running")
+      return
+    }
+    
+    let sdk = SiopOpenID4VP()
+    let url = session["request_uri"]
+    let clientId = session["client_id"]
+    let presentationId = session["presentation_id"] as! String
+    
+    overrideDependencies()
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
+    
+    // Do not fail 404
+    guard let result = result else {
+      XCTAssert(true, "this tests depends on a local verifier running")
+      return
+    }
+    
+    switch result {
+    case .notSecured: break
+    case .jwt(request: let request):
+      let resolved = request
+      
+      let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+      let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
+      let privateKey = try KeyController.generateECDHPrivateKey()
+      
+      let rsaJWK = try RSAPublicKey(
+        publicKey: rsaPublicKey,
+        additionalParameters: [
+          "use": "sig",
+          "kid": UUID().uuidString,
+          "alg": "RS256"
+        ])
+      
+      let keySet = try WebKeySet(jwk: rsaJWK)
+      
+      let wallet: WalletOpenId4VPConfiguration = .init(
+        subjectSyntaxTypesSupported: [
+          .decentralizedIdentifier,
+          .jwkThumbprint
+        ],
+        preferredSubjectSyntaxType: .jwkThumbprint,
+        decentralizedIdentifier: try .init(rawValue: "did:example:123"),
+        signingKey: privateKey,
+        signingKeySet: keySet,
+        supportedClientIdSchemes: [],
+        vpFormatsSupported: []
+      )
+      
+      // Obtain consent
+      let consent: ClientConsent = .vpToken(
+        vpToken: TestsConstants.cbor,
+        presentationSubmission: .init(
+          id: "psId",
+          definitionID: "psId",
+          descriptorMap: []
+        )
+      )
+      
+      // Generate a direct post authorisation response
+      let response = try? XCTUnwrap(AuthorizationResponse(
+        resolvedRequest: resolved,
+        consent: consent,
+        walletOpenId4VPConfig: wallet
+      ), "Expected a non-nil item")
+      
+      // Dispatch
+      XCTAssertNotNil(response)
+      
+      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
+      switch result {
+      case .accepted:
+        XCTAssert(true)
+      default:
+        XCTAssert(false)
+      }
+      
+      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
+      
+      switch pollingResult {
+      case .success:
+        XCTAssert(true)
+      case .failure:
+        XCTAssert(false)
+      }
+    }
+  }
   func testSDKEndtoEndDirectPost() async throws {
     
     let nonce = UUID().uuidString

@@ -53,10 +53,16 @@ public actor AuthorisationService: AuthorisationServiceType {
   public func formCheck(poster: Posting, response: AuthorizationResponse) async throws -> Bool {
     switch response {
     case .directPost(let url, let data):
+      
+      let payload = setupDirectPostPayload(
+        key: Constants.presentationSubmissionKey,
+        dictionary: try? data.toDictionary()
+      )
+      
       let post = VerifierFormPost(
         additionalHeaders: ["Content-Type": ContentType.form.rawValue],
         url: url,
-        formData: try data.toDictionary()
+        formData: payload
       )
 
       let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
@@ -85,5 +91,29 @@ public actor AuthorisationService: AuthorisationServiceType {
     case .query, .queryJwt, .fragment, .fragmentJwt:
       throw AuthorizationError.invalidResponseMode
     }
+  }
+}
+
+private extension AuthorisationService {
+  func setupDirectPostPayload(
+    key: String,
+    dictionary: [String: Any]?
+  ) -> [String: Any] {
+    
+    guard let dictionary = dictionary else { return [:] }
+    
+    let value = dictionary[key] as? [String: Any]
+    let presentationSubmission: String? = value?.toJSONString() ?? ""
+    
+    return dictionary
+      .filter { $0.key != Constants.presentationSubmissionKey }
+      .merging([Constants.presentationSubmissionKey: presentationSubmission as Any], uniquingKeysWith: { _, new in new })
+      .compactMapValues { $0 }
+      .filter { key, value in
+        if let value = value as? String {
+          return !value.isEmpty
+        }
+        return true
+      }
   }
 }
