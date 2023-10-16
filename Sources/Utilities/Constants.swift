@@ -96,4 +96,6 @@ public struct Constants {
     let base64URL = randomData.base64URLEncodedString()
     return base64URL
   }
+  
+  static let presentationSubmissionKey = "presentation_submission"
 }
