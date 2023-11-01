@@ -1,7 +1,7 @@
-name: Software Composition Analysis with Dependency-Check
+name: SCA - Dependency-Check
 on:
   push:
-    branches: [ 'main', 'release/*', 'feature/*' ]
+    branches: [ 'main', 'release/*', 'feature/*', 'fix/*', 'refactor/*' ]
     tags: [ v* ]
   workflow_dispatch:
 
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Depcheck Action - SCA
