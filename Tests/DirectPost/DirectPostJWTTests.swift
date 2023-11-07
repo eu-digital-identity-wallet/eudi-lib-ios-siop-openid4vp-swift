@@ -276,7 +276,7 @@ final class DirectPostJWTTests: DiXCTest {
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
-      ), "Expected a non-nil item")
+      ), "Expected item to be non-nil")
       
       // Dispatch
       XCTAssertNotNil(response)
