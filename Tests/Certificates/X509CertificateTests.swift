@@ -34,10 +34,25 @@ final class X509CertificateTests: XCTestCase {
       
       let publicKey = certificate.publicKey
       let pem = try publicKey.serializeAsPEM().pemString
-      let secKey = try KeyController.convertPEMToPublicKey(pem)
       
-      XCTAssertNil(try? certificate.extensions.subjectAlternativeNames)
+      let secKey = try KeyController.convertPEMToPublicKey(pem)
       XCTAssertNotNil(secKey)
+      
+      let clientIndentifier = "client_identifer.example.com"
+      guard let dnss = try? certificate.extensions.subjectAlternativeNames?.rawSubjectAlternativeNames() else {
+        XCTFail("Could not locate subject alternative names")
+        return
+      }
+      XCTAssert(!dnss.isEmpty)
+      XCTAssert(dnss.contains(where: { $0 == clientIndentifier }))
+
+      let uri = "https://www.example.com"
+      guard let uris = try? certificate.extensions.subjectAlternativeNames?.rawUniformResourceIdentifiers() else {
+        XCTFail("Could not locate uri's")
+        return
+      }
+      XCTAssert(!uris.isEmpty)
+      XCTAssert(uris.contains(where: { $0 == uri }))
       
     } else {
       XCTFail("Could not get SecKey from base64 x509")
