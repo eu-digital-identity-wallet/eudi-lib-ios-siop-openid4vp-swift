@@ -35,19 +35,25 @@ final class ClientMetaDataValidatorTests: XCTestCase {
   
   func testValidate_WhenFetchByReferenceWithValidURL_ThenReturnSuccess() async throws {
     
-    let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
-      jwksUri: TestsConstants.validByReferenceWebKeyUrlString,
-      jwks: nil,
-      idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
-      idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
-      idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
-      subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
-      authorizationSignedResponseAlg: TestsConstants.signedResponseAlg,
-      authorizationEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
-      authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc
-    ))!
-    
-    XCTAssertEqual(response.jwkSet?.keys.first?.kty, TestsConstants.webKeySet.keys.first?.kty)
+    do {
+      let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
+        jwksUri: TestsConstants.validByReferenceWebKeyUrlString,
+        jwks: nil,
+        idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
+        idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
+        idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
+        subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
+        authorizationSignedResponseAlg: TestsConstants.signedResponseAlg,
+        authorizationEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
+        authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc
+      ))!
+      
+      XCTAssertEqual(response.jwkSet?.keys.first?.kty, TestsConstants.webKeySet.keys.first?.kty)
+    } catch {
+      
+      XCTExpectFailure()
+      XCTFail()
+    }
   }
   
   func testValidate_WhenFetchByReferenceWithInvalidURL_ThenReturnFailure() async throws {
