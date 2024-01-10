@@ -211,7 +211,8 @@ final class DirectPostJWTTests: DiXCTest {
     let session = try? await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
     
     guard let session = session else {
-      XCTAssert(true, "this tests depends on a local verifier running")
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
       return
     }
     
@@ -225,7 +226,8 @@ final class DirectPostJWTTests: DiXCTest {
     
     // Do not fail 404
     guard let result = result else {
-      XCTAssert(true, "this tests depends on a local verifier running")
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
       return
     }
     
@@ -380,7 +382,7 @@ final class DirectPostJWTTests: DiXCTest {
       ))
     
     let consent: ClientConsent = .vpToken(
-      vpToken: "dummy_vp_token",
+      vpToken: TestsConstants.cbor,
       presentationSubmission: .init(
         id: "psId",
         definitionID: "psId",
