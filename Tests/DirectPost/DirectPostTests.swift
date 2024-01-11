@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import CryptoKit
 
 import XCTest
 import Mockingbird
@@ -263,13 +264,19 @@ final class DirectPostTests: DiXCTest {
     XCTAssertNotNil(result)
   }
   
+  
   func testSDKEndtoEndDirectPostVpToken() async throws {
     
-    let nonce = UUID().uuidString
+    let nonce = Data(ChaChaPoly.Nonce()).base64EncodedString()
+      .replacingOccurrences(of: "+", with: "-")
+      .replacingOccurrences(of: "/", with: "_")
+      .trimmingCharacters(in: CharacterSet(charactersIn: "="))
+    
     let session = try? await TestsHelpers.getDirectPostVpTokenSession(nonce: nonce)
     
     guard let session = session else {
-      XCTAssert(true, "this tests depends on a local verifier running")
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
       return
     }
     
@@ -283,7 +290,8 @@ final class DirectPostTests: DiXCTest {
     
     // Do not fail 404
     guard let result = result else {
-      XCTAssert(true, "this tests depends on a local verifier running")
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
       return
     }
     
@@ -363,7 +371,8 @@ final class DirectPostTests: DiXCTest {
     let session = try? await TestsHelpers.getDirectPostSession(nonce: nonce)
     
     guard let session = session else {
-      XCTAssert(true, "this tests depends on a local verifier running")
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
       return
     }
     
@@ -377,7 +386,8 @@ final class DirectPostTests: DiXCTest {
     
     // Do not fail 404
     guard let result = result else {
-      XCTAssert(true)
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
       return
     }
     

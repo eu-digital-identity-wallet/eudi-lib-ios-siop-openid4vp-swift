@@ -23,7 +23,15 @@ let package = Package(
     .package(
       url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
       .upToNextMinor(from: "0.0.41")
-    )
+    ),
+    .package(
+      url: "https://github.com/apple/swift-certificates.git",
+      .upToNextMajor(from: "1.0.0")
+    ),
+    .package(
+      url: "https://github.com/apple/swift-asn1.git",
+      .upToNextMajor(from: "1.0.0")
+    ),
   ],
   targets: [
     .target(
@@ -36,7 +44,15 @@ let package = Package(
         .product(
           name: "PresentationExchange",
           package: "eudi-lib-ios-presentation-exchange-swift"
-        )
+        ),
+        .product(
+          name: "X509",
+          package: "swift-certificates"
+        ),
+        .product(
+          name: "SwiftASN1",
+          package: "swift-asn1"
+        ),
       ],
       path: "Sources",
       resources: [

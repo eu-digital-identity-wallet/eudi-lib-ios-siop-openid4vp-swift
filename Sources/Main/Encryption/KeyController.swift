@@ -20,7 +20,7 @@ public class KeyController {
   
   public static func generateHardcodedRSAPrivateKey() throws -> SecKey? {
     
-    // Convert PEM key to Data
+    // Convert DER key to Data
     guard
       let contents = String.loadStringFileFromBundle(
         named: "sample_derfile",
@@ -105,6 +105,37 @@ public class KeyController {
       .replacingOccurrences(of: "=", with: "")
     pemString += "\n-----END RSA PRIVATE KEY-----\n"
     return pemString
+  }
+  
+  public static func convertPEMToPublicKey(_ pem: String) throws -> SecKey? {
+    
+    let key = pem
+      .replacingOccurrences(of: "-----BEGIN PUBLIC KEY-----", with: "")
+      .replacingOccurrences(of: "-----END PUBLIC KEY-----", with: "")
+      .split(separator: "\n").joined()
+    
+    // Define the key attributes
+    let attributes: [CFString: Any] = [
+      kSecAttrKeyType: kSecAttrKeyTypeRSA,
+      kSecAttrKeyClass: kSecAttrKeyClassPublic
+    ]
+    
+    guard let privateKeyData = Data(
+      base64Encoded: key,
+      options: .ignoreUnknownCharacters
+    ) else {
+      return nil
+    }
+    
+    // Create the SecKey object
+    var error: Unmanaged<CFError>?
+    guard let secKey = SecKeyCreateWithData(privateKeyData as CFData, attributes as CFDictionary, &error) else {
+      if let error = error?.takeRetainedValue() {
+        print("Failed to create SecKey:", error)
+      }
+      return nil
+    }
+    return secKey
   }
 }
 
