@@ -54,6 +54,12 @@ final class X509CertificateTests: XCTestCase {
       XCTAssert(!uris.isEmpty)
       XCTAssert(uris.contains(where: { $0 == uri }))
       
+      let valid = publicKey.isValidSignature(certificate.signature, for: certificate)
+      XCTAssert(valid)
+      
+      let legacyCertificate = SecCertificateCreateWithData(nil, data as CFData)
+      XCTAssertNotNil(legacyCertificate)
+      
     } else {
       XCTFail("Could not get SecKey from base64 x509")
     }
