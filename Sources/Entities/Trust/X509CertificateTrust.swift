@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 import Foundation
+import X509
 
-public enum SupportedClientIdScheme {
-  public var scheme: ClientIdScheme {
-    switch self {
-      
-    /**
-      * The Client Identifier is known to the Wallet in advance of the Authorization Request.
-      */
-    case .preregistered:
-      return .preRegistered
-    case .x509SanUri:
-      return .x509SanUri
-    case .x509SanDns:
-      return .x509SanDns
-    }
-  }
+public typealias CertificateTrust = ([Certificate]) -> Bool
 
-  case preregistered(clients: [String: PreregisteredClient])
-  case x509SanUri(trust: CertificateTrust)
-  case x509SanDns(trust: CertificateTrust)
+public protocol X509CertificateTrustType {
+  func isTrusted(chain: [Certificate]) -> Bool
 }

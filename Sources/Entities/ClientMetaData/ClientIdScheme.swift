@@ -26,7 +26,8 @@ public enum ClientIdScheme: String, Codable {
   case redirectUri = "redirect_uri"
   case entityId = "entity_id"
   case did = "did"
-  case isox509 = "iso_x509"
+  case x509SanDns = "x509_san_dns"
+  case x509SanUri = "x509_san_uri"
 }
 
 /// Extension providing additional functionality to the `ClientIdScheme` enumeration.
@@ -37,8 +38,7 @@ extension ClientIdScheme {
   /// - Throws: An error if the client ID scheme is unsupported.
   init(authorizationRequestObject: JSONObject) throws {
     let scheme = authorizationRequestObject["client_id_scheme"] as? String ?? "unknown"
-    guard
-      scheme == "pre-registered",
+    guard scheme == "pre-registered" || scheme == "x509_san_dns" || scheme == "x509_san_uri",
       let clientIdScheme = ClientIdScheme(rawValue: scheme)
     else {
       throw ValidatedAuthorizationError.unsupportedClientIdScheme(scheme)
