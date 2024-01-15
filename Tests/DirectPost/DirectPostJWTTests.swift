@@ -332,6 +332,14 @@ final class DirectPostJWTTests: DiXCTest {
         "alg": "RS256"
       ])
     
+    let chainVerifier = { certificates in
+      let chainVerifier = X509CertificateChainVerifier()
+      let verified = try? chainVerifier.verifyCertificateChain(
+        base64Certificates: certificates
+      )
+      return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
+    }
+    
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: WalletOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -343,9 +351,7 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: { _ in
-          return true
-        })
+        .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: []
     )

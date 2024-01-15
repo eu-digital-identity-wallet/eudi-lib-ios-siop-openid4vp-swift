@@ -110,9 +110,11 @@ public actor JarJwtSignatureValidator {
   ) async throws {
     
     let header = jws.header
-    let chain = header.x5c
+    guard let chain: [String] = header.x5c else {
+      throw ValidatedAuthorizationError.validationError("x5c header field does not contain a serialized leaf certificate")
+    }
     
-    let certificates: [Certificate] = chain?.compactMap { serializedCertificate in
+    let certificates: [Certificate] = chain.compactMap { serializedCertificate in
       guard 
         let serializedData = Data(base64Encoded: serializedCertificate),
         let string = String(data: serializedData, encoding: .utf8)
@@ -133,7 +135,7 @@ public actor JarJwtSignatureValidator {
     switch supportedClientIdScheme {
     case .x509SanDns(let trust),
          .x509SanUri(let trust):
-      let trust = trust(certificates)
+      let trust = trust(chain)
       if !trust {
         throw ValidatedAuthorizationError.validationError("Could not trust certificate chain")
       }

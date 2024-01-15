@@ -65,7 +65,7 @@ final class X509CertificateTests: XCTestCase {
     }
   }
   
-  func testVerifyCerticateChain() {
+  func testVerifyRawCerticateChain() {
     
     guard
       let rootCertData = Data(base64Encoded: TestsConstants.x5cRootCertificate),
@@ -94,7 +94,7 @@ final class X509CertificateTests: XCTestCase {
     
     // Evaluate the trust
     var trustResult: SecTrustResultType = .invalid
-    let status = SecTrustEvaluate(trust!, &trustResult)
+    _ = SecTrustEvaluate(trust!, &trustResult)
     
     // Check if the trust evaluation was successful
     if trustResult == .unspecified {
@@ -104,7 +104,27 @@ final class X509CertificateTests: XCTestCase {
     }
   }
   
-  func testCertificateRevokation() {
+  func testVerifyCerticateChainWithVerifier() {
+    
+    let chainVerifier = X509CertificateChainVerifier()
+    
+    do {
+      let verified = try chainVerifier.verifyCertificateChain(
+        base64Certificates: [
+          TestsConstants.x5cRootCertificateBase64,
+          TestsConstants.x5cLeafCertificateBase64,
+          TestsConstants.x5cInterCertificateBase64
+        ]
+      )
+      
+      XCTAssert(chainVerifier.isChainTrustResultSuccesful(verified))
+      
+    } catch {
+      XCTAssert(false, "Unable to verify certificate chain")
+    }
+  }
+  
+  func testRawCertificateRevokation() {
     
     guard
       let rootCertData = Data(base64Encoded: TestsConstants.x5cRootCertificate)
@@ -144,6 +164,19 @@ final class X509CertificateTests: XCTestCase {
       } else {
         print("Failed to create trust object.")
       }
+    }
+  }
+  
+  func testCertificateRevokationWithVerifier() {
+    
+    let chainVerifier = X509CertificateChainVerifier()
+    
+    do {
+      let notRevoked = try chainVerifier.checkCertificateValidAndNotRevoked(base64Certificate: TestsConstants.x5cRootCertificateBase64)
+      XCTAssert(notRevoked)
+      
+    } catch {
+      XCTAssert(false, "Unable to verify certificate chain")
     }
   }
 }

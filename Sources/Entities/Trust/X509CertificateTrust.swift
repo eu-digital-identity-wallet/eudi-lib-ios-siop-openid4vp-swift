@@ -16,8 +16,10 @@
 import Foundation
 import X509
 
-public typealias CertificateTrust = ([Certificate]) -> Bool
+public typealias Base64Certificate = String
+
+public typealias CertificateTrust = ([Base64Certificate]) -> Bool
 
 public protocol X509CertificateTrustType {
-  func isTrusted(chain: [Certificate]) -> Bool
+  func isTrusted(chain: [Base64Certificate]) -> Bool
 }
