@@ -413,6 +413,104 @@ final class DirectPostJWTTests: DiXCTest {
     }
   }
   
+  func testSDKEndtoEndDirectPostJwtX509WithAccepetedRequestURI() async throws {
+    
+    let nonce = UUID().uuidString
+    let session = try? await TestsHelpers.getDirectPostJwtSessionAcceptRequestURI(nonce: nonce)
+    
+    guard let session = session else {
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
+      return
+    }
+    
+    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
+    let privateKey = try KeyController.generateECDHPrivateKey()
+    
+    let rsaJWK = try RSAPublicKey(
+      publicKey: rsaPublicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": UUID().uuidString,
+        "alg": "RS256"
+      ])
+    
+    let chainVerifier = { certificates in
+      let chainVerifier = X509CertificateChainVerifier()
+      let verified = try? chainVerifier.verifyCertificateChain(
+        base64Certificates: certificates
+      )
+      return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
+    }
+    
+    let keySet = try WebKeySet(jwk: rsaJWK)
+    let wallet: WalletOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
+      signingKey: privateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .x509SanDns(trust: chainVerifier)
+      ],
+      vpFormatsSupported: []
+    )
+    
+    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let url = session["request_uri"]
+    let clientId = session["client_id"]
+    
+    overrideDependencies()
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
+    
+    guard let result = result else {
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
+      return
+    }
+    
+    switch result {
+    case .notSecured: break
+    case .jwt(request: let request):
+      let resolved = request
+      
+      // Obtain consent
+      let consent: ClientConsent = .vpToken(
+        vpToken: TestsConstants.cbor,
+        presentationSubmission: .init(
+          id: "psId",
+          definitionID: "psId",
+          descriptorMap: []
+        )
+      )
+      
+      // Generate a direct post authorisation response
+      let response = try? XCTUnwrap(AuthorizationResponse(
+        resolvedRequest: resolved,
+        consent: consent,
+        walletOpenId4VPConfig: wallet
+      ), "Expected item to be non-nil")
+      
+      // Dispatch
+      XCTAssertNotNil(response)
+      
+      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
+      switch result {
+      case .accepted(let redirectURI):
+        XCTAssert(true, redirectURI?.absoluteString ?? "No redirect url")
+        
+        let hostUrl = URL(string: TestsConstants.host)
+        XCTAssertEqual(hostUrl?.host ?? "", redirectURI?.host ?? "")
+      default:
+        XCTAssert(false)
+      }
+    }
+  }
+  
   func testGivenClientMetaDataWhenAValidResolutionIsObtainedThenDecodeJwtWithSucess() async throws {
     
     let ecPrivateKey = try KeyController.generateECDHPrivateKey()

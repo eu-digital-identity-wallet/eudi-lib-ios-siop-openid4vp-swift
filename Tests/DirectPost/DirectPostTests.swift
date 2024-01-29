@@ -181,7 +181,7 @@ final class DirectPostTests: DiXCTest {
     
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.formCheck(poster: any(), response: any())) ~> true
+    await given(service.formCheck(poster: any(), response: any())) ~> ("", true)
     let result: DispatchOutcome = try await dispatcher.dispatch()
     
     XCTAssertNotNil(result)
@@ -258,7 +258,7 @@ final class DirectPostTests: DiXCTest {
     
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.formCheck(poster: any(), response: any())) ~> true
+    await given(service.formCheck(poster: any(), response: any())) ~> ("", true)
     let result: DispatchOutcome = try await dispatcher.dispatch()
     
     XCTAssertNotNil(result)

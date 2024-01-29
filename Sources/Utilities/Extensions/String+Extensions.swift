@@ -47,4 +47,18 @@ public extension String {
     }
     return string
   }
+  
+  func toDictionary() -> [String: Any]? {
+    guard let jsonData = data(using: .utf8) else {
+      print("Failed to convert string to data.")
+      return nil
+    }
+    
+    do {
+      return try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+    } catch {
+      print("Error parsing JSON:", error.localizedDescription)
+      return nil
+    }
+  }
 }

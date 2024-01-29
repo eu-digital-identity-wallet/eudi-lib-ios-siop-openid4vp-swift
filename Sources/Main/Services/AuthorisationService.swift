@@ -20,7 +20,7 @@ public protocol AuthorisationServiceType {
   /// Posts a response and returns a generic result.
   func formPost<T: Codable>(poster: Posting, response: AuthorizationResponse) async throws -> T
   /// Posts a response and returns a success boolean.
-  func formCheck(poster: Posting, response: AuthorizationResponse) async throws -> Bool
+  func formCheck(poster: Posting, response: AuthorizationResponse) async throws -> (String, Bool)
 }
 
 /// An implementation of the `AuthorisationServiceType` protocol.
@@ -50,7 +50,7 @@ public actor AuthorisationService: AuthorisationServiceType {
   }
 
   /// Posts a response and returns a success boolean.
-  public func formCheck(poster: Posting, response: AuthorizationResponse) async throws -> Bool {
+  public func formCheck(poster: Posting, response: AuthorizationResponse) async throws -> (String, Bool) {
     switch response {
     case .directPost(let url, let data):
       
@@ -65,7 +65,7 @@ public actor AuthorisationService: AuthorisationServiceType {
         formData: payload
       )
 
-      let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
+      let result: Result<(String, Bool), PostError> = await poster.check(key: "redirect_uri", request: post.urlRequest)
       return try result.get()
     case .directPostJwt(let url, let data, let jarmSpec):
       let encryptor = ResponseSignerEncryptor()
@@ -85,7 +85,7 @@ public actor AuthorisationService: AuthorisationServiceType {
       
       self.joseResponse = joseResponse
       
-      let result: Result<Bool, PostError> = await poster.check(request: post.urlRequest)
+      let result: Result<(String, Bool), PostError> = await poster.check(key: "redirect_uri", request: post.urlRequest)
       return try result.get()
       
     case .query, .queryJwt, .fragment, .fragmentJwt:
