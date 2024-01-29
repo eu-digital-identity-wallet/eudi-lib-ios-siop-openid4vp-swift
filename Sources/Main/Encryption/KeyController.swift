@@ -15,6 +15,8 @@
  */
 import Foundation
 import Security
+import CryptorECC
+import JOSESwift
 
 public class KeyController {
   
@@ -107,7 +109,23 @@ public class KeyController {
     return pemString
   }
   
-  public static func convertPEMToPublicKey(_ pem: String) throws -> SecKey? {
+  public static func convertPEMToPublicKey(
+    _ pem: String,
+    algorithm: SignatureAlgorithm = .RS256
+  ) -> SecKey? {
+    switch algorithm {
+    case .RS256, .RS384, .RS512:
+      return try? Self.convertRSAPEMToPublicKey(pem)
+    case .ES256, .ES384, .ES512:
+      return try? ECPublicKey(key: pem).nativeKey
+    case .HS256, .HS384, .HS512:
+      return nil
+    case .PS256, .PS384, .PS512:
+      return nil
+    }
+  }
+  
+  public static func convertRSAPEMToPublicKey(_ pem: String) throws -> SecKey? {
     
     let key = pem
       .replacingOccurrences(of: "-----BEGIN PUBLIC KEY-----", with: "")

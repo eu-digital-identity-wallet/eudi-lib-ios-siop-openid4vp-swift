@@ -16,6 +16,7 @@
 import Foundation
 import JOSESwift
 import X509
+import CryptorECC
 
 public actor JarJwtSignatureValidator {
   
@@ -126,7 +127,7 @@ public actor JarJwtSignatureValidator {
       }
       let derBytes = [UInt8](data)
       return try? Certificate(derEncoded: derBytes)
-    } ?? []
+    }
     
     guard !certificates.isEmpty else {
       throw ValidatedAuthorizationError.validationError("x5c header field does not contain a serialized leaf certificate")
@@ -154,12 +155,24 @@ public actor JarJwtSignatureValidator {
     let publicKey = leafCertificate.publicKey
     let pem = try publicKey.serializeAsPEM().pemString
     
-    if let secKey = try KeyController.convertPEMToPublicKey(pem) {
+    guard let signingAlgorithm = jws.header.algorithm else {
+      throw ValidatedAuthorizationError.validationError("JWS header does not contain algorith field")
+    }
+    
+    if let secKey = KeyController.convertPEMToPublicKey(pem, algorithm: signingAlgorithm) {
       let joseController = JOSEController()
-      _ = try? joseController.verify(
+      let verified = (try? joseController.verify(
         jws: jws,
-        publicKey: secKey
-      )
+        publicKey: secKey,
+        algorithm: signingAlgorithm
+      )) ?? false
+      
+      if !verified {
+        throw ValidatedAuthorizationError.validationError("Unable to verify signature using public key from leaf certificate")
+      }
+
+    } else {
+      throw ValidatedAuthorizationError.validationError("Unable to decode public key from leaf certificate")
     }
   }
   
