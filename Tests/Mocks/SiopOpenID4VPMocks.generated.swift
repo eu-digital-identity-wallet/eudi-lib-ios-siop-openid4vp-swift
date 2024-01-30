@@ -13,11 +13,13 @@
 @testable import SiopOpenID4VP
 import Combine
 import CryptoKit
+import CryptorECC
 import Foundation
 import JOSESwift
 import PresentationExchange
 import Security
 import Swift
+import X509
 import os
 
 private let mkbGenericStaticMockContext = Mockingbird.GenericStaticMockContext()
@@ -34,30 +36,30 @@ public final class AuthorisationServiceTypeMock: AuthorisationServiceType, Mocki
   }
 
   // MARK: Mocked `formCheck`(`poster`: Posting, `response`: AuthorizationResponse)
-  public func `formCheck`(`poster`: Posting, `response`: AuthorizationResponse) async throws -> Bool {
-    return try await self.mockingbirdContext.mocking.didInvoke(Mockingbird.SwiftInvocation(selectorName: "`formCheck`(`poster`: Posting, `response`: AuthorizationResponse) async throws -> Bool", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.ArgumentMatcher(`poster`), Mockingbird.ArgumentMatcher(`response`)], returnType: Swift.ObjectIdentifier((Bool).self))) {
+  public func `formCheck`(`poster`: Posting, `response`: AuthorizationResponse) async throws -> (String, Bool) {
+    return try await self.mockingbirdContext.mocking.didInvoke(Mockingbird.SwiftInvocation(selectorName: "`formCheck`(`poster`: Posting, `response`: AuthorizationResponse) async throws -> (String, Bool)", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.ArgumentMatcher(`poster`), Mockingbird.ArgumentMatcher(`response`)], returnType: Swift.ObjectIdentifier(((String, Bool)).self))) {
       self.mockingbirdContext.recordInvocation($0)
       let mkbImpl = self.mockingbirdContext.stubbing.implementation(for: $0)
-      if let mkbImpl = mkbImpl as? (Posting, AuthorizationResponse) async throws -> Bool { return try await mkbImpl(`poster`, `response`) }
-      if let mkbImpl = mkbImpl as? () async throws -> Bool { return try await mkbImpl() }
+      if let mkbImpl = mkbImpl as? (Posting, AuthorizationResponse) async throws -> (String, Bool) { return try await mkbImpl(`poster`, `response`) }
+      if let mkbImpl = mkbImpl as? () async throws -> (String, Bool) { return try await mkbImpl() }
       for mkbTargetBox in self.mockingbirdContext.proxy.targets(for: $0) {
         switch mkbTargetBox.target {
         case .super:
           break
         case .object(let mkbObject):
           guard var mkbObject = mkbObject as? MockingbirdSupertype else { break }
-          let mkbValue: Bool = try await mkbObject.`formCheck`(poster: `poster`, response: `response`)
+          let mkbValue: (String, Bool) = try await mkbObject.`formCheck`(poster: `poster`, response: `response`)
           self.mockingbirdContext.proxy.updateTarget(&mkbObject, in: mkbTargetBox)
           return mkbValue
         }
       }
-      if let mkbValue = self.mockingbirdContext.stubbing.defaultValueProvider.value.provideValue(for: (Bool).self) { return mkbValue }
+      if let mkbValue = self.mockingbirdContext.stubbing.defaultValueProvider.value.provideValue(for: ((String, Bool)).self) { return mkbValue }
       self.mockingbirdContext.stubbing.failTest(for: $0, at: self.mockingbirdContext.sourceLocation)
     }
   }
 
-  public func `formCheck`(`poster`: @autoclosure () -> Posting, `response`: @autoclosure () -> AuthorizationResponse) async -> Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (Posting, AuthorizationResponse) async throws -> Bool, Bool> {
-    return Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (Posting, AuthorizationResponse) async throws -> Bool, Bool>(context: self.mockingbirdContext, invocation: Mockingbird.SwiftInvocation(selectorName: "`formCheck`(`poster`: Posting, `response`: AuthorizationResponse) async throws -> Bool", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.resolve(`poster`), Mockingbird.resolve(`response`)], returnType: Swift.ObjectIdentifier((Bool).self)))
+  public func `formCheck`(`poster`: @autoclosure () -> Posting, `response`: @autoclosure () -> AuthorizationResponse) async -> Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (Posting, AuthorizationResponse) async throws -> (String, Bool), (String, Bool)> {
+    return Mockingbird.Mockable<Mockingbird.ThrowingAsyncFunctionDeclaration, (Posting, AuthorizationResponse) async throws -> (String, Bool), (String, Bool)>(context: self.mockingbirdContext, invocation: Mockingbird.SwiftInvocation(selectorName: "`formCheck`(`poster`: Posting, `response`: AuthorizationResponse) async throws -> (String, Bool)", selectorType: Mockingbird.SelectorType.method, arguments: [Mockingbird.resolve(`poster`), Mockingbird.resolve(`response`)], returnType: Swift.ObjectIdentifier(((String, Bool)).self)))
   }
 
   // MARK: Mocked `formPost`<T: Codable>(`poster`: Posting, `response`: AuthorizationResponse)

@@ -181,7 +181,7 @@ final class DirectPostTests: DiXCTest {
     
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.formCheck(poster: any(), response: any())) ~> true
+    await given(service.formCheck(poster: any(), response: any())) ~> ("", true)
     let result: DispatchOutcome = try await dispatcher.dispatch()
     
     XCTAssertNotNil(result)
@@ -258,7 +258,7 @@ final class DirectPostTests: DiXCTest {
     
     let service = mock(AuthorisationServiceType.self)
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.formCheck(poster: any(), response: any())) ~> true
+    await given(service.formCheck(poster: any(), response: any())) ~> ("", true)
     let result: DispatchOutcome = try await dispatcher.dispatch()
     
     XCTAssertNotNil(result)
@@ -288,7 +288,6 @@ final class DirectPostTests: DiXCTest {
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
     
-    // Do not fail 404
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
       XCTAssert(false)
@@ -384,7 +383,6 @@ final class DirectPostTests: DiXCTest {
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
     
-    // Do not fail 404
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
       XCTAssert(false)

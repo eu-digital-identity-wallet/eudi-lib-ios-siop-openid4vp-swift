@@ -15,6 +15,8 @@
  */
 import Foundation
 import JOSESwift
+import X509
+import CryptorECC
 
 public actor JarJwtSignatureValidator {
   
@@ -69,8 +71,108 @@ public actor JarJwtSignatureValidator {
         clientId: clientId,
         jws: jws
       )
-    case .isox509: break
+    case .x509SanUri:
+      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
+      try await validateX509(
+        supportedClientIdScheme: supported,
+        clientId: clientId,
+        jws: jws,
+        alternativeNames: { certificate in
+          let alternativeNames = try? certificate
+            .extensions
+            .subjectAlternativeNames?
+            .rawUniformResourceIdentifiers()
+          return alternativeNames ?? []
+        }
+      )
+    case .x509SanDns:
+      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
+      try await validateX509(
+        supportedClientIdScheme: supported,
+        clientId: clientId,
+        jws: jws,
+        alternativeNames: { certificate in
+          let alternativeNames = try? certificate
+            .extensions
+            .subjectAlternativeNames?
+            .rawSubjectAlternativeNames()
+          return alternativeNames ?? []
+        }
+      )
     default: break
+    }
+  }
+  
+  private func validateX509(
+    supportedClientIdScheme: SupportedClientIdScheme?,
+    clientId: String,
+    jws: JWS,
+    alternativeNames: (Certificate) -> [String]
+  ) async throws {
+    
+    let header = jws.header
+    guard let chain: [String] = header.x5c else {
+      throw ValidatedAuthorizationError.validationError("x5c header field does not contain a serialized leaf certificate")
+    }
+    
+    let certificates: [Certificate] = chain.compactMap { serializedCertificate in
+      guard 
+        let serializedData = Data(base64Encoded: serializedCertificate),
+        let string = String(data: serializedData, encoding: .utf8)
+      else {
+        return nil
+      }
+      guard let data = Data(base64Encoded: string.removeCertificateDelimiters()) else {
+        return nil
+      }
+      let derBytes = [UInt8](data)
+      return try? Certificate(derEncoded: derBytes)
+    }
+    
+    guard !certificates.isEmpty else {
+      throw ValidatedAuthorizationError.validationError("x5c header field does not contain a serialized leaf certificate")
+    }
+    
+    switch supportedClientIdScheme {
+    case .x509SanDns(let trust),
+         .x509SanUri(let trust):
+      let trust = trust(chain)
+      if !trust {
+        throw ValidatedAuthorizationError.validationError("Could not trust certificate chain")
+      }
+    default: throw ValidatedAuthorizationError.validationError("Invalid client id scheme for x509")
+    }
+    
+    guard let leafCertificate = certificates.first else {
+      throw ValidatedAuthorizationError.validationError("Could not locate leaf certificate")
+    }
+
+    let alternativeNames = alternativeNames(leafCertificate)
+    if !alternativeNames.contains(clientId) {
+      throw ValidatedAuthorizationError.validationError("Client id (\(clientId) not part of list (\(alternativeNames))")
+    }
+    
+    let publicKey = leafCertificate.publicKey
+    let pem = try publicKey.serializeAsPEM().pemString
+    
+    guard let signingAlgorithm = jws.header.algorithm else {
+      throw ValidatedAuthorizationError.validationError("JWS header does not contain algorith field")
+    }
+    
+    if let secKey = KeyController.convertPEMToPublicKey(pem, algorithm: signingAlgorithm) {
+      let joseController = JOSEController()
+      let verified = (try? joseController.verify(
+        jws: jws,
+        publicKey: secKey,
+        algorithm: signingAlgorithm
+      )) ?? false
+      
+      if !verified {
+        throw ValidatedAuthorizationError.validationError("Unable to verify signature using public key from leaf certificate")
+      }
+
+    } else {
+      throw ValidatedAuthorizationError.validationError("Unable to decode public key from leaf certificate")
     }
   }
   
@@ -114,9 +216,8 @@ public actor JarJwtSignatureValidator {
     let jwk = await resolver.resolve(source: client.jwkSetSource)
     switch jwk {
     case .success(let set):
-      guard let key = set?.keys.first(where: { $0.alg == jws.header.algorithm?.rawValue }),
-            let alg = key.alg,
-            let algorithm = SignatureAlgorithm(rawValue: alg)
+      guard let key = set?.keys.first,
+            let algorithm = SignatureAlgorithm(rawValue: client.jarSigningAlg.name)
       else {
         throw ValidatedAuthorizationError.validationError("Could not resolve key from JWK source")
       }
@@ -124,7 +225,11 @@ public actor JarJwtSignatureValidator {
       let publicKey = try RSAPublicKey(data: key.toDictionary().toThrowingJSONData())
       let secKey = try publicKey.converted(to: SecKey.self)
       if let verifier = Verifier(verifyingAlgorithm: algorithm, key: secKey) {
-        _ = try jws.validate(using: verifier)
+        let isValid = jws.isValid(for: verifier)
+        if !isValid {
+          throw ValidatedAuthorizationError.validationError("Unable to verify signature")
+        }
+        
       } else {
         throw ValidatedAuthorizationError.validationError("Unable to verify signature")
       }

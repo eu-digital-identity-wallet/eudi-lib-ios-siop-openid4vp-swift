@@ -119,7 +119,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
     
     let clientId = "Verifier"
-    let scheme = "iso_x509"
+    let scheme = "did"
     
     let jws = try JWS(
       header: .init(
@@ -174,7 +174,6 @@ private extension JarJwtSignatureValidatorTests {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .isoX509,
         .preregistered(clients: [
           "Verifier": .init(
             clientId: "Verifier",
@@ -214,7 +213,6 @@ private extension JarJwtSignatureValidatorTests {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .isoX509,
         .preregistered(clients: [
           "Verifier": .init(
             clientId: "Verifier",

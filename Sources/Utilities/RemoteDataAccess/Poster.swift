@@ -53,7 +53,7 @@ public protocol Posting {
 
    - Returns: A Result type with a success boolean (based on status code) or an error.
    */
-  func check(request: URLRequest) async -> Result<Bool, PostError>
+  func check(key: String, request: URLRequest) async -> Result<(String, Bool), PostError>
 }
 
 public struct Poster: Posting {
@@ -98,16 +98,19 @@ public struct Poster: Posting {
 
    - Returns: A Result type with a success boolean (based on status code) or an error.
    */
-  public func check(request: URLRequest) async -> Result<Bool, PostError> {
+  public func check(key: String, request: URLRequest) async -> Result<(String, Bool) , PostError> {
     do {
       let delegate = SelfSignedSessionDelegate()
       let configuration = URLSessionConfiguration.default
       let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
-      let (_, response) = try await session.data(for: request)
+      let (data, response) = try await session.data(for: request)
       
-      print(response)
+      let string = String(data: data, encoding: .utf8)
+      let dictionary = string?.toDictionary() ?? [:]
+      let value = dictionary[key] as? String ?? ""
+      let success = (response as? HTTPURLResponse)?.statusCode.isWithinRange(200...299) ?? false
       
-      return .success((response as? HTTPURLResponse)?.statusCode.isWithinRange(200...299) ?? false)
+      return .success((value, success))
     } catch let error as NSError {
       if error.domain == NSURLErrorDomain {
         return .failure(.networkError(error))

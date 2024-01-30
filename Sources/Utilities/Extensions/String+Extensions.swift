@@ -25,7 +25,12 @@ public extension String {
       .replacingOccurrences(of: "=", with: "")
     return base64url
   }
-
+  
+  func removeCertificateDelimiters() -> String {
+    return self.replacingOccurrences(of: "-----BEGIN CERTIFICATE-----\n", with: "")
+      .replacingOccurrences(of: "-----END CERTIFICATE-----", with: "")
+      .replacingOccurrences(of: "\n", with: "")
+  }
   /// Loads the contents of a string file from the bundle associated with the Swift package.
   ///
   /// - Parameters:
@@ -34,12 +39,26 @@ public extension String {
   /// - Returns: The contents of the string file, or `nil` if it fails to load.
   static func loadStringFileFromBundle(named fileName: String, withExtension fileExtension: String) -> String? {
     let bundle = Bundle.module
-
+    
     guard let fileURL = bundle.url(forResource: fileName, withExtension: fileExtension),
-      let data = try? Data(contentsOf: fileURL),
-      let string = String(data: data, encoding: .utf8) else {
+          let data = try? Data(contentsOf: fileURL),
+          let string = String(data: data, encoding: .utf8) else {
       return nil
     }
     return string
+  }
+  
+  func toDictionary() -> [String: Any]? {
+    guard let jsonData = data(using: .utf8) else {
+      print("Failed to convert string to data.")
+      return nil
+    }
+    
+    do {
+      return try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any]
+    } catch {
+      print("Error parsing JSON:", error.localizedDescription)
+      return nil
+    }
   }
 }

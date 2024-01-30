@@ -53,7 +53,6 @@ final class SiopOpenID4VPTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .isoX509,
         .preregistered(clients: [
           "Verifier": .init(
             clientId: "Verifier",

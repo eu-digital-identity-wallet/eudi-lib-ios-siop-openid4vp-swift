@@ -32,8 +32,8 @@ public class JOSEController {
   
   public init() { }
   
-  public func verify(jws: JWS, publicKey: SecKey) throws -> Bool {
-    let verifier = try self.verifier(algorithhm: .RS256, publicKey: publicKey)
+  public func verify(jws: JWS, publicKey: SecKey, algorithm: SignatureAlgorithm = .RS256) throws -> Bool {
+    let verifier = try self.verifier(algorithhm: algorithm, publicKey: publicKey)
     return try jws.validate(using: verifier).isValid(for: verifier)
   }
   
@@ -65,7 +65,6 @@ public class JOSEController {
       rsaJWK: rsaJWK
     )
     
-    // NOTE: By SIOPv2 draft 12 issuer = subject
     let claimSet = try ([
       JWTClaimNames.issuer: issuerClaim,
       JWTClaimNames.subject: issuerClaim,
@@ -97,7 +96,7 @@ public class JOSEController {
 private extension JOSEController {
   
   func verifier(algorithhm: SignatureAlgorithm, publicKey: SecKey) throws -> Verifier {
-    guard let verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) else {
+    guard let verifier = Verifier(verifyingAlgorithm: algorithhm, key: publicKey) else {
       throw JOSEError.invalidVerifier
     }
     return verifier
@@ -131,14 +130,15 @@ private extension JOSEController {
   func sign(
     payload: Payload,
     kid: UUID,
-    signingKey: SecKey
+    signingKey: SecKey,
+    algorithm: SignatureAlgorithm = .RS256
   ) throws -> JWTString {
     let header = try JWSHeader(parameters: [
-      "alg": SignatureAlgorithm.RS256.rawValue,
+      "alg": algorithm.rawValue,
       "kid": kid.uuidString
     ])
     
-    let signer = try self.signer(algorithhm: .RS256, privateKey: signingKey)
+    let signer = try self.signer(algorithhm: algorithm, privateKey: signingKey)
     
     return try JWS(
       header: header,
