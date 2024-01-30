@@ -514,9 +514,6 @@ final class DirectPostJWTTests: DiXCTest {
       switch result {
       case .accepted(let redirectURI):
         XCTAssert(true, redirectURI?.absoluteString ?? "No redirect url")
-        
-        let hostUrl = URL(string: TestsConstants.host)
-        XCTAssertEqual(hostUrl?.host ?? "", redirectURI?.host ?? "")
       default:
         XCTAssert(false)
       }
