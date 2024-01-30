@@ -32,7 +32,7 @@ let package = Package(
       url: "https://github.com/apple/swift-asn1.git",
       .upToNextMajor(from: "1.0.0")
     ),.package(
-      url: "https://github.com/dtsiflit/BlueECC.git",
+      url: "https://github.com/niscy-eudiw/BlueECC.git",
       .upToNextMajor(from: "1.2.4")
     ),
   ],
