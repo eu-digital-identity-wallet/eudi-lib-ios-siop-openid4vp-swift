@@ -246,7 +246,8 @@ final class DirectPostJWTTests: DiXCTest {
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
           )
-        ])],
+        ])
+      ],
       vpFormatsSupported: []
     )
     

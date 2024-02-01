@@ -280,7 +280,44 @@ final class DirectPostTests: DiXCTest {
       return
     }
     
-    let sdk = SiopOpenID4VP()
+    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
+    
+    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
+    let privateKey = try KeyController.generateECDHPrivateKey()
+    
+    let rsaJWK = try RSAPublicKey(
+      publicKey: rsaPublicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": UUID().uuidString,
+        "alg": "RS256"
+      ])
+    
+    let keySet = try WebKeySet(jwk: rsaJWK)
+    
+    let wallet: WalletOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
+      signingKey: privateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .preregistered(clients: [
+          "Verifier": .init(
+            clientId: "Verifier",
+            jarSigningAlg: .init(.RS256),
+            jwkSetSource: .fetchByReference(url: publicKeysURL)
+          )
+        ])
+      ],
+      vpFormatsSupported: []
+    )
+    
+    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]
     let presentationId = session["presentation_id"] as! String
@@ -298,33 +335,6 @@ final class DirectPostTests: DiXCTest {
     case .notSecured: break
     case .jwt(request: let request):
       let resolved = request
-      
-      let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
-      let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
-      let privateKey = try KeyController.generateECDHPrivateKey()
-      
-      let rsaJWK = try RSAPublicKey(
-        publicKey: rsaPublicKey,
-        additionalParameters: [
-          "use": "sig",
-          "kid": UUID().uuidString,
-          "alg": "RS256"
-        ])
-      
-      let keySet = try WebKeySet(jwk: rsaJWK)
-      
-      let wallet: WalletOpenId4VPConfiguration = .init(
-        subjectSyntaxTypesSupported: [
-          .decentralizedIdentifier,
-          .jwkThumbprint
-        ],
-        preferredSubjectSyntaxType: .jwkThumbprint,
-        decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-        signingKey: privateKey,
-        signingKeySet: keySet,
-        supportedClientIdSchemes: [],
-        vpFormatsSupported: []
-      )
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
@@ -411,6 +421,8 @@ final class DirectPostTests: DiXCTest {
         name: "Bob"
       )
       
+      let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
+      
       let wallet: WalletOpenId4VPConfiguration = .init(
         subjectSyntaxTypesSupported: [
           .decentralizedIdentifier,
@@ -420,7 +432,15 @@ final class DirectPostTests: DiXCTest {
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
         signingKey: try KeyController.generateRSAPrivateKey(),
         signingKeySet: WebKeySet(keys: []),
-        supportedClientIdSchemes: [],
+        supportedClientIdSchemes: [
+          .preregistered(clients: [
+            "Verifier": .init(
+              clientId: "Verifier",
+              jarSigningAlg: .init(.RS256),
+              jwkSetSource: .fetchByReference(url: publicKeysURL)
+            )
+          ])
+        ],
         vpFormatsSupported: []
       )
       
