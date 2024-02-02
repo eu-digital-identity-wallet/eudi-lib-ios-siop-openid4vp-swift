@@ -29,6 +29,10 @@ public enum DataConversionError: Error {
 
 public struct X509CertificateChainVerifier {
   
+  public init() {
+    
+  }
+  
   public func isChainTrustResultSuccesful(_ result: ChainTrustResult) -> Bool {
     return result != .failure
   }
