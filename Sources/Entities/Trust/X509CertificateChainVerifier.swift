@@ -123,6 +123,47 @@ public struct X509CertificateChainVerifier {
       return false
     }
   }
+  
+  public func areCertificatesLinked(
+    rootCertificateBase64: String,
+    otherCertificateBase64: String
+  ) -> Bool {
+    guard
+      let rootCertificateData = Data(base64Encoded: rootCertificateBase64),
+      let otherCertificateData = Data(base64Encoded: otherCertificateBase64)
+    else {
+      return false // Invalid Base64-encoded data
+    }
+    
+    // Create SecCertificate objects from DER data
+    if let rootCertificate = SecCertificateCreateWithData(nil, rootCertificateData as CFData),
+       let otherCertificate = SecCertificateCreateWithData(nil, otherCertificateData as CFData) {
+      
+      // Create a trust object and evaluate it
+      var trust: SecTrust?
+      var policy: SecPolicy?
+      
+      policy = SecPolicyCreateBasicX509()
+      let policies = [policy!] as CFArray
+      
+      let status = SecTrustCreateWithCertificates([rootCertificate] as CFArray, policies, &trust)
+      
+      if status == errSecSuccess {
+        SecTrustSetAnchorCertificates(trust!, [rootCertificate] as CFArray)
+        
+        let otherCertificates = [otherCertificate] as CFArray
+        SecTrustSetAnchorCertificatesOnly(trust!, true)
+        SecTrustSetAnchorCertificates(trust!, otherCertificates)
+        
+        var trustResult: SecTrustResultType = .invalid
+        SecTrustEvaluate(trust!, &trustResult)
+        
+        return trustResult == .unspecified || trustResult == .proceed
+      }
+    }
+    
+    return false // The certificates are not linked
+  }
 }
 
 private extension X509CertificateChainVerifier {
