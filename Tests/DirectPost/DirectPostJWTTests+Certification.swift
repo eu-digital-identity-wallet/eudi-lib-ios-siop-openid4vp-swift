@@ -26,7 +26,96 @@ final class DirectPostJWTCertificationTests: DiXCTest {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
-    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/JbO4QVq6zcSotusfqTXjvncyJcvHlW8EstOUwU8qm0vKqmxejB0qqDABml21bI7h%230SfiQ1_E49QFwh-iiHzirRQQYYFyGId-b3DoBN78wYw"
+    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/gk7OppLHTBkcCoc0h05LLiK0ChbTNTRXoCCyw5NENDiZJIspr9JlboV2Tcj9mlH8%23ZJT0a3wzGlngjOF1GHSJ0Rq6417Oo1VHLT3hQkE7j8o"
+    let clientId = "demo.certification.openid.net"
+    
+    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
+    let privateKey = try KeyController.generateECDHPrivateKey()
+    
+    let rsaJWK = try RSAPublicKey(
+      publicKey: rsaPublicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": UUID().uuidString,
+        "alg": "RS256"
+      ])
+    
+    let chainVerifier = { certificates in
+      let chainVerifier = X509CertificateChainVerifier()
+      let verified = try? chainVerifier.verifyCertificateChain(
+        base64Certificates: certificates
+      )
+      return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
+    }
+    
+    let keySet = try WebKeySet(jwk: rsaJWK)
+    let wallet: WalletOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
+      signingKey: privateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .x509SanDns(trust: chainVerifier)
+      ],
+      vpFormatsSupported: []
+    )
+    
+    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+ 
+    overrideDependencies()
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    
+    guard let result = result else {
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
+      return
+    }
+    
+    switch result {
+    case .notSecured: break
+    case .jwt(request: let request):
+      let resolved = request
+      
+      // Obtain consent
+      let consent: ClientConsent = .vpToken(
+        vpToken: TestsConstants.certCbor,
+        presentationSubmission: .init(
+          id: "psId",
+          definitionID: "psId",
+          descriptorMap: []
+        )
+      )
+      
+      // Generate a direct post authorisation response
+      let response = try? XCTUnwrap(AuthorizationResponse(
+        resolvedRequest: resolved,
+        consent: consent,
+        walletOpenId4VPConfig: wallet
+      ), "Expected item to be non-nil")
+      
+      // Dispatch
+      XCTAssertNotNil(response)
+      
+      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
+      switch result {
+      case .accepted:
+        XCTAssert(true)
+      default:
+        XCTAssert(false)
+      }
+    }
+  }
+  
+  func testGivenOnlineCertifierHappyPathWithRedirectTestPlanThenExpectSuccess() async throws {
+    
+    /// To get this URL, visit https://demo.certification.openid.net/
+    /// and run a happy flow no state test
+    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/BqKznts040iPAipEv9VTuru3tzO9ewzscjwOZE2vuapIcfM8PJE9uZPvHZGHko7i%23d1kaTu9NWeb56ACu-0TkA66BLWXPcMy7UX5mhhB2LPU"
     let clientId = "demo.certification.openid.net"
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
@@ -104,7 +193,97 @@ final class DirectPostJWTCertificationTests: DiXCTest {
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted(let redirectURI):
-        XCTAssert(true, redirectURI?.absoluteString ?? "No redirect url")
+        XCTAssertNotNil(redirectURI!.absoluteString)
+        XCTAssert(true, "Redirect uri \(redirectURI!.absoluteString)")
+      default:
+        XCTAssert(false)
+      }
+    }
+  }
+  
+  func testGivenOnlineCertifierHappyPathTestPlanThenExpectFailure() async throws {
+    
+    /// To get this URL, visit https://demo.certification.openid.net/
+    /// and run a happy flow no state test
+    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/qAEbszoe0OFahgCCvuxhmqk0g7WsxPd7lyhV6D7Z2gW8h4GdprRINow7mgcmOVAN%23z5-nmDFnFTfulrFOCuuJ8AxqNlnvV9omSHZxpbMch6E"
+    let clientId = "demo.certification.openid.net"
+    
+    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
+    let privateKey = try KeyController.generateECDHPrivateKey()
+    
+    let rsaJWK = try RSAPublicKey(
+      publicKey: rsaPublicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": UUID().uuidString,
+        "alg": "RS256"
+      ])
+    
+    let chainVerifier = { certificates in
+      let chainVerifier = X509CertificateChainVerifier()
+      let verified = try? chainVerifier.verifyCertificateChain(
+        base64Certificates: certificates
+      )
+      return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
+    }
+    
+    let keySet = try WebKeySet(jwk: rsaJWK)
+    let wallet: WalletOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
+      signingKey: privateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .x509SanDns(trust: chainVerifier)
+      ],
+      vpFormatsSupported: []
+    )
+    
+    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+ 
+    overrideDependencies()
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    
+    guard let result = result else {
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
+      return
+    }
+    
+    switch result {
+    case .notSecured: break
+    case .jwt(request: let request):
+      let resolved = request
+      
+      // Obtain consent
+      let consent: ClientConsent = .vpToken(
+        vpToken: TestsConstants.certCbor,
+        presentationSubmission: .init(
+          id: "psId",
+          definitionID: "psId",
+          descriptorMap: []
+        )
+      )
+      
+      // Generate a direct post authorisation response
+      let response = try? XCTUnwrap(AuthorizationResponse(
+        resolvedRequest: resolved,
+        consent: consent,
+        walletOpenId4VPConfig: wallet
+      ), "Expected item to be non-nil")
+      
+      // Dispatch
+      XCTAssertNotNil(response)
+      
+      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
+      switch result {
+      case .accepted:
+        XCTAssert(true)
       default:
         XCTAssert(false)
       }

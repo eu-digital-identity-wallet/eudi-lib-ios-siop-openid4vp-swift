@@ -42,6 +42,27 @@ public class JOSEEncryptionMethod: JOSEAlgorithm {
     super.init(name: name, requirement: requirement)
     self.cekBitLength = cekBitLength
   }
+  
+  convenience init?(optionalName: String?) {
+    if let optionalName {
+      self.init(name: optionalName)
+    } else {
+      return nil
+    }
+  }
+  
+  convenience init?(optionalSupportedName: String?) {
+    var name = optionalSupportedName
+    if !["A128CBC-HS256", "A256CBC-HS512"].contains(optionalSupportedName) {
+      name = "A128CBC-HS256"
+    }
+    
+    if let name {
+      self.init(name: name)
+    } else {
+      return nil
+    }
+  }
 }
 
 public extension JOSEEncryptionMethod {

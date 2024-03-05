@@ -170,8 +170,8 @@ public extension ClientMetaData {
   struct Validated: Equatable {
     public let jwkSet: WebKeySet?
     public let idTokenJWSAlg: JWSAlgorithm?
-    public let idTokenJWEAlg: JWEAlgorithm
-    public let idTokenJWEEnc: JOSEEncryptionMethod
+    public let idTokenJWEAlg: JWEAlgorithm?
+    public let idTokenJWEEnc: JOSEEncryptionMethod?
     public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
     public let authorizationSignedResponseAlg: JWSAlgorithm?
     public let authorizationEncryptedResponseAlg: JWEAlgorithm?
@@ -180,8 +180,8 @@ public extension ClientMetaData {
     public init(
       jwkSet: WebKeySet?,
       idTokenJWSAlg: JWSAlgorithm?,
-      idTokenJWEAlg: JWEAlgorithm,
-      idTokenJWEEnc: JOSEEncryptionMethod,
+      idTokenJWEAlg: JWEAlgorithm?,
+      idTokenJWEEnc: JOSEEncryptionMethod?,
       subjectSyntaxTypesSupported: [SubjectSyntaxType],
       authorizationSignedResponseAlg: JWSAlgorithm?,
       authorizationEncryptedResponseAlg: JWEAlgorithm?,
