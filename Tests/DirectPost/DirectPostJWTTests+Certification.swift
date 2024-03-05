@@ -26,8 +26,14 @@ final class DirectPostJWTCertificationTests: DiXCTest {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
-    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/gk7OppLHTBkcCoc0h05LLiK0ChbTNTRXoCCyw5NENDiZJIspr9JlboV2Tcj9mlH8%23ZJT0a3wzGlngjOF1GHSJ0Rq6417Oo1VHLT3hQkE7j8o"
+    let url = ""
     let clientId = "demo.certification.openid.net"
+    
+    guard !url.isEmpty else {
+      XCTExpectFailure("The tests need a url")
+      XCTAssert(false)
+      return
+    }
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
@@ -115,8 +121,14 @@ final class DirectPostJWTCertificationTests: DiXCTest {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
-    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/BqKznts040iPAipEv9VTuru3tzO9ewzscjwOZE2vuapIcfM8PJE9uZPvHZGHko7i%23d1kaTu9NWeb56ACu-0TkA66BLWXPcMy7UX5mhhB2LPU"
+    let url = ""
     let clientId = "demo.certification.openid.net"
+    
+    guard !url.isEmpty else {
+      XCTExpectFailure("The tests need a url")
+      XCTAssert(false)
+      return
+    }
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
@@ -205,8 +217,14 @@ final class DirectPostJWTCertificationTests: DiXCTest {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
-    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/qAEbszoe0OFahgCCvuxhmqk0g7WsxPd7lyhV6D7Z2gW8h4GdprRINow7mgcmOVAN%23z5-nmDFnFTfulrFOCuuJ8AxqNlnvV9omSHZxpbMch6E"
+    let url = ""
     let clientId = "demo.certification.openid.net"
+    
+    guard !url.isEmpty else {
+      XCTExpectFailure("The tests need a url")
+      XCTAssert(false)
+      return
+    }
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
