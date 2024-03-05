@@ -301,9 +301,9 @@ final class DirectPostJWTCertificationTests: DiXCTest {
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
-        XCTAssert(true)
-      default:
         XCTAssert(false)
+      default:
+        XCTAssert(true)
       }
     }
   }
