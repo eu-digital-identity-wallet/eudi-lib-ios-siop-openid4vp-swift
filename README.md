@@ -1,5 +1,10 @@
 # SIOPv2 OpenID4VP 
 
+:heavy_exclamation_mark: **Important!** Before you proceed, please read
+the [EUDI Wallet Reference Implementation project description](https://github.com/eu-digital-identity-wallet/.github-private/blob/main/profile/reference-implementation.md)
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
 ## Introduction
 
 OpenID4VP is a Protocol that enables the presentation of Verifiable Credentials. It is built on top of OAuth 2.0 and supports multiple credential formats, including W3C Verifiable Credentials Data Model, ISO mdoc, and AnonCreds. This protocol allows for simple, secure, and developer-friendly credential presentation and can be used to support credential presentation and the issuance of access tokens for access to APIs based on Verifiable Credentials in the wallet
