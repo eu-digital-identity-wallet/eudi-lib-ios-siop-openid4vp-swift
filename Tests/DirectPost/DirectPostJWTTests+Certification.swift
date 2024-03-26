@@ -20,7 +20,7 @@ import Mockingbird
 
 @testable import SiopOpenID4VP
 
-final class DirectPostJWTCertificationTests: DiXCTest {
+final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
   
   func testGivenOnlineCertifierHappyPathTestPlanThenExpectSuccess() async throws {
     

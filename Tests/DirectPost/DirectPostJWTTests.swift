@@ -309,7 +309,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
   }
   
-  func testSDKEndtoWebVerifierEndDirectPostJwtPreregistered() async throws {
+  func testSDKEndtoEndWebVerifierDirectPostJwtPreregistered() async throws {
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
@@ -352,6 +352,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
+    /// Note:  The url is only valid for one use
     let url = ""
     let clientId = "dev.verifier-backend.eudiw.dev"
     
@@ -591,16 +592,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
   }
   
-  func testSDKEndtoEndDirectPostJwtX509WithAccepetedRequestURI() async throws {
-    
-    let nonce = UUID().uuidString
-//    let session = try? await TestsHelpers.getDirectPostJwtSessionAcceptRequestURI(nonce: nonce)
-//    
-//    guard let session = session else {
-//      XCTExpectFailure("this tests depends on a local verifier running")
-//      XCTAssert(false)
-//      return
-//    }
+  func testSDKEndtoEndWebVerifierDirectPostJwtX509WithAccepetedRequestURI() async throws {
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
@@ -639,20 +631,14 @@ final class DirectPostJWTTests: DiXCTest {
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    let url = "https://dev.verifier-backend.eudiw.dev/wallet/request.jwt/5rykjIVxug2z-UzAMX26Azh7zum6dMWEQtSkny76HK7yXvhNcJvZ6EiOrQREe-50OIte-8f1-JR7Tcuh0dVSMA"//session["request_uri"]
-    let clientId = "dev.verifier-backend.eudiw.dev"//session["client_id"]
     
-//    guard let clientId = clientId else {
-//      XCTExpectFailure()
-//      XCTAssert(false)
-//      return
-//    }
-//    
-//    guard let url = url else {
-//      XCTExpectFailure()
-//      XCTAssert(false)
-//      return
-//    }
+    /// To get this URL, visit https://dev.verifier.eudiw.dev/
+    /// and  "Request for the entire PID"
+    /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
+    /// Decode the URL online and paste it below in the url variable
+    /// Note:  The url is only valid for one use
+    let url = ""
+    let clientId = "dev.verifier-backend.eudiw.dev"
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
