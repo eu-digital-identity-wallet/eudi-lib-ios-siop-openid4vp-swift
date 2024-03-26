@@ -71,7 +71,9 @@ public actor AuthorisationService: AuthorisationServiceType {
       let encryptor = ResponseSignerEncryptor()
       let joseResponse = try await encryptor.signEncryptResponse(spec: jarmSpec, data: data)
       
-      let payload = try data.toDictionary().merging([
+      let dictionary = try data.toDictionary()
+      let payload = dictionary.merging([
+        "state": dictionary["state"] ?? "",
         "response": joseResponse
       ], uniquingKeysWith: { _, new in
         new

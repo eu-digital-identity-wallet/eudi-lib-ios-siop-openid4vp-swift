@@ -29,6 +29,14 @@ public class JWEAlgorithm: JOSEAlgorithm {
   public override init(name: String, requirement: JOSEAlgorithm.Requirement) {
     super.init(name: name, requirement: requirement)
   }
+  
+  convenience init?(optionalName: String?) {
+    if let optionalName {
+      self.init(name: optionalName)
+    } else {
+      return nil
+    }
+  }
 }
 
 public extension JWEAlgorithm {

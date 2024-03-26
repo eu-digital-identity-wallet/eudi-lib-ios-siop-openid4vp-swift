@@ -26,12 +26,12 @@ internal actor ClientMetaDataValidator {
     
     let idTokenJWSAlg: JWSAlgorithm? = parseOptionJWSAlgorithm(algorithm: clientMetaData.idTokenSignedResponseAlg)
     
-    let idTokenJWEAlg: JWEAlgorithm = .init(
-      name: try clientMetaData.idTokenEncryptedResponseAlg ?? { throw ValidatedAuthorizationError.validationError("idTokenEncryptedResponseAlg is nil") }()
+    let idTokenJWEAlg: JWEAlgorithm? = .init(
+      optionalName: clientMetaData.idTokenEncryptedResponseAlg
     )
     
-    let idTokenJWEEnc: JOSEEncryptionMethod = .init(
-      name: try clientMetaData.idTokenEncryptedResponseEnc ?? { throw ValidatedAuthorizationError.validationError("idTokenEncryptedResponseEnc is nil") }()
+    let idTokenJWEEnc: JOSEEncryptionMethod? = .init(
+      optionalName: clientMetaData.idTokenEncryptedResponseEnc
     )
     
     let subjectSyntaxTypesSupported: [SubjectSyntaxType] = clientMetaData.subjectSyntaxTypesSupported.compactMap { SubjectSyntaxType(rawValue: $0) }
@@ -51,7 +51,7 @@ internal actor ClientMetaDataValidator {
       subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
       authorizationSignedResponseAlg: parseOptionJWSAlgorithm(algorithm: clientMetaData.authorizationSignedResponseAlg),
       authorizationEncryptedResponseAlg: parseOptionJWEAlgorithm(algorithm: clientMetaData.authorizationEncryptedResponseAlg),
-      authorizationEncryptedResponseEnc: parseOptionEncryptionAlgorithm(algorithm: clientMetaData.authorizationEncryptedResponseEnc)
+      authorizationEncryptedResponseEnc: .init(optionalSupportedName: clientMetaData.authorizationEncryptedResponseEnc)
     )
     
     return validated

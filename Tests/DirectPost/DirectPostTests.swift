@@ -272,14 +272,6 @@ final class DirectPostTests: DiXCTest {
       .replacingOccurrences(of: "/", with: "_")
       .trimmingCharacters(in: CharacterSet(charactersIn: "="))
     
-    let session = try? await TestsHelpers.getDirectPostVpTokenSession(nonce: nonce)
-    
-    guard let session = session else {
-      XCTExpectFailure("this tests depends on a local verifier running")
-      XCTAssert(false)
-      return
-    }
-    
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
@@ -318,12 +310,16 @@ final class DirectPostTests: DiXCTest {
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    let url = session["request_uri"]
-    let clientId = session["client_id"]
-    let presentationId = session["presentation_id"] as! String
+    /// To get this URL, visit https://dev.verifier.eudiw.dev/
+    /// and  "Request for the entire PID"
+    /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
+    /// Decode the URL online and paste it below in the url variable
+    /// Note:  The url is only valid for one use
+    let url = ""
+    let clientId = "dev.verifier-backend.eudiw.dev"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -361,15 +357,6 @@ final class DirectPostTests: DiXCTest {
       case .accepted:
         XCTAssert(true)
       default:
-        XCTAssert(false)
-      }
-      
-      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
-      
-      switch pollingResult {
-      case .success:
-        XCTAssert(true)
-      case .failure:
         XCTAssert(false)
       }
     }
