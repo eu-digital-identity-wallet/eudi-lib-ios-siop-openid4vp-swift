@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Chronometer.git",
       "state" : {
-        "revision" : "742a6a58714e6c134d635abc589dbca9526099c3",
-        "version" : "0.1.9"
+        "revision" : "b4808d59a175b1f764cc3d7e2e927e5476b10427",
+        "version" : "0.1.11"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Hitch.git",
       "state" : {
-        "revision" : "de110dd6d2de0f41f4a4e7b7dea0bb769df7b12b",
-        "version" : "0.4.113"
+        "revision" : "6b426996533d8a13eb61dcbc954f2fd5bed9e18f",
+        "version" : "0.4.129"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/niscy-eudiw/JOSESwift.git",
       "state" : {
-        "revision" : "ef86488a729fb1eb85edc3b174f528ac212c5ce6",
-        "version" : "2.4.1"
+        "revision" : "518cedba79ef18867191811b161471298b6cb7c8",
+        "version" : "2.4.1-gcm"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Sextant.git",
       "state" : {
-        "revision" : "49b567226e72ba4f22943e352e1ee3bf3bf4824e",
-        "version" : "0.4.24"
+        "revision" : "52a77d0bce0210cf9557faef7fd0adb9a6da02fb",
+        "version" : "0.4.31"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Spanker.git",
       "state" : {
-        "revision" : "6b0edd2996d1f3bebb534fb05e20eac6bf8c8739",
-        "version" : "0.2.46"
+        "revision" : "96e58f68274a2e6f370fff153ceb5674a06936c4",
+        "version" : "0.2.47"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "cc76b894169a3c86b71bac10c78a4db6beb7a9ad",
-        "version" : "3.2.0"
+        "revision" : "f0525da24dc3c6cbb2b6b338b65042bc91cbc4bb",
+        "version" : "3.3.0"
       }
     }
   ],
