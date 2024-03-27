@@ -52,13 +52,8 @@ public class JOSEEncryptionMethod: JOSEAlgorithm {
   }
   
   convenience init?(optionalSupportedName: String?) {
-    var name = optionalSupportedName
-    if !["A128CBC-HS256", "A256CBC-HS512"].contains(optionalSupportedName) {
-      name = "A128CBC-HS256"
-    }
-    
-    if let name {
-      self.init(name: name)
+    if let optionalSupportedName {
+      self.init(name: optionalSupportedName)
     } else {
       return nil
     }
