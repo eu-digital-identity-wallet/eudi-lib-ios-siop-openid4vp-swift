@@ -143,11 +143,15 @@ private extension ResponseSignerEncryptor {
       keySet: signingKeySet
     )
     
-    let header = try JWEHeader(parameters: [
+    let parameters: [String: Any?] = [
       "alg": responseSigningAlg.name,
       "enc": responseEncryptionEnc.name,
-      "kid": keyAndEncryptor.key.kid
-    ])
+      "kid": keyAndEncryptor.key.kid,
+      "apv": data.vpTokenValue,
+      "apu": data.vpTokenApu
+    ].filter { $0.value != nil }
+    
+    let header = try JWEHeader(parameters: parameters as [String : Any])
     
     let jwe = try JWE(
       header: header,
@@ -184,10 +188,13 @@ private extension ResponseSignerEncryptor {
         keySet: signingKeySet
       )
       
-      let header = try JWEHeader(parameters: [
+      let parameters: [String: Any?] = [
         "alg": responseSigningAlg.name,
-        "enc": responseEncryptionEnc.name
-      ])
+        "enc": responseEncryptionEnc.name,
+        "apv": data.vpTokenValue,
+        "apu": data.vpTokenApu
+      ].filter { $0.value != nil }
+      let header = try JWEHeader(parameters: parameters as [String : Any])
       
       return try JWE(
         header: header,
