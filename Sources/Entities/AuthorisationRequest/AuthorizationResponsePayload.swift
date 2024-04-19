@@ -15,8 +15,6 @@
  */
 import Foundation
 
-public typealias VpToken = String
-
 /// An enumeration representing different types of authorization response payloads.
 public enum AuthorizationResponsePayload: Encodable {
   /// An SIOP authentication response payload.
@@ -62,6 +60,22 @@ public enum AuthorizationResponsePayload: Encodable {
     case presentationSubmission = "presentation_submission"
   }
 
+  var vpTokenValue: String? {
+    switch self {
+    case .openId4VPAuthorizationResponse(let vpToken, _, _, _):
+      vpToken.value
+    default: nil
+    }
+  }
+  
+  var vpTokenApu: String? {
+    switch self {
+    case .openId4VPAuthorizationResponse(let vpToken, _, _, _):
+      vpToken.apu
+    default: nil
+    }
+  }
+  
   /// Encodes the enumeration using the given encoder.
   public func encode(to encoder: Encoder) throws {
      var container = encoder.container(keyedBy: CodingKeys.self)
@@ -72,12 +86,12 @@ public enum AuthorizationResponsePayload: Encodable {
        try container.encode(idToken, forKey: .idToken)
      case .openId4VPAuthorizationResponse(
       let vpToken,
-      let verifiableCredential,
+      _,
       let presentationSubmission,
       let state
      ):
        try container.encode(presentationSubmission, forKey: .presentationSubmission)
-       try container.encode(vpToken, forKey: .vpToken)
+       try container.encode(vpToken.value, forKey: .vpToken)
        try container.encode(state, forKey: .state)
      case .noConsensusResponseData(let state, let message):
        try container.encode(state, forKey: .state)
