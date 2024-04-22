@@ -353,7 +353,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "https://dev.verifier-backend.eudiw.dev/wallet/request.jwt/l_iC-TGZ5nPEBcgDtT5ac1tkbg9A3qTuCOQzJJU3yzMBDbVRpPkPHwFMZ2s4LQeZ8hESctvJs78VVfoYvavdRg"
+    let url = ""
     let clientId = "dev.verifier-backend.eudiw.dev"
     
     overrideDependencies()
