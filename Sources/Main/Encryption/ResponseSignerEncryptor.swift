@@ -147,7 +147,7 @@ private extension ResponseSignerEncryptor {
       "alg": responseSigningAlg.name,
       "enc": responseEncryptionEnc.name,
       "kid": keyAndEncryptor.key.kid,
-      "apv": data.vpTokenValue,
+      "apv": data.nonce.base64urlEncode,
       "apu": data.vpTokenApu
     ].filter { $0.value != nil }
     
@@ -191,7 +191,7 @@ private extension ResponseSignerEncryptor {
       let parameters: [String: Any?] = [
         "alg": responseSigningAlg.name,
         "enc": responseEncryptionEnc.name,
-        "apv": data.vpTokenValue,
+        "apv": data.nonce.base64urlEncode,
         "apu": data.vpTokenApu
       ].filter { $0.value != nil }
       let header = try JWEHeader(parameters: parameters as [String : Any])

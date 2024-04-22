@@ -38,6 +38,9 @@ public enum AuthorizationError: LocalizedError {
   /// The state is invalid.
   case invalidState
 
+  /// The nonce is invalid.
+  case invalidNonce
+  
   /// The response mode is invalid.
   case invalidResponseMode
 
@@ -58,6 +61,8 @@ public enum AuthorizationError: LocalizedError {
       return ".unsupportedResolution"
     case .invalidState:
       return ".invalidState"
+    case .invalidNonce:
+      return ".invalidNonce"
     case .invalidResponseMode:
       return ".invalidResponseMode"
     }
