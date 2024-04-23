@@ -14,7 +14,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/niscy-eudiw/JOSESwift.git",
-      exact: "2.4.1"
+      exact: "2.4.1-gcm"
     ),
     .package(
       url: "https://github.com/birdrides/mockingbird.git",
