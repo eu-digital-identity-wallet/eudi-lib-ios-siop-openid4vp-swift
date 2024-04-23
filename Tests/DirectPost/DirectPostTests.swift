@@ -267,11 +267,6 @@ final class DirectPostTests: DiXCTest {
   
   func testSDKEndtoEndDirectPostVpToken() async throws {
     
-    let nonce = Data(ChaChaPoly.Nonce()).base64EncodedString()
-      .replacingOccurrences(of: "+", with: "-")
-      .replacingOccurrences(of: "/", with: "_")
-      .trimmingCharacters(in: CharacterSet(charactersIn: "="))
-    
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()

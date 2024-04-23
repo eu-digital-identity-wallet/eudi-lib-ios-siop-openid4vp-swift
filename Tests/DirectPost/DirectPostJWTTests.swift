@@ -441,7 +441,7 @@ final class DirectPostJWTTests: DiXCTest {
     // Add your own URL here that you can obtain from
     // https://verifier.eudiw.dev/
     let url = ""
-    let clientId = "verifier-backend.eudiw.dev"
+    let clientId = "dev.verifier-backend.eudiw.dev"
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)

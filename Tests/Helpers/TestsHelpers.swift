@@ -60,7 +60,6 @@ class TestsHelpers {
       "type": "vp_token",
       "response_mode":  "direct_post.jwt",
       "nonce": nonce,
-      "presentation_definition_mode": "by_reference",
       "presentation_definition": [
         "id": "32f54163-7166-48f1-93d8-ff217bdb0653",
         "input_descriptors": [
