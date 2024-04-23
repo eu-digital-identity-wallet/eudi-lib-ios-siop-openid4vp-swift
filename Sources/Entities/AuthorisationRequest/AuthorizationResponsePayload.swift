@@ -105,7 +105,6 @@ public enum AuthorizationResponsePayload: Encodable {
      case .siopAuthenticationResponse(let idToken, let state, let nonce):
        try container.encode(state, forKey: .state)
        try container.encode(idToken, forKey: .idToken)
-       try container.encode(nonce, forKey: .nonce)
      case .openId4VPAuthorizationResponse(
       let vpToken,
       _,
@@ -116,7 +115,6 @@ public enum AuthorizationResponsePayload: Encodable {
        try container.encode(presentationSubmission, forKey: .presentationSubmission)
        try container.encode(vpToken.value, forKey: .vpToken)
        try container.encode(state, forKey: .state)
-       try container.encode(nonce, forKey: .nonce)
      case .noConsensusResponseData(let state, let message):
        try container.encode(state, forKey: .state)
        try container.encode(message, forKey: .error)
