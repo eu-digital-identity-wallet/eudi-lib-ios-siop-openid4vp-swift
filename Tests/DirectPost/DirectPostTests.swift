@@ -267,11 +267,6 @@ final class DirectPostTests: DiXCTest {
   
   func testSDKEndtoEndDirectPostVpToken() async throws {
     
-    let nonce = Data(ChaChaPoly.Nonce()).base64EncodedString()
-      .replacingOccurrences(of: "+", with: "-")
-      .replacingOccurrences(of: "/", with: "_")
-      .trimmingCharacters(in: CharacterSet(charactersIn: "="))
-    
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
@@ -316,7 +311,7 @@ final class DirectPostTests: DiXCTest {
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = ""
-    let clientId = "dev.verifier-backend.eudiw.dev"
+    let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
@@ -334,7 +329,7 @@ final class DirectPostTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.cbor,
+        vpToken: .generic(TestsConstants.cbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",

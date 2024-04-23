@@ -22,7 +22,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
-      exact: "0.0.41"
+      exact: "0.0.43"
     ),
     .package(
       url: "https://github.com/apple/swift-certificates.git",

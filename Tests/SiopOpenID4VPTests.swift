@@ -157,7 +157,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     let sdk = SiopOpenID4VP()
     let passportClaim = Claim(
       id: "samplePassport",
-      format: .ldp,
+      format: "ldp",
       jsonObject: [
         "credentialSchema":
           [

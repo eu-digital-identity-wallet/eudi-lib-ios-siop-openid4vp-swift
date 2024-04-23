@@ -89,7 +89,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.certCbor,
+        vpToken: .generic(TestsConstants.certCbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -184,7 +184,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.certCbor,
+        vpToken: .generic(TestsConstants.certCbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -280,7 +280,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.certCbor,
+        vpToken: .generic(TestsConstants.certCbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",

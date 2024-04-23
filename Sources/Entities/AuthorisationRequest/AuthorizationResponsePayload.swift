@@ -15,19 +15,23 @@
  */
 import Foundation
 
-public typealias VpToken = String
-
 /// An enumeration representing different types of authorization response payloads.
 public enum AuthorizationResponsePayload: Encodable {
+  
   /// An SIOP authentication response payload.
-  case siopAuthenticationResponse(idToken: JWTString, state: String)
+  case siopAuthenticationResponse(
+    idToken: JWTString,
+    state: String,
+    nonce: String
+  )
 
   /// An OpenID Connect 4 Verifiable Presentation authorization response payload.
   case openId4VPAuthorizationResponse(
     vpToken: VpToken,
     verifiableCredential: [JWTString],
     presentationSubmission: PresentationSubmission,
-    state: String
+    state: String,
+    nonce: String
   )
 
   /// An SIOP OpenID Connect 4 Verifiable Presentation authentication response payload.
@@ -35,7 +39,8 @@ public enum AuthorizationResponsePayload: Encodable {
     idToken: JWTString,
     verifiableCredential: [JWTString],
     presentationSubmission: PresentationSubmission,
-    state: String
+    state: String,
+    nonce: String
   )
 
   /// A failure response payload.
@@ -57,27 +62,58 @@ public enum AuthorizationResponsePayload: Encodable {
     case noConsensusResponseData
     case idToken = "id_token"
     case state
+    case nonce
     case error
     case vpToken = "vp_token"
     case presentationSubmission = "presentation_submission"
   }
 
+  var vpTokenValue: String? {
+    switch self {
+    case .openId4VPAuthorizationResponse(let vpToken, _, _, _, _):
+      vpToken.value
+    default: nil
+    }
+  }
+  
+  var vpTokenApu: String? {
+    switch self {
+    case .openId4VPAuthorizationResponse(let vpToken, _, _, _, _):
+      vpToken.apu
+    default: nil
+    }
+  }
+  
+  var nonce: String {
+    switch self {
+    case .siopAuthenticationResponse(_, _, let nonce):
+      nonce
+    case .openId4VPAuthorizationResponse(_, _, _, _, let nonce):
+      nonce
+    case .siopOpenId4VPAuthenticationResponse(_, _, _, _, let nonce):
+      nonce
+    default:
+      ""
+    }
+  }
+  
   /// Encodes the enumeration using the given encoder.
   public func encode(to encoder: Encoder) throws {
      var container = encoder.container(keyedBy: CodingKeys.self)
 
      switch self {
-     case .siopAuthenticationResponse(let idToken, let state):
+     case .siopAuthenticationResponse(let idToken, let state, let nonce):
        try container.encode(state, forKey: .state)
        try container.encode(idToken, forKey: .idToken)
      case .openId4VPAuthorizationResponse(
       let vpToken,
-      let verifiableCredential,
+      _,
       let presentationSubmission,
-      let state
+      let state,
+      let nonce
      ):
        try container.encode(presentationSubmission, forKey: .presentationSubmission)
-       try container.encode(vpToken, forKey: .vpToken)
+       try container.encode(vpToken.value, forKey: .vpToken)
        try container.encode(state, forKey: .state)
      case .noConsensusResponseData(let state, let message):
        try container.encode(state, forKey: .state)

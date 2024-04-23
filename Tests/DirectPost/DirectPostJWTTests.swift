@@ -272,7 +272,7 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.cbor,
+        vpToken: .generic(TestsConstants.cbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -354,7 +354,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = ""
-    let clientId = "dev.verifier-backend.eudiw.dev"
+    let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
@@ -372,7 +372,7 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.cbor,
+        vpToken: .generic(TestsConstants.cbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -459,7 +459,7 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.cbor,
+        vpToken: .generic(TestsConstants.cbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -555,7 +555,7 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.cbor,
+        vpToken: .generic(TestsConstants.cbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -638,7 +638,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = ""
-    let clientId = "dev.verifier-backend.eudiw.dev"
+    let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
@@ -656,7 +656,7 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: TestsConstants.cbor,
+        vpToken: .generic(TestsConstants.cbor),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -764,7 +764,7 @@ final class DirectPostJWTTests: DiXCTest {
       ))
     
     let consent: ClientConsent = .vpToken(
-      vpToken: TestsConstants.cbor,
+      vpToken: .generic(TestsConstants.cbor),
       presentationSubmission: .init(
         id: "psId",
         definitionID: "psId",
