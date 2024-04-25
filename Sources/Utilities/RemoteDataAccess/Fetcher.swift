@@ -76,9 +76,6 @@ public struct Fetcher<Element: Codable>: Fetching {
    */
   public func fetch(session: URLSession = URLSession.shared, url: URL) async -> Result<Element, FetchError> {
     do {
-      let delegate = SelfSignedSessionDelegate()
-      let configuration = URLSessionConfiguration.default
-      let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
       let (data, response) = try await session.data(from: url)
       let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
       if !statusCode.isWithinRange(200...299) {
@@ -104,12 +101,11 @@ public struct Fetcher<Element: Codable>: Fetching {
     }
   }
 
-  public func fetchString(url: URL) async throws -> Result<String, FetchError> {
+  public func fetchString(
+    session: URLSession = URLSession.shared,
+    url: URL
+  ) async throws -> Result<String, FetchError> {
     do {
-      let delegate = SelfSignedSessionDelegate()
-      let configuration = URLSessionConfiguration.default
-      let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
-
       let (data, response) = try await session.data(from: url)
       let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
       if !statusCode.isWithinRange(200...299) {

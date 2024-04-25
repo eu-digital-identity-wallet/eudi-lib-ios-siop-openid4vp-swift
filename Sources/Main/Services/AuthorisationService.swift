@@ -43,7 +43,10 @@ public actor AuthorisationService: AuthorisationServiceType {
         formData: try data.toDictionary()
       )
 
-      let result: Result<T, PostError> = await poster.post(request: post.urlRequest)
+      let result: Result<T, PostError> = await poster.post(
+        session: URLSession.shared,
+        request: post.urlRequest
+      )
       return try result.get()
     default: throw AuthorizationError.invalidResponseMode
     }
