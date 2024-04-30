@@ -34,7 +34,7 @@ public enum Client {
    /**
     * The id of the client.
     */
-  var id: String {
+  public var id: String {
     switch self {
     case .preRegistered(let clientId, _):
       return clientId
@@ -47,7 +47,7 @@ public enum Client {
     }
   }
   
-  var legalName: String? {
+  public var legalName: String? {
     switch self {
     case .preRegistered(_, let legalName):
       return legalName
@@ -61,7 +61,7 @@ public enum Client {
   }
 }
 
-extension Certificate {
+public extension Certificate {
   var leganame: String {
     ""
   }
