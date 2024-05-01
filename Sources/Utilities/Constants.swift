@@ -53,6 +53,10 @@ public struct Constants {
   }
 
   public static let testClientId = "https%3A%2F%2Fclient.example.org%2Fcb"
+  public static let testClient: Client = .preRegistered(
+    clientId: "https%3A%2F%2Fclient.example.org%2Fcb",
+    legalName: "Verifier"
+  )
   public static let testNonce = "0S6_WzA2Mj"
   public static let testScope = "one two three"
 
