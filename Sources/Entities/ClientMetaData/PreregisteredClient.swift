@@ -17,15 +17,18 @@ import Foundation
 
 public struct PreregisteredClient {
   public let clientId: String
+  public let legalName: String
   public let jarSigningAlg: JWSAlgorithm
   public let jwkSetSource: WebKeySource
 
   public init(
     clientId: String,
+    legalName: String,
     jarSigningAlg: JWSAlgorithm,
     jwkSetSource: WebKeySource
   ) {
     self.clientId = clientId
+    self.legalName = legalName
     self.jarSigningAlg = jarSigningAlg
     self.jwkSetSource = jwkSetSource
   }
