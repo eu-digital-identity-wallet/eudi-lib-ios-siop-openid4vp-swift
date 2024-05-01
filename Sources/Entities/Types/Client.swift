@@ -15,6 +15,7 @@
  */
 import Foundation
 import X509
+import SwiftASN1
 
 public enum Client {
   case preRegistered(
@@ -27,7 +28,7 @@ public enum Client {
     certificate: Certificate
   )
   case x509SanUri(
-    clientId: URL,
+    clientId: String,
     certificate: Certificate
   )
 
@@ -43,7 +44,7 @@ public enum Client {
     case .x509SanDns(let clientId, _):
       return clientId
     case .x509SanUri(let clientId, _):
-      return clientId.absoluteString
+      return clientId
     }
   }
   
@@ -54,15 +55,27 @@ public enum Client {
     case .redirectUri:
       return nil
     case .x509SanDns(_, let certificate):
-      return certificate.leganame
+      return certificate.legaName
     case .x509SanUri(_, let certificate):
-      return certificate.leganame
+      return certificate.legaName
     }
   }
 }
 
 public extension Certificate {
-  var leganame: String {
-    ""
+  var legaName: String {
+    let a = GeneralName.directoryName(issuer)
+    switch a {
+    case .directoryName(let name):
+      guard let organizationName = name.lazy.filter({ name in
+        name.contains { attribute in
+          attribute.type == ASN1ObjectIdentifier.RDNAttributeType.organizationName
+        }
+      }).first else {
+        return ""
+      }
+      return String(describing: organizationName.description).components(separatedBy: "=").last ?? ""
+    default: return ""
+    }
   }
 }
