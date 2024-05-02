@@ -21,6 +21,7 @@ extension ValidatedSiopOpenId4VPRequest {
     let clientMetaDataSource: ClientMetaDataSource?
     let clientIdScheme: ClientIdScheme?
     let clientId: String
+    let client: Client
     let nonce: String
     let scope: Scope?
     let responseMode: ResponseMode?
@@ -31,6 +32,7 @@ extension ValidatedSiopOpenId4VPRequest {
       clientMetaDataSource: ClientMetaDataSource?,
       clientIdScheme: ClientIdScheme?,
       clientId: String,
+      client: Client,
       nonce: String,
       scope: Scope?,
       responseMode: ResponseMode?,
@@ -40,6 +42,7 @@ extension ValidatedSiopOpenId4VPRequest {
       self.clientMetaDataSource = clientMetaDataSource
       self.clientIdScheme = clientIdScheme
       self.clientId = clientId
+      self.client = client
       self.nonce = nonce
       self.scope = scope
       self.responseMode = responseMode
