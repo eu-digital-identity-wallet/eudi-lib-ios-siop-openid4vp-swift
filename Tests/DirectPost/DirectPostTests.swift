@@ -35,6 +35,7 @@ final class DirectPostTests: DiXCTest {
         idTokenType: .attesterSigned,
         clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
+        client: Constants.testClient,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
@@ -69,6 +70,7 @@ final class DirectPostTests: DiXCTest {
         idTokenType: .attesterSigned,
         clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
+        client: Constants.testClient,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
@@ -119,6 +121,7 @@ final class DirectPostTests: DiXCTest {
         idTokenType: .attesterSigned,
         clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
+        client: Constants.testClient,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
@@ -198,6 +201,7 @@ final class DirectPostTests: DiXCTest {
         idTokenType: .attesterSigned,
         clientMetaData: metaData,
         clientId: TestsConstants.testClientId,
+        client: Constants.testClient,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
@@ -296,6 +300,7 @@ final class DirectPostTests: DiXCTest {
         .preregistered(clients: [
           "Verifier": .init(
             clientId: "Verifier",
+            legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
           )
@@ -418,6 +423,7 @@ final class DirectPostTests: DiXCTest {
           .preregistered(clients: [
             "Verifier": .init(
               clientId: "Verifier",
+              legalName: "Verifier",
               jarSigningAlg: .init(.RS256),
               jwkSetSource: .fetchByReference(url: publicKeysURL)
             )

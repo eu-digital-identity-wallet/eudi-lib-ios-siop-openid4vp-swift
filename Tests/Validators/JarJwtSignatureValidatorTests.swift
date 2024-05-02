@@ -177,6 +177,7 @@ private extension JarJwtSignatureValidatorTests {
         .preregistered(clients: [
           "Verifier": .init(
             clientId: "Verifier",
+            legalName: "Verifier",
             jarSigningAlg: JWSAlgorithm(.RS256),
             jwkSetSource: .passByValue(webKeys: .init(keys: keySet.keys))
           )
@@ -216,6 +217,7 @@ private extension JarJwtSignatureValidatorTests {
         .preregistered(clients: [
           "Verifier": .init(
             clientId: "Verifier",
+            legalName: "Verifier",
             jarSigningAlg: JWSAlgorithm(.RS256),
             jwkSetSource: .passByValue(webKeys: .init(keys: keySet.keys))
           )
