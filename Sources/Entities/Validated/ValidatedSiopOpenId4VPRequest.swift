@@ -15,6 +15,8 @@
  */
 import Foundation
 import PresentationExchange
+import JOSESwift
+import X509
 
 // Enum defining the types of validated SIOP OpenID4VP requests
 public enum ValidatedSiopOpenId4VPRequest {
@@ -68,23 +70,32 @@ public extension ValidatedSiopOpenId4VPRequest {
       walletConfiguration: walletConfiguration
     )
     
+    let client = try Self.getClient(
+      clientId: payloadcClientId,
+      jwt: jwt,
+      config: walletConfiguration
+    )
+    
     // Initialize the validated request based on the response type
     switch responseType {
     case .idToken:
       self = try ValidatedSiopOpenId4VPRequest.createIdToken(
         clientId: payloadcClientId,
+        client: client,
         nonce: nonce,
         authorizationRequestObject: payload
       )
     case .vpToken:
       self = try ValidatedSiopOpenId4VPRequest.createVpToken(
         clientId: payloadcClientId,
+        client: client,
         nonce: nonce,
         authorizationRequestObject: payload
       )
     case .vpAndIdToken:
       self = try ValidatedSiopOpenId4VPRequest.createIdVpToken(
         clientId: payloadcClientId,
+        client: client,
         nonce: nonce,
         authorizationRequestObject: payload
       )
@@ -124,23 +135,32 @@ public extension ValidatedSiopOpenId4VPRequest {
       walletConfiguration: walletConfiguration
     )
     
+    let client = try Self.getClient(
+      clientId: clientId,
+      jwt: request,
+      config: walletConfiguration
+    )
+    
     // Initialize the validated request based on the response type
     switch responseType {
     case .idToken:
       self = try ValidatedSiopOpenId4VPRequest.createIdToken(
         clientId: clientId,
+        client: client,
         nonce: nonce,
         authorizationRequestObject: payload
       )
     case .vpToken:
       self = try ValidatedSiopOpenId4VPRequest.createVpToken(
         clientId: clientId,
+        client: client,
         nonce: nonce,
         authorizationRequestObject: payload
       )
     case .vpAndIdToken:
       self = try ValidatedSiopOpenId4VPRequest.createIdVpToken(
         clientId: clientId,
+        client: client,
         nonce: nonce,
         authorizationRequestObject: payload
       )
@@ -182,7 +202,8 @@ public extension ValidatedSiopOpenId4VPRequest {
             idTokenType: try .init(authorizationRequestData: authorizationRequestData),
             clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
             clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
-            clientId: clientId,
+            clientId: clientId, 
+            client: .preRegistered(clientId: clientId, legalName: clientId),
             nonce: nonce,
             scope: authorizationRequestData.scope,
             responseMode: try? .init(authorizationRequestData: authorizationRequestData),
@@ -201,7 +222,8 @@ public extension ValidatedSiopOpenId4VPRequest {
           presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
           clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
           clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
-          clientId: clientId,
+          clientId: clientId, 
+          client: .preRegistered(clientId: clientId, legalName: clientId),
           nonce: nonce,
           scope: authorizationRequestData.scope,
           responseMode: try? .init(authorizationRequestData: authorizationRequestData),
@@ -221,6 +243,55 @@ public extension ValidatedSiopOpenId4VPRequest {
     case .success(let string):
       return try ValidatedSiopOpenId4VPRequest.extractJWT(string)
     case .failure: throw ValidatedAuthorizationError.invalidJwtPayload
+    }
+  }
+}
+
+public extension ValidatedSiopOpenId4VPRequest {
+  static func getClient(
+    clientId: String,
+    jwt: JWTString,
+    config: WalletOpenId4VPConfiguration?
+  ) throws -> Client {
+    guard
+      let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first
+    else {
+      throw ValidatedAuthorizationError.validationError("No supported client Id scheme")
+    }
+    
+    switch scheme {
+    case .preregistered(let clients):
+      guard let client = clients[clientId] else {
+        throw ValidatedAuthorizationError.validationError("preregistered client nort found")
+      }
+      return.preRegistered(clientId: clientId, legalName: client.legalName)
+    case .x509SanUri,
+         .x509SanDns:
+      guard let jws = try? JWS(compactSerialization: jwt) else {
+        throw ValidatedAuthorizationError.validationError("Unable to process JWT")
+      }
+      guard let chain: [String] = jws.header.x5c else {
+        throw ValidatedAuthorizationError.validationError("No certificate in header")
+      }
+      
+      let certificates: [Certificate] = chain.compactMap { serializedCertificate in
+
+        guard
+          let serializedData = Data(base64Encoded: serializedCertificate)
+        else {
+          return nil
+        }
+
+        let derBytes = [UInt8](serializedData)
+        return try? Certificate(derEncoded: derBytes)
+      }
+      guard let certificate = certificates.first else {
+        throw ValidatedAuthorizationError.validationError("No certificate in chain")
+      }
+      return .x509SanUri(
+        clientId: clientId,
+        certificate: certificate
+      )
     }
   }
 }
@@ -248,7 +319,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
       clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
       clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
-      clientId: clientId,
+      clientId: clientId, 
+      client: .preRegistered(clientId: clientId, legalName: clientId),
       nonce: nonce,
       responseMode: try? .init(authorizationRequestData: authorizationRequestData),
       state: authorizationRequestData.state
@@ -258,6 +330,7 @@ private extension ValidatedSiopOpenId4VPRequest {
   // Create an ID token request
   static func createIdToken(
     clientId: String,
+    client: Client,
     nonce: String,
     authorizationRequestObject: JSONObject
   ) throws -> ValidatedSiopOpenId4VPRequest {
@@ -265,7 +338,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
-      clientId: clientId,
+      clientId: clientId, 
+      client: client,
       nonce: nonce,
       scope: authorizationRequestObject[Constants.SCOPE] as? String ?? "",
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
@@ -276,6 +350,7 @@ private extension ValidatedSiopOpenId4VPRequest {
   // Create a VP token request
   static func createVpToken(
     clientId: String,
+    client: Client,
     nonce: String,
     authorizationRequestObject: JSONObject
   ) throws -> ValidatedSiopOpenId4VPRequest {
@@ -283,7 +358,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
-      clientId: clientId,
+      clientId: clientId, 
+      client: client,
       nonce: nonce,
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       state: authorizationRequestObject[Constants.STATE] as? String
@@ -293,6 +369,7 @@ private extension ValidatedSiopOpenId4VPRequest {
   // Create an ID and VP token request
   static func createIdVpToken(
     clientId: String,
+    client: Client,
     nonce: String,
     authorizationRequestObject: JSONObject
   ) throws -> ValidatedSiopOpenId4VPRequest {
@@ -301,7 +378,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
-      clientId: clientId,
+      clientId: clientId, 
+      client: client,
       nonce: nonce,
       scope: authorizationRequestObject[Constants.SCOPE] as? String ?? "",
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
