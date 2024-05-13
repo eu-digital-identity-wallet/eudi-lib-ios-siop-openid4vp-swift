@@ -350,7 +350,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     
-    /// To get this URL, visit https://dev.verifier.eudiw.dev/
+    /// To get this URL, visit https://verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
