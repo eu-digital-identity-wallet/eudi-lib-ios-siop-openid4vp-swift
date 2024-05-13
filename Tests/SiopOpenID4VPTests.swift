@@ -56,6 +56,7 @@ final class SiopOpenID4VPTests: DiXCTest {
         .preregistered(clients: [
           "Verifier": .init(
             clientId: "Verifier",
+            legalName: "Verifier",
             jarSigningAlg: JWSAlgorithm(.RS256),
             jwkSetSource: .passByValue(webKeys: .init(keys: [
               .init(

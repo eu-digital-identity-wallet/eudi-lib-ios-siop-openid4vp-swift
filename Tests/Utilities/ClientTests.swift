@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 import Foundation
+import XCTest
+import JOSESwift
 
-public struct PreregisteredClient {
-  public let clientId: String
-  public let legalName: String
-  public let jarSigningAlg: JWSAlgorithm
-  public let jwkSetSource: WebKeySource
+@testable import SiopOpenID4VP
 
-  public init(
-    clientId: String,
-    legalName: String,
-    jarSigningAlg: JWSAlgorithm,
-    jwkSetSource: WebKeySource
-  ) {
-    self.clientId = clientId
-    self.legalName = legalName
-    self.jarSigningAlg = jarSigningAlg
-    self.jwkSetSource = jwkSetSource
+final class ClientTests: DiXCTest {
+  
+  override func tearDown() {
+    super.tearDown()
+  }
+  
+  override func setUp() {
+    super.setUp()
   }
 }

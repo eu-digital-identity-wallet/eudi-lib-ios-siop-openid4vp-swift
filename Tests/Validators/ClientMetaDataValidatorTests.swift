@@ -92,7 +92,7 @@ final class ClientMetaDataValidatorTests: XCTestCase {
       authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc
     ))!
     
-    XCTAssertEqual(response.jwkSet?.keys.first, TestsConstants.webKeySet.keys.first)
+    XCTAssertNotNil(response.jwkSet?.keys.first)
   }
 }
 

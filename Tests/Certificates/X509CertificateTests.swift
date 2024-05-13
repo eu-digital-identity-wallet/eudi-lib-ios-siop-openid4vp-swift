@@ -35,7 +35,7 @@ final class X509CertificateTests: XCTestCase {
       let publicKey = certificate.publicKey
       let pem = try publicKey.serializeAsPEM().pemString
       
-      let secKey = try KeyController.convertPEMToPublicKey(pem)
+      let secKey = KeyController.convertPEMToPublicKey(pem)
       XCTAssertNotNil(secKey)
       
       let clientIndentifier = "client_identifer.example.com"

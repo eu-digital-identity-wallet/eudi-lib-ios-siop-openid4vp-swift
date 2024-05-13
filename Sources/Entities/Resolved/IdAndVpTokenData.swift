@@ -22,7 +22,7 @@ extension ResolvedRequestData {
     let idTokenType: IdTokenType
     let presentationDefinition: PresentationDefinition
     let clientMetaData: ClientMetaData?
-    let clientId: String
+    let client: Client
     let nonce: String
     let responseMode: ResponseMode?
     let state: String?
@@ -33,7 +33,6 @@ extension ResolvedRequestData {
     ///   - idTokenType: The type of the ID token.
     ///   - presentationDefinition: The presentation definition.
     ///   - clientMetaData: The client metadata.
-    ///   - clientId: The client ID.
     ///   - nonce: The nonce.
     ///   - responseMode: The response mode.
     ///   - state: The state.
@@ -42,7 +41,7 @@ extension ResolvedRequestData {
       idTokenType: IdTokenType,
       presentationDefinition: PresentationDefinition,
       clientMetaData: ClientMetaData?,
-      clientId: String,
+      client: Client,
       nonce: String,
       responseMode: ResponseMode?,
       state: String?,
@@ -51,7 +50,7 @@ extension ResolvedRequestData {
       self.idTokenType = idTokenType
       self.presentationDefinition = presentationDefinition
       self.clientMetaData = clientMetaData
-      self.clientId = clientId
+      self.client = client
       self.nonce = nonce
       self.responseMode = responseMode
       self.state = state

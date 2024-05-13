@@ -44,7 +44,7 @@ public extension ResolvedRequestData {
       self = .idToken(request: .init(
         idTokenType: request.idTokenType,
         clientMetaData: validatedClientMetaData,
-        clientId: request.clientId,
+        client: request.client,
         nonce: request.nonce,
         responseMode: request.responseMode,
         state: request.state,
@@ -68,7 +68,7 @@ public extension ResolvedRequestData {
       self = .vpToken(request: .init(
         presentationDefinition: presentationDefinition,
         clientMetaData: validatedClientMetaData,
-        clientId: request.clientId,
+        client: request.client,
         nonce: request.nonce,
         responseMode: request.responseMode,
         state: request.state
@@ -89,12 +89,23 @@ public extension ResolvedRequestData {
         idTokenType: request.idTokenType,
         presentationDefinition: presentationDefinition,
         clientMetaData: clientMetaData,
-        clientId: request.clientId,
+        client: request.client,
         nonce: request.nonce,
         responseMode: request.responseMode,
         state: request.state,
         scope: request.scope
       ))
+    }
+  }
+  
+  var legalName: String? {
+    switch self {
+    case .idToken(let request):
+      return request.client.legalName
+    case .vpToken(let request):
+      return request.client.legalName
+    case .idAndVpToken(let request):
+      return request.client.legalName
     }
   }
 }

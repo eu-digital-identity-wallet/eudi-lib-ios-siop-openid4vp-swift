@@ -43,7 +43,7 @@ public protocol Posting {
 
    - Returns: A Result type with the response data or an error.
    */
-  func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError>
+  func post<Response: Codable>(session: URLSession, request: URLRequest) async -> Result<Response, PostError>
 
   /**
    Performs a POST request with the provided URLRequest.
@@ -70,11 +70,8 @@ public struct Poster: Posting {
 
    - Returns: A Result type with the response data or an error.
    */
-  public func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError> {
+  public func post<Response: Codable>(session: URLSession, request: URLRequest) async -> Result<Response, PostError> {
     do {
-      let delegate = SelfSignedSessionDelegate()
-      let configuration = URLSessionConfiguration.default
-      let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
       let (data, _) = try await session.data(for: request)
       let object = try JSONDecoder().decode(Response.self, from: data)
 
