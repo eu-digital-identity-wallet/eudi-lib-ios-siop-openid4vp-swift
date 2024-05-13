@@ -20,7 +20,6 @@ extension ResolvedRequestData {
   public struct VpTokenData {
     public let presentationDefinition: PresentationDefinition
     public let clientMetaData: ClientMetaData.Validated?
-    public let clientId: String
     public let client: Client
     public  let nonce: String
     public let responseMode: ResponseMode?
@@ -38,7 +37,6 @@ extension ResolvedRequestData {
     public init(
       presentationDefinition: PresentationDefinition,
       clientMetaData: ClientMetaData.Validated?,
-      clientId: String,
       client: Client,
       nonce: String,
       responseMode: ResponseMode?,
@@ -46,7 +44,6 @@ extension ResolvedRequestData {
     ) {
       self.presentationDefinition = presentationDefinition
       self.clientMetaData = clientMetaData
-      self.clientId = clientId
       self.client = client
       self.nonce = nonce
       self.responseMode = responseMode

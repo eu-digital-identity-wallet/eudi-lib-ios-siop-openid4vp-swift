@@ -34,7 +34,6 @@ final class DirectPostTests: DiXCTest {
       request: .init(
         idTokenType: .attesterSigned,
         clientMetaData: metaData,
-        clientId: TestsConstants.testClientId,
         client: Constants.testClient,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -69,7 +68,6 @@ final class DirectPostTests: DiXCTest {
       request: .init(
         idTokenType: .attesterSigned,
         clientMetaData: metaData,
-        clientId: TestsConstants.testClientId,
         client: Constants.testClient,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -120,7 +118,6 @@ final class DirectPostTests: DiXCTest {
       request: .init(
         idTokenType: .attesterSigned,
         clientMetaData: metaData,
-        clientId: TestsConstants.testClientId,
         client: Constants.testClient,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -200,7 +197,6 @@ final class DirectPostTests: DiXCTest {
       request: .init(
         idTokenType: .attesterSigned,
         clientMetaData: metaData,
-        clientId: TestsConstants.testClientId,
         client: Constants.testClient,
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
@@ -298,8 +294,8 @@ final class DirectPostTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          "Verifier": .init(
-            clientId: "Verifier",
+          "verifier-backend.eudiw.dev": .init(
+            clientId: "verifier-backend.eudiw.dev",
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
@@ -310,7 +306,7 @@ final class DirectPostTests: DiXCTest {
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    /// To get this URL, visit https://dev.verifier.eudiw.dev/
+    /// To get this URL, visit https://verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
@@ -361,6 +357,7 @@ final class DirectPostTests: DiXCTest {
       }
     }
   }
+  
   func testSDKEndtoEndDirectPost() async throws {
     
     let nonce = UUID().uuidString
@@ -372,7 +369,45 @@ final class DirectPostTests: DiXCTest {
       return
     }
     
-    let sdk = SiopOpenID4VP()
+    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
+    
+    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
+    let privateKey = try KeyController.generateECDHPrivateKey()
+    
+    let rsaJWK = try RSAPublicKey(
+      publicKey: rsaPublicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": UUID().uuidString,
+        "alg": "RS256"
+      ])
+    
+    let keySet = try WebKeySet(jwk: rsaJWK)
+    
+    let wallet: WalletOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
+      signingKey: privateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .preregistered(clients: [
+          "verifier-backend.eudiw.dev": .init(
+            clientId: "verifier-backend.eudiw.dev",
+            legalName: "Verifier",
+            jarSigningAlg: .init(.RS256),
+            jwkSetSource: .fetchByReference(url: publicKeysURL)
+          )
+        ])
+      ],
+      vpFormatsSupported: []
+    )
+    
+    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]
     let presentationId = session["presentation_id"] as! String
@@ -421,8 +456,8 @@ final class DirectPostTests: DiXCTest {
         signingKeySet: WebKeySet(keys: []),
         supportedClientIdSchemes: [
           .preregistered(clients: [
-            "Verifier": .init(
-              clientId: "Verifier",
+            "verifier-backend.eudiw.dev": .init(
+              clientId: "verifier-backend.eudiw.dev",
               legalName: "Verifier",
               jarSigningAlg: .init(.RS256),
               jwkSetSource: .fetchByReference(url: publicKeysURL)

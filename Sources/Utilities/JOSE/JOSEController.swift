@@ -68,7 +68,7 @@ public class JOSEController {
     let claimSet = try ([
       JWTClaimNames.issuer: issuerClaim,
       JWTClaimNames.subject: issuerClaim,
-      JWTClaimNames.audience: idTokenData.clientId,
+      JWTClaimNames.audience: idTokenData.client.id,
       JWTClaimNames.issuedAt: Int(iat.timeIntervalSince1970.rounded()),
       JWTClaimNames.expirationTime: Int(exp.timeIntervalSince1970.rounded()),
       "sub_jwk": subjectJwk.toDictionary()

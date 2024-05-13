@@ -44,7 +44,6 @@ public extension ResolvedRequestData {
       self = .idToken(request: .init(
         idTokenType: request.idTokenType,
         clientMetaData: validatedClientMetaData,
-        clientId: request.clientId, 
         client: request.client,
         nonce: request.nonce,
         responseMode: request.responseMode,
@@ -69,7 +68,6 @@ public extension ResolvedRequestData {
       self = .vpToken(request: .init(
         presentationDefinition: presentationDefinition,
         clientMetaData: validatedClientMetaData,
-        clientId: request.clientId, 
         client: request.client,
         nonce: request.nonce,
         responseMode: request.responseMode,
