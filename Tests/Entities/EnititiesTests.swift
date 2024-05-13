@@ -33,7 +33,6 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
       idTokenType: idTokenType,
       presentationDefinition: presentationDefinition,
       clientMetaData: clientMetaData,
-      clientId: clientId, 
       client: .preRegistered(clientId: clientId, legalName: clientId),
       nonce: nonce,
       responseMode: responseMode,
@@ -43,7 +42,6 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     
     XCTAssertEqual(tokenData.idTokenType, idTokenType)
     XCTAssertEqual(tokenData.clientMetaData, clientMetaData)
-    XCTAssertEqual(tokenData.clientId, clientId)
     XCTAssertEqual(tokenData.nonce, nonce)
     XCTAssertEqual(tokenData.state, state)
     XCTAssertEqual(tokenData.scope, scope)

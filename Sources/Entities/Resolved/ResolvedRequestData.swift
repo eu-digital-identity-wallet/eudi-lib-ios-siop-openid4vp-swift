@@ -89,7 +89,6 @@ public extension ResolvedRequestData {
         idTokenType: request.idTokenType,
         presentationDefinition: presentationDefinition,
         clientMetaData: clientMetaData,
-        clientId: request.clientId, 
         client: request.client,
         nonce: request.nonce,
         responseMode: request.responseMode,
