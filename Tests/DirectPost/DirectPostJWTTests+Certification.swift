@@ -22,7 +22,7 @@ import Mockingbird
 
 final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
   
-  func testGivenOnlineCertifierHappyPathTestPlanThenExpectSuccess() async throws {
+  func testExampleGivenOnlineCertifierHappyPathTestPlanThenExpectSuccess() async throws {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
@@ -118,7 +118,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     }
   }
   
-  func testGivenOnlineCertifierHappyPathWithRedirectTestPlanThenExpectSuccess() async throws {
+  func testExampleGivenOnlineCertifierHappyPathWithRedirectTestPlanThenExpectSuccess() async throws {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
@@ -215,7 +215,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     }
   }
   
-  func testGivenOnlineCertifierHappyPathTestPlanThenExpectFailure() async throws {
+  func testExampleGivenOnlineCertifierHappyPathTestPlanThenExpectFailure() async throws {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
