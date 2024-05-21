@@ -26,7 +26,8 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
-    let url = ""
+    /// then proceed to assign the request uri to the variable below
+    let url = "#01"
     let clientId = "demo.certification.openid.net"
     
     guard !url.isEmpty else {
@@ -121,7 +122,8 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
-    let url = ""
+    /// then proceed to assign the request uri to the variable below
+    let url = "#02"
     let clientId = "demo.certification.openid.net"
     
     guard !url.isEmpty else {
@@ -217,7 +219,8 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
-    let url = ""
+    /// then proceed to assign the request uri to the variable below
+    let url = "#03"
     let clientId = "demo.certification.openid.net"
     
     guard !url.isEmpty else {
