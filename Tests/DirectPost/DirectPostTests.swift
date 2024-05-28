@@ -311,7 +311,7 @@ final class DirectPostTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = ""
+    let url = "#06"
     let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
