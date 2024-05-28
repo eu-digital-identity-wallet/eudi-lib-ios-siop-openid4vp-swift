@@ -355,7 +355,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = ""
+    let url = "#04"
     let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
@@ -642,7 +642,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = ""
+    let url = "#05"
     let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
