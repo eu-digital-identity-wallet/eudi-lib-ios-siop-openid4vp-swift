@@ -191,6 +191,7 @@ private extension ResponseSignerEncryptor {
       let parameters: [String: Any?] = [
         "alg": responseSigningAlg.name,
         "enc": responseEncryptionEnc.name,
+        "kid": keyAndEncryptor.key.kid,
         "apv": data.nonce.base64urlEncode,
         "apu": data.vpTokenApu
       ].filter { $0.value != nil }
