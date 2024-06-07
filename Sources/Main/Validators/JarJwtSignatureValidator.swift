@@ -116,17 +116,23 @@ public actor JarJwtSignatureValidator {
     }
     
     let certificates: [Certificate] = chain.compactMap { serializedCertificate in
-      guard 
-        let serializedData = Data(base64Encoded: serializedCertificate),
-        let string = String(data: serializedData, encoding: .utf8)
+      guard
+        let serializedData = Data(base64Encoded: serializedCertificate)
       else {
         return nil
       }
-      guard let data = Data(base64Encoded: string.removeCertificateDelimiters()) else {
-        return nil
+      
+      if let string = String(data: serializedData, encoding: .utf8) {
+        guard let data = Data(base64Encoded: string.removeCertificateDelimiters()) else {
+          return nil
+        }
+        let derBytes = [UInt8](data)
+        return try? Certificate(derEncoded: derBytes)
+      } else {
+        
+        let derBytes = [UInt8](serializedData)
+        return try? Certificate(derEncoded: derBytes)
       }
-      let derBytes = [UInt8](data)
-      return try? Certificate(derEncoded: derBytes)
     }
     
     guard !certificates.isEmpty else {
