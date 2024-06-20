@@ -227,3 +227,34 @@ public actor JarJwtSignatureValidator {
     }
   }
 }
+
+public extension JarJwtSignatureValidator {
+
+  func verifyJWS(jwsString: String, publicKey: SecKey) -> Bool {
+    do {
+      
+      let jws = try JWS(compactSerialization: jwsString)
+      let keyAttributes = SecKeyCopyAttributes(publicKey) as? [CFString: Any]
+      let keyType = keyAttributes?[kSecAttrKeyType as CFString] as? String
+
+      if keyType == (kSecAttrKeyTypeRSA as String) {
+        if let verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) {
+          _ = try jws.validate(using: verifier)
+          return true
+          }
+        return false
+      } else if keyType == (kSecAttrKeyTypeEC as String) {
+        if let verifier = Verifier(verifyingAlgorithm: .ES256, key: publicKey) {
+          _ = try jws.validate(using: verifier)
+          return true
+        }
+        return false
+
+      } else {
+        return false
+      }
+    } catch {
+      return false
+    }
+  }
+}
