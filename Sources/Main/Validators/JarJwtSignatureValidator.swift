@@ -230,31 +230,21 @@ public actor JarJwtSignatureValidator {
 
 public extension JarJwtSignatureValidator {
 
-  func verifyJWS(jwsString: String, publicKey: SecKey) -> Bool {
-    do {
-      
-      let jws = try JWS(compactSerialization: jwsString)
-      let keyAttributes = SecKeyCopyAttributes(publicKey) as? [CFString: Any]
-      let keyType = keyAttributes?[kSecAttrKeyType as CFString] as? String
+  static func verifyJWS(jws: JWS, publicKey: SecKey) throws {
 
-      if keyType == (kSecAttrKeyTypeRSA as String) {
-        if let verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) {
-          _ = try jws.validate(using: verifier)
-          return true
-          }
-        return false
-      } else if keyType == (kSecAttrKeyTypeEC as String) {
-        if let verifier = Verifier(verifyingAlgorithm: .ES256, key: publicKey) {
-          _ = try jws.validate(using: verifier)
-          return true
-        }
-        return false
+    let keyAttributes = SecKeyCopyAttributes(publicKey) as? [CFString: Any]
+    let keyType = keyAttributes?[kSecAttrKeyType as CFString] as? String
 
-      } else {
-        return false
+    if keyType == (kSecAttrKeyTypeRSA as String) {
+      if let verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) {
+        _ = try jws.validate(using: verifier)
       }
-    } catch {
-      return false
+    } else if keyType == (kSecAttrKeyTypeEC as String) {
+      if let verifier = Verifier(verifyingAlgorithm: .ES256, key: publicKey) {
+        _ = try jws.validate(using: verifier)
+      }
     }
+
+    throw ValidatedAuthorizationError.validationError("Unable to verif JWS")
   }
 }
