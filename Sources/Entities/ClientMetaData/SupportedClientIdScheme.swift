@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
 public enum SupportedClientIdScheme {
   public var scheme: ClientIdScheme {
@@ -28,10 +29,19 @@ public enum SupportedClientIdScheme {
       return .x509SanUri
     case .x509SanDns:
       return .x509SanDns
+    case .did:
+      return .did
+    case .verifierAttestation:
+      return .verifierAttestation
     }
   }
 
   case preregistered(clients: [String: PreregisteredClient])
   case x509SanUri(trust: CertificateTrust)
   case x509SanDns(trust: CertificateTrust)
+  case did(lookup: DIDPublicKeyLookupAgent)
+  case verifierAttestation(
+    trust: Verifier,
+    clockSkew: TimeInterval = 15.0
+  )
 }
