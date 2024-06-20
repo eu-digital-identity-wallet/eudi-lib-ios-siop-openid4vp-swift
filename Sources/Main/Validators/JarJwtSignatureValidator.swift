@@ -115,26 +115,8 @@ public actor JarJwtSignatureValidator {
       throw ValidatedAuthorizationError.validationError("x5c header field does not contain a serialized leaf certificate")
     }
     
-    let certificates: [Certificate] = chain.compactMap { serializedCertificate in
-      guard
-        let serializedData = Data(base64Encoded: serializedCertificate)
-      else {
-        return nil
-      }
-      
-      if let string = String(data: serializedData, encoding: .utf8) {
-        guard let data = Data(base64Encoded: string.removeCertificateDelimiters()) else {
-          return nil
-        }
-        let derBytes = [UInt8](data)
-        return try? Certificate(derEncoded: derBytes)
-      } else {
-        
-        let derBytes = [UInt8](serializedData)
-        return try? Certificate(derEncoded: derBytes)
-      }
-    }
-    
+    let certificates: [Certificate] = parseCertificates(from: chain)
+
     guard !certificates.isEmpty else {
       throw ValidatedAuthorizationError.validationError("x5c header field does not contain a serialized leaf certificate")
     }
