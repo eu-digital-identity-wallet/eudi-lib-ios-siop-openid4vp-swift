@@ -35,6 +35,9 @@ public enum PostError: Error {
 }
 
 public protocol Posting {
+
+  var usesSelfSignedDelegation: Bool { get set }
+
   /**
    Performs a POST request with the provided URLRequest.
 
@@ -57,10 +60,15 @@ public protocol Posting {
 }
 
 public struct Poster: Posting {
+
+  public var usesSelfSignedDelegation: Bool
+
   /**
    Initializes a Poster instance.
    */
-  public init() {}
+  public init(usesSelfSignedDelegation: Bool = false) {
+    self.usesSelfSignedDelegation = usesSelfSignedDelegation
+  }
 
   /**
    Performs a POST request with the provided URLRequest.
@@ -72,7 +80,16 @@ public struct Poster: Posting {
    */
   public func post<Response: Codable>(session: URLSession, request: URLRequest) async -> Result<Response, PostError> {
     do {
-      let (data, _) = try await session.data(for: request)
+      let postSession: URLSession = {
+        if self.usesSelfSignedDelegation {
+          let delegate = SelfSignedSessionDelegate()
+          let configuration = URLSessionConfiguration.default
+          return URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+        } else {
+          return session
+        }
+      }()
+      let (data, _) = try await postSession.data(for: request)
       let object = try JSONDecoder().decode(Response.self, from: data)
 
       return .success(object)
@@ -97,9 +114,17 @@ public struct Poster: Posting {
    */
   public func check(key: String, request: URLRequest) async -> Result<(String, Bool) , PostError> {
     do {
-      let delegate = SelfSignedSessionDelegate()
-      let configuration = URLSessionConfiguration.default
-      let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+
+      let session: URLSession = {
+        if self.usesSelfSignedDelegation {
+          let delegate = SelfSignedSessionDelegate()
+          let configuration = URLSessionConfiguration.default
+          return URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+        } else {
+          return URLSession.shared
+        }
+      }()
+
       let (data, response) = try await session.data(for: request)
       
       let string = String(data: data, encoding: .utf8)
