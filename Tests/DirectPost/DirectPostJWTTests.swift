@@ -241,7 +241,7 @@ final class DirectPostJWTTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          "verifier-backend.eudiw.dev": .init(
+          "Verifier": .init(
             clientId: "verifier-backend.eudiw.dev",
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
@@ -521,6 +521,7 @@ final class DirectPostJWTTests: DiXCTest {
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
     
+    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: WalletOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -532,7 +533,15 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier)
+        .x509SanDns(trust: chainVerifier),
+        .preregistered(clients: [
+          "Verifier": .init(
+            clientId: "verifier-backend.eudiw.dev",
+            legalName: "Verifier",
+            jarSigningAlg: .init(.RS256),
+            jwkSetSource: .fetchByReference(url: publicKeysURL)
+          )
+        ])
       ],
       vpFormatsSupported: []
     )

@@ -264,42 +264,40 @@ public extension ValidatedSiopOpenId4VPRequest {
       guard let client = clients[clientId] else {
         throw ValidatedAuthorizationError.validationError("preregistered client nort found")
       }
-      return.preRegistered(clientId: clientId, legalName: client.legalName)
+      return .preRegistered(
+        clientId: clientId,
+        legalName: client.legalName
+      )
+
     case .x509SanUri,
          .x509SanDns:
       guard let jws = try? JWS(compactSerialization: jwt) else {
         throw ValidatedAuthorizationError.validationError("Unable to process JWT")
       }
+
       guard let chain: [String] = jws.header.x5c else {
         throw ValidatedAuthorizationError.validationError("No certificate in header")
       }
-      
-      let certificates: [Certificate] = chain.compactMap { serializedCertificate in
-        guard
-          let serializedData = Data(base64Encoded: serializedCertificate)
-        else {
-          return nil
-        }
-        
-        if let string = String(data: serializedData, encoding: .utf8) {
-          guard let data = Data(base64Encoded: string.removeCertificateDelimiters()) else {
-            return nil
-          }
-          let derBytes = [UInt8](data)
-          return try? Certificate(derEncoded: derBytes)
-        } else {
-          
-          let derBytes = [UInt8](serializedData)
-          return try? Certificate(derEncoded: derBytes)
-        }
-      }
+
+      let certificates: [Certificate] = parseCertificates(from: chain)
       guard let certificate = certificates.first else {
         throw ValidatedAuthorizationError.validationError("No certificate in chain")
       }
+
       return .x509SanUri(
         clientId: clientId,
         certificate: certificate
       )
+        
+    case .did(let keyLookup):
+      return try Self.didPublicKeyLookup(
+        jws: try JWS(compactSerialization: jwt),
+        clientId: clientId,
+        keyLookup: keyLookup
+      )
+
+    case .verifierAttestation: //(let trust, let clockSkew):
+        throw ValidatedAuthorizationError.validationError("Verifier Attestation not supported")
     }
   }
 }
@@ -307,6 +305,45 @@ public extension ValidatedSiopOpenId4VPRequest {
 // Private extension for ValidatedSiopOpenId4VPRequest
 private extension ValidatedSiopOpenId4VPRequest {
   
+  private static func verifierAttestation() {
+
+  }
+
+  private static func didPublicKeyLookup(
+    jws: JWS,
+    clientId: String,
+    keyLookup: DIDPublicKeyLookupAgent
+  ) throws -> Client {
+
+    guard let kid = jws.header.kid else {
+      throw ValidatedAuthorizationError.validationError("kid not found in JWT header")
+    }
+
+    guard
+      let keyUrl = AbsoluteDIDUrl.parse(kid),
+      keyUrl.string.hasPrefix(clientId)
+    else {
+      throw ValidatedAuthorizationError.validationError("kid not found in JWT header")
+    }
+
+    guard let clientIdAsDID = DID.parse(clientId) else {
+      throw ValidatedAuthorizationError.validationError("Invalid DID")
+    }
+
+    guard let publicKey = keyLookup(clientIdAsDID) else {
+      throw ValidatedAuthorizationError.validationError("Unable to extract public key from DID")
+    }
+
+    try JarJwtSignatureValidator.verifyJWS(
+      jws: jws,
+      publicKey: publicKey
+    )
+
+    return .didClient(
+      did: clientIdAsDID
+    )
+  }
+
   static func validateSignature(
     token: JWTString,
     clientId: String?,
