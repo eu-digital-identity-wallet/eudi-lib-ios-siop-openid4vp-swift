@@ -39,7 +39,11 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.invalidRequestUri(requestUri)
     }
 
-    let jwt = try await ValidatedSiopOpenId4VPRequest.fetchJwtString(requestUrl: requestUrl)
+    let usesSelfSignedDelegation = walletConfiguration?.usesSelfSignedDelegation ?? false
+    let jwt = try await ValidatedSiopOpenId4VPRequest.fetchJwtString(
+      usesSelfSignedDelegation: usesSelfSignedDelegation,
+      requestUrl: requestUrl
+    )
 
     // Extract the payload from the JSON Web Token
     guard let payload = JSONWebToken(jsonWebToken: jwt)?.payload else {
@@ -234,9 +238,12 @@ public extension ValidatedSiopOpenId4VPRequest {
     }
   }
 
-  fileprivate static func fetchJwtString(requestUrl: URL) async throws -> String {
+  fileprivate static func fetchJwtString(
+    usesSelfSignedDelegation: Bool = false,
+    requestUrl: URL
+  ) async throws -> String {
     struct ResultType: Codable {}
-    let fetcher = Fetcher<ResultType>()
+    let fetcher = Fetcher<ResultType>(usesSelfSignedDelegation: usesSelfSignedDelegation)
     let jwtResult = try await fetcher.fetchString(url: requestUrl)
 
     switch jwtResult {
