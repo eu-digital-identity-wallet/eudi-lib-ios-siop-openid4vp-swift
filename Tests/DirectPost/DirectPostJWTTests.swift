@@ -241,7 +241,7 @@ final class DirectPostJWTTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          "Verifier": .init(
+          "verifier-backend.eudiw.dev": .init(
             clientId: "verifier-backend.eudiw.dev",
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
