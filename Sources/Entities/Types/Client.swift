@@ -32,6 +32,14 @@ public enum Client {
     certificate: Certificate
   )
 
+  case didClient(
+    did: DID
+  )
+
+  case attested(
+    clientId: String
+  )
+
    /**
     * The id of the client.
     */
@@ -45,9 +53,13 @@ public enum Client {
       return clientId
     case .x509SanUri(let clientId, _):
       return clientId
+    case .didClient(let did):
+      return did.string
+    case .attested(let clientId):
+      return clientId
     }
   }
-  
+
   public var legalName: String? {
     switch self {
     case .preRegistered(_, let legalName):
@@ -58,6 +70,10 @@ public enum Client {
       return certificate.legaName
     case .x509SanUri(_, let certificate):
       return certificate.legaName
+    case .didClient:
+      return nil
+    case .attested:
+      return nil
     }
   }
 }

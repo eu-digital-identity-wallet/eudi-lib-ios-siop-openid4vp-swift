@@ -38,6 +38,16 @@ public protocol ClientMetaDataResolverType {
 }
 
 public actor ClientMetaDataResolver: ClientMetaDataResolverType {
+
+  public var usesSelfSignedDelegation: Bool
+
+  /**
+    Initializes an instance.
+   */
+  public init(usesSelfSignedDelegation: Bool = false) {
+    self.usesSelfSignedDelegation = usesSelfSignedDelegation
+  }
+
   /// Resolves client metadata asynchronously.
   ///
   /// - Parameters:
@@ -48,12 +58,15 @@ public actor ClientMetaDataResolver: ClientMetaDataResolverType {
     fetcher: Fetcher<ClientMetaData> = Fetcher(),
     source: ClientMetaDataSource?
   ) async -> Result<ClientMetaData?, ResolvingError> {
+    var resolverFetcher = fetcher
+    resolverFetcher.usesSelfSignedDelegation = self.usesSelfSignedDelegation
+
     guard let source = source else { return .success(nil) }
     switch source {
     case .passByValue(metaData: let metaData):
       return .success(metaData)
     case .fetchByReference(url: let url):
-      let result = await fetcher.fetch(url: url)
+      let result = await resolverFetcher.fetch(url: url)
       let metaData = try? result.get()
       if let metaData = metaData {
         return .success(metaData)

@@ -26,6 +26,7 @@ public struct WalletOpenId4VPConfiguration {
   public let supportedClientIdSchemes: [SupportedClientIdScheme]
   public let vpFormatsSupported: [ClaimFormat]
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition]
+  public let usesSelfSignedDelegation: Bool
 
   public init(
     subjectSyntaxTypesSupported: [SubjectSyntaxType],
@@ -37,7 +38,8 @@ public struct WalletOpenId4VPConfiguration {
     signingKeySet: WebKeySet,
     supportedClientIdSchemes: [SupportedClientIdScheme],
     vpFormatsSupported: [ClaimFormat],
-    knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
+    knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
+    usesSelfSignedDelegation: Bool = false
   ) {
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
     self.preferredSubjectSyntaxType = preferredSubjectSyntaxType
@@ -49,6 +51,7 @@ public struct WalletOpenId4VPConfiguration {
     self.supportedClientIdSchemes = supportedClientIdSchemes
     self.vpFormatsSupported = vpFormatsSupported
     self.knownPresentationDefinitionsPerScope = knownPresentationDefinitionsPerScope
+    self.usesSelfSignedDelegation = usesSelfSignedDelegation
   }
 
   internal init() throws {
@@ -62,5 +65,6 @@ public struct WalletOpenId4VPConfiguration {
     supportedClientIdSchemes = []
     vpFormatsSupported = []
     knownPresentationDefinitionsPerScope = [:]
+    usesSelfSignedDelegation = false
   }
 }

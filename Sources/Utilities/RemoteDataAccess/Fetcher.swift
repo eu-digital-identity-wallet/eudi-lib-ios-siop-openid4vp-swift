@@ -44,6 +44,7 @@ public enum FetchError: LocalizedError {
 }
 
 public protocol Fetching {
+  var usesSelfSignedDelegation: Bool { get set }
   associatedtype Element: Codable
 
   /**
@@ -60,11 +61,14 @@ public protocol Fetching {
 
 public struct Fetcher<Element: Codable>: Fetching {
   @Injected var reporter: Reporting
+  public var usesSelfSignedDelegation: Bool
 
   /**
    Initializes a Fetcher instance.
    */
-  public init() {}
+  public init(usesSelfSignedDelegation: Bool = false) {
+    self.usesSelfSignedDelegation = usesSelfSignedDelegation
+  }
 
   /**
    Fetches data from the provided URL.
@@ -76,7 +80,16 @@ public struct Fetcher<Element: Codable>: Fetching {
    */
   public func fetch(session: URLSession = URLSession.shared, url: URL) async -> Result<Element, FetchError> {
     do {
-      let (data, response) = try await session.data(from: url)
+      let fetchSession: URLSession = {
+        if self.usesSelfSignedDelegation {
+          let delegate = SelfSignedSessionDelegate()
+          let configuration = URLSessionConfiguration.default
+          return URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+        } else {
+          return session
+        }
+      }()
+      let (data, response) = try await fetchSession.data(from: url)
       let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
       if !statusCode.isWithinRange(200...299) {
         throw FetchError.invalidStatusCode(url, statusCode)
@@ -106,7 +119,16 @@ public struct Fetcher<Element: Codable>: Fetching {
     url: URL
   ) async throws -> Result<String, FetchError> {
     do {
-      let (data, response) = try await session.data(from: url)
+      let fetchSession: URLSession = {
+        if self.usesSelfSignedDelegation {
+          let delegate = SelfSignedSessionDelegate()
+          let configuration = URLSessionConfiguration.default
+          return URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
+        } else {
+          return session
+        }
+      }()
+      let (data, response) = try await fetchSession.data(from: url)
       let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
       if !statusCode.isWithinRange(200...299) {
         throw FetchError.invalidStatusCode(url, statusCode)

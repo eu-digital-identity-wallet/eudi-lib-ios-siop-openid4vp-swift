@@ -28,6 +28,7 @@ public enum ClientIdScheme: String, Codable {
   case did = "did"
   case x509SanDns = "x509_san_dns"
   case x509SanUri = "x509_san_uri"
+  case verifierAttestation = "verifier_attestation"
 }
 
 /// Extension providing additional functionality to the `ClientIdScheme` enumeration.
