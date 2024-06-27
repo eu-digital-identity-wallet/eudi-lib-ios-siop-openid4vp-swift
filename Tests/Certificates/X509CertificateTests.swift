@@ -100,6 +100,7 @@ final class X509CertificateTests: XCTestCase {
     if trustResult == .unspecified {
       print("Certificate chain is valid.")
     } else {
+        
       print("Certificate chain is NOT valid.")
     }
   }
