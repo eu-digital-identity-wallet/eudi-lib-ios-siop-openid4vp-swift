@@ -39,9 +39,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.invalidRequestUri(requestUri)
     }
 
-    let usesSelfSignedDelegation = walletConfiguration?.usesSelfSignedDelegation ?? false
     let jwt = try await ValidatedSiopOpenId4VPRequest.fetchJwtString(
-      usesSelfSignedDelegation: usesSelfSignedDelegation,
       requestUrl: requestUrl
     )
 
@@ -239,11 +237,10 @@ public extension ValidatedSiopOpenId4VPRequest {
   }
 
   fileprivate static func fetchJwtString(
-    usesSelfSignedDelegation: Bool = false,
     requestUrl: URL
   ) async throws -> String {
     struct ResultType: Codable {}
-    let fetcher = Fetcher<ResultType>(usesSelfSignedDelegation: usesSelfSignedDelegation)
+    let fetcher = Fetcher<ResultType>()
     let jwtResult = try await fetcher.fetchString(url: requestUrl)
 
     switch jwtResult {
