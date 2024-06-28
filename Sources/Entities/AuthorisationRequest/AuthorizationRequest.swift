@@ -42,7 +42,6 @@ public extension AuthorizationRequest {
       throw ValidatedAuthorizationError.conflictingData
     }
 
-    let usesSelfSignedDelegation = walletConfiguration?.usesSelfSignedDelegation ?? false
     if let request = authorizationRequestData.request {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
         request: request,
@@ -50,8 +49,8 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        clientMetaDataResolver: ClientMetaDataResolver(usesSelfSignedDelegation: usesSelfSignedDelegation),
-        presentationDefinitionResolver: PresentationDefinitionResolver(usesSelfSignedDelegation: usesSelfSignedDelegation),
+        clientMetaDataResolver: ClientMetaDataResolver(),
+        presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
       )
       self = .jwt(request: resolvedSiopOpenId4VPRequestData)
@@ -63,8 +62,8 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        clientMetaDataResolver: ClientMetaDataResolver(usesSelfSignedDelegation: usesSelfSignedDelegation),
-        presentationDefinitionResolver: PresentationDefinitionResolver(usesSelfSignedDelegation: usesSelfSignedDelegation),
+        clientMetaDataResolver: ClientMetaDataResolver(),
+        presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
       )
       self = .jwt(request: resolvedSiopOpenId4VPRequestData)
@@ -75,8 +74,8 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        clientMetaDataResolver: ClientMetaDataResolver(usesSelfSignedDelegation: usesSelfSignedDelegation),
-        presentationDefinitionResolver: PresentationDefinitionResolver(usesSelfSignedDelegation: usesSelfSignedDelegation),
+        clientMetaDataResolver: ClientMetaDataResolver(),
+        presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
       )
 

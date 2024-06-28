@@ -42,13 +42,10 @@ public protocol PresentationDefinitionResolverType {
 
 public actor PresentationDefinitionResolver: PresentationDefinitionResolverType {
 
-  public var usesSelfSignedDelegation: Bool
-
   /**
     Initializes an instance.
    */
-  public init(usesSelfSignedDelegation: Bool = false) {
-    self.usesSelfSignedDelegation = usesSelfSignedDelegation
+  public init() {
   }
 
   /// Resolves presentation definitions asynchronously.
@@ -63,14 +60,11 @@ public actor PresentationDefinitionResolver: PresentationDefinitionResolverType 
     predefinedDefinitions: [String: PresentationDefinition] = [:],
     source: PresentationDefinitionSource
   ) async -> Result<PresentationDefinition, ResolvingError> {
-    var resolverFetcher = fetcher
-    resolverFetcher.usesSelfSignedDelegation = self.usesSelfSignedDelegation
-
     switch source {
     case .passByValue(presentationDefinition: let presentationDefinition):
       return .success(presentationDefinition)
     case .fetchByReference(url: let url):
-      let result = await resolverFetcher.fetch(url: url)
+      let result = await fetcher.fetch(url: url)
       let presentationDefinition = try? result.get()
       if let presentationDefinition = presentationDefinition {
         return .success(presentationDefinition)
