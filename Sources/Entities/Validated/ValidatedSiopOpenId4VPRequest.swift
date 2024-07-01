@@ -40,6 +40,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     }
 
     let jwt = try await ValidatedSiopOpenId4VPRequest.fetchJwtString(
+      fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared),
       requestUrl: requestUrl
     )
 
@@ -236,13 +237,12 @@ public extension ValidatedSiopOpenId4VPRequest {
     }
   }
 
+  fileprivate struct ResultType: Codable {}
   fileprivate static func fetchJwtString(
+    fetcher: Fetcher<ResultType> = Fetcher(),
     requestUrl: URL
   ) async throws -> String {
-    struct ResultType: Codable {}
-    let fetcher = Fetcher<ResultType>()
     let jwtResult = try await fetcher.fetchString(url: requestUrl)
-
     switch jwtResult {
     case .success(let string):
       return try ValidatedSiopOpenId4VPRequest.extractJWT(string)

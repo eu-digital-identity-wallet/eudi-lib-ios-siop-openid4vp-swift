@@ -29,12 +29,10 @@ public protocol PresentationDefinitionResolverType {
   /// Resolves presentation definitions asynchronously.
   ///
   /// - Parameters:
-  ///   - fetcher: The fetcher object responsible for fetching presentation definitions.
   ///   - predefinedDefinitions: Predefined presentation definitions mapped by keys.
   ///   - source: The input source for resolving presentation definitions.
   /// - Returns: An asynchronous result containing the resolved presentation definition or an error.
   func resolve(
-    fetcher: Fetcher<OutputType>,
     predefinedDefinitions: [String: OutputType],
     source: InputType
   ) async -> Result<OutputType, ErrorType>
@@ -42,21 +40,24 @@ public protocol PresentationDefinitionResolverType {
 
 public actor PresentationDefinitionResolver: PresentationDefinitionResolverType {
 
+  private let fetcher: Fetcher<PresentationDefinition>
+
   /**
     Initializes an instance.
    */
-  public init() {
+  public init(
+    fetcher: Fetcher<PresentationDefinition> = Fetcher()
+  ) {
+    self.fetcher = fetcher
   }
 
   /// Resolves presentation definitions asynchronously.
   ///
   /// - Parameters:
-  ///   - fetcher: The fetcher object responsible for fetching presentation definitions.
   ///   - predefinedDefinitions: Predefined presentation definitions mapped by keys.
   ///   - source: The input source for resolving presentation definitions.
   /// - Returns: An asynchronous result containing the resolved presentation definition or an error
   public func resolve(
-    fetcher: Fetcher<PresentationDefinition> = Fetcher(),
     predefinedDefinitions: [String: PresentationDefinition] = [:],
     source: PresentationDefinitionSource
   ) async -> Result<PresentationDefinition, ResolvingError> {

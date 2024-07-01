@@ -28,31 +28,32 @@ public protocol ClientMetaDataResolverType {
   /// Resolves client metadata asynchronously.
   ///
   /// - Parameters:
-  ///   - fetcher: The fetcher object responsible for fetching metadata.
   ///   - source: The input source for resolving metadata.
   /// - Returns: An asynchronous result containing the resolved metadata or an error.
   func resolve(
-    fetcher: Fetcher<OutputType>,
     source: InputType?
   ) async -> Result<OutputType?, ErrorType>
 }
 
 public actor ClientMetaDataResolver: ClientMetaDataResolverType {
 
+  private let fetcher: Fetcher<ClientMetaData>
+
   /**
     Initializes an instance.
    */
-  public init() {
+  public init(
+    fetcher: Fetcher<ClientMetaData> = Fetcher()
+  ) {
+    self.fetcher = fetcher
   }
 
   /// Resolves client metadata asynchronously.
   ///
   /// - Parameters:
-  ///   - fetcher: The fetcher object responsible for fetching metadata. Default value is Fetcher<ClientMetaData>().
   ///   - source: The input source for resolving metadata.
   /// - Returns: An asynchronous result containing the resolved metadata or an error of type ResolvingError.
   public func resolve(
-    fetcher: Fetcher<ClientMetaData> = Fetcher(),
     source: ClientMetaDataSource?
   ) async -> Result<ClientMetaData?, ResolvingError> {
     guard let source = source else { return .success(nil) }
@@ -60,7 +61,7 @@ public actor ClientMetaDataResolver: ClientMetaDataResolverType {
     case .passByValue(metaData: let metaData):
       return .success(metaData)
     case .fetchByReference(url: let url):
-      let result = await fetcher.fetch(url: url)
+      let result = await self.fetcher.fetch(url: url)
       let metaData = try? result.get()
       if let metaData = metaData {
         return .success(metaData)

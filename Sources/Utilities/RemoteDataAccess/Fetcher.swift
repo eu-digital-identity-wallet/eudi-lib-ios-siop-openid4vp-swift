@@ -44,27 +44,32 @@ public enum FetchError: LocalizedError {
 }
 
 public protocol Fetching {
+  var session: Networking { get set }
   associatedtype Element: Codable
 
   /**
     Fetches data from the provided URL.
 
     - Parameters:
-       - session: The URLSession to use for fetching the data.
        - url: The URL from which to fetch the data.
 
     - Returns: A `Result` type with the fetched data or an error.
    */
-  func fetch(session: URLSession, url: URL) async -> Result<Element, FetchError>
+  func fetch(url: URL) async -> Result<Element, FetchError>
 }
 
 public struct Fetcher<Element: Codable>: Fetching {
+  
   @Injected var reporter: Reporting
+  public var session: Networking
 
   /**
    Initializes a Fetcher instance.
    */
-  public init() {
+  public init(
+    session: Networking = URLSession.shared
+  ) {
+    self.session = session
   }
 
   /**
@@ -75,9 +80,9 @@ public struct Fetcher<Element: Codable>: Fetching {
 
    - Returns: A Result type with the fetched data or an error.
    */
-  public func fetch(session: URLSession = URLSession.shared, url: URL) async -> Result<Element, FetchError> {
+  public func fetch(url: URL) async -> Result<Element, FetchError> {
     do {
-      let (data, response) = try await session.data(from: url)
+        let (data, response) = try await self.session.data(from: url)
       let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
       if !statusCode.isWithinRange(200...299) {
         throw FetchError.invalidStatusCode(url, statusCode)

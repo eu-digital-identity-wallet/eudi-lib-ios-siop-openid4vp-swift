@@ -49,11 +49,16 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        clientMetaDataResolver: ClientMetaDataResolver(),
-        presentationDefinitionResolver: PresentationDefinitionResolver(),
+        clientMetaDataResolver: ClientMetaDataResolver(
+          fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
+        ),
+        presentationDefinitionResolver: PresentationDefinitionResolver(
+          fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
+        ),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
       )
       self = .jwt(request: resolvedSiopOpenId4VPRequestData)
+        
     } else if let requestUri = authorizationRequestData.requestUri {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
         requestUri: requestUri,
@@ -62,8 +67,12 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        clientMetaDataResolver: ClientMetaDataResolver(),
-        presentationDefinitionResolver: PresentationDefinitionResolver(),
+        clientMetaDataResolver: ClientMetaDataResolver(
+          fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
+        ),
+        presentationDefinitionResolver: PresentationDefinitionResolver(
+          fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
+        ),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
       )
       self = .jwt(request: resolvedSiopOpenId4VPRequestData)

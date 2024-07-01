@@ -36,6 +36,8 @@ public enum PostError: Error {
 
 public protocol Posting {
 
+  var session: Networking { get set }
+
   /**
    Performs a POST request with the provided URLRequest.
 
@@ -44,7 +46,7 @@ public protocol Posting {
 
    - Returns: A Result type with the response data or an error.
    */
-  func post<Response: Codable>(session: URLSession, request: URLRequest) async -> Result<Response, PostError>
+  func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError>
 
   /**
    Performs a POST request with the provided URLRequest.
@@ -59,10 +61,15 @@ public protocol Posting {
 
 public struct Poster: Posting {
 
+  public var session: Networking
+
   /**
    Initializes a Poster instance.
    */
-  public init() {
+  public init(
+    session: Networking = URLSession.shared
+  ) {
+    self.session = session
   }
 
   /**
@@ -73,9 +80,9 @@ public struct Poster: Posting {
 
    - Returns: A Result type with the response data or an error.
    */
-  public func post<Response: Codable>(session: URLSession, request: URLRequest) async -> Result<Response, PostError> {
+  public func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError> {
     do {
-      let (data, _) = try await session.data(for: request)
+      let (data, _) = try await self.session.data(for: request)
       let object = try JSONDecoder().decode(Response.self, from: data)
 
       return .success(object)
@@ -101,7 +108,7 @@ public struct Poster: Posting {
   public func check(key: String, request: URLRequest) async -> Result<(String, Bool) , PostError> {
     do {
 
-      let (data, response) = try await URLSession.shared.data(for: request)
+      let (data, response) = try await self.session.data(for: request)
 
       let string = String(data: data, encoding: .utf8)
       let dictionary = string?.toDictionary() ?? [:]

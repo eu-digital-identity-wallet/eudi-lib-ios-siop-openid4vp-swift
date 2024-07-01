@@ -44,7 +44,6 @@ public actor AuthorisationService: AuthorisationServiceType {
       )
 
       let result: Result<T, PostError> = await poster.post(
-        session: URLSession.shared,
         request: post.urlRequest
       )
       return try result.get()
