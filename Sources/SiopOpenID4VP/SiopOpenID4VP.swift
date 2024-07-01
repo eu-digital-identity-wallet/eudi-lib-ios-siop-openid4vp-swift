@@ -139,7 +139,9 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       authorizationResponse: response
     )
 
-    return try await dispatcher.dispatch()
+    return try await dispatcher.dispatch(
+      poster: Poster(session: walletConfiguration?.session ?? URLSession.shared)
+    )
   }
 
   /**

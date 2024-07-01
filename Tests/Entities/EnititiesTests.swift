@@ -99,7 +99,8 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
       signingKeySet: signingKeySet,
       supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,
-      knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope
+      knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope,
+      session: WalletOpenId4VPConfiguration.walletSession
     )
     
     XCTAssertEqual(walletOpenId4VPConfiguration.subjectSyntaxTypesSupported, subjectSyntaxTypesSupported)
