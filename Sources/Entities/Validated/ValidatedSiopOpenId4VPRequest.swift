@@ -58,10 +58,8 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
 
-    guard let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME] as? String else {
-      throw ValidatedAuthorizationError.missingRequiredField(".clientIdScheme")
-    }
-
+    let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME] as? String
+      
     if let clientId = clientId {
       if payloadcClientId != clientId {
         throw ValidatedAuthorizationError.clientIdMismatch(clientId, payloadcClientId)
@@ -135,9 +133,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
 
-    guard let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME] as? String else {
-      throw ValidatedAuthorizationError.missingRequiredField(".clientIdScheme")
-    }
+    let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME] as? String
 
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
@@ -267,7 +263,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     clientId: String,
     jwt: JWTString,
     config: WalletOpenId4VPConfiguration?,
-    scheme: String
+    scheme: String?
   ) throws -> Client {
     guard
         let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first(where: { $0.scheme.rawValue == scheme }) ?? config?.supportedClientIdSchemes.first
