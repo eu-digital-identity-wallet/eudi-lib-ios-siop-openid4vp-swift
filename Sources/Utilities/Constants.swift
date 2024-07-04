@@ -22,6 +22,7 @@ public struct Constants {
   public static let SCOPE = "scope"
   public static let STATE = "state"
   public static let HTTPS = "https"
+  public static let CLIENT_ID_SCHEME = "client_id_scheme"
   public static let PRESENTATION_DEFINITION = "presentation_definition"
   public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
 

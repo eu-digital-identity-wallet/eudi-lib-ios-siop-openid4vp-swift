@@ -58,6 +58,10 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
 
+    guard let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME] as? String else {
+      throw ValidatedAuthorizationError.missingRequiredField(".clientIdScheme")
+    }
+
     if let clientId = clientId {
       if payloadcClientId != clientId {
         throw ValidatedAuthorizationError.clientIdMismatch(clientId, payloadcClientId)
@@ -76,7 +80,8 @@ public extension ValidatedSiopOpenId4VPRequest {
     let client = try Self.getClient(
       clientId: payloadcClientId,
       jwt: jwt,
-      config: walletConfiguration
+      config: walletConfiguration, 
+      scheme: clientIdScheme
     )
     
     // Initialize the validated request based on the response type
@@ -125,8 +130,13 @@ public extension ValidatedSiopOpenId4VPRequest {
     guard let clientId = payload[Constants.CLIENT_ID] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".clientId")
     }
+
     guard let nonce = payload[Constants.NONCE] as? String else {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
+    }
+
+    guard let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME] as? String else {
+      throw ValidatedAuthorizationError.missingRequiredField(".clientIdScheme")
     }
 
     // Determine the response type from the payload
@@ -141,7 +151,8 @@ public extension ValidatedSiopOpenId4VPRequest {
     let client = try Self.getClient(
       clientId: clientId,
       jwt: request,
-      config: walletConfiguration
+      config: walletConfiguration, 
+      scheme: clientIdScheme
     )
     
     // Initialize the validated request based on the response type
@@ -255,10 +266,11 @@ public extension ValidatedSiopOpenId4VPRequest {
   static func getClient(
     clientId: String,
     jwt: JWTString,
-    config: WalletOpenId4VPConfiguration?
+    config: WalletOpenId4VPConfiguration?,
+    scheme: String
   ) throws -> Client {
     guard
-      let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first
+        let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first(where: { $0.scheme.rawValue == scheme }) ?? config?.supportedClientIdSchemes.first
     else {
       throw ValidatedAuthorizationError.validationError("No supported client Id scheme")
     }
