@@ -15,8 +15,8 @@
  */
 import Foundation
 
-private let DID_URL_SYNTAX = try? NSRegularExpression(pattern: "^did:[a-z0-9]+:(([A-Z.a-z0-9]|-|_|%[0-9A-Fa-f][0-9A-Fa-f])*:)*([A-Z.a-z0-9]|-|_|%[0-9A-Fa-f][0-9A-Fa-f])+(/(([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|([!$&'()*+,;=])|:|@)*)*(\\?(((([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|([!$&'()*+,;=])|:|@)|/|\\?)*))?(#(((([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|([!$&'()*+,;=])|:|@)|/|\\?)*))?$", options: [])
-private let DID_SYNTAX = try? NSRegularExpression(pattern: "^did:[a-z0-9]+:(([A-Z.a-z0-9]|-|_|%[0-9A-Fa-f][0-9A-Fa-f])*:)*([A-Z.a-z0-9]|-|_|%[0-9A-Fa-f][0-9A-Fa-f])+$", options: [])
+public let DID_URL_SYNTAX = try? NSRegularExpression(pattern: "^did:[a-z0-9]+:(([A-Z.a-z0-9]|-|_|%[0-9A-Fa-f][0-9A-Fa-f])*:)*([A-Z.a-z0-9]|-|_|%[0-9A-Fa-f][0-9A-Fa-f])+(/(([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|([!$&'()*+,;=])|:|@)*)*(\\?(((([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|([!$&'()*+,;=])|:|@)|/|\\?)*))?(#(((([-A-Z._a-z0-9]|~)|%[0-9A-Fa-f][0-9A-Fa-f]|([!$&'()*+,;=])|:|@)|/|\\?)*))?$", options: [])
+public let DID_SYNTAX = try? NSRegularExpression(pattern: "^did:[a-z0-9]+:(([A-Z.a-z0-9]|-|_|%[0-9A-Fa-f][0-9A-Fa-f])*:)*([A-Z.a-z0-9]|-|_|%[0-9A-Fa-f][0-9A-Fa-f])+$", options: [])
 
 public struct AbsoluteDIDUrl {
   private let uri: URL
@@ -34,7 +34,7 @@ public struct AbsoluteDIDUrl {
       return nil
     }
 
-    let parsed = DID.parse(string)
+    let parsed = DID.parse(string, regex: regex)
     if regex.matches(
       in: string,
       options: [],
@@ -65,9 +65,9 @@ public struct DID {
     return uri.absoluteString
   }
 
-  public static func parse(_ string: String) -> DID? {
+    public static func parse(_ string: String, regex: NSRegularExpression? = DID_SYNTAX) -> DID? {
     guard
-      let regex = DID_SYNTAX,
+      let regex = regex,
       regex.matches(
         in: string,
         options: [],
