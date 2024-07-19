@@ -21,6 +21,7 @@ public enum JOSEObjectType: String {
   case JOSE_JSON = "JOSE+JSON"
   case JWT = "JWT"
   case REQ_JWT = "oauth-authz-req+jwt"
+  case VERIFIER_ATTESTATION = "verifier-attestation+jwt"
 
   public var type: String {
     return self.rawValue
