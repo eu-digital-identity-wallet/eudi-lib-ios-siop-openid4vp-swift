@@ -308,11 +308,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         keyLookup: keyLookup
       )
 
-    case .verifierAttestation(let trust, _):
-      let jws = try JWS(compactSerialization: jwt)
-      guard jws.isValid(for: trust) else {
-        throw ValidatedAuthorizationError.validationError("verifierAttestation Verifier not trusted")
-      }
+    case .verifierAttestation:
       return try Self.verifierAttestation(
         jwt: jwt,
         supportedScheme: scheme,
@@ -347,17 +343,18 @@ private extension ValidatedSiopOpenId4VPRequest {
     let claims = try jws.verifierAttestationClaims()
       
     try TimeChecks(skew: clockSkew)
-      .verify(claimsSet: .init(
-        issuer: claims.iss,
-        subject: claims.sub,
-        audience: [],
-        expirationTime: claims.exp,
-        notBeforeTime: claims.nbf,
-        issueTime: claims.iat,
-        jwtID: nil,
-        claims: [:]
+      .verify(
+        claimsSet: .init(
+          issuer: claims.iss,
+          subject: claims.sub,
+          audience: [],
+          expirationTime: claims.exp,
+          notBeforeTime: Date(),
+          issueTime: claims.iat,
+          jwtID: nil,
+          claims: [:]
+        )
       )
-    )
     return .attested(clientId: clientId)
   }
 
@@ -545,7 +542,6 @@ private extension JWS {
       sub: try tryExtract(JWTClaimNames.subject, from: json),
       iat: try tryExtract(JWTClaimNames.issuedAt, from: json, converter: dateFromUnixTimestamp),
       exp: try tryExtract(JWTClaimNames.expirationTime, from: json, converter: dateFromUnixTimestamp),
-      nbf: try? tryExtract(JWTClaimNames.notBefore, from: json, converter: dateFromUnixTimestamp),
       verifierPubJwk: jwk,
       redirectUris: try tryExtract("redirect_uris", from: json),
       responseUris: try tryExtract("response_uris", from: json)
@@ -613,7 +609,7 @@ private struct DateUtils {
     return date1.timeIntervalSince(date2) > skew
   }
     
-  static func isBefore(_ date1: Date, _ date2: Date, _ skew: TimeInterval) -> Bool {
+  static func isBefore(_ date1: Date, _ date2: Date, _ skew: TimeInterval = .zero) -> Bool {
     return date1.timeIntervalSince(date2) < -skew
   }
 }
@@ -637,26 +633,12 @@ private class TimeChecks: JWTClaimsSetVerifier {
     }
         
     if let iat = claimsSet.issueTime {
-      if !DateUtils.isBefore(iat, now, skewInSeconds) {
+      if !DateUtils.isBefore(iat, now) {
         throw JWTVerificationError.issuedInFuture
       }
             
-      if let exp = claimsSet.expirationTime, !exp.timeIntervalSince(iat).isLess(than: 0) {
+      if let exp = claimsSet.expirationTime, !iat.timeIntervalSince(exp).isLess(than: 0) {
         throw JWTVerificationError.issuedAfterExpiration
-      }
-    }
-        
-    if let nbf = claimsSet.notBeforeTime {
-      if !DateUtils.isBefore(nbf, now, skewInSeconds) {
-        throw JWTVerificationError.notYetActive
-      }
-            
-      if let exp = claimsSet.expirationTime, !nbf.timeIntervalSince(exp).isLess(than: 0) {
-        throw JWTVerificationError.activeAfterExpiration
-      }
-            
-        if let iat = claimsSet.issueTime, nbf.timeIntervalSince(iat) < .zero {
-        throw JWTVerificationError.activeBeforeIssuance
       }
     }
   }

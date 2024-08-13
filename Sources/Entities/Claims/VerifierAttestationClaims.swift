@@ -21,7 +21,6 @@ public struct VerifierAttestationClaims {
   public let sub: String
   public let iat: Date?
   public let exp: Date
-  public let nbf: Date?
   public let verifierPubJwk: JWK
   public let redirectUris: [String]?
   public let responseUris: [String]?
@@ -31,7 +30,6 @@ public struct VerifierAttestationClaims {
     sub: String,
     iat: Date?,
     exp: Date,
-    nbf: Date?,
     verifierPubJwk: JWK,
     redirectUris: [String]?,
     responseUris: [String]?
@@ -40,7 +38,6 @@ public struct VerifierAttestationClaims {
     self.sub = sub
     self.iat = iat
     self.exp = exp
-    self.nbf = nbf
     self.verifierPubJwk = verifierPubJwk
     self.redirectUris = redirectUris
     self.responseUris = responseUris

@@ -20,7 +20,7 @@ actor VerifierAttestationIssuer {
 
   static let ID = "Attestation Issuer"
   
-  let attestationDuration: TimeInterval = 10.0
+  let attestationDuration: TimeInterval = 100.0
   
   lazy var algAndKey: (algorithm: SignatureAlgorithm, key: SecKey) = {
     let privateKey = try? KeyController.generateECDHPrivateKey()
@@ -29,7 +29,7 @@ actor VerifierAttestationIssuer {
   
   lazy var verifier: Verifier? = {
     
-    let publicKey: SecKey? = try? KeyController.generateECDHPublicKey(from: self.algAndKey.key)
+    let publicKey: SecKey = try! KeyController.generateECDHPublicKey(from: self.algAndKey.key)
     let verifier: Verifier? = .init(
       verifyingAlgorithm: .ES256,
       key: publicKey
@@ -67,15 +67,18 @@ actor VerifierAttestationIssuer {
       "sub": clientId,
       "iat": now,
       "exp": now + attestationDuration,
-      "cnf": try ecPublicJwk.toDictionary(),
+      "cnf": [
+        "jwk": try ecPublicJwk.toDictionary()
+      ],
       "redirect_uris": [],
-      "response_urls": []
+      "response_uris": []
     ] as [String : Any]
     
     return try JWS(
       header: .init(
         parameters: [
-          "typ": "verifier-attestation+jwt"
+          "typ": "verifier-attestation+jwt",
+          "alg": "ES256"
         ]
       ),
       payload: Payload(
