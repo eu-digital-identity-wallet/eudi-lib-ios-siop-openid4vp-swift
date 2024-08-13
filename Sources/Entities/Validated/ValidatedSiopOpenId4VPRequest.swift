@@ -308,7 +308,11 @@ public extension ValidatedSiopOpenId4VPRequest {
         keyLookup: keyLookup
       )
 
-    case .verifierAttestation:
+    case .verifierAttestation(let trust, _):
+      let jws = try JWS(compactSerialization: jwt)
+      guard jws.isValid(for: trust) else {
+        throw ValidatedAuthorizationError.validationError("verifierAttestation Verifier not trusted")
+      }
       return try Self.verifierAttestation(
         jwt: jwt,
         supportedScheme: scheme,
