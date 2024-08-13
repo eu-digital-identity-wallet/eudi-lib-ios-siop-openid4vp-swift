@@ -312,7 +312,8 @@ public extension ValidatedSiopOpenId4VPRequest {
       return try Self.verifierAttestation(
         jwt: jwt,
         supportedScheme: scheme,
-        clientId: clientId)
+        clientId: clientId
+      )
     }
   }
 }
