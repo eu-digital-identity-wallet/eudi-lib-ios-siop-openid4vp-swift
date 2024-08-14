@@ -35,8 +35,8 @@ final class VerifierAttestaionTestsTests: XCTestCase {
     let jwt = try await issuer.attestation(
       clock: 10.0,
       clientId: clientId,
-      redirectUris: [],
-      responseUris: []
+      redirectUris: [URL(string: "https://www.example.com")!],
+      responseUris: [URL(string: "https://www.example.com")!]
     )
     
     let config = try await verifierAttestationWalletConfiguration(
@@ -56,6 +56,47 @@ final class VerifierAttestaionTestsTests: XCTestCase {
       XCTAssertEqual(client, "client-id")
     default:
       XCTAssert(false)
+    }
+  }
+  
+  func testVerifierAttestationInvalidIssuer() async throws {
+    
+    let clientId = "client-id"
+    var issuer: VerifierAttestationIssuer
+    
+    issuer = VerifierAttestationIssuer()
+    let verifier = await issuer.verifier!
+    
+    issuer = VerifierAttestationIssuer()
+    let jwt = try await issuer.attestation(
+      clock: 10.0,
+      clientId: clientId,
+      redirectUris: [URL(string: "https://www.example.com")!],
+      responseUris: [URL(string: "https://www.example.com")!]
+    )
+    
+    let config = try await verifierAttestationWalletConfiguration(
+      privateKey: issuer.algAndKey.key,
+      verifier: verifier
+    )
+    
+    XCTAssertThrowsError(try ValidatedSiopOpenId4VPRequest.getClient(
+      clientId: clientId,
+      jwt: jwt.compactSerializedString,
+      config: config,
+      scheme: "verifier_attestation"
+    )) { error in
+      guard let joseError = error as? JOSESwiftError else {
+        XCTAssert(false)
+        return
+      }
+      
+      switch joseError {
+      case .verifyingFailed:
+        XCTAssert(true)
+      default:
+        XCTAssert(false)
+      }
     }
   }
 }
