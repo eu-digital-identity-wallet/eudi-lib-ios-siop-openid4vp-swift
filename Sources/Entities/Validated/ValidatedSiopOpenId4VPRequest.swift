@@ -266,7 +266,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     scheme: String?
   ) throws -> Client {
     guard
-        let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first(where: { $0.scheme.rawValue == scheme }) ?? config?.supportedClientIdSchemes.first
+      let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first(where: { $0.scheme.rawValue == scheme }) ?? config?.supportedClientIdSchemes.first
     else {
       throw ValidatedAuthorizationError.validationError("No supported client Id scheme")
     }
@@ -308,8 +308,12 @@ public extension ValidatedSiopOpenId4VPRequest {
         keyLookup: keyLookup
       )
 
-    case .verifierAttestation: //(let trust, let clockSkew):
-        throw ValidatedAuthorizationError.validationError("Verifier Attestation not supported")
+    case .verifierAttestation:
+      return try Self.verifierAttestation(
+        jwt: jwt,
+        supportedScheme: scheme,
+        clientId: clientId
+      )
     }
   }
 }
@@ -317,8 +321,41 @@ public extension ValidatedSiopOpenId4VPRequest {
 // Private extension for ValidatedSiopOpenId4VPRequest
 private extension ValidatedSiopOpenId4VPRequest {
   
-  private static func verifierAttestation() {
-
+  private static func verifierAttestation(
+    jwt: JWTString,
+    supportedScheme: SupportedClientIdScheme,
+    clientId: String
+  ) throws -> Client {
+    guard case let .verifierAttestation(verifier, clockSkew) = supportedScheme else {
+      throw ValidatedAuthorizationError.validationError("Scheme should be verifier attestation")
+    }
+      
+    guard let jws = try? JWS(compactSerialization: jwt) else {
+      throw ValidatedAuthorizationError.validationError("Unable to process JWT")
+    }
+      
+    let expectedType = JOSEObjectType(rawValue: "verifier-attestation+jwt")
+    guard jws.header.typ == expectedType?.rawValue else {
+      throw ValidatedAuthorizationError.validationError("verifier-attestation+jwt not found in JWT header")
+    }
+      
+    _ = try jws.validate(using: verifier)
+    let claims = try jws.verifierAttestationClaims()
+      
+    try TimeChecks(skew: clockSkew)
+      .verify(
+        claimsSet: .init(
+          issuer: claims.iss,
+          subject: claims.sub,
+          audience: [],
+          expirationTime: claims.exp,
+          notBeforeTime: Date(),
+          issueTime: claims.iat,
+          jwtID: nil,
+          claims: [:]
+        )
+      )
+    return .attested(clientId: clientId)
   }
 
   private static func didPublicKeyLookup(
@@ -346,7 +383,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.validationError("Unable to extract public key from DID")
     }
 
-    try JarJwtSignatureValidator.verifyJWS(
+    try AccessValidator.verifyJWS(
       jws: jws,
       publicKey: publicKey
     )
@@ -362,7 +399,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     walletConfiguration: WalletOpenId4VPConfiguration? = nil
   ) async throws {
     
-    let validator = JarJwtSignatureValidator(walletOpenId4VPConfig: walletConfiguration)
+    let validator = AccessValidator(walletOpenId4VPConfig: walletConfiguration)
     try? await validator.validate(clientId: clientId, jwt: token)
   }
   
@@ -465,6 +502,143 @@ private extension ValidatedSiopOpenId4VPRequest {
         return string
       } else {
         throw ValidatedAuthorizationError.invalidJwtPayload
+      }
+    }
+  }
+}
+
+private extension JWS {
+    
+  // Function to convert Unix timestamp to Date
+  func dateFromUnixTimestamp(_ timestamp: Any) -> Date? {
+    if let timestampInt = timestamp as? Int {
+      return Date(timeIntervalSince1970: TimeInterval(timestampInt))
+    } else if let timestampDouble = timestamp as? Double {
+      return Date(timeIntervalSince1970: timestampDouble)
+    }
+    return nil
+  }
+    
+  func verifierAttestationClaims() throws -> VerifierAttestationClaims {
+      
+    let payload = payload.data()
+    guard let json = try JSONSerialization.jsonObject(
+        with: payload,
+        options: []
+    ) as? [String: Any] else {
+      throw ValidatedAuthorizationError.validationError("Invalid JWS payload")
+    }
+      
+    guard
+      let cnf = json["cnf"] as? [String: Any],
+      let jwkDict = cnf["jwk"] as? [String: Any],
+      let jwk = convertJSONToPublicKey(json: jwkDict)
+    else {
+      throw ValidatedAuthorizationError.validationError("Cannot locate cnf/jwk in payload")
+    }
+      
+    return VerifierAttestationClaims(
+      iss: try tryExtract(JWTClaimNames.issuer, from: json),
+      sub: try tryExtract(JWTClaimNames.subject, from: json),
+      iat: try tryExtract(JWTClaimNames.issuedAt, from: json, converter: dateFromUnixTimestamp),
+      exp: try tryExtract(JWTClaimNames.expirationTime, from: json, converter: dateFromUnixTimestamp),
+      verifierPubJwk: jwk,
+      redirectUris: try tryExtract("redirect_uris", from: json),
+      responseUris: try tryExtract("response_uris", from: json)
+    )
+  }
+    
+  // Function to convert JSON to ECPublicKey or RSAPublicKey
+  func convertJSONToPublicKey(json: [String: Any]) -> JWK? {
+    guard let kty = json["kty"] as? String else {
+      return nil
+    }
+        
+    switch kty {
+      case "EC":
+        return convertJSONToECPublicKey(json: json)
+      case "RSA":
+        return convertJSONToRSAPublicKey(json: json)
+      default:
+        return nil
+    }
+  }
+
+  // Function to convert JSON to ECPublicKey
+  func convertJSONToECPublicKey(json: [String: Any]) -> ECPublicKey? {
+    guard
+      let x = json["x"] as? String,
+      let y = json["y"] as? String,
+      let crv = json["crv"] as? String,
+      let curve = ECCurveType(rawValue: crv)
+    else {
+      return nil
+    }
+    return ECPublicKey(crv: curve, x: x, y: y)
+  }
+
+  // Function to convert JSON to RSAPublicKey
+  func convertJSONToRSAPublicKey(json: [String: Any]) -> RSAPublicKey? {
+    guard
+      let n = json["n"] as? String,
+      let e = json["e"] as? String
+    else {
+      return nil
+    }
+    return RSAPublicKey(modulus: n, exponent: e)
+  }
+}
+
+// Protocol to verify JWT claims
+private protocol JWTClaimsSetVerifier {
+  func verify(claimsSet: JWTClaimsSet) throws
+}
+
+private enum JWTVerificationError: Error {
+  case expiredJWT
+  case issuedInFuture
+  case issuedAfterExpiration
+  case notYetActive
+  case activeAfterExpiration
+  case activeBeforeIssuance
+}
+
+// Date utility functions similar to DateUtils in Kotlin
+private struct DateUtils {
+  static func isAfter(_ date1: Date, _ date2: Date, _ skew: TimeInterval) -> Bool {
+    return date1.timeIntervalSince(date2) > skew
+  }
+    
+  static func isBefore(_ date1: Date, _ date2: Date, _ skew: TimeInterval = .zero) -> Bool {
+    return date1.timeIntervalSince(date2) < -skew
+  }
+}
+
+// TimeChecks class implementation in Swift
+private class TimeChecks: JWTClaimsSetVerifier {
+  private let skew: TimeInterval
+    
+  init(skew: TimeInterval) {
+    self.skew = skew
+  }
+    
+  func verify(claimsSet: JWTClaimsSet) throws {
+    let now = Date()
+    let skewInSeconds = skew
+        
+    if let exp = claimsSet.expirationTime {
+      if !DateUtils.isAfter(exp, now, skewInSeconds) {
+        throw JWTVerificationError.expiredJWT
+      }
+    }
+        
+    if let iat = claimsSet.issueTime {
+      if !DateUtils.isBefore(iat, now) {
+        throw JWTVerificationError.issuedInFuture
+      }
+            
+      if let exp = claimsSet.expirationTime, !iat.timeIntervalSince(exp).isLess(than: 0) {
+        throw JWTVerificationError.issuedAfterExpiration
       }
     }
   }

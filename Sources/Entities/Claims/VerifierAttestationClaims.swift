@@ -14,25 +14,32 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
-public enum JOSEObjectType: String {
-
-  case JOSE = "JOSE"
-  case JOSE_JSON = "JOSE+JSON"
-  case JWT = "JWT"
-  case REQ_JWT = "oauth-authz-req+jwt"
-  case VERIFIER_ATTESTATION = "verifier-attestation+jwt"
-
-  public var type: String {
-    return self.rawValue
-  }
-}
-
-public extension JOSEObjectType {
-  static func parse(_ type: String) throws -> JOSEObjectType {
-    guard let objectType = JOSEObjectType(rawValue: type) else {
-      throw JOSEError.invalidObjectType
-    }
-    return objectType
+public struct VerifierAttestationClaims {
+  public let iss: String
+  public let sub: String
+  public let iat: Date?
+  public let exp: Date
+  public let verifierPubJwk: JWK
+  public let redirectUris: [String]?
+  public let responseUris: [String]?
+    
+  public init(
+    iss: String,
+    sub: String,
+    iat: Date?,
+    exp: Date,
+    verifierPubJwk: JWK,
+    redirectUris: [String]?,
+    responseUris: [String]?
+  ) {
+    self.iss = iss
+    self.sub = sub
+    self.iat = iat
+    self.exp = exp
+    self.verifierPubJwk = verifierPubJwk
+    self.redirectUris = redirectUris
+    self.responseUris = responseUris
   }
 }

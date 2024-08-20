@@ -24,9 +24,8 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
   
   func testExampleGivenOnlineCertifierHappyPathTestPlanThenExpectSuccess() async throws {
     
-    /// To get this URL, visit https://demo.certification.openid.net/
-    /// and run a happy flow no state test
-    /// then proceed to assign the request uri to the variable below
+    /// To get this URL,  visit https://demo.certification.openid.net/
+    /// and run a happy flow no state test then proceed to assign the request uri to the variable below
     let url = "#01"
     let clientId = "demo.certification.openid.net"
     

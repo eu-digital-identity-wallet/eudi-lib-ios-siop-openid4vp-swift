@@ -21,7 +21,7 @@ import JOSESwift
 
 final class JarJwtSignatureValidatorTests: XCTestCase {
   
-  var validator: JarJwtSignatureValidator!
+  var validator: AccessValidator!
   
   override func tearDown() {
     DependencyContainer.shared.removeAll()
@@ -35,7 +35,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
   
   func testJarJwtSignature_WhenInputsAreValid_ThenAssertSuccess() async throws {
     
-    self.validator = try? XCTUnwrap(JarJwtSignatureValidator(
+    self.validator = try? XCTUnwrap(AccessValidator(
       walletOpenId4VPConfig: preRegisteredWalletConfiguration()
     ))
     
@@ -73,7 +73,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
   
   func testJarJwtSignature_WhenInputsAreValidExceptClientId_ThenReturnFailure() async throws {
     
-    self.validator = try? XCTUnwrap(JarJwtSignatureValidator(
+    self.validator = try? XCTUnwrap(AccessValidator(
       walletOpenId4VPConfig: preRegisteredWalletConfiguration()
     ))
     
@@ -111,7 +111,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
   
   func testJarJwtSignature_WhenInputsAreValidWithoutPregistered_ThenAssertSuccess() async throws {
     
-    self.validator = try? XCTUnwrap(JarJwtSignatureValidator(
+    self.validator = try? XCTUnwrap(AccessValidator(
       walletOpenId4VPConfig: iso509WalletConfiguration()
     ))
     

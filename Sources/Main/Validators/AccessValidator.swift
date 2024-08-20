@@ -18,7 +18,7 @@ import JOSESwift
 import X509
 import CryptorECC
 
-public actor JarJwtSignatureValidator {
+public actor AccessValidator {
   
   public let walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
   private let resolver = WebKeyResolver()
@@ -228,7 +228,7 @@ public actor JarJwtSignatureValidator {
   }
 }
 
-public extension JarJwtSignatureValidator {
+public extension AccessValidator {
 
   static func verifyJWS(jws: JWS, publicKey: SecKey) throws {
 
