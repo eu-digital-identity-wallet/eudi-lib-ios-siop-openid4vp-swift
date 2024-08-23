@@ -39,7 +39,7 @@ public enum SupportedClientIdScheme {
   case preregistered(clients: [String: PreregisteredClient])
   case x509SanUri(trust: CertificateTrust)
   case x509SanDns(trust: CertificateTrust)
-  case did(lookup: DIDPublicKeyLookupAgent)
+  case did(lookup: DIDPublicKeyLookupAgentType)
   case verifierAttestation(
     trust: Verifier,
     clockSkew: TimeInterval = 15.0

@@ -75,7 +75,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       walletConfiguration: walletConfiguration
     )
     
-    let client = try Self.getClient(
+    let client = try await Self.getClient(
       clientId: payloadcClientId,
       jwt: jwt,
       config: walletConfiguration, 
@@ -144,7 +144,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       walletConfiguration: walletConfiguration
     )
     
-    let client = try Self.getClient(
+    let client = try await Self.getClient(
       clientId: clientId,
       jwt: request,
       config: walletConfiguration, 
@@ -264,7 +264,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     jwt: JWTString,
     config: WalletOpenId4VPConfiguration?,
     scheme: String?
-  ) throws -> Client {
+  ) async throws -> Client {
     guard
       let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first(where: { $0.scheme.rawValue == scheme }) ?? config?.supportedClientIdSchemes.first
     else {
@@ -302,7 +302,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       )
         
     case .did(let keyLookup):
-      return try Self.didPublicKeyLookup(
+      return try await Self.didPublicKeyLookup(
         jws: try JWS(compactSerialization: jwt),
         clientId: clientId,
         keyLookup: keyLookup
@@ -361,9 +361,9 @@ private extension ValidatedSiopOpenId4VPRequest {
   private static func didPublicKeyLookup(
     jws: JWS,
     clientId: String,
-    keyLookup: DIDPublicKeyLookupAgent
-  ) throws -> Client {
-
+    keyLookup: DIDPublicKeyLookupAgentType
+  ) async throws -> Client {
+    
     guard let kid = jws.header.kid else {
       throw ValidatedAuthorizationError.validationError("kid not found in JWT header")
     }
@@ -378,8 +378,8 @@ private extension ValidatedSiopOpenId4VPRequest {
     guard let clientIdAsDID = DID.parse(clientId) else {
       throw ValidatedAuthorizationError.validationError("Invalid DID")
     }
-
-    guard let publicKey = keyLookup(clientIdAsDID) else {
+    
+    guard let publicKey = await keyLookup.resolveKey(from: clientIdAsDID) else {
       throw ValidatedAuthorizationError.validationError("Unable to extract public key from DID")
     }
 
@@ -555,12 +555,12 @@ private extension JWS {
     }
         
     switch kty {
-      case "EC":
-        return convertJSONToECPublicKey(json: json)
-      case "RSA":
-        return convertJSONToRSAPublicKey(json: json)
-      default:
-        return nil
+    case "EC":
+      return convertJSONToECPublicKey(json: json)
+    case "RSA":
+      return convertJSONToRSAPublicKey(json: json)
+    default:
+      return nil
     }
   }
 

@@ -102,7 +102,7 @@ public enum AuthorizationResponsePayload: Encodable {
      var container = encoder.container(keyedBy: CodingKeys.self)
 
      switch self {
-     case .siopAuthenticationResponse(let idToken, let state, let nonce):
+     case .siopAuthenticationResponse(let idToken, let state, _):
        try container.encode(state, forKey: .state)
        try container.encode(idToken, forKey: .idToken)
      case .openId4VPAuthorizationResponse(
@@ -110,7 +110,7 @@ public enum AuthorizationResponsePayload: Encodable {
       _,
       let presentationSubmission,
       let state,
-      let nonce
+      _
      ):
        try container.encode(presentationSubmission, forKey: .presentationSubmission)
        try container.encode(vpToken.value, forKey: .vpToken)
