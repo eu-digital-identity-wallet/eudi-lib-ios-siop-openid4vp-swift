@@ -20,13 +20,7 @@ final class DIDTests: XCTestCase {
 
   private let sampleDidJwk =
   """
-    did:jwk:
-    eyJraWQiOiJ1cm46aWV0ZjpwYXJhbXM6b2F1dGg6andrLXRodW1icHJpbnQ6c2hhLTI
-    1Njpnc0w0VTRxX1J6VFhRckpwQUNnZGkwb1lCdUV1QjNZNWZFanhDd1NPUFlBIiwia3
-    R5IjoiRUMiLCJjcnYiOiJQLTM4NCIsImFsZyI6IkVTMzg0IiwieCI6ImEtRWV5T2hlR
-    UNWcDJqRkdVRTNqR0RCNlAzVV80S0lyZHRzTU9RQXFQN0NBMlVvV3NERG1nOWdJUVhi
-    OEthd0ciLCJ5Ijoib3cxWDJ6VFVRaG12elY4NnpHdGhKc0xLeDE2MmhmSmxmN1p0OTF
-    YUnZBTzRScE4zR2RGaVl3Tmc0NXJWUmlUcSJ9
+    did:jwk:eyJrdHkiOiJFQyIsInVzZSI6InNpZyIsImtleV9vcHMiOlsic2lnbiJdLCJhbGciOiJFUzI1NiIsImtpZCI6IjhjMWQwZGQ1LTAxZjItNGMxOS04MjQwLTI0ZDQ3NWVkY2I5NCIsImNydiI6IlAtMjU2IiwieCI6Ik1VZzM5Mmk2OFNOaEFWYmlWRnJHQ2FyeTZIZzFkeFpZNk1OY1VwNVNULVkiLCJ5Ijoid243NTJSX3BnRWxlVWtNYmF0M0hmRDE3LUdhZTRLRHIwRUxyVU1HZnFWSSJ9
   """.replacingOccurrences(of: "\n", with: "")
      .trimmingCharacters(in: .whitespacesAndNewlines)
      .replacingOccurrences(of: " ", with: "")
