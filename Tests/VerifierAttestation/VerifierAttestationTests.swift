@@ -23,7 +23,7 @@ final class VerifierAttestaionTestsTests: XCTestCase {
   
   override func setUpWithError() throws {
   }
-
+  
   override func tearDownWithError() throws {
   }
   
@@ -44,7 +44,7 @@ final class VerifierAttestaionTestsTests: XCTestCase {
       verifier: verifier
     )
     
-    let client = try ValidatedSiopOpenId4VPRequest.getClient(
+    let client = try await ValidatedSiopOpenId4VPRequest.getClient(
       clientId: clientId,
       jwt: jwt.compactSerializedString,
       config: config,
@@ -80,12 +80,18 @@ final class VerifierAttestaionTestsTests: XCTestCase {
       verifier: verifier
     )
     
-    XCTAssertThrowsError(try ValidatedSiopOpenId4VPRequest.getClient(
-      clientId: clientId,
-      jwt: jwt.compactSerializedString,
-      config: config,
-      scheme: "verifier_attestation"
-    )) { error in
+    do {
+      // Attempt to call the async function
+      _ = try await ValidatedSiopOpenId4VPRequest.getClient(
+        clientId: clientId,
+        jwt: jwt.compactSerializedString,
+        config: config,
+        scheme: "verifier_attestation"
+      )
+      
+      // If no error is thrown, this assertion will fail the test
+      XCTFail("Expected error to be thrown, but no error was thrown.")
+    } catch {
       guard let joseError = error as? JOSESwiftError else {
         XCTAssert(false)
         return

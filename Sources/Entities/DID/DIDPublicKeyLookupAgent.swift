@@ -15,4 +15,6 @@
  */
 import Foundation
 
-public typealias DIDPublicKeyLookupAgent = (_ didUrl: DID) -> SecKey?
+public protocol DIDPublicKeyLookupAgentType {
+  func resolveKey(from didUrl: DID) async -> SecKey?
+}
