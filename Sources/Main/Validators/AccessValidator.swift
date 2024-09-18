@@ -212,7 +212,10 @@ public actor AccessValidator {
       
       let publicKey = try RSAPublicKey(data: key.toDictionary().toThrowingJSONData())
       let secKey = try publicKey.converted(to: SecKey.self)
-      if let verifier = Verifier(verifyingAlgorithm: algorithm, key: secKey) {
+      if let verifier = Verifier(
+        signatureAlgorithm: algorithm,
+        key: secKey
+      ) {
         let isValid = jws.isValid(for: verifier)
         if !isValid {
           throw ValidatedAuthorizationError.validationError("Unable to verify signature")
@@ -236,11 +239,17 @@ public extension AccessValidator {
     let keyType = keyAttributes?[kSecAttrKeyType as CFString] as? String
 
     if keyType == (kSecAttrKeyTypeRSA as String) {
-      if let verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) {
+      if let verifier = Verifier(
+        signatureAlgorithm: .RS256,
+        key: publicKey
+      ) {
         _ = try jws.validate(using: verifier)
       }
     } else if keyType == (kSecAttrKeyTypeEC as String) {
-      if let verifier = Verifier(verifyingAlgorithm: .ES256, key: publicKey) {
+      if let verifier = Verifier(
+        signatureAlgorithm: .ES256,
+        key: publicKey
+      ) {
         _ = try jws.validate(using: verifier)
       }
     }

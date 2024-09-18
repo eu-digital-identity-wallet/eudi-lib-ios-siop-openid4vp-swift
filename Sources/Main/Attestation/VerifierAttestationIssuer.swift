@@ -31,7 +31,7 @@ actor VerifierAttestationIssuer {
     
     let publicKey: SecKey = try! KeyController.generateECDHPublicKey(from: self.algAndKey.key)
     let verifier: Verifier? = .init(
-      verifyingAlgorithm: .ES256,
+      signatureAlgorithm: .ES256,
       key: publicKey
     )
     return verifier
@@ -85,7 +85,7 @@ actor VerifierAttestationIssuer {
         payload.toThrowingJSONData()
       ),
       signer: .init(
-        signingAlgorithm: algAndKey.algorithm,
+        signatureAlgorithm: algAndKey.algorithm,
         key: algAndKey.key
       )!
     )
