@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 import Foundation
+import SwiftyJSON
 
 public typealias Base64URL = String
 
-public enum VpToken {
-  case generic(String)
-  case msoMdoc(String, apu: Base64URL) // Assuming apu is a string
+public enum VpToken: Encodable {
   
-  public var value: String {
-    switch self {
-    case .generic(let value), 
-         .msoMdoc(let value, _):
-      return value
+  case generic(String)
+  case msoMdoc(String, apu: Base64URL)
+  case json(JSON)
+  case array([MixedType])
+  
+  public enum MixedType: Encodable {
+    case string(String)
+    case json(JSON)
+    
+    public func encode(to encoder: Encoder) throws {
+      var container = encoder.singleValueContainer()
+      switch self {
+      case .string(let value):
+        try container.encode(value)
+      case .json(let value):
+        try container.encode(value)
+      }
     }
   }
   
@@ -35,6 +46,22 @@ public enum VpToken {
       return apu
     default:
       return nil
+    }
+  }
+  
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    switch self {
+    case .generic(let value),
+        .msoMdoc(let value, _):
+      try container.encode(value)
+    case .json(let value):
+      try container.encode(value)
+    case .array(let array):
+      var container = encoder.unkeyedContainer()
+      for item in array {
+        try container.encode(item)
+      }
     }
   }
 }

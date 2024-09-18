@@ -67,14 +67,6 @@ public enum AuthorizationResponsePayload: Encodable {
     case vpToken = "vp_token"
     case presentationSubmission = "presentation_submission"
   }
-
-  var vpTokenValue: String? {
-    switch self {
-    case .openId4VPAuthorizationResponse(let vpToken, _, _, _, _):
-      vpToken.value
-    default: nil
-    }
-  }
   
   var vpTokenApu: String? {
     switch self {
@@ -113,7 +105,7 @@ public enum AuthorizationResponsePayload: Encodable {
       _
      ):
        try container.encode(presentationSubmission, forKey: .presentationSubmission)
-       try container.encode(vpToken.value, forKey: .vpToken)
+       try container.encode(vpToken, forKey: .vpToken)
        try container.encode(state, forKey: .state)
      case .noConsensusResponseData(let state, let message):
        try container.encode(state, forKey: .state)
