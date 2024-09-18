@@ -273,7 +273,9 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .generic(TestsConstants.cbor),
+        vpToken: .init(verifiablePresentations: [
+          .generic(TestsConstants.cbor)
+        ]),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -374,7 +376,9 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .generic(TestsConstants.cbor),
+        vpToken: .init(verifiablePresentations: [
+          .generic(TestsConstants.cbor)
+        ]),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -462,7 +466,9 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .generic(TestsConstants.cbor),
+        vpToken: .init(verifiablePresentations: [
+          .generic(TestsConstants.cbor)
+        ]),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -569,7 +575,9 @@ final class DirectPostJWTTests: DiXCTest {
 
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .generic(TestsConstants.cbor),
+        vpToken: .init(verifiablePresentations: [
+          .generic(TestsConstants.cbor)
+        ]),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -670,7 +678,9 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .generic(TestsConstants.cbor),
+        vpToken: .init(verifiablePresentations: [
+          .generic(TestsConstants.cbor)
+        ]),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
@@ -781,7 +791,9 @@ final class DirectPostJWTTests: DiXCTest {
       ))
     
     let consent: ClientConsent = .vpToken(
-      vpToken: .generic(TestsConstants.cbor),
+      vpToken: .init(verifiablePresentations: [
+        .generic(TestsConstants.cbor)
+      ]),
       presentationSubmission: .init(
         id: "psId",
         definitionID: "psId",

@@ -330,7 +330,9 @@ final class DirectPostTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .generic(TestsConstants.cbor),
+        vpToken: .init(verifiablePresentations: [
+          .generic(TestsConstants.cbor)
+        ]),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
