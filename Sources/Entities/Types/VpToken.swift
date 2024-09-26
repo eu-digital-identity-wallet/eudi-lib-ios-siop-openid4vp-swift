@@ -14,27 +14,78 @@
  * limitations under the License.
  */
 import Foundation
+import SwiftyJSON
 
 public typealias Base64URL = String
 
-public enum VpToken {
-  case generic(String)
-  case msoMdoc(String, apu: Base64URL) // Assuming apu is a string
+public struct VpToken: Encodable {
   
-  public var value: String {
-    switch self {
-    case .generic(let value), 
-         .msoMdoc(let value, _):
-      return value
-    }
+  public let apu: Base64URL?
+  public let verifiablePresentations: [VerifiablePresentation]
+  
+  public init(
+    apu: Base64URL? = nil,
+    verifiablePresentations: [VerifiablePresentation]
+  ) {
+    self.apu = apu
+    self.verifiablePresentations = verifiablePresentations
   }
   
-  public var apu: String? {
-    switch self {
-    case .msoMdoc(_, let apu):
-      return apu
-    default:
-      return nil
+  public enum VerifiablePresentation {
+    case generic(String)
+    case msoMdoc(String)
+    case json(JSON)
+  }
+  
+  // Custom error types for encoding
+  public enum VpTokenError: Error {
+    case notExpected
+    case notSupported
+  }
+
+  // Helper function to encode individual VerifiablePresentation cases
+  private func encodeToken(_ token: VerifiablePresentation) throws -> JSON {
+    let jsonData: Data
+    switch token {
+    case .generic(let value):
+      jsonData = try JSONEncoder().encode(value)
+    case .msoMdoc(let value):
+      jsonData = try JSONEncoder().encode(value)
+    case .json(let json):
+      jsonData = try JSONEncoder().encode(json)
+    }
+    return try JSON(data: jsonData)
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    
+    // Handle the case when there are no verifiable presentations
+    guard !verifiablePresentations.isEmpty else {
+      throw VpTokenError.notExpected
+    }
+    
+    // Handle the case when there is a single verifiable presentation
+    if verifiablePresentations.count == 1 {
+      
+      guard let token = verifiablePresentations.first else {
+        throw VpTokenError.notExpected
+      }
+      
+      switch token {
+      case .generic(let value):
+        try container.encode(value)
+      case .msoMdoc(let value):
+        try container.encode(value)
+      case .json(let json):
+        try container.encode(json)
+      }
+    } else {
+      
+      // Handle the case when there are multiple verifiable presentations
+      let jsonArray = try verifiablePresentations.map { try encodeToken($0) }
+      try container.encode(jsonArray)
     }
   }
 }
+
