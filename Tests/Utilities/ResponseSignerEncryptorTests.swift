@@ -73,7 +73,10 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     
     // Verify signature
     let jws = try JWS(compactSerialization: response)
-    guard let verifier: Verifier = Verifier(verifyingAlgorithm: .RS256, key: publicKey) else {
+    guard let verifier: Verifier = Verifier(
+      signatureAlgorithm: .RS256,
+      key: publicKey
+    ) else {
       XCTAssert(false, "Invalid Verifier")
       return
     }

@@ -58,7 +58,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
         "client_id_scheme": scheme
       ].toThrowingJSONData()),
       signer: Signer(
-        signingAlgorithm: algorithm,
+        signatureAlgorithm: algorithm,
         key: walletConfig.signingKey
       )!
     )
@@ -91,7 +91,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
         "client_id_scheme": scheme
       ].toThrowingJSONData()),
       signer: Signer(
-        signingAlgorithm: algorithm,
+        signatureAlgorithm: algorithm,
         key: walletConfig.signingKey
       )!
     )
@@ -130,7 +130,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
         "client_id_scheme": scheme
       ].toThrowingJSONData()),
       signer: Signer(
-        signingAlgorithm: algorithm,
+        signatureAlgorithm: algorithm,
         key: walletConfig.signingKey
       )!
     )
