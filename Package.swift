@@ -13,8 +13,8 @@ let package = Package(
   ],
   dependencies: [
     .package(
-      url: "https://github.com/niscy-eudiw/JOSESwift.git",
-      exact: "2.4.1-gcm"
+      url: "https://github.com/airsidemobile/JOSESwift.git",
+      from: "3.0.0"
     ),
     .package(
       url: "https://github.com/birdrides/mockingbird.git",

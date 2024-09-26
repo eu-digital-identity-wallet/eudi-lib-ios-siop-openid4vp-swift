@@ -96,14 +96,20 @@ public class JOSEController {
 private extension JOSEController {
   
   func verifier(algorithhm: SignatureAlgorithm, publicKey: SecKey) throws -> Verifier {
-    guard let verifier = Verifier(verifyingAlgorithm: algorithhm, key: publicKey) else {
+    guard let verifier = Verifier(
+      signatureAlgorithm: algorithhm,
+      key: publicKey
+    ) else {
       throw JOSEError.invalidVerifier
     }
     return verifier
   }
   
-  func signer(algorithhm: SignatureAlgorithm, privateKey: SecKey) throws -> Signer<SecKey> {
-    guard let signer = Signer(signingAlgorithm: algorithhm, key: privateKey) else {
+  func signer(algorithhm: SignatureAlgorithm, privateKey: SecKey) throws -> Signer {
+    guard let signer = Signer(
+      signatureAlgorithm: algorithhm,
+      key: privateKey
+    ) else {
       throw JOSEError.invalidSigner
     }
     return signer

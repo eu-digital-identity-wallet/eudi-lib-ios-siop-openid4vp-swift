@@ -210,7 +210,7 @@ private extension ResponseSignerEncryptor {
     jwsAlgorithm: SignatureAlgorithm,
     keySet: WebKeySet,
     signingKey: SecKey
-  ) throws -> (key: WebKeySet.Key, signer: Signer<SecKey>) {
+  ) throws -> (key: WebKeySet.Key, signer: Signer) {
     let key = try keySet.keys.first { key in
       key.alg == jwsAlgorithm.rawValue
     } ?? { throw ValidatedAuthorizationError.invalidJWTWebKeySet }()
@@ -220,7 +220,7 @@ private extension ResponseSignerEncryptor {
     }
     
     guard let signer = Signer(
-      signingAlgorithm: signatureAlgorithm,
+      signatureAlgorithm: signatureAlgorithm,
       key: signingKey
     ) else {
       throw ValidatedAuthorizationError.invalidSigningKey
