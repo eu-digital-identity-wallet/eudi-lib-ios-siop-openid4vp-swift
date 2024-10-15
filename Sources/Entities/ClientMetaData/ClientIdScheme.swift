@@ -15,6 +15,7 @@
  */
 import Foundation
 import PresentationExchange
+import SwiftyJSON
 
 /*
  * https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-additional-verifier-metadat
@@ -37,8 +38,8 @@ extension ClientIdScheme {
   /// Initializes a `ClientIdScheme` based on the authorization request object.
   /// - Parameter authorizationRequestObject: The authorization request object.
   /// - Throws: An error if the client ID scheme is unsupported.
-  init(authorizationRequestObject: JSONObject) throws {
-    let scheme = authorizationRequestObject["client_id_scheme"] as? String ?? "unknown"
+  init(authorizationRequestObject: JSON) throws {
+    let scheme = authorizationRequestObject["client_id_scheme"].string ?? "unknown"
     guard scheme == "pre-registered" || scheme == "x509_san_dns" || scheme == "x509_san_uri",
       let clientIdScheme = ClientIdScheme(rawValue: scheme)
     else {

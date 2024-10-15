@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import SwiftyJSON
 
 internal actor ClientMetaDataValidator {
   
@@ -84,7 +85,7 @@ private extension ClientMetaDataValidator {
   func extractKeySet(clientMetaData: ClientMetaData) async throws -> WebKeySet {
     
     if let jwks = clientMetaData.jwks,
-       let keys = try jwks.convertToDictionary() {
+       let keys = try? JSON(jwks.convertToDictionary() ?? [:]) {
       return try WebKeySet(keys)
       
     } else if let jwksUri = clientMetaData.jwksUri,

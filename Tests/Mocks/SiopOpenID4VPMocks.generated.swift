@@ -13,7 +13,6 @@
 @testable import SiopOpenID4VP
 import Combine
 import CryptoKit
-import CryptorECC
 import Foundation
 import JOSESwift
 import PresentationExchange

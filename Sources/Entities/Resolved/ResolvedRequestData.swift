@@ -19,6 +19,17 @@ public enum ResolvedRequestData {
   case idToken(request: IdTokenData)
   case vpToken(request: VpTokenData)
   case idAndVpToken(request: IdAndVpTokenData)
+  
+  var presentationDefinition: PresentationDefinition? {
+    switch self {
+    case .vpToken(let request):
+      return request.presentationDefinition
+    case .idAndVpToken(let request):
+      return request.presentationDefinition
+    default:
+      return nil
+    }
+  }
 }
 
 public extension ResolvedRequestData {

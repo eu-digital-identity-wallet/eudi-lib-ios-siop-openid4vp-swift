@@ -372,23 +372,26 @@ final class DirectPostJWTTests: DiXCTest {
     switch result {
     case .notSecured: break
     case .jwt(request: let request):
-      let resolved = request
+      let presentationDefinition = try?  XCTUnwrap(
+        request.presentationDefinition,
+        "Unable to resolve presentation definition"
+      )
+      
+      XCTAssertNotNil(presentationDefinition)
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
-        ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        vpToken: .init(
+          apu: TestsConstants.generateMdocGeneratedNonce(),
+          verifiablePresentations: [
+            .msoMdoc(TestsConstants.pidCbor)
+          ]),
+        presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
       )
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: resolved,
+        resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -461,24 +464,27 @@ final class DirectPostJWTTests: DiXCTest {
     
     switch result {
     case .notSecured: break
-    case .jwt(request: let request):
-      let resolved = request
+    case .jwt(let request):
+      let presentationDefinition = try?  XCTUnwrap(
+        request.presentationDefinition,
+        "Unable to resolve presentation definition"
+      )
+      
+      XCTAssertNotNil(presentationDefinition)
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
-        ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        vpToken: .init(
+          apu: TestsConstants.generateMdocGeneratedNonce(),
+          verifiablePresentations: [
+            .msoMdoc(TestsConstants.pidCbor)
+          ]),
+        presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
       )
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: resolved,
+        resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -674,23 +680,26 @@ final class DirectPostJWTTests: DiXCTest {
     switch result {
     case .notSecured: break
     case .jwt(request: let request):
-      let resolved = request
+      let presentationDefinition = try?  XCTUnwrap(
+        request.presentationDefinition,
+        "Unable to resolve presentation definition"
+      )
+      
+      XCTAssertNotNil(presentationDefinition)
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
-        ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        vpToken: .init(
+          apu: TestsConstants.generateMdocGeneratedNonce(),
+          verifiablePresentations: [
+            .msoMdoc(TestsConstants.pidCbor)
+          ]),
+        presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
       )
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: resolved,
+        resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -836,7 +845,7 @@ final class DirectPostJWTTests: DiXCTest {
     let jwt = String.init(data: decryptionPayload.data(), encoding: .utf8)
     XCTAssert(jwt!.isValidJWT())
     
-    let iss = JSONWebToken(jsonWebToken: jwt!)?.payload["iss"] as! String
+    let iss = JSONWebToken(jsonWebToken: jwt!)?.payload["iss"].string!
     XCTAssert(iss == "did:example:123")
   }
 }

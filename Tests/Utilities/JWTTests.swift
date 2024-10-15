@@ -26,7 +26,7 @@ final class JWTTests: DiXCTest {
       jsonWebToken: token
     )
     
-    let name = jsonWebToken!.payload["name"] as? String
+    let name = jsonWebToken!.payload["name"].string
     XCTAssert(name! == "John Doe")
   }
 }

@@ -15,6 +15,7 @@
  */
 import Foundation
 import PresentationExchange
+import SwiftyJSON
 
 public enum ResponseMode {
   case directPost(responseURI: URL)
@@ -28,35 +29,35 @@ public enum ResponseMode {
   /// - Parameter authorizationRequestObject: The authorization request object.
   /// - Throws: A `ValidatedAuthorizationError.missingRequiredField` if the required fields are missing,
   ///           or a `ValidatedAuthorizationError.unsupportedResponseMode` if the response mode is unsupported.
-  public init(authorizationRequestObject: JSONObject) throws {
-    guard let responseMode = authorizationRequestObject["response_mode"] as? String else {
+  public init(authorizationRequestObject: JSON) throws {
+    guard let responseMode = authorizationRequestObject["response_mode"].string else {
       throw ValidatedAuthorizationError.missingRequiredField(".responseMode")
     }
 
     switch responseMode {
     case "direct_post":
-      if let responseUri = authorizationRequestObject["response_uri"] as? String,
+      if let responseUri = authorizationRequestObject["response_uri"].string,
          let uri = URL(string: responseUri) {
         self = .directPost(responseURI: uri)
       } else {
         throw ValidatedAuthorizationError.missingRequiredField(".responseUri")
       }
     case "direct_post.jwt":
-      if let responseUri = authorizationRequestObject["response_uri"] as? String,
+      if let responseUri = authorizationRequestObject["response_uri"].string,
          let uri = URL(string: responseUri) {
          self = .directPostJWT(responseURI: uri)
       } else {
         throw ValidatedAuthorizationError.missingRequiredField(".responseUri")
       }
     case "query":
-      if let redirectUri = authorizationRequestObject["redirect_uri"] as? String,
+      if let redirectUri = authorizationRequestObject["redirect_uri"].string,
          let uri = URL(string: redirectUri) {
         self = .query(responseURI: uri)
       } else {
         throw ValidatedAuthorizationError.missingRequiredField(".redirectUri")
       }
     case "fragment":
-      if let redirectUri = authorizationRequestObject["redirect_uri"] as? String,
+      if let redirectUri = authorizationRequestObject["redirect_uri"].string,
          let uri = URL(string: redirectUri) {
         self = .fragment(responseURI: uri)
       } else {
