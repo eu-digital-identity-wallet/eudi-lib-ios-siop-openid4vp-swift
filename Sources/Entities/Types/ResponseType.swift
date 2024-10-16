@@ -15,6 +15,7 @@
  */
 import Foundation
 import PresentationExchange
+import SwiftyJSON
 
 public enum ResponseType: String, Codable {
   case vpToken = "vp_token"
@@ -26,8 +27,8 @@ public enum ResponseType: String, Codable {
   ///
   /// - Parameter authorizationRequestObject: The authorization request object.
   /// - Throws: A `ValidatedAuthorizationError.unsupportedResponseType` if the response type is unsupported.
-  public init(authorizationRequestObject: JSONObject) throws {
-    let type = authorizationRequestObject["response_type"] as? String ?? ""
+  public init(authorizationRequestObject: JSON) throws {
+    let type = authorizationRequestObject["response_type"].stringValue
     guard let responseType = ResponseType(rawValue: type) else {
       throw ValidatedAuthorizationError.unsupportedResponseType(type.isEmpty ? "unknown" : type)
     }

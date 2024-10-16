@@ -16,7 +16,6 @@
 import Foundation
 import JOSESwift
 import X509
-import CryptorECC
 
 public actor AccessValidator {
   

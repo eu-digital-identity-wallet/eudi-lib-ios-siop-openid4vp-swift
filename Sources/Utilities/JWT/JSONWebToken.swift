@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import Foundation
+import SwiftyJSON
 
 public struct JSONWebToken {
   public let header: JSONWebTokenHeader
-  public let payload: JSONObject
+  public let payload: JSON
   public let signature: String
   
   /**
@@ -28,7 +29,7 @@ public struct JSONWebToken {
    - payload: The payload component of the JSON Web Token.
    - signature: The signature component of the JSON Web Token.
    */
-  public init(header: JSONWebTokenHeader, payload: JSONObject, signature: String) {
+  public init(header: JSONWebTokenHeader, payload: JSON, signature: String) {
     self.header = header
     self.payload = payload
     self.signature = signature
@@ -71,7 +72,8 @@ public extension JSONWebToken {
     
     do {
       header = try decoder.decode(JSONWebTokenHeader.self, from: headerData)
-      payload = try JSONSerialization.jsonObject(with: payloadData, options: .allowFragments) as? JSONObject ?? [:]
+      let object = try JSONSerialization.jsonObject(with: payloadData, options: .allowFragments)
+      payload = JSON(object)
       signature = components[2] as String
     } catch {
       return nil

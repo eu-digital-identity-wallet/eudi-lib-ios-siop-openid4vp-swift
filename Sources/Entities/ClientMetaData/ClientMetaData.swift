@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import SwiftyJSON
 
 /// By OpenID Connect Dynamic Client Registration specification
 /// A structure representing client metadata.
@@ -74,43 +75,45 @@ public struct ClientMetaData: Codable, Equatable {
   /// Initializes a `ClientMetaData` instance with the provided JSON object representing metadata.
   /// - Parameter metaData: The JSON object representing the metadata.
   /// - Throws: An error if the required values are missing or invalid in the metadata.
-  public init(metaData: JSONObject) throws {
-    self.jwksUri = try? metaData.getValue(
+  public init(metaData: JSON) throws {
+    
+    let dictionaryObject = metaData.dictionaryObject ?? [:]
+    self.jwksUri = try? dictionaryObject.getValue(
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    let jwks = metaData["jwks"] as? [String: Any]
+    let jwks = metaData["jwks"].dictionaryObject
     self.jwks = jwks?.toJSONString()
 
-    self.idTokenSignedResponseAlg = try? metaData.getValue(
+    self.idTokenSignedResponseAlg = try? dictionaryObject.getValue(
       for: "id_token_signed_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.idTokenEncryptedResponseAlg = try? metaData.getValue(
+    self.idTokenEncryptedResponseAlg = try? dictionaryObject.getValue(
       for: "id_token_encrypted_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.idTokenEncryptedResponseEnc = try? metaData.getValue(
+    self.idTokenEncryptedResponseEnc = try? dictionaryObject.getValue(
       for: "id_token_encrypted_response_enc",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-    self.subjectSyntaxTypesSupported = (try? metaData.getValue(
+    self.subjectSyntaxTypesSupported = (try? dictionaryObject.getValue(
       for: "subject_syntax_types_supported",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )) ?? []
 
-    self.authorizationSignedResponseAlg = try? metaData.getValue(
+    self.authorizationSignedResponseAlg = try? dictionaryObject.getValue(
       for: "authorization_signed_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.authorizationEncryptedResponseAlg = try? metaData.getValue(
+    self.authorizationEncryptedResponseAlg = try? dictionaryObject.getValue(
       for: "authorization_encrypted_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
 
-    self.authorizationEncryptedResponseEnc = try? metaData.getValue(
+    self.authorizationEncryptedResponseEnc = try? dictionaryObject.getValue(
       for: "authorization_encrypted_response_enc",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )

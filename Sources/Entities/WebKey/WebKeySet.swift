@@ -15,6 +15,7 @@
  */
 import Foundation
 import JOSESwift
+import SwiftyJSON
 
 public struct WebKeySet: Codable, Equatable {
   public let keys: [Key]
@@ -23,8 +24,8 @@ public struct WebKeySet: Codable, Equatable {
     self.keys = keys
   }
 
-  public init(_ json: JSONObject) throws {
-    guard let keys = json["keys"] as? [JSONObject] else {
+  public init(_ json: JSON) throws {
+    guard let keys = json["keys"].array else {
       throw ValidatedAuthorizationError.invalidJWTWebKeySet
     }
     self.keys = try WebKeySet.transformToKey(keys)
@@ -32,8 +33,8 @@ public struct WebKeySet: Codable, Equatable {
 
   public init(_ json: String) throws {
     guard
-      let keySet = try json.convertToDictionary(),
-      let keys = keySet["keys"] as? [JSONObject]
+      let keySet = try? JSON(json.convertToDictionary() ?? [:]),
+      let keys = keySet["keys"].array
     else {
       throw ValidatedAuthorizationError.invalidJWTWebKeySet
     }
@@ -115,8 +116,9 @@ public extension WebKeySet {
 fileprivate extension WebKeySet {
 
   @ArrayBuilder<WebKeySet.Key>
-  static func transformToKey(_ keys: [JSONObject]) throws -> [WebKeySet.Key] {
-    for key in keys {
+  static func transformToKey(_ keys: [JSON]) throws -> [WebKeySet.Key] {
+    let dictionaries: [[String: Any]] = keys.compactMap { $0.dictionaryObject }
+    for key in dictionaries {
       WebKeySet.Key(
         kty: try key.getValue(
           for: "kty",
@@ -165,10 +167,14 @@ fileprivate extension WebKeySet {
 
 public extension WebKeySet {
   init(jwk: JWK) throws {
-    self.keys = try WebKeySet.transformToKey([jwk.toDictionary()])
+    self.keys = try WebKeySet.transformToKey(
+      [JSON(jwk.toDictionary())]
+    )
   }
   
   init(jwks: [JWK]) throws {
-    self.keys = try WebKeySet.transformToKey(jwks.map { try $0.toDictionary() })
+    self.keys = try WebKeySet.transformToKey(jwks.map {
+      try JSON($0.toDictionary())
+    })
   }
 }

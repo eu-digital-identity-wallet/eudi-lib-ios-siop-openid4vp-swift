@@ -23,9 +23,9 @@ You can use this library to simplify the integration of OIDC4VP into your mobile
 
 ## Usage
 
-Entry point to the library is the class [SiopOpenId4Vp](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/SiopOpenID4VP/SiopOpenID4VP.swift).
+Entry point to the library is the class [SiopOpenId4Vp](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/SiopOpenID4VP/SiopOpenID4VP.swift).
 
-You can add the library to your project using Swift Package Manager. [Releases](https://github.com/niscy-eudiw/siop-openid4vp-ios/tags)
+You can add the library to your project using Swift Package Manager. [Releases](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/releases)
 
 ```swift
 import SiopOpenID4VP
@@ -51,7 +51,7 @@ requests mentioned aforementioned) and in addition gather from Verifier addition
 reference (such as `presentation_definition_uri`, `client_metadata_uri` etc)
 
 The object that captures the aforementioned functionality is 
-[ResolvedSiopOpenId4VPRequestData](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/OpenID4VPEntities/Resolved/ResolvedSiopOpenId4VPRequestData.swift)
+[ResolvedSiopOpenId4VPRequestData](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/Entities/Resolved/ResolvedRequestData.swift)
 
 
 async/await version:
@@ -102,7 +102,7 @@ This functionality is a wallet concern and it is not supported directly by the l
 ### Build an authorization response
 
 
-After collecting holder's consensus, wallet can use the library to form an appropriate response [AuthorizationResponse](https://github.com/niscy-eudiw/siop-openid4vp-ios/blob/main/Sources/OpenID4VPEntities/AuthorisationRequest/AuthorizationResponse.swift).
+After collecting holder's consensus, wallet can use the library to form an appropriate response [AuthorizationResponse](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/Entities/AuthorisationRequest/AuthorizationResponse.swift).
 
 ```swift
 import SiopOpenID4VP
@@ -190,7 +190,7 @@ Library currently supports `response_type` equal to `id_token` or `vp_token id_t
 
 ## Dependencies (to other libs)
 
-* Presentation Exchange [Presentation Exchange](https://github.com/niscy-eudiw/presentation-exchange-swift)
+* Presentation Exchange [Presentation Exchange](https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift)
 * JSONSchema support: [JSON Schema](https://github.com/kylef/JSONSchema.swift)
 * JSONPath support: [Sextant](https://github.com/KittyMac/Sextant.git)
 * Lint support: [SwiftLint](https://github.com/realm/SwiftLint.git)

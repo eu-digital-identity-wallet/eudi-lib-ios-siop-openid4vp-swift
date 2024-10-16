@@ -15,6 +15,7 @@
  */
 import Foundation
 import PresentationExchange
+import SwiftyJSON
 
 /// An enumeration representing different data sources for client metadata.
 public enum ClientMetaDataSource {
@@ -42,11 +43,12 @@ extension ClientMetaDataSource {
   /// Initializes a `ClientMetaDataSource` based on the authorization request object.
   /// - Parameter authorizationRequestObject: The authorization request object.
   /// - Returns: A `ClientMetaDataSource` instance if the object can be used as a data source, or `nil` if not.
-  init?(authorizationRequestObject: JSONObject) {
-    if let metaData = authorizationRequestObject["client_metadata"] as? JSONObject,
-       let clientMetaData = try? ClientMetaData(metaData: metaData) {
+  init?(authorizationRequestObject: JSON) {
+    if let metaData = authorizationRequestObject["client_metadata"].dictionary,
+       let json = JSON(rawValue: metaData),
+       let clientMetaData = try? ClientMetaData(metaData: json) {
       self = .passByValue(metaData: clientMetaData)
-    } else if let clientMetadataUri = authorizationRequestObject["client_metadata_uri"] as? String,
+    } else if let clientMetadataUri = authorizationRequestObject["client_metadata_uri"].string,
               let uri = URL(string: clientMetadataUri) {
       self = .fetchByReference(url: uri)
     } else {

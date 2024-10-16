@@ -17,6 +17,7 @@ import Foundation
 import PresentationExchange
 import JOSESwift
 import X509
+import SwiftyJSON
 
 // Enum defining the types of validated SIOP OpenID4VP requests
 public enum ValidatedSiopOpenId4VPRequest {
@@ -50,15 +51,15 @@ public extension ValidatedSiopOpenId4VPRequest {
     }
 
     // Extract the client ID and nonce from the payload
-    guard let payloadcClientId = payload[Constants.CLIENT_ID] as? String else {
+    guard let payloadcClientId = payload[Constants.CLIENT_ID].string else {
       throw ValidatedAuthorizationError.missingRequiredField(".clientId")
     }
 
-    guard let nonce = payload[Constants.NONCE] as? String else {
+    guard let nonce = payload[Constants.NONCE].string else {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
 
-    let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME] as? String
+    let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME].string
       
     if let clientId = clientId {
       if payloadcClientId != clientId {
@@ -125,15 +126,15 @@ public extension ValidatedSiopOpenId4VPRequest {
     }
 
     // Extract the client ID and nonce from the payload
-    guard let clientId = payload[Constants.CLIENT_ID] as? String else {
+    guard let clientId = payload[Constants.CLIENT_ID].string else {
       throw ValidatedAuthorizationError.missingRequiredField(".clientId")
     }
 
-    guard let nonce = payload[Constants.NONCE] as? String else {
+    guard let nonce = payload[Constants.NONCE].string else {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
 
-    let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME] as? String
+    let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME].string
 
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
@@ -426,7 +427,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     clientId: String,
     client: Client,
     nonce: String,
-    authorizationRequestObject: JSONObject
+    authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
     .idToken(request: .init(
       idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
@@ -435,9 +436,9 @@ private extension ValidatedSiopOpenId4VPRequest {
       clientId: clientId, 
       client: client,
       nonce: nonce,
-      scope: authorizationRequestObject[Constants.SCOPE] as? String ?? "",
+      scope: authorizationRequestObject[Constants.SCOPE].stringValue,
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
-      state: authorizationRequestObject[Constants.STATE] as? String
+      state: authorizationRequestObject[Constants.STATE].string
     ))
   }
 
@@ -446,7 +447,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     clientId: String,
     client: Client,
     nonce: String,
-    authorizationRequestObject: JSONObject
+    authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
     .vpToken(request: .init(
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
@@ -456,7 +457,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       client: client,
       nonce: nonce,
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
-      state: authorizationRequestObject[Constants.STATE] as? String
+      state: authorizationRequestObject[Constants.STATE].string
     ))
   }
 
@@ -465,7 +466,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     clientId: String,
     client: Client,
     nonce: String,
-    authorizationRequestObject: JSONObject
+    authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
     .idAndVpToken(request: .init(
       idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
@@ -475,9 +476,9 @@ private extension ValidatedSiopOpenId4VPRequest {
       clientId: clientId, 
       client: client,
       nonce: nonce,
-      scope: authorizationRequestObject[Constants.SCOPE] as? String ?? "",
+      scope: authorizationRequestObject[Constants.SCOPE].stringValue,
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
-      state: authorizationRequestObject[Constants.STATE] as? String
+      state: authorizationRequestObject[Constants.STATE].string
     ))
   }
 
