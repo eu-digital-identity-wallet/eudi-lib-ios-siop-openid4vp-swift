@@ -26,7 +26,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     
     /// To get this URL,  visit https://demo.certification.openid.net/
     /// and run a happy flow no state test then proceed to assign the request uri to the variable below
-    let url = "#01"
+    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/7g9906BWdUB0MSltzaqcC0nFv09M2uaTOWMNjklEiAjulhtiqiSvAVhObbuNysH2%23xxoBio9f6MHBD47CpyEhGHD8FyhVSGLJjmPfeaYOAQQ"
     let clientId = "demo.certification.openid.net"
     
     guard !url.isEmpty else {

@@ -450,7 +450,7 @@ final class DirectPostJWTTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     // Add your own URL here that you can obtain from
     // https://verifier.eudiw.dev/
-    let url = "#07"
+    let url = "https://verifier-backend.eudiw.dev/wallet/request.jwt/xvyVO_gQr7R-ZY6zR46qwDYRix_3cjpvqOobGsc5GtT4JKEg872K-5Kro5NdkSHP3usFGprL4UlYmJG9q3aTgg"
     let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()

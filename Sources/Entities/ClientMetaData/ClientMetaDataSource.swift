@@ -48,9 +48,6 @@ extension ClientMetaDataSource {
        let json = JSON(rawValue: metaData),
        let clientMetaData = try? ClientMetaData(metaData: json) {
       self = .passByValue(metaData: clientMetaData)
-    } else if let clientMetadataUri = authorizationRequestObject["client_metadata_uri"].string,
-              let uri = URL(string: clientMetadataUri) {
-      self = .fetchByReference(url: uri)
     } else {
       return nil
     }
