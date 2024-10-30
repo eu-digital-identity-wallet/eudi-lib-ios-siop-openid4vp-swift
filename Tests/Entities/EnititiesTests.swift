@@ -71,6 +71,8 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
       supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,
       knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope,
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default(),
       session: SiopOpenId4VPConfiguration.walletSession
     )
     

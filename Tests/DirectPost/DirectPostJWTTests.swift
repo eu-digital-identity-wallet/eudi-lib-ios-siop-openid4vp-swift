@@ -93,7 +93,9 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: try KeyController.generateRSAPrivateKey(),
       signingKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     // Generate a direct post authorisation response
@@ -157,7 +159,9 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let resolved: ResolvedRequestData = .idToken(
@@ -250,7 +254,9 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -348,7 +354,9 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -445,7 +453,9 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -556,7 +566,9 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -656,7 +668,9 @@ final class DirectPostJWTTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)

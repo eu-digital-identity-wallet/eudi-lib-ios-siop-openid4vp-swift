@@ -73,8 +73,11 @@ final class SiopOpenID4VPTests: DiXCTest {
               )
             ]))
           )
-        ])],
-      vpFormatsSupported: []
+        ])
+      ],
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
   }
   
@@ -127,7 +130,9 @@ final class SiopOpenID4VPTests: DiXCTest {
             ]))
           )
         ])],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
   }
   

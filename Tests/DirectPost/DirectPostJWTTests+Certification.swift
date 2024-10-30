@@ -68,7 +68,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -166,7 +168,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -265,7 +269,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)

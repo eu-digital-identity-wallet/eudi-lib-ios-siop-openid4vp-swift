@@ -144,7 +144,9 @@ private extension VerifierAttestaionTestsTests {
           clockSkew: 15.0
         )
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
   }
   

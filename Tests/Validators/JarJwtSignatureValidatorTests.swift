@@ -182,7 +182,9 @@ private extension JarJwtSignatureValidatorTests {
             jwkSetSource: .passByValue(webKeys: .init(keys: keySet.keys))
           )
         ])],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
   }
   
@@ -222,7 +224,9 @@ private extension JarJwtSignatureValidatorTests {
             jwkSetSource: .passByValue(webKeys: .init(keys: keySet.keys))
           )
         ])],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
   }
   
