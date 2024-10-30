@@ -272,6 +272,14 @@ final class SiopOpenID4VPTests: DiXCTest {
       )
       
       XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
+      
+      switch resolvedSiopOpenId4VPRequestData {
+      case .idAndVpToken(let request):
+        XCTAssertEqual(request.clientMetaData!.vpFormats.values.first!, VpFormat.sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)]))
+        XCTAssert(true)
+      default:
+        XCTAssert(false, "Unexpected case")
+      }
     } catch _ as FetchError {
       XCTAssert(true)
     } catch {

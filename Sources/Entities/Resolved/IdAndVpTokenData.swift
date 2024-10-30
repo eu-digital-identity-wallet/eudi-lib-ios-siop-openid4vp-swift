@@ -21,7 +21,7 @@ extension ResolvedRequestData {
   public struct IdAndVpTokenData {
     let idTokenType: IdTokenType
     let presentationDefinition: PresentationDefinition
-    let clientMetaData: ClientMetaData?
+    let clientMetaData: ClientMetaData.Validated?
     let client: Client
     let nonce: String
     let responseMode: ResponseMode?
@@ -41,7 +41,7 @@ extension ResolvedRequestData {
     public init(
       idTokenType: IdTokenType,
       presentationDefinition: PresentationDefinition,
-      clientMetaData: ClientMetaData?,
+      clientMetaData: ClientMetaData.Validated?,
       client: Client,
       nonce: String,
       responseMode: ResponseMode?,

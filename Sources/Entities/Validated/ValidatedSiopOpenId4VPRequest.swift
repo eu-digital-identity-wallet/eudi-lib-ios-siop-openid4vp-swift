@@ -599,7 +599,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       requestUriMethod: .init(method: authorizationRequestObject[Constants.REQUEST_URI_METHOD].string),
       state: authorizationRequestObject[Constants.STATE].string,
-      vpFormats: try (formats ?? VpFormats.empty())
+      vpFormats: try (formats ?? VpFormats.default())
     ))
   }
   
@@ -622,7 +622,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       scope: authorizationRequestObject[Constants.SCOPE].stringValue,
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       state: authorizationRequestObject[Constants.STATE].string,
-      vpFormats: try (formats ?? VpFormats.empty())
+      vpFormats: try (formats ?? VpFormats.default())
     ))
   }
   

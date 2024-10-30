@@ -27,7 +27,7 @@ public struct VPConfiguration {
         sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
         kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
       ),
-      .msoMdoc(JSON())
+      .msoMdoc
     ]))
   }
   

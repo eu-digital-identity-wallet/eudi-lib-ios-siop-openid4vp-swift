@@ -16,13 +16,19 @@
 import XCTest
 @testable import SiopOpenID4VP
 
-class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
+class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
   
-  func testIdAndVpTokenDataInitialization() throws {
+  func testIdAndVpTokenDataInitialization() async throws {
 
+    overrideDependencies()
+    
+    let metaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
+    let validator = ClientMetaDataValidator()
+    let validatedClientMetaData = try? await validator.validate(clientMetaData: metaData)
+    
     let idTokenType: IdTokenType = .attesterSigned
     let presentationDefinition = PresentationExchange.Constants.presentationDefinitionPreview()
-    let clientMetaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
+    let clientMetaData = validatedClientMetaData
     let clientId = "testClientID"
     let nonce = "testNonce"
     let responseMode: ResponseMode = .directPost(responseURI: URL(string: "https://www.example.com")!)

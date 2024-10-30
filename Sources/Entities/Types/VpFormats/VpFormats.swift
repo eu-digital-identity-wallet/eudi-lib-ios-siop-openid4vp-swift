@@ -86,7 +86,7 @@ public enum VpFormat: Equatable {
     sdJwtAlgorithms: [JWSAlgorithm],
     kbJwtAlgorithms: [JWSAlgorithm]
   )
-  case msoMdoc(JSON)
+  case msoMdoc
   case jwtVp(algorithms: [String])
   case ldpVp(proofTypes: [String])
   
@@ -132,6 +132,15 @@ public struct VpFormats: Equatable {
   
   static let formats = "vp_formats"
   public let values: [VpFormat]
+  
+  public static func `default`() throws -> VpFormats {
+    try VpFormats(values: [
+      .sdJwtVc(
+        sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
+        kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
+      )
+    ])
+  }
   
   public static func empty() throws -> VpFormats {
     try VpFormats(values: [])
@@ -207,7 +216,7 @@ public extension VpFormats {
     }
     
     if let msoMdocJson = to.msoMdoc {
-      let msoMdocFormat = VpFormat.msoMdoc(msoMdocJson)
+      let msoMdocFormat = VpFormat.msoMdoc
       formats.append(msoMdocFormat)
     }
     
@@ -242,16 +251,14 @@ extension VpFormat {
   func toJSON() -> JSON {
     switch self {
     case .sdJwtVc(let sdJwtAlgorithms, let kbJwtAlgorithms):
-      return JSON([
-        "type": "sdJwtVc",
-        "sdJwtAlgorithms": sdJwtAlgorithms.map { $0.name }, // Assuming JWSAlgorithm has a `name` property
-        "kbJwtAlgorithms": kbJwtAlgorithms.map { $0.name }
-      ])
-    case .msoMdoc(let json):
-      return JSON([
-        "type": "msoMdoc",
-        "data": json
-      ])
+      return JSON(["sdJwtVc", [
+        "sd-jwt_alg_values": sdJwtAlgorithms.map { $0.name },
+        "kb-jwt_alg_values": kbJwtAlgorithms.map { $0.name }
+        ]]
+      )
+    case .msoMdoc:
+      return JSON(["msoMdoc": JSON()])
+      
     case .jwtVp(let algorithms):
       return JSON([
         "type": "jwtVp",
