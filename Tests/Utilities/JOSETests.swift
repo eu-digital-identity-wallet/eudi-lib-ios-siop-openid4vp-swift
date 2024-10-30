@@ -39,7 +39,10 @@ final class JOSETests: DiXCTest {
       name: "Bob"
     )
     
-    let walletConfiguration: WalletOpenId4VPConfiguration = .init(
+    let keySet = try WebKeySet(jwk: rsaJWK)
+    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
+    
+    let walletConfiguration: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -47,8 +50,17 @@ final class JOSETests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: try KeyController.generateRSAPrivateKey(),
-      signingKeySet: WebKeySet(keys: []),
-      supportedClientIdSchemes: [],
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .preregistered(clients: [
+          "verifier-backend.eudiw.dev": .init(
+            clientId: "verifier-backend.eudiw.dev",
+            legalName: "Verifier",
+            jarSigningAlg: .init(.RS256),
+            jwkSetSource: .fetchByReference(url: publicKeysURL)
+          )
+        ])
+      ],
       vpFormatsSupported: []
     )
     

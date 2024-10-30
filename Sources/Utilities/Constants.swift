@@ -25,7 +25,9 @@ public struct Constants {
   public static let CLIENT_ID_SCHEME = "client_id_scheme"
   public static let PRESENTATION_DEFINITION = "presentation_definition"
   public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
-
+  public static let REQUEST_URI_METHOD = "request_url_method"
+  public static let CLIENT_META_DATA = "client_meta_data"
+  
   public static let clientMetaDataJWKSString = """
   {
     "keys": [{
@@ -49,7 +51,8 @@ public struct Constants {
       subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
       authorizationSignedResponseAlg: "RS256",
       authorizationEncryptedResponseAlg: "RSA-OAEP-256",
-      authorizationEncryptedResponseEnc: "A128CBC-HS256"
+      authorizationEncryptedResponseEnc: "A128CBC-HS256",
+      vpFormats: nil
     )
   }
 

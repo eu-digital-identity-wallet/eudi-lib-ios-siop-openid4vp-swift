@@ -45,7 +45,7 @@ public extension ResolvedRequestData {
     validatedAuthorizationRequest: ValidatedSiopOpenId4VPRequest
   ) async throws {
     switch validatedAuthorizationRequest {
-    case .idToken(request: let request):
+    case .idToken(let request):
       let clientMetaDataSource = request.clientMetaDataSource
       let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
 
@@ -61,7 +61,7 @@ public extension ResolvedRequestData {
         state: request.state,
         scope: request.scope
       ))
-    case .vpToken(request: let request):
+    case .vpToken(let request):
       let clientMetaDataSource = request.clientMetaDataSource
       let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
 
@@ -82,7 +82,8 @@ public extension ResolvedRequestData {
         client: request.client,
         nonce: request.nonce,
         responseMode: request.responseMode,
-        state: request.state
+        state: request.state,
+        vpFormats: request.vpFormats
       ))
     case .idAndVpToken(request: let request):
       let clientMetaDataSource = request.clientMetaDataSource
@@ -104,7 +105,8 @@ public extension ResolvedRequestData {
         nonce: request.nonce,
         responseMode: request.responseMode,
         state: request.state,
-        scope: request.scope
+        scope: request.scope,
+        vpFormats: request.vpFormats
       ))
     }
   }

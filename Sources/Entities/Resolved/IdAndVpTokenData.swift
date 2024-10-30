@@ -27,6 +27,7 @@ extension ResolvedRequestData {
     let responseMode: ResponseMode?
     let state: String?
     let scope: Scope?
+    let vpFormats: VpFormats
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -45,7 +46,8 @@ extension ResolvedRequestData {
       nonce: String,
       responseMode: ResponseMode?,
       state: String?,
-      scope: Scope?
+      scope: Scope?,
+      vpFormats: VpFormats
     ) {
       self.idTokenType = idTokenType
       self.presentationDefinition = presentationDefinition
@@ -55,6 +57,7 @@ extension ResolvedRequestData {
       self.responseMode = responseMode
       self.state = state
       self.scope = scope
+      self.vpFormats = vpFormats
     }
   }
 }

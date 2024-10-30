@@ -25,7 +25,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   var subscriptions = Set<AnyCancellable>()
   
-  func preRegisteredWalletConfiguration() throws -> WalletOpenId4VPConfiguration {
+  func preRegisteredWalletConfiguration() throws -> SiopOpenId4VPConfiguration {
     
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -43,7 +43,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
     
-    return WalletOpenId4VPConfiguration(
+    return SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -56,6 +56,59 @@ final class SiopOpenID4VPTests: DiXCTest {
         .preregistered(clients: [
           "Verifier": .init(
             clientId: "Verifier",
+            legalName: "Verifier",
+            jarSigningAlg: JWSAlgorithm(.RS256),
+            jwkSetSource: .passByValue(webKeys: .init(keys: [
+              .init(
+                kty: "RSA",
+                use: "sig",
+                kid: "6b011ae0-86cb-4732-9039-fb918875898c",
+                iat: 1691502634,
+                crv: "",
+                x: "",
+                y: "",
+                exponent: "AQAB",
+                modulus: "qT-f2yAL1pA-AFNYusDrkfJPZ9AGJT8-xfqszP90-i6wOd7vTf-OPtMjElZ6i2XpBJcbAX8ICjFn7Q2TeAyGeBieKRgXYd1ry18ae7bOu6lE_s7yg-O5PE4s1ZpTRl1W1RRcOo8ZICA0lGaucgn5eDMZqwBYyepIcndUlIWggeUJvekaZBsvBLe6RTEC_6OLiP-VZOu6F-jor69_J9Y5QzDGu3p27-LwcSpjy1i_cwDb9QzYqyPT3k72wmHIoHEgzVR32Y6E-LUSmJX7GZJ9MQNraf6ch-_Mg1pDZqlnSdK6XNLodU8YxelUIc9aAWKLxUFnSlUWjyqN-dDHBLgY9Q",
+                alg: "RS256"
+              )
+            ]))
+          )
+        ])],
+      vpFormatsSupported: []
+    )
+  }
+  
+  func preRegisteredWalletConfigurationWithKnownClientID() throws -> SiopOpenId4VPConfiguration {
+    
+    let privateKey = try KeyController.generateRSAPrivateKey()
+    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
+    
+    let alg = JWSAlgorithm(.RS256)
+    let publicKeyJWK = try RSAPublicKey(
+      publicKey: publicKey,
+      additionalParameters: [
+        "alg": alg.name,
+        "use": "sig",
+        "kid": UUID().uuidString
+      ])
+    
+    let keySet = try WebKeySet([
+      "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
+    ])
+    
+    return SiopOpenId4VPConfiguration(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
+      signingKey: privateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .preregistered(clients: [
+          "verifier-backend.eudiw.dev": .init(
+            clientId: "verifier-backend.eudiw.dev",
             legalName: "Verifier",
             jarSigningAlg: JWSAlgorithm(.RS256),
             jwkSetSource: .passByValue(webKeys: .init(keys: [
@@ -114,7 +167,8 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKValidationResolutionGivenDataByValueIsValid() async throws {
     
-    let sdk = SiopOpenID4VP()
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
+    let sdk = SiopOpenID4VP(walletConfiguration: walletConfiguration)
     let presentationDefinition: PresentationDefinition = try await sdk.process(url: TestsConstants.validAuthorizeUrl)
     
     XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
@@ -155,7 +209,11 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKValidationResolutionAndDoNotMatchGivenDataByValueIsValid() async throws {
     
-    let sdk = SiopOpenID4VP()
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
+    
+    let sdk = SiopOpenID4VP(
+      walletConfiguration: walletConfiguration
+    )
     let passportClaim = Claim(
       id: "samplePassport",
       format: "ldp",
@@ -210,11 +268,16 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testIdTokenValidationResolutionGivenReferenceDataIsValid() async throws {
     
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
+    
     let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
-    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
+      authorizationRequestData: authorizationRequestData!,
+      walletConfiguration: walletConfiguration
+    )
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
@@ -225,11 +288,16 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testValidationResolutionGivenReferenceDataIsValid() async throws {
     
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
+    
     let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
-    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
+    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
+      authorizationRequestData: authorizationRequestData!,
+      walletConfiguration: walletConfiguration
+    )
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
@@ -325,6 +393,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
       request: TestsConstants.passByValueJWT,
+      requestUriMethod: .GET,
       walletConfiguration: walletConfiguration
     )
     
@@ -355,6 +424,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     do {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
         requestUri: TestsConstants.passByValueJWTURI,
+        requestUriMethod: .GET,
         clientId: authorizationRequestData?.clientId
       )
       

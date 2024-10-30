@@ -19,12 +19,12 @@ import X509
 
 public actor AccessValidator {
   
-  public let walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
+  public let walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
   private let resolver = WebKeyResolver()
   private let objectType: JOSEObjectType
   
   public init(
-    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?,
+    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
     objectType: JOSEObjectType = .REQ_JWT
   ) {
     self.walletOpenId4VPConfig = walletOpenId4VPConfig

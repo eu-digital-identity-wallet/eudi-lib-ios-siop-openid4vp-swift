@@ -26,4 +26,20 @@ public enum RequestUriMethod: CustomStringConvertible {
       return "POST"
     }
   }
+  
+  public init(method: String?) {
+    guard let method = method else {
+      self = .GET
+      return
+    }
+    
+    switch method.uppercased() {
+    case "GET":
+      self = .GET
+    case "POST":
+      self = .POST
+    default:
+      self = .GET
+    }
+  }
 }

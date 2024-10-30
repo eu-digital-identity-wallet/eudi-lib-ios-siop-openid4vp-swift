@@ -37,7 +37,8 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
       nonce: nonce,
       responseMode: responseMode,
       state: state,
-      scope: scope
+      scope: scope,
+      vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
     )
     
     XCTAssertEqual(tokenData.idTokenType, idTokenType)
@@ -45,36 +46,6 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     XCTAssertEqual(tokenData.nonce, nonce)
     XCTAssertEqual(tokenData.state, state)
     XCTAssertEqual(tokenData.scope, scope)
-  }
-  
-  func testIdTokenRequestInitialization() {
-    let idTokenType = IdTokenType.subjectSigned
-    let clientMetaDataSource: ClientMetaDataSource = .fetchByReference(url: URL(string: "https://www.example.com")!)
-    let clientIdScheme: ClientIdScheme = .redirectUri
-    let clientId = "dummy_client_id"
-    let nonce = "dummy_nonce"
-    let scope = "dummy_scope"
-    let responseMode: ResponseMode = .directPost(responseURI: URL(string: "https://www.example.com")!)
-    let state = "dummy_state"
-    
-    let request = ValidatedSiopOpenId4VPRequest.IdTokenRequest(
-      idTokenType: idTokenType,
-      clientMetaDataSource: clientMetaDataSource,
-      clientIdScheme: clientIdScheme,
-      clientId: clientId, 
-      client: .preRegistered(clientId: clientId, legalName: clientId),
-      nonce: nonce,
-      scope: scope,
-      responseMode: responseMode,
-      state: state
-    )
-    
-    XCTAssertEqual(request.idTokenType, idTokenType)
-    XCTAssertEqual(request.clientIdScheme, clientIdScheme)
-    XCTAssertEqual(request.clientId, clientId)
-    XCTAssertEqual(request.nonce, nonce)
-    XCTAssertEqual(request.scope, scope)
-    XCTAssertEqual(request.state, state)
   }
   
   func testWalletOpenId4VPConfigurationInitialization() throws {
@@ -89,7 +60,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
     let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
 
-    let walletOpenId4VPConfiguration = WalletOpenId4VPConfiguration(
+    let walletOpenId4VPConfiguration = SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
       preferredSubjectSyntaxType: preferredSubjectSyntaxType,
       decentralizedIdentifier: decentralizedIdentifier,
@@ -100,7 +71,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: XCTestCase {
       supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,
       knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope,
-      session: WalletOpenId4VPConfiguration.walletSession
+      session: SiopOpenId4VPConfiguration.walletSession
     )
     
     XCTAssertEqual(walletOpenId4VPConfiguration.subjectSyntaxTypesSupported, subjectSyntaxTypesSupported)

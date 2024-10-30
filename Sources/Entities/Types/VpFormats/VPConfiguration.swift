@@ -21,8 +21,8 @@ public struct VPConfiguration {
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
   public let vpFormats: VpFormats
   
-  public static func `default`() throws -> VPConfiguration {
-    try .init(vpFormats: .init(values: [
+  public static func `default`() -> VPConfiguration {
+    try! .init(vpFormats: .init(values: [
       .sdJwtVc(
         sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
         kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
@@ -30,6 +30,7 @@ public struct VPConfiguration {
       .msoMdoc(JSON())
     ]))
   }
+  
   public init(
     presentationDefinitionUriSupported: Bool = true,
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],

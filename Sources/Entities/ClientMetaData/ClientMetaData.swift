@@ -28,7 +28,10 @@ public struct ClientMetaData: Codable, Equatable {
   public let authorizationSignedResponseAlg: String?
   public let authorizationEncryptedResponseAlg: String?
   public let authorizationEncryptedResponseEnc: String?
-
+  public let vpFormats: VpFormatsTO?
+  
+  static let vpFormats = "vp_formats"
+  
   /// Coding keys for encoding and decoding the structure.
   enum CodingKeys: String, CodingKey {
     case jwksUri = "jwks_uri"
@@ -40,8 +43,9 @@ public struct ClientMetaData: Codable, Equatable {
     case authorizationSignedResponseAlg = "authorization_signed_response_alg"
     case authorizationEncryptedResponseAlg = "authorization_encrypted_response_alg"
     case authorizationEncryptedResponseEnc = "authorization_encrypted_response_enc"
+    case vpFormats = "vp_formats"
   }
-
+  
   /// Initializes a `ClientMetaData` instance with the provided values.
   /// - Parameters:
   ///   - jwksUri: The JWKS URI.
@@ -59,7 +63,8 @@ public struct ClientMetaData: Codable, Equatable {
     subjectSyntaxTypesSupported: [String],
     authorizationSignedResponseAlg: String? = nil,
     authorizationEncryptedResponseAlg: String?,
-    authorizationEncryptedResponseEnc: String?
+    authorizationEncryptedResponseEnc: String?,
+    vpFormats: VpFormatsTO?
   ) {
     self.jwksUri = jwksUri
     self.jwks = jwks
@@ -70,8 +75,9 @@ public struct ClientMetaData: Codable, Equatable {
     self.authorizationSignedResponseAlg = authorizationSignedResponseAlg
     self.authorizationEncryptedResponseAlg = authorizationEncryptedResponseAlg
     self.authorizationEncryptedResponseEnc = authorizationEncryptedResponseEnc
+    self.vpFormats = vpFormats
   }
-
+  
   /// Initializes a `ClientMetaData` instance with the provided JSON object representing metadata.
   /// - Parameter metaData: The JSON object representing the metadata.
   /// - Throws: An error if the required values are missing or invalid in the metadata.
@@ -82,10 +88,10 @@ public struct ClientMetaData: Codable, Equatable {
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-
+    
     let jwks = metaData["jwks"].dictionaryObject
     self.jwks = jwks?.toJSONString()
-
+    
     self.idTokenSignedResponseAlg = try? dictionaryObject.getValue(
       for: "id_token_signed_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
@@ -102,23 +108,32 @@ public struct ClientMetaData: Codable, Equatable {
       for: "subject_syntax_types_supported",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )) ?? []
-
+    
     self.authorizationSignedResponseAlg = try? dictionaryObject.getValue(
       for: "authorization_signed_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-
+    
     self.authorizationEncryptedResponseAlg = try? dictionaryObject.getValue(
       for: "authorization_encrypted_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-
+    
     self.authorizationEncryptedResponseEnc = try? dictionaryObject.getValue(
       for: "authorization_encrypted_response_enc",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
+    
+    if let vpFormatsDictionary: JSON = try? dictionaryObject.getValue(
+      for: Self.vpFormats,
+      error: ValidatedAuthorizationError.invalidClientMetadata
+    ), let formats = vpFormatsDictionary.dictionary?.decode(to: VpFormatsTO.self) {
+      self.vpFormats = formats
+    } else {
+      self.vpFormats = nil
+    }
   }
-
+  
   /// Initializes a `ClientMetaData` instance with the provided metadata string.
   /// - Parameter metaDataString: The string representing the metadata.
   /// - Throws: An error if the metadata string is invalid or cannot be converted to a dictionary.
@@ -126,15 +141,15 @@ public struct ClientMetaData: Codable, Equatable {
     guard let metaData = try metaDataString.convertToDictionary() else {
       throw ValidatedAuthorizationError.invalidClientMetadata
     }
-
+    
     self.jwksUri = try? metaData.getValue(
       for: "jwks_uri",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-
+    
     let jwks = metaData["jwks"] as? [String: Any]
     self.jwks = jwks?.toJSONString()
-
+    
     self.idTokenSignedResponseAlg = try metaData.getValue(
       for: "id_token_signed_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
@@ -147,29 +162,40 @@ public struct ClientMetaData: Codable, Equatable {
       for: "id_token_encrypted_response_enc",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
+    
     self.subjectSyntaxTypesSupported = try metaData.getValue(
       for: "subject_syntax_types_supported",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-
+    
     self.authorizationSignedResponseAlg = try? metaData.getValue(
       for: "authorization_signed_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
-
+    
     self.authorizationEncryptedResponseAlg = try? metaData.getValue(
       for: "authorization_encrypted_response_alg",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
+    
     self.authorizationEncryptedResponseEnc = try? metaData.getValue(
       for: "authorization_encrypted_response_enc",
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
+    
+    if let vpFormatsDictionary: JSON = try? metaData.getValue(
+      for: Self.vpFormats,
+      error: ValidatedAuthorizationError.invalidClientMetadata
+    ), let formats = vpFormatsDictionary.dictionary?.decode(to: VpFormatsTO.self) {
+      self.vpFormats = formats
+    } else {
+      self.vpFormats = nil
+    }
   }
 }
 
 public extension ClientMetaData {
-
+  
   struct Validated: Equatable {
     public let jwkSet: WebKeySet?
     public let idTokenJWSAlg: JWSAlgorithm?
@@ -179,7 +205,8 @@ public extension ClientMetaData {
     public let authorizationSignedResponseAlg: JWSAlgorithm?
     public let authorizationEncryptedResponseAlg: JWEAlgorithm?
     public let authorizationEncryptedResponseEnc: JOSEEncryptionMethod?
-
+    public let vpFormats: VpFormats
+    
     public init(
       jwkSet: WebKeySet?,
       idTokenJWSAlg: JWSAlgorithm?,
@@ -188,7 +215,8 @@ public extension ClientMetaData {
       subjectSyntaxTypesSupported: [SubjectSyntaxType],
       authorizationSignedResponseAlg: JWSAlgorithm?,
       authorizationEncryptedResponseAlg: JWEAlgorithm?,
-      authorizationEncryptedResponseEnc: JOSEEncryptionMethod?
+      authorizationEncryptedResponseEnc: JOSEEncryptionMethod?,
+      vpFormats: VpFormats
     ) {
       self.jwkSet = jwkSet
       self.idTokenJWSAlg = idTokenJWSAlg
@@ -198,6 +226,7 @@ public extension ClientMetaData {
       self.authorizationSignedResponseAlg = authorizationSignedResponseAlg
       self.authorizationEncryptedResponseAlg = authorizationEncryptedResponseAlg
       self.authorizationEncryptedResponseEnc = authorizationEncryptedResponseEnc
+      self.vpFormats = vpFormats
     }
   }
 }

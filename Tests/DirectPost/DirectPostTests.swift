@@ -143,7 +143,7 @@ final class DirectPostTests: DiXCTest {
       name: "Bob"
     )
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -283,7 +283,7 @@ final class DirectPostTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -390,7 +390,7 @@ final class DirectPostTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -450,7 +450,7 @@ final class DirectPostTests: DiXCTest {
       
       let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
       
-      let wallet: WalletOpenId4VPConfiguration = .init(
+      let wallet: SiopOpenId4VPConfiguration = .init(
         subjectSyntaxTypesSupported: [
           .decentralizedIdentifier,
           .jwkThumbprint

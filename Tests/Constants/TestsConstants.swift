@@ -31,7 +31,8 @@ struct TestsConstants {
       subjectSyntaxTypesSupported: [],
       authorizationSignedResponseAlg: ".authorizationSignedResponseAlg",
       authorizationEncryptedResponseAlg: ".authorizationEncryptedResponseAlg",
-      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc"
+      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc",
+      vpFormats: Self.testVpFormatsTO()
     )
   }
   
@@ -44,7 +45,8 @@ struct TestsConstants {
       subjectSyntaxTypesSupported: [.decentralizedIdentifier],
       authorizationSignedResponseAlg: .init(.ES256),
       authorizationEncryptedResponseAlg: .init(.A128GCMKW),
-      authorizationEncryptedResponseEnc: .init(.A128CBC_HS256)
+      authorizationEncryptedResponseEnc: .init(.A128CBC_HS256),
+      vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
     )
   }
 
@@ -130,7 +132,7 @@ struct TestsConstants {
   static let validVpTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
   "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_respons e_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
@@ -147,7 +149,7 @@ struct TestsConstants {
   static let validIdTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=id_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
   "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
@@ -165,7 +167,7 @@ struct TestsConstants {
   static let validIdVpTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token id_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
   "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
@@ -236,7 +238,7 @@ struct TestsConstants {
   static var nonNormativeUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
   "&redirect_uri=https://client.example.org/" +
   "&presentation_definition=%@" +
@@ -245,7 +247,7 @@ struct TestsConstants {
   static var nonNormativeOutOfScopeUrlString =
   "https://www.example.com/authorize?" +
   "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=redirect_uri" +
   "&redirect_uri=https://client.example.org/" +
   "&presentation_definition=%@" +
@@ -419,6 +421,15 @@ struct TestsConstants {
           path: "$"
         )
       }
+    )
+  }
+  
+  public static func testVpFormatsTO() -> VpFormatsTO {
+    .init(
+      vcSdJwt: .init(
+        sdJwtAlgorithms: ["PS256"],
+        kdJwtAlgorithms: ["PS256"]
+      )
     )
   }
 }
