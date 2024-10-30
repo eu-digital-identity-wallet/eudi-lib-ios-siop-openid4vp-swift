@@ -243,6 +243,7 @@ public extension AccessValidator {
         key: publicKey
       ) {
         _ = try jws.validate(using: verifier)
+        return
       }
     } else if keyType == (kSecAttrKeyTypeEC as String) {
       if let verifier = Verifier(
@@ -250,6 +251,7 @@ public extension AccessValidator {
         key: publicKey
       ) {
         _ = try jws.validate(using: verifier)
+        return
       }
     }
 
