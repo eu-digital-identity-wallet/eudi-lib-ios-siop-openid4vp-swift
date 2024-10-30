@@ -29,8 +29,8 @@ public enum ValidatedSiopOpenId4VPRequest {
 // Extension for ValidatedSiopOpenId4VPRequest
 public extension ValidatedSiopOpenId4VPRequest {
   
-  private static let WALLET_NONCE_FORM_PARAM = "wallet_nonce"
-  private static let WALLET_METADATA_FORM_PARAM = "wallet_metadata"
+  static let WALLET_NONCE_FORM_PARAM = "wallet_nonce"
+  static let WALLET_METADATA_FORM_PARAM = "wallet_metadata"
   
   // Initialize with a request URI
   init(
@@ -39,7 +39,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     clientId: String?,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
-
+    
     guard let requestUrl = URL(string: requestUri) else {
       throw ValidatedAuthorizationError.invalidRequestUri(requestUri)
     }
@@ -715,10 +715,59 @@ private extension SiopOpenId4VPConfiguration {
   ) throws {
     
     let jws = try JWS(compactSerialization: jwt)
-    // Need non-nil client id
-    // Need non-nil nonce
-    // JWT has to be signed
-    // client id must match JWT clientID
-    // wallet nonce must match signed jwt wallet nonce
+    
+    guard expectedClient != nil else {
+      throw ValidatedAuthorizationError.validationError("expectedClient should not be nil")
+    }
+    
+    guard expectedWalletNonce != nil else {
+      throw ValidatedAuthorizationError.validationError("expectedWalletNonce should not be nil")
+    }
+    
+    guard let jwsClientID = getValueForKey(
+      from: jwt,
+      key: "client_id"
+    ) as? String else {
+      throw ValidatedAuthorizationError.validationError("client_id should not be nil")
+    }
+    
+    guard jwsClientID == expectedClient else {
+      throw ValidatedAuthorizationError.validationError("client_id's do not match")
+    }
+    
+    guard let jwsNonce = getValueForKey(
+      from: jwt,
+      key: ValidatedSiopOpenId4VPRequest.WALLET_NONCE_FORM_PARAM
+    ) as? String else {
+      throw ValidatedAuthorizationError.validationError("nonce should not be nil")
+    }
+    
+    guard jwsNonce == expectedWalletNonce else {
+      throw ValidatedAuthorizationError.validationError("nonce's do not match")
+    }
+    
+    guard let algorithm = jws.header.algorithm else {
+      throw ValidatedAuthorizationError.validationError("algorithm should not be nil")
+    }
+    
+    guard jarConfiguration.supportedAlgorithms.contains(where: { $0.name == algorithm.rawValue }) else {
+      throw ValidatedAuthorizationError.validationError("nonce's do not match")
+    }
+  }
+  
+  func getValueForKey(from jwtString: String, key: String) -> Any? {
+    do {
+      let jwt = try JWS(compactSerialization: jwtString)
+      let payloadData = jwt.payload.data()
+      
+      let jsonObject = try JSONSerialization.jsonObject(with: payloadData, options: [])
+      guard let payloadDict = jsonObject as? [String: Any] else {
+        return nil
+      }
+      return payloadDict[key]
+      
+    } catch {
+      return nil
+    }
   }
 }
