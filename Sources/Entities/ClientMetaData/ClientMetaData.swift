@@ -124,10 +124,8 @@ public struct ClientMetaData: Codable, Equatable {
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
     
-    if let vpFormatsDictionary: JSON = try? dictionaryObject.getValue(
-      for: Self.vpFormats,
-      error: ValidatedAuthorizationError.invalidClientMetadata
-    ), let formats = vpFormatsDictionary.dictionary?.decode(to: VpFormatsTO.self) {
+    let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormats]
+    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsTO.self) {
       self.vpFormats = formats
     } else {
       self.vpFormats = nil
@@ -183,10 +181,8 @@ public struct ClientMetaData: Codable, Equatable {
       error: ValidatedAuthorizationError.invalidClientMetadata
     )
     
-    if let vpFormatsDictionary: JSON = try? metaData.getValue(
-      for: Self.vpFormats,
-      error: ValidatedAuthorizationError.invalidClientMetadata
-    ), let formats = vpFormatsDictionary.dictionary?.decode(to: VpFormatsTO.self) {
+    let vpFormatsDictionary: JSON = JSON(metaData)[Self.vpFormats]
+    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsTO.self) {
       self.vpFormats = formats
     } else {
       self.vpFormats = nil

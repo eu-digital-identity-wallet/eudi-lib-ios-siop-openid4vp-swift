@@ -31,7 +31,11 @@ public struct JARConfiguration {
   
   /// Default JAR configuration with trusted algorithms ES256, ES384, and ES512
   public static let `default` = JARConfiguration(
-    supportedAlgorithms: [JWSAlgorithm(.ES256)],
+    supportedAlgorithms: [
+      JWSAlgorithm(
+        .ES256
+      )
+    ],
     supportedRequestUriMethods: .defaultOption
   )
 }

@@ -252,16 +252,24 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testIdVpTokenValidationResolutionGivenReferenceDataIsValid() async throws {
     
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
     let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validIdVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
     do {
-      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
+      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
+        authorizationRequestData: authorizationRequestData!,
+        walletConfiguration: walletConfiguration
+      )
       
       XCTAssertNotNil(validatedAuthorizationRequestData)
       
-      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData)
+      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
+        clientMetaDataResolver: ClientMetaDataResolver(),
+        presentationDefinitionResolver: PresentationDefinitionResolver(),
+        validatedAuthorizationRequest: validatedAuthorizationRequestData
+      )
       
       XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
     } catch _ as FetchError {

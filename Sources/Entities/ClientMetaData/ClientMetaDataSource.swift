@@ -44,6 +44,11 @@ extension ClientMetaDataSource {
        let json = JSON(rawValue: metaData),
        let clientMetaData = try? ClientMetaData(metaData: json) {
       self = .passByValue(metaData: clientMetaData)
+    } else if let metaData = authorizationRequestObject["client_metadata"].string,
+              let data = metaData.data(using: .utf8),
+              let json = try? JSON(data: data),
+              let clientMetaData = try? ClientMetaData(metaData: json) {
+      self = .passByValue(metaData: clientMetaData)
     } else {
       return nil
     }

@@ -588,7 +588,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     nonce: String,
     authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
-    let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_META_DATA].string)
+    let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_METADATA].string)
     return .vpToken(request: .init(
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
@@ -610,7 +610,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     nonce: String,
     authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
-    let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_META_DATA].string)
+    let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_METADATA].string)
     return .idAndVpToken(request: .init(
       idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
