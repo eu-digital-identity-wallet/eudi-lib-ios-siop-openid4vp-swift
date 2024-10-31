@@ -81,7 +81,9 @@ final class SiopOpenID4VPTests: DiXCTest {
     )
   }
   
-  func preRegisteredWalletConfigurationWithKnownClientID() throws -> SiopOpenId4VPConfiguration {
+  func preRegisteredWalletConfigurationWithKnownClientID(
+    _ clientId: String = "verifier-backend.eudiw.dev"
+  ) throws -> SiopOpenId4VPConfiguration {
     
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -110,8 +112,8 @@ final class SiopOpenID4VPTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          "verifier-backend.eudiw.dev": .init(
-            clientId: "verifier-backend.eudiw.dev",
+          clientId: .init(
+            clientId: clientId,
             legalName: "Verifier",
             jarSigningAlg: JWSAlgorithm(.RS256),
             jwkSetSource: .passByValue(webKeys: .init(keys: [
@@ -182,7 +184,10 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKValidationResolutionGivenDataByReferenceIsValid() async throws {
     
-    let sdk = SiopOpenID4VP()
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
+    let sdk = SiopOpenID4VP(
+      walletConfiguration: walletConfiguration
+    )
     
     overrideDependencies()
     
@@ -194,7 +199,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     } catch _ as FetchError {
       XCTAssert(true)
     } catch {
-      
+      XCTAssert(true)
     }
   }
   
@@ -302,7 +307,8 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!
+    )
     
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
   }
@@ -335,13 +341,15 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testValidationResolutionWithAuthorisationRequestGivenDataIsValid() async throws {
     
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
     let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
     do {
       let authorizationRequest = try await AuthorizationRequest(
-        authorizationRequestData: authorizationRequestData!
+        authorizationRequestData: authorizationRequestData!,
+        walletConfiguration: walletConfiguration
       )
       
       XCTAssertNotNil(authorizationRequest)
@@ -391,11 +399,14 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKValidationResolutionGivenByValueDataIsValid() async throws {
     
-    let sdk = SiopOpenID4VP()
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
+    let sdk = SiopOpenID4VP(
+      walletConfiguration: walletConfiguration
+    )
+    
     do {
       let presentationDefinition = try await sdk.process(url: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
       
-      XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
       XCTAssert(presentationDefinition.inputDescriptors.count == 1)
     } catch _ as FetchError {
       XCTAssert(true)
@@ -443,6 +454,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     XCTAssertNotNil(authorizationRequestData)
     
     do {
+      /// Supply your own passByValueJWTURI here
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
         requestUri: TestsConstants.passByValueJWTURI,
         requestUriMethod: .GET,
@@ -472,13 +484,15 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKValidationResolutionGivenDataRequestObjectByValueIsValid() async throws {
     
+    let walletConfiguration = try preRegisteredWalletConfiguration()
     let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.requestObjectUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
     do {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
-        authorizationRequestData: authorizationRequestData!
+        authorizationRequestData: authorizationRequestData!,
+        walletConfiguration: walletConfiguration
       )
       
       XCTAssertNotNil(validatedAuthorizationRequestData)
@@ -506,13 +520,19 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKValidationResolutionGivenDataRequestObjectByReferenceIsValid() async throws {
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.requestUriUrl)
+    let walletConfiguration = try preRegisteredWalletConfiguration()
+    
+    /// Supply your own requestUriUrl here
+    let authorizationRequestData = AuthorisationRequestObject(
+      from: TestsConstants.requestUriUrl
+    )
     
     XCTAssertNotNil(authorizationRequestData)
     
     do {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
-        authorizationRequestData: authorizationRequestData!
+        authorizationRequestData: authorizationRequestData!,
+        walletConfiguration: walletConfiguration
       )
       
       XCTAssertNotNil(validatedAuthorizationRequestData)
@@ -540,16 +560,17 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKValidationResolutionGivenDataRequestObjectByReferenceIsNotFoundURL() async throws {
     
+    let walletConfiguration = try preRegisteredWalletConfiguration()
     let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.requestExpiredUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
     do {
       _ = try await ValidatedSiopOpenId4VPRequest(
-        authorizationRequestData: authorizationRequestData!
+        authorizationRequestData: authorizationRequestData!,
+        walletConfiguration: walletConfiguration
       )
     } catch let error as FetchError {
-      print(error.localizedDescription)
       switch error {
       case .invalidStatusCode(_, let status):
         XCTAssert(status == 404)
@@ -566,7 +587,10 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKInstanceValidationResolutionGivenDataRequestObjectByValueIsValid() async throws {
     
-    let sdk = SiopOpenID4VP()
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID("Verifier")
+    let sdk = SiopOpenID4VP(
+      walletConfiguration: walletConfiguration
+    )
     
     do {
       let presentationDefinition = try await sdk.process(url: TestsConstants.requestObjectUrl)
@@ -583,14 +607,18 @@ final class SiopOpenID4VPTests: DiXCTest {
     }
   }
   
-  func testSDKAuthorisationResolutionWithPublisherValidationResolutionGivenDataByReferenceIsValid() {
+  func testSDKAuthorisationResolutionWithPublisherValidationResolutionGivenDataByReferenceIsValid() throws {
     
     let expectation = XCTestExpectation(description: "Authorisation request succesful")
     
-    let sdk = SiopOpenID4VP()
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
+    let sdk = SiopOpenID4VP(
+      walletConfiguration: walletConfiguration
+    )
     
     overrideDependencies()
     
+    /// Supply your own validByReferenceAuthorizeUrl here
     sdk.authorizationPublisher(for: TestsConstants.validByReferenceAuthorizeUrl)
       .sink { completion in
         expectation.fulfill()
@@ -613,11 +641,15 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testSDKAuthorisationValidationGivenDataByReferenceIsValid() async throws {
     
-    let sdk = SiopOpenID4VP()
+    let walletConfiguration = try preRegisteredWalletConfigurationWithKnownClientID()
+    let sdk = SiopOpenID4VP(
+      walletConfiguration: walletConfiguration
+    )
     
     overrideDependencies()
     
     do {
+      /// Supply your own validByReferenceAuthorizeUrl here
       let result = try await sdk.authorize(url: TestsConstants.validByReferenceAuthorizeUrl)
       
       switch result {

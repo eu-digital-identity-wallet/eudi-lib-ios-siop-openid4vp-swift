@@ -35,7 +35,7 @@ public extension ValidatedSiopOpenId4VPRequest {
   // Initialize with a request URI
   init(
     requestUri: JWTURI,
-    requestUriMethod: RequestUriMethod,
+    requestUriMethod: RequestUriMethod = .GET,
     clientId: String?,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
@@ -119,7 +119,7 @@ public extension ValidatedSiopOpenId4VPRequest {
   // Initialize with a JWT string
   init(
     request: JWTString,
-    requestUriMethod: RequestUriMethod,
+    requestUriMethod: RequestUriMethod = .GET,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
     
@@ -260,7 +260,7 @@ public extension ValidatedSiopOpenId4VPRequest {
   }
   
   fileprivate static func getJWT(
-    requestUriMethod: RequestUriMethod,
+    requestUriMethod: RequestUriMethod = .GET,
     config: SiopOpenId4VPConfiguration?,
     requestUrl: URL,
     clientId: String?
