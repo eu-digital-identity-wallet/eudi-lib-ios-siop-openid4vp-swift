@@ -315,3 +315,20 @@ final class VpFormatsTests: XCTestCase {
     XCTAssertTrue(vpFormats?.contains(.msoMdoc) ?? false)
   }
 }
+
+class WalletMetaDataTests: XCTestCase {
+  
+  func testWalletMetaData() throws {
+    
+    let walletConfiguration = try SiopOpenID4VPTests.preRegisteredWalletConfigurationWithKnownClientID()
+    
+    let json = walletMetaData(cfg: walletConfiguration)
+    
+    XCTAssertEqual(json["request_object_signing_alg_values_supported"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["presentation_definition_uri_supported"].boolValue, true)
+    XCTAssertEqual(json["vp_formats_supported"]["vp_formats"].arrayValue.count, 2)
+    XCTAssertEqual(json["client_id_schemes_supported"].arrayValue.map { $0.stringValue }, ["preRegistered"])
+    XCTAssertEqual(json["response_types_supported"].arrayValue.map { $0.stringValue }, ["vp_token", "id_token"])
+    XCTAssertEqual(json["response_modes_supported"].arrayValue.map { $0.stringValue }, ["direct_post", "direct_post.jwt"])
+  }
+}

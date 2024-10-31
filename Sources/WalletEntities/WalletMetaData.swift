@@ -28,10 +28,10 @@ public func walletMetaData(cfg: SiopOpenId4VPConfiguration) -> JSON {
   
   json[VP_FORMATS_SUPPORTED] = cfg.vpConfiguration.vpFormats.toJSON()
   
-  json[CLIENT_ID_SCHEMES_SUPPORTED] = JSON(cfg.supportedClientIdSchemes.map { $0.scheme })
+  json[CLIENT_ID_SCHEMES_SUPPORTED] = JSON(cfg.supportedClientIdSchemes.map { $0.name })
   
   // Response types supported
-  json[RESPONSE_TYPES_SUPPOERTED] = JSON(["vp_token", "id_token"])
+  json[RESPONSE_TYPES_SUPPORTED] = JSON(["vp_token", "id_token"])
   
   // Response modes supported
   json[RESPONSE_MODES_SUPPORTED] = JSON(["direct_post", "direct_post.jwt"])
@@ -47,6 +47,6 @@ private let AUTHORIZATION_ENCRYPTION_ENC_VALUES_SUPPORTED = "authorization_encry
 private let PRESENTATION_DEFINITION_URI_SUPPORTED = "presentation_definition_uri_supported"
 private let CLIENT_ID_SCHEMES_SUPPORTED = "client_id_schemes_supported"
 private let VP_FORMATS_SUPPORTED = "vp_formats_supported"
-private let RESPONSE_TYPES_SUPPOERTED = "response_types_supported"
+private let RESPONSE_TYPES_SUPPORTED = "response_types_supported"
 private let RESPONSE_MODES_SUPPORTED = "response_modes_supported"
 
