@@ -130,7 +130,7 @@ public extension VpFormat {
 
 public struct VpFormats: Equatable {
   
-  static let formats = "vp_formats"
+  static let vpFormats = "vp_formats"
   public let values: [VpFormat]
   
   public static func `default`() throws -> VpFormats {
@@ -155,13 +155,12 @@ public struct VpFormats: Equatable {
   }
   
   public init?(json: JSON) throws {
-    guard let metaData = json.dictionaryObject else {
+    guard let dictionaryObject = json.dictionaryObject else {
       return nil
     }
-    if let vpFormatsDictionary: JSON = try? metaData.getValue(
-      for: Self.formats,
-      error: ValidatedAuthorizationError.invalidClientMetadata
-    ), let formats = vpFormatsDictionary.dictionary?.decode(to: VpFormatsTO.self) {
+    
+    let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormats]
+    if let formats = try? vpFormatsDictionary.decoded(as: [VpFormatsTO].self) {
       try? self.init(from: formats)
     } else {
       return nil
@@ -215,7 +214,7 @@ public extension VpFormats {
       formats.append(sdJwtVcFormat)
     }
     
-    if let msoMdocJson = to.msoMdoc {
+    if to.msoMdoc != nil {
       let msoMdocFormat = VpFormat.msoMdoc
       formats.append(msoMdocFormat)
     }
@@ -233,6 +232,50 @@ public extension VpFormats {
     try self.init(values: formats)
   }
   
+  // New initializer that accepts an array of VpFormatsTO objects
+  init?(from tos: [VpFormatsTO]?) throws {
+    
+    guard let tos = tos else {
+      return nil
+    }
+    
+    var formats: [VpFormat] = []
+    
+    for to in tos {
+      // Convert VcSdJwtTO if it exists
+      if let vcSdJwt = to.vcSdJwt {
+        let sdJwtAlgorithms = vcSdJwt.sdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
+        let kbJwtAlgorithms = vcSdJwt.kdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
+        
+        let sdJwtVcFormat = VpFormat.sdJwtVc(
+          sdJwtAlgorithms: sdJwtAlgorithms,
+          kbJwtAlgorithms: kbJwtAlgorithms
+        )
+        formats.append(sdJwtVcFormat)
+      }
+      
+      // Add msoMdoc if it exists
+      if to.msoMdoc != nil {
+        let msoMdocFormat = VpFormat.msoMdoc
+        formats.append(msoMdocFormat)
+      }
+      
+      // Convert JwtVpTO if it exists
+      if let jwtVp = to.jwtVp {
+        let jwtVpFormat = VpFormat.jwtVp(algorithms: jwtVp.alg)
+        formats.append(jwtVpFormat)
+      }
+      
+      // Convert LdpVpTO if it exists
+      if let ldpVp = to.ldpVp {
+        let ldpVpFormat = VpFormat.ldpVp(proofTypes: ldpVp.proofType)
+        formats.append(ldpVpFormat)
+      }
+    }
+    
+    try self.init(values: formats)
+  }
+  
   // Convert VpFormats to JSON
   func toJSON() -> JSON {
     var jsonArray: [JSON] = []
@@ -242,7 +285,7 @@ public extension VpFormats {
       jsonArray.append(jsonFormat)
     }
     
-    return JSON([Self.formats: jsonArray])
+    return JSON([Self.vpFormats: jsonArray])
   }
 }
 
@@ -251,23 +294,21 @@ extension VpFormat {
   func toJSON() -> JSON {
     switch self {
     case .sdJwtVc(let sdJwtAlgorithms, let kbJwtAlgorithms):
-      return JSON(["sdJwtVc", [
+      return JSON(["sdJwtVc": [
         "sd-jwt_alg_values": sdJwtAlgorithms.map { $0.name },
         "kb-jwt_alg_values": kbJwtAlgorithms.map { $0.name }
-        ]]
+      ]]
       )
     case .msoMdoc:
       return JSON(["msoMdoc": JSON()])
       
     case .jwtVp(let algorithms):
       return JSON([
-        "type": "jwtVp",
-        "algorithms": algorithms
+        "jwtVp": ["algorithms": algorithms]
       ])
     case .ldpVp(let proofTypes):
       return JSON([
-        "type": "ldpVp",
-        "proofTypes": proofTypes
+        "ldpVp": ["proofTypes": proofTypes]
       ])
     }
   }

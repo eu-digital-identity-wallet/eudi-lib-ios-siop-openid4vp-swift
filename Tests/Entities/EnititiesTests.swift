@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 import XCTest
+import Foundation
+import SwiftyJSON
+
 @testable import SiopOpenID4VP
 
 class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
   
   func testIdAndVpTokenDataInitialization() async throws {
-
+    
     overrideDependencies()
     
     let metaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
@@ -65,7 +68,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     let supportedClientIdSchemes: [SupportedClientIdScheme] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
     let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
-
+    
     let walletOpenId4VPConfiguration = SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
       preferredSubjectSyntaxType: preferredSubjectSyntaxType,
@@ -94,7 +97,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     let subjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
     XCTAssert(subjectSyntaxType == .jwkThumbprint)
   }
-
+  
   func testSubjectSyntaxTypeInitWithDecentralizedIdentifier() {
     let subjectSyntaxType: SubjectSyntaxType = .decentralizedIdentifier
     XCTAssert(subjectSyntaxType == .decentralizedIdentifier)
@@ -104,7 +107,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     let did = DecentralizedIdentifier.did("did:example:123abc")
     XCTAssertTrue(did.isValid())
   }
-      
+  
   func testInvalidDID() {
     let did = DecentralizedIdentifier.did("invalid_did")
     XCTAssertFalse(did.isValid())
@@ -122,13 +125,13 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
 }
 
 class VerifierFormPostTests: XCTestCase {
-    
+  
   func testUrlRequest() {
     let url = URL(string: "https://www.example.com")!
     let formData: [String: Any] = [
-        "param1": "value1",
-        "param2": 123,
-        "param3": true
+      "param1": "value1",
+      "param2": 123,
+      "param3": true
     ]
     let formPost = VerifierFormPost(url: url, formData: formData)
     
@@ -170,7 +173,7 @@ class VerifierFormPostTests: XCTestCase {
     let url = URL(string: "https://www.example.com")!
     let formData: [String: Any] = ["param": "value"]
     let formPost = VerifierFormPost(url: url, formData: formData)
-      
+    
     var expectedRequest = URLRequest(url: url)
     expectedRequest.httpMethod = "POST"
     expectedRequest.httpBody = "param=value".data(using: .utf8)
@@ -180,5 +183,135 @@ class VerifierFormPostTests: XCTestCase {
     // Add test cases to cover other scenarios for urlRequest
     let request = formPost.urlRequest
     XCTAssertEqual(request.allHTTPHeaderFields, formPost.additionalHeaders)
+  }
+}
+
+final class VpFormatsTests: XCTestCase {
+  
+  // MARK: - Test Initialization of VpFormat and VpFormats
+  
+  func testInitWithValidValues() throws {
+    let sdJwtFormat = VpFormat.sdJwtVc(
+      sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
+      kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
+    )
+    let jwtVpFormat = VpFormat.jwtVp(algorithms: ["RS256"])
+    let ldpVpFormat = VpFormat.ldpVp(proofTypes: ["ProofType1"])
+    let msoMdocFormat = VpFormat.msoMdoc
+    
+    let vpFormats = try VpFormats(values: [sdJwtFormat, jwtVpFormat, ldpVpFormat, msoMdocFormat])
+    
+    XCTAssertEqual(vpFormats.values.count, 4)
+    XCTAssertTrue(vpFormats.contains(sdJwtFormat))
+    XCTAssertTrue(vpFormats.contains(jwtVpFormat))
+    XCTAssertTrue(vpFormats.contains(ldpVpFormat))
+    XCTAssertTrue(vpFormats.contains(msoMdocFormat))
+  }
+  
+  func testInitWithDuplicateFormatsThrowsError() {
+    let format = VpFormat.jwtVp(algorithms: ["RS256"])
+    
+    XCTAssertThrowsError(try VpFormats(values: [format, format])) { error in
+      guard let validationError = error as? ValidatedAuthorizationError else {
+        return XCTFail("Unexpected error type")
+      }
+      XCTAssertEqual(validationError, .validationError("Multiple instances 2 found for JWT_VP."))
+    }
+  }
+  
+  // MARK: - Test Format Names
+  
+  func testFormatNames() {
+    XCTAssertEqual(VpFormat.msoMdoc.formatName(), .MSO_MDOC)
+    XCTAssertEqual(VpFormat.sdJwtVc(sdJwtAlgorithms: [], kbJwtAlgorithms: []).formatName(), .SD_JWT_VC)
+    XCTAssertEqual(VpFormat.jwtVp(algorithms: []).formatName(), .JWT_VP)
+    XCTAssertEqual(VpFormat.ldpVp(proofTypes: []).formatName(), .LDP_VP)
+  }
+  
+  // MARK: - Test JSON Serialization and Deserialization
+  
+  func testVpFormatToJSON() {
+    let format = VpFormat.sdJwtVc(
+      sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
+      kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
+    )
+    let json = format.toJSON()
+    
+    XCTAssertEqual(json["sdJwtVc"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["sdJwtVc"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+  }
+  
+  func testVpFormatsToJSON() throws {
+    let sdJwtFormat = VpFormat.sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)])
+    let jwtVpFormat = VpFormat.jwtVp(algorithms: ["RS256"])
+    let vpFormats = try VpFormats(values: [sdJwtFormat, jwtVpFormat])
+    
+    let json = vpFormats.toJSON()
+    
+    XCTAssertEqual(json["vp_formats"].arrayValue.count, 2)
+  }
+  
+  func testVpFormatsFromJson() throws {
+    let jsonString = """
+    {
+      "vp_formats": [
+        { "jwt_vp": {
+          "alg": ["RS256"] 
+        }},
+        { "vc+sd-jwt": {
+          "sd-jwt_alg_values": ["ES256"],
+          "kb-jwt_alg_values": ["ES256"]
+        }}
+      ]
+    }
+    """
+    
+    let vpFormats = try VpFormats(jsonString: jsonString)
+    
+    XCTAssertEqual(vpFormats?.values.count, 2)
+  }
+  
+  func testVpFormatEquatable() {
+    let format1 = VpFormat.jwtVp(algorithms: ["RS256"])
+    let format2 = VpFormat.jwtVp(algorithms: ["RS256"])
+    
+    XCTAssertEqual(format1, format2)
+  }
+  
+  func testVpFormatInequality() {
+    let format1 = VpFormat.jwtVp(algorithms: ["RS256"])
+    let format2 = VpFormat.jwtVp(algorithms: ["ES256"])
+    
+    XCTAssertNotEqual(format1, format2)
+  }
+  
+  // MARK: - Test Empty VpFormats Creation
+  
+  func testVpFormatsEmptyCreation() throws {
+    let emptyFormats = try VpFormats.empty()
+    
+    XCTAssertEqual(emptyFormats.values.count, 0)
+  }
+  
+  func testVpFormatsDefaultCreation() throws {
+    let defaultFormats = try VpFormats.default()
+    
+    XCTAssertEqual(defaultFormats.values.count, 1)
+    XCTAssertEqual(defaultFormats.values.first?.formatName(), .SD_JWT_VC)
+  }
+  
+  func testVpFormatsInitFromTO() throws {
+    let to = VpFormatsTO(
+      vcSdJwt: VcSdJwtTO(sdJwtAlgorithms: ["ES256"], kdJwtAlgorithms: ["ES256"]),
+      jwtVp: JwtVpTO(alg: ["RS256"]),
+      ldpVp: LdpVpTO(proofType: ["ProofType"]),
+      msoMdoc: JSON()
+    )
+    
+    let vpFormats = try VpFormats(from: to)
+    
+    XCTAssertEqual(vpFormats?.values.count, 4)
+    XCTAssertTrue(vpFormats?.contains(.jwtVp(algorithms: ["RS256"])) ?? false)
+    XCTAssertTrue(vpFormats?.contains(.msoMdoc) ?? false)
   }
 }
