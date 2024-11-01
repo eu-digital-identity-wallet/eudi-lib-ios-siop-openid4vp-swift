@@ -49,7 +49,8 @@ public struct NonceGenerator {
   /// - Parameter byteLength: The number of random bytes to use for generating the nonce. Defaults to 32 bytes.
   /// - Returns: A base64-encoded string representing the secure random nonce.
   public static func generateSecureNonce(byteLength: Int = 32) -> String {
-    let randomBytes = [UInt8](repeating: 0, count: byteLength).map { _ in UInt8.random(in: 0...255) }
+    var randomBytes = [UInt8](repeating: 0, count: byteLength)
+    _ = SecRandomCopyBytes(kSecRandomDefault, byteLength, &randomBytes)  // Using CryptoKit's secure random generator
     return Data(randomBytes).base64EncodedString()
   }
 }

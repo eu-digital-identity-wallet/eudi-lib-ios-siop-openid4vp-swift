@@ -19,6 +19,9 @@ import SwiftyJSON
 /// By OpenID Connect Dynamic Client Registration specification
 /// A structure representing client metadata.
 public struct ClientMetaData: Codable, Equatable {
+  
+  static let vpFormats = "vp_formats"
+  
   public let jwksUri: String?
   public let jwks: String?
   public let idTokenSignedResponseAlg: String?
@@ -29,8 +32,6 @@ public struct ClientMetaData: Codable, Equatable {
   public let authorizationEncryptedResponseAlg: String?
   public let authorizationEncryptedResponseEnc: String?
   public let vpFormats: VpFormatsTO?
-  
-  static let vpFormats = "vp_formats"
   
   /// Coding keys for encoding and decoding the structure.
   enum CodingKeys: String, CodingKey {
