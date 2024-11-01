@@ -188,8 +188,6 @@ class VerifierFormPostTests: XCTestCase {
 
 final class VpFormatsTests: XCTestCase {
   
-  // MARK: - Test Initialization of VpFormat and VpFormats
-  
   func testInitWithValidValues() throws {
     let sdJwtFormat = VpFormat.sdJwtVc(
       sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
@@ -218,8 +216,7 @@ final class VpFormatsTests: XCTestCase {
       XCTAssertEqual(validationError, .validationError("Multiple instances 2 found for JWT_VP."))
     }
   }
-  
-  // MARK: - Test Format Names
+
   
   func testFormatNames() {
     XCTAssertEqual(VpFormat.msoMdoc.formatName(), .MSO_MDOC)
@@ -227,8 +224,6 @@ final class VpFormatsTests: XCTestCase {
     XCTAssertEqual(VpFormat.jwtVp(algorithms: []).formatName(), .JWT_VP)
     XCTAssertEqual(VpFormat.ldpVp(proofTypes: []).formatName(), .LDP_VP)
   }
-  
-  // MARK: - Test JSON Serialization and Deserialization
   
   func testVpFormatToJSON() {
     let format = VpFormat.sdJwtVc(
@@ -322,7 +317,9 @@ class WalletMetaDataTests: XCTestCase {
     
     let walletConfiguration = try SiopOpenID4VPTests.preRegisteredWalletConfigurationWithKnownClientID()
     
-    let json = walletMetaData(cfg: walletConfiguration)
+    let json = walletMetaData(
+      cfg: walletConfiguration
+    )
     
     XCTAssertEqual(json["request_object_signing_alg_values_supported"].arrayValue.map { $0.stringValue }, ["ES256"])
     XCTAssertEqual(json["presentation_definition_uri_supported"].boolValue, true)
