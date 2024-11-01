@@ -36,9 +36,9 @@ public protocol SiopOpenID4VPType {
 
 public class SiopOpenID4VP: SiopOpenID4VPType {
 
-  let walletConfiguration: WalletOpenId4VPConfiguration?
+  let walletConfiguration: SiopOpenId4VPConfiguration?
 
-  public init(walletConfiguration: WalletOpenId4VPConfiguration? = nil) {
+  public init(walletConfiguration: SiopOpenId4VPConfiguration? = nil) {
     self.walletConfiguration = walletConfiguration
     registerDependencies()
   }

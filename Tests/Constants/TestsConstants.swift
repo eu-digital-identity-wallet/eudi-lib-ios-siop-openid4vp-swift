@@ -31,7 +31,8 @@ struct TestsConstants {
       subjectSyntaxTypesSupported: [],
       authorizationSignedResponseAlg: ".authorizationSignedResponseAlg",
       authorizationEncryptedResponseAlg: ".authorizationEncryptedResponseAlg",
-      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc"
+      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc",
+      vpFormats: Self.testVpFormatsTO()
     )
   }
   
@@ -44,7 +45,8 @@ struct TestsConstants {
       subjectSyntaxTypesSupported: [.decentralizedIdentifier],
       authorizationSignedResponseAlg: .init(.ES256),
       authorizationEncryptedResponseAlg: .init(.A128GCMKW),
-      authorizationEncryptedResponseEnc: .init(.A128CBC_HS256)
+      authorizationEncryptedResponseEnc: .init(.A128CBC_HS256),
+      vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
     )
   }
 
@@ -130,11 +132,11 @@ struct TestsConstants {
   static let validVpTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
-  "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_respons e_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
+  "&client_metadata={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_respons e_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats\":{\"vc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
-  "&presentation_definition_uri=https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/presentation_definition/32f54163-7166-48f1-93d8-ff217bdb0653" +
+  "&presentation_definition={\"comment\":\"Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.\",\"presentation_definition\":{\"id\":\"8e6ad256-bd03-4361-a742-377e8cccced0\",\"name\":\"Presentation definition 002\",\"purpose\":\"Account info 002\",\"input_descriptors\":[{\"id\":\"wa_driver_license\",\"name\":\"Washington State Business License\",\"purpose\":\"We can only allow licensed Washington State business representatives into the WA Business Conference\",\"constraints\":{\"fields\":[{\"path\":[\"$.credentialSubject.dateOfBirth\",\"$.credentialSubject.dob\",\"$.vc.credentialSubject.dateOfBirth\",\"$.vc.credentialSubject.dob\"]}]}}]}}" +
   "&nonce=n-0S6_WzA2Mj" +
   "&response_mode=direct_post" +
   "&response_uri=https://client.example.org/response"
@@ -147,11 +149,11 @@ struct TestsConstants {
   static let validIdTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=id_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
-  "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
+  "&client_metadata={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats\":{\"vc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
-  "&presentation_definition_uri=https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/presentation_definition/32f54163-7166-48f1-93d8-ff217bdb0653" +
+  "&presentation_definition={\"comment\":\"Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.\",\"presentation_definition\":{\"id\":\"8e6ad256-bd03-4361-a742-377e8cccced0\",\"name\":\"Presentation definition 002\",\"purpose\":\"Account info 002\",\"input_descriptors\":[{\"id\":\"wa_driver_license\",\"name\":\"Washington State Business License\",\"purpose\":\"We can only allow licensed Washington State business representatives into the WA Business Conference\",\"constraints\":{\"fields\":[{\"path\":[\"$.credentialSubject.dateOfBirth\",\"$.credentialSubject.dob\",\"$.vc.credentialSubject.dateOfBirth\",\"$.vc.credentialSubject.dob\"]}]}}]}}" +
   "&nonce=n-0S6_WzA2Mj" +
   "&response_mode=direct_post" +
   "&id_token_type=subject_signed" +
@@ -165,11 +167,11 @@ struct TestsConstants {
   static let validIdVpTokenByClientByValuePresentationByReferenceUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token id_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
-  "&client_meta_data={\"jwks_uri\":\"value_jwks_uri\",\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"]}" +
+  "&client_metadata={\"jwks\":{\"keys\":[{\"kty\":\"RSA\", \"e\":\"AQAB\", \"use\":\"sig\", \"kid\":\"a4e1bbe6-26e8-480b-a364-f43497894453\", \"iat\":1683559586, \"n\":\"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew\"}]},\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats\":{\"vc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
-  "&presentation_definition_uri=https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/presentation_definition/32f54163-7166-48f1-93d8-ff217bdb0653" +
+  "&presentation_definition={\"comment\":\"Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.\",\"presentation_definition\":{\"id\":\"8e6ad256-bd03-4361-a742-377e8cccced0\",\"name\":\"Presentation definition 002\",\"purpose\":\"Account info 002\",\"input_descriptors\":[{\"id\":\"wa_driver_license\",\"name\":\"Washington State Business License\",\"purpose\":\"We can only allow licensed Washington State business representatives into the WA Business Conference\",\"constraints\":{\"fields\":[{\"path\":[\"$.credentialSubject.dateOfBirth\",\"$.credentialSubject.dob\",\"$.vc.credentialSubject.dateOfBirth\",\"$.vc.credentialSubject.dob\"]}]}}]}}" +
   "&nonce=n-0S6_WzA2Mj" +
   "&response_mode=direct_post" +
   "&id_token_type=subject_signed" +
@@ -187,9 +189,9 @@ struct TestsConstants {
   "response_type=vp_token" +
   "&client_id=https://client.example.org/" +
   "&client_id_scheme=pre-registered" +
-  "&client_meta_data_uri=https://client.example.org/redirect_me" +
+  "&client_metadata_uri=https://client.example.org/redirect_me" +
   "&redirect_uri=https://client.example.org/redirect_me" +
-  "&presentation_definition_uri=https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/presentation_definition/32f54163-7166-48f1-93d8-ff217bdb0653" +
+  "&presentation_definition={\"comment\":\"Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.\",\"presentation_definition\":{\"id\":\"8e6ad256-bd03-4361-a742-377e8cccced0\",\"name\":\"Presentation definition 002\",\"purpose\":\"Account info 002\",\"input_descriptors\":[{\"id\":\"wa_driver_license\",\"name\":\"Washington State Business License\",\"purpose\":\"We can only allow licensed Washington State business representatives into the WA Business Conference\",\"constraints\":{\"fields\":[{\"path\":[\"$.credentialSubject.dateOfBirth\",\"$.credentialSubject.dob\",\"$.vc.credentialSubject.dateOfBirth\",\"$.vc.credentialSubject.dob\"]}]}}]}}" +
   "&nonce=n-0S6_WzA2Mj" +
   "&response_mode=direct_post" +
   "&response_uri=https://client.example.org/response"
@@ -236,7 +238,7 @@ struct TestsConstants {
   static var nonNormativeUrlString =
   "eudi-wallet://authorize?" +
   "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
   "&redirect_uri=https://client.example.org/" +
   "&presentation_definition=%@" +
@@ -245,7 +247,7 @@ struct TestsConstants {
   static var nonNormativeOutOfScopeUrlString =
   "https://www.example.com/authorize?" +
   "response_type=vp_token" +
-  "&client_id=https://client.example.org/" +
+  "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=redirect_uri" +
   "&redirect_uri=https://client.example.org/" +
   "&presentation_definition=%@" +
@@ -419,6 +421,15 @@ struct TestsConstants {
           path: "$"
         )
       }
+    )
+  }
+  
+  public static func testVpFormatsTO() -> VpFormatsTO {
+    .init(
+      vcSdJwt: .init(
+        sdJwtAlgorithms: ["PS256"],
+        kdJwtAlgorithms: ["PS256"]
+      )
     )
   }
 }

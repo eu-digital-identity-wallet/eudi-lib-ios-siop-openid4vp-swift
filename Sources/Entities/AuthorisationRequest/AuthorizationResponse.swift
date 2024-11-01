@@ -55,7 +55,7 @@ public extension AuthorizationResponse {
   init(
     resolvedRequest: ResolvedRequestData,
     consent: ClientConsent,
-    walletOpenId4VPConfig: WalletOpenId4VPConfiguration? = nil
+    walletOpenId4VPConfig: SiopOpenId4VPConfiguration? = nil
   ) throws {
     switch consent {
     case .idToken(let idToken):
@@ -136,7 +136,7 @@ private extension AuthorizationResponse {
     responseMode: ResponseMode?,
     payload: AuthorizationResponsePayload,
     clientMetaData: ClientMetaData.Validated?,
-    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
+    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
   ) throws -> AuthorizationResponse {
     guard let responseMode = responseMode else {
       throw AuthorizationError.invalidResponseMode

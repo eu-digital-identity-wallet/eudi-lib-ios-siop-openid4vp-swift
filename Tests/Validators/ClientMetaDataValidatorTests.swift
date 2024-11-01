@@ -45,7 +45,8 @@ final class ClientMetaDataValidatorTests: XCTestCase {
         subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
         authorizationSignedResponseAlg: TestsConstants.signedResponseAlg,
         authorizationEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
-        authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc
+        authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
+        vpFormats: TestsConstants.testVpFormatsTO()
       ))!
       
       XCTAssertEqual(response.jwkSet?.keys.first?.kty, TestsConstants.webKeySet.keys.first?.kty)
@@ -68,7 +69,8 @@ final class ClientMetaDataValidatorTests: XCTestCase {
         subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
         authorizationSignedResponseAlg: TestsConstants.signedResponseAlg,
         authorizationEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
-        authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc
+        authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
+        vpFormats: TestsConstants.testVpFormatsTO()
       ))!
       
       XCTAssertEqual(response.jwkSet?.keys.first, TestsConstants.webKeySet.keys.first)
@@ -89,7 +91,8 @@ final class ClientMetaDataValidatorTests: XCTestCase {
       subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
       authorizationSignedResponseAlg: TestsConstants.signedResponseAlg,
       authorizationEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
-      authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc
+      authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
+      vpFormats: TestsConstants.testVpFormatsTO()
     ))!
     
     XCTAssertNotNil(response.jwkSet?.keys.first)

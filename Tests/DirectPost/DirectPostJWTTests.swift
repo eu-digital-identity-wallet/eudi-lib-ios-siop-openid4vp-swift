@@ -83,7 +83,7 @@ final class DirectPostJWTTests: DiXCTest {
     // Obtain consent
     let consent: ClientConsent = .negative(message: "user_cancelled")
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -93,7 +93,9 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: try KeyController.generateRSAPrivateKey(),
       signingKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     // Generate a direct post authorisation response
@@ -140,13 +142,14 @@ final class DirectPostJWTTests: DiXCTest {
       idTokenEncryptedResponseEnc: "A128CBC-HS256",
       subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
       authorizationEncryptedResponseAlg: "ECDH-ES",
-      authorizationEncryptedResponseEnc: "A128CBC-HS256" // was: A256GCM"
+      authorizationEncryptedResponseEnc: "A128CBC-HS256", // was: A256GCM"
+      vpFormats: TestsConstants.testVpFormatsTO()
     )
     
     let validator = ClientMetaDataValidator()
     let metaData = try await validator.validate(clientMetaData: clientMetaData)
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -156,7 +159,9 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let resolved: ResolvedRequestData = .idToken(
@@ -230,7 +235,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -249,7 +254,9 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -328,7 +335,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -347,7 +354,9 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -425,7 +434,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -444,13 +453,15 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     // Add your own URL here that you can obtain from
     // https://verifier.eudiw.dev/
-    let url = "#07"
+    let url = "https://verifier-backend.eudiw.dev/wallet/request.jwt/xvyVO_gQr7R-ZY6zR46qwDYRix_3cjpvqOobGsc5GtT4JKEg872K-5Kro5NdkSHP3usFGprL4UlYmJG9q3aTgg"
     let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
@@ -535,7 +546,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -555,7 +566,9 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -643,7 +656,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -655,7 +668,9 @@ final class DirectPostJWTTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -796,7 +811,8 @@ final class DirectPostJWTTests: DiXCTest {
         ),
         nonce: "0S6_WzA2Mj",
         responseMode: .directPostJWT(responseURI: URL(string: "https://respond.here")!),
-        state: "state"
+        state: "state",
+        vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
       ))
     
     let consent: ClientConsent = .vpToken(

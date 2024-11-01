@@ -146,7 +146,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
 
 private extension JarJwtSignatureValidatorTests {
   
-  func preRegisteredWalletConfiguration() throws -> WalletOpenId4VPConfiguration {
+  func preRegisteredWalletConfiguration() throws -> SiopOpenId4VPConfiguration {
     
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -164,7 +164,7 @@ private extension JarJwtSignatureValidatorTests {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
     
-    return WalletOpenId4VPConfiguration(
+    return SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -182,11 +182,13 @@ private extension JarJwtSignatureValidatorTests {
             jwkSetSource: .passByValue(webKeys: .init(keys: keySet.keys))
           )
         ])],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
   }
   
-  func iso509WalletConfiguration() throws -> WalletOpenId4VPConfiguration {
+  func iso509WalletConfiguration() throws -> SiopOpenId4VPConfiguration {
     
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -204,7 +206,7 @@ private extension JarJwtSignatureValidatorTests {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
     
-    return WalletOpenId4VPConfiguration(
+    return SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -222,7 +224,9 @@ private extension JarJwtSignatureValidatorTests {
             jwkSetSource: .passByValue(webKeys: .init(keys: keySet.keys))
           )
         ])],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
   }
   

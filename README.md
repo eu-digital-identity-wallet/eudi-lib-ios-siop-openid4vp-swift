@@ -48,7 +48,7 @@ a deep link. Similarly, in the cross device scenario, the request would be obtai
 Regardless of the scenario, wallet must take the URI (of the deep link or the QR Code) that represents the 
 authorization request and ask the SDK to validate the URI (that is to make sure that it represents one of the supported
 requests mentioned aforementioned) and in addition gather from Verifier additional information that may be included by
-reference (such as `presentation_definition_uri`, `client_metadata_uri` etc)
+reference (such as `presentation_definition_uri`, etc)
 
 The object that captures the aforementioned functionality is 
 [ResolvedSiopOpenId4VPRequestData](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/Entities/Resolved/ResolvedRequestData.swift)

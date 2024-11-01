@@ -25,8 +25,10 @@ extension ValidatedSiopOpenId4VPRequest {
     let client: Client
     let nonce: String
     let responseMode: ResponseMode?
+    let requestUriMethod: RequestUriMethod
     let state: String?
-
+    let vpFormats: VpFormats
+    
     public init(
       presentationDefinitionSource: PresentationDefinitionSource,
       clientMetaDataSource: ClientMetaDataSource?,
@@ -35,7 +37,9 @@ extension ValidatedSiopOpenId4VPRequest {
       client: Client,
       nonce: String,
       responseMode: ResponseMode?,
-      state: String?
+      requestUriMethod: RequestUriMethod,
+      state: String?,
+      vpFormats: VpFormats
     ) {
       self.presentationDefinitionSource = presentationDefinitionSource
       self.clientMetaDataSource = clientMetaDataSource
@@ -44,7 +48,9 @@ extension ValidatedSiopOpenId4VPRequest {
       self.client = client
       self.nonce = nonce
       self.responseMode = responseMode
+      self.requestUriMethod = requestUriMethod
       self.state = state
+      self.vpFormats = vpFormats
     }
   }
 }

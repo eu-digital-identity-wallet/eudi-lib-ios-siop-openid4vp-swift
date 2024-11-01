@@ -21,10 +21,11 @@ extension ResolvedRequestData {
     public let presentationDefinition: PresentationDefinition
     public let clientMetaData: ClientMetaData.Validated?
     public let client: Client
-    public  let nonce: String
+    public let nonce: String
     public let responseMode: ResponseMode?
     public let state: String?
-
+    public let vpFormats: VpFormats
+    
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///
     /// - Parameters:
@@ -40,7 +41,8 @@ extension ResolvedRequestData {
       client: Client,
       nonce: String,
       responseMode: ResponseMode?,
-      state: String?
+      state: String?,
+      vpFormats: VpFormats
     ) {
       self.presentationDefinition = presentationDefinition
       self.clientMetaData = clientMetaData
@@ -48,6 +50,7 @@ extension ResolvedRequestData {
       self.nonce = nonce
       self.responseMode = responseMode
       self.state = state
+      self.vpFormats = vpFormats
     }
   }
 }

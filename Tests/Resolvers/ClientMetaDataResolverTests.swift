@@ -61,18 +61,6 @@ final class ClientMetaDataResolverTests: XCTestCase {
       XCTFail(error.localizedDescription)
     }
   }
-  
-  func testResolve_WhenFetchByReferenceWithInvalidURL_ThenReturnFailure() async throws {
-    
-    let response = await self.clientMetaDataResolver.resolve(source: .fetchByReference(url: TestsConstants.invalidUrl))
-    
-    switch response {
-    case .success:
-      XCTFail("Success is not an option here")
-    case .failure(let error):
-      XCTAssertEqual(error.localizedDescription, ResolvingError.invalidSource.localizedDescription)
-    }
-  }
 }
 
 private extension ClientMetaDataResolverTests {

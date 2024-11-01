@@ -20,7 +20,7 @@ public protocol ClientMetaDataResolverType {
   associatedtype InputType
 
   /// The output type for resolved client metadata. Must be Codable and Equatable.
-  associatedtype OutputType: Codable, Equatable
+  associatedtype OutputType: Codable
 
   /// The error type for resolving client metadata. Must conform to the Error protocol.
   associatedtype ErrorType: Error
@@ -58,15 +58,8 @@ public actor ClientMetaDataResolver: ClientMetaDataResolverType {
   ) async -> Result<ClientMetaData?, ResolvingError> {
     guard let source = source else { return .success(nil) }
     switch source {
-    case .passByValue(metaData: let metaData):
+    case .passByValue(let metaData):
       return .success(metaData)
-    case .fetchByReference(url: let url):
-      let result = await self.fetcher.fetch(url: url)
-      let metaData = try? result.get()
-      if let metaData = metaData {
-        return .success(metaData)
-      }
-      return .failure(.invalidSource)
     }
   }
 }

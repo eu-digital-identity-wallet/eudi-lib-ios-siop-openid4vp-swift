@@ -32,7 +32,7 @@ public indirect enum JarmOption {
 public extension JarmOption {
   init(
     clientMetaData: ClientMetaData.Validated,
-    walletOpenId4VPConfig: WalletOpenId4VPConfiguration
+    walletOpenId4VPConfig: SiopOpenId4VPConfiguration
   ) throws {
     var signed: JarmOption?
     if let signingAlgorithm = clientMetaData.authorizationSignedResponseAlg {

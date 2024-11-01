@@ -17,15 +17,32 @@ import Foundation
 
 /**
  Extension to `Dictionary` where both the `Key` and `Value` conform to `Encodable`.
-
+ 
  This extension adds a `toJSONData()` method that attempts to convert the dictionary
  to JSON data using `JSONSerialization`.
-
+ 
  - Returns: The JSON `Data` if the conversion is successful; otherwise, nil.
-
+ 
  - Note: This function will fail and return nil if the dictionary contains keys or values that aren't encodable.
  */
 public extension Dictionary where Key: Encodable {
+  /// Converts the dictionary to Data and decodes it into a Codable object.
+  /// - Parameter type: The Codable type to decode into.
+  /// - Returns: A decoded object of the specified Codable type, or `nil` if the operation fails.
+  func decode<T: Decodable>(to type: T.Type) -> T? {
+    do {
+      // Convert the dictionary to Data using JSONSerialization
+      let data = try JSONSerialization.data(withJSONObject: self, options: [])
+      
+      // Decode the data into the specified Codable type
+      let decodedObject = try JSONDecoder().decode(T.self, from: data)
+      return decodedObject
+    } catch {
+      print("Failed to decode: \(error.localizedDescription)")
+      return nil
+    }
+  }
+  
   func toJSONData() -> Data? {
     do {
       return try JSONSerialization.data(withJSONObject: self, options: [])
@@ -33,7 +50,7 @@ public extension Dictionary where Key: Encodable {
       return nil
     }
   }
-
+  
   func toThrowingJSONData() throws -> Data {
     return try JSONSerialization.data(withJSONObject: self, options: [])
   }
@@ -48,7 +65,7 @@ public extension Dictionary where Key == String, Value == Any {
     }
     return from(JSONfile: URL(fileURLWithPath: path))
   }
-
+  
   // Converts the dictionary to an array of URLQueryItem objects
   func toQueryItems() -> [URLQueryItem] {
     var queryItems: [URLQueryItem] = []
@@ -67,7 +84,7 @@ public extension Dictionary where Key == String, Value == Any {
     }
     return queryItems
   }
-
+  
   func getValue<T: Codable>(
     for key: String,
     error: LocalizedError

@@ -36,6 +36,25 @@ public enum SupportedClientIdScheme {
     }
   }
 
+  public var name: String {
+    switch self {
+      
+    /**
+      * The Client Identifier is known to the Wallet in advance of the Authorization Request.
+      */
+    case .preregistered:
+      return "preRegistered"
+    case .x509SanUri:
+      return "x509SanUri"
+    case .x509SanDns:
+      return "x509SanDns"
+    case .did:
+      return "did"
+    case .verifierAttestation:
+      return "verifierAttestation"
+    }
+  }
+  
   case preregistered(clients: [String: PreregisteredClient])
   case x509SanUri(trust: CertificateTrust)
   case x509SanDns(trust: CertificateTrust)

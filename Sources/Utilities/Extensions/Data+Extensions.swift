@@ -27,7 +27,7 @@ extension Data {
     }
     return data
   }
-
+  
   // Encodes the data as a base64 URL-safe string
   func base64URLEncodedString() -> String {
     var base64String = self.base64EncodedString()
@@ -35,5 +35,20 @@ extension Data {
     base64String = base64String.replacingOccurrences(of: "+", with: "-")
     base64String = base64String.replacingOccurrences(of: "=", with: "")
     return base64String
+  }
+  
+  init?(base64UrlEncoded base64Url: String) {
+    var base64 = base64Url
+      .replacingOccurrences(of: "-", with: "+") // Replace '-' with '+'
+      .replacingOccurrences(of: "_", with: "/") // Replace '_' with '/'
+    
+    // Pad with '=' to make the base64 string length a multiple of 4
+    let paddingLength = 4 - base64.count % 4
+    if paddingLength < 4 {
+      base64.append(String(repeating: "=", count: paddingLength))
+    }
+    
+    guard let data = Data(base64Encoded: base64) else { return nil }
+    self = data
   }
 }

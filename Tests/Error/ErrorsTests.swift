@@ -95,7 +95,7 @@ class ErrorTests: XCTestCase {
 
   func testInvalidAuthorizationData() {
     let error = ValidatedAuthorizationError.invalidAuthorizationData
-    XCTAssertEqual(error.errorDescription, "")
+    XCTAssertEqual(error.errorDescription, "invalidAuthorizationData")
   }
 
   func testInvalidPresentationDefinition() {

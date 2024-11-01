@@ -32,7 +32,7 @@ public extension AuthorizationRequest {
   ///   - authorizationRequestData: The authorization request data to process.
   init(
     authorizationRequestData: AuthorisationRequestObject?,
-    walletConfiguration: WalletOpenId4VPConfiguration? = nil
+    walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
     guard let authorizationRequestData = authorizationRequestData else {
       throw ValidatedAuthorizationError.noAuthorizationData
@@ -45,6 +45,7 @@ public extension AuthorizationRequest {
     if let request = authorizationRequestData.request {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
         request: request,
+        requestUriMethod: .init(method: authorizationRequestData.requestUriMethod),
         walletConfiguration: walletConfiguration
       )
 
@@ -62,6 +63,7 @@ public extension AuthorizationRequest {
     } else if let requestUri = authorizationRequestData.requestUri {
       let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
         requestUri: requestUri,
+        requestUriMethod: .init(method: authorizationRequestData.requestUriMethod),
         clientId: authorizationRequestData.clientId,
         walletConfiguration: walletConfiguration
       )

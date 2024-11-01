@@ -25,6 +25,7 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
   case invalidIdTokenType
   case noAuthorizationData
   case invalidAuthorizationData
+  case invalidConfiguration
   case invalidPresentationDefinition
   case invalidClientMetadata
   case invalidJWTWebKeySet
@@ -64,7 +65,9 @@ public enum ValidatedAuthorizationError: LocalizedError, Equatable {
     case .noAuthorizationData:
       return ".noAuthorizationData"
     case .invalidAuthorizationData:
-      return ""
+      return "invalidAuthorizationData"
+    case .invalidConfiguration:
+      return "invalidConfiguration"
     case .invalidPresentationDefinition:
       return ".invalidAuthorizationData"
     case .invalidClientMetadata:
