@@ -21,10 +21,10 @@
     {
       "identity" : "eudi-lib-ios-presentation-exchange-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
+      "location" : "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "branch" : "feature/update-auth--request-object",
-        "revision" : "3129297e9608edee6e456c70b7e679b44e2f8f38"
+        "revision" : "4e1ac57b6772f7f6eac5ef24d977c42e94bc6565",
+        "version" : "0.2.0"
       }
     },
     {

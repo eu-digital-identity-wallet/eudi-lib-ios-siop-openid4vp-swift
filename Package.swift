@@ -21,8 +21,8 @@ let package = Package(
       .upToNextMinor(from: "0.20.0")
     ),
     .package(
-      url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
-      branch: "feature/update-auth--request-object"
+      url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
+      .upToNextMajor(from: "0.2.0")
     ),
     .package(
       url: "https://github.com/apple/swift-certificates.git",
