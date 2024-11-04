@@ -20,7 +20,6 @@ import SwiftyJSON
 /// An enumeration representing different data sources for client metadata.
 public enum ClientMetaDataSource {
   case passByValue(metaData: ClientMetaData)
-  case fetchByReference(url: URL)
 }
 
 /// Extension providing additional functionality to the `ClientMetaDataSource` enumeration.
@@ -32,9 +31,6 @@ extension ClientMetaDataSource {
     if let metaData = authorizationRequestData.clientMetaData,
        let clientMetaData = try? ClientMetaData(metaDataString: metaData) {
       self = .passByValue(metaData: clientMetaData)
-    } else if let clientMetadataUri = authorizationRequestData.clientMetadataUri,
-              let uri = URL(string: clientMetadataUri) {
-      self = .fetchByReference(url: uri)
     } else {
       return nil
     }
@@ -48,9 +44,11 @@ extension ClientMetaDataSource {
        let json = JSON(rawValue: metaData),
        let clientMetaData = try? ClientMetaData(metaData: json) {
       self = .passByValue(metaData: clientMetaData)
-    } else if let clientMetadataUri = authorizationRequestObject["client_metadata_uri"].string,
-              let uri = URL(string: clientMetadataUri) {
-      self = .fetchByReference(url: uri)
+    } else if let metaData = authorizationRequestObject["client_metadata"].string,
+              let data = metaData.data(using: .utf8),
+              let json = try? JSON(data: data),
+              let clientMetaData = try? ClientMetaData(metaData: json) {
+      self = .passByValue(metaData: clientMetaData)
     } else {
       return nil
     }

@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public struct WalletOpenId4VPConfiguration {
+public struct SiopOpenId4VPConfiguration {
   public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
   public let preferredSubjectSyntaxType: SubjectSyntaxType
   public let decentralizedIdentifier: DecentralizedIdentifier
@@ -26,6 +26,8 @@ public struct WalletOpenId4VPConfiguration {
   public let supportedClientIdSchemes: [SupportedClientIdScheme]
   public let vpFormatsSupported: [ClaimFormat]
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition]
+  public let jarConfiguration: JARConfiguration
+  public let vpConfiguration: VPConfiguration
   public let session: Networking
 
   public init(
@@ -39,6 +41,8 @@ public struct WalletOpenId4VPConfiguration {
     supportedClientIdSchemes: [SupportedClientIdScheme],
     vpFormatsSupported: [ClaimFormat],
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
+    jarConfiguration: JARConfiguration = .default,
+    vpConfiguration: VPConfiguration = VPConfiguration.default(),
     session: Networking = Self.walletSession
   ) {
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
@@ -51,6 +55,8 @@ public struct WalletOpenId4VPConfiguration {
     self.supportedClientIdSchemes = supportedClientIdSchemes
     self.vpFormatsSupported = vpFormatsSupported
     self.knownPresentationDefinitionsPerScope = knownPresentationDefinitionsPerScope
+    self.jarConfiguration = jarConfiguration
+    self.vpConfiguration = vpConfiguration
     self.session = session
   }
 
@@ -65,6 +71,8 @@ public struct WalletOpenId4VPConfiguration {
     supportedClientIdSchemes = []
     vpFormatsSupported = []
     knownPresentationDefinitionsPerScope = [:]
+    jarConfiguration = .default
+    vpConfiguration = VPConfiguration.default()
     session = URLSession.shared
   }
 

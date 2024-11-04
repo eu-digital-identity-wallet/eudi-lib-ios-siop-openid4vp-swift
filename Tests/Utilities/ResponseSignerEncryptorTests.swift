@@ -44,7 +44,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ]) 
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -54,7 +54,9 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let responseSignerEncryptor = ResponseSignerEncryptor()
@@ -140,7 +142,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -150,7 +152,9 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let encrypted: JarmOption = .encryptedResponse(
@@ -261,7 +265,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       "keys": [publicJWK.jsonString()?.convertToDictionary()]
     ])
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -271,7 +275,9 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       signingKey: rsaPrivateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let encrypted: JarmOption = .encryptedResponse(

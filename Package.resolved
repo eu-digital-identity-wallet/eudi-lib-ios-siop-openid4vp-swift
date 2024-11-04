@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "revision" : "bf9396b3bc9ed27a3b740759b045c31d10b0eb62",
-        "version" : "0.1.1"
+        "revision" : "4e1ac57b6772f7f6eac5ef24d977c42e94bc6565",
+        "version" : "0.2.0"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-asn1.git",
       "state" : {
-        "revision" : "c7e239b5c1492ffc3ebd7fbcc7a92548ce4e78f0",
-        "version" : "1.1.0"
+        "revision" : "7faebca1ea4f9aaf0cda1cef7c43aecd2311ddf6",
+        "version" : "1.3.0"
       }
     },
     {
@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-certificates.git",
       "state" : {
-        "revision" : "bc566f88842b3b8001717326d935c2d113af5741",
-        "version" : "1.2.0"
+        "revision" : "1fbb6ef21f1525ed5faf4c95207b9c11bea27e94",
+        "version" : "1.6.1"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-crypto.git",
       "state" : {
-        "revision" : "f0525da24dc3c6cbb2b6b338b65042bc91cbc4bb",
-        "version" : "3.3.0"
+        "revision" : "8fa345c2081cfbd4851dffff5dd5bed48efe6081",
+        "version" : "3.9.0"
       }
     },
     {

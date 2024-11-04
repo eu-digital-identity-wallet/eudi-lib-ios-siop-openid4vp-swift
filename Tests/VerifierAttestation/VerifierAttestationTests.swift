@@ -112,7 +112,7 @@ private extension VerifierAttestaionTestsTests {
   func verifierAttestationWalletConfiguration(
     privateKey: SecKey,
     verifier: Verifier
-  ) throws -> WalletOpenId4VPConfiguration {
+  ) throws -> SiopOpenId4VPConfiguration {
     
     let publicKey = try KeyController.generateECDHPublicKey(from: privateKey)
     
@@ -129,7 +129,7 @@ private extension VerifierAttestaionTestsTests {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
     
-    return WalletOpenId4VPConfiguration(
+    return SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -144,7 +144,9 @@ private extension VerifierAttestaionTestsTests {
           clockSkew: 15.0
         )
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
   }
   

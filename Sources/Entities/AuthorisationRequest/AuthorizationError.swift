@@ -44,6 +44,15 @@ public enum AuthorizationError: LocalizedError {
   /// The response mode is invalid.
   case invalidResponseMode
 
+  /// Request and request uri both exist.
+  case invalidUseOfBothRequestAndRequestUri
+  
+  /// Unsupported method.
+  case unsupportedRequestUriMethod(method: RequestUriMethod)
+  
+  /// Invalid method
+  case invalidRequestUriMethod
+  
   /// A localized description of the error.
   public var errorDescription: String? {
     switch self {
@@ -65,6 +74,12 @@ public enum AuthorizationError: LocalizedError {
       return ".invalidNonce"
     case .invalidResponseMode:
       return ".invalidResponseMode"
+    case .invalidUseOfBothRequestAndRequestUri:
+      return ".invalidUseOfBothRequestAndRequestUri"
+    case .unsupportedRequestUriMethod(let method):
+      return ".unsupportedRequestUriMethod\(method)"
+    case .invalidRequestUriMethod:
+      return ".invalidRequestUriMethod"
     }
   }
 }

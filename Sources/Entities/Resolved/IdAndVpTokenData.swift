@@ -21,12 +21,13 @@ extension ResolvedRequestData {
   public struct IdAndVpTokenData {
     let idTokenType: IdTokenType
     let presentationDefinition: PresentationDefinition
-    let clientMetaData: ClientMetaData?
+    let clientMetaData: ClientMetaData.Validated?
     let client: Client
     let nonce: String
     let responseMode: ResponseMode?
     let state: String?
     let scope: Scope?
+    let vpFormats: VpFormats
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -40,12 +41,13 @@ extension ResolvedRequestData {
     public init(
       idTokenType: IdTokenType,
       presentationDefinition: PresentationDefinition,
-      clientMetaData: ClientMetaData?,
+      clientMetaData: ClientMetaData.Validated?,
       client: Client,
       nonce: String,
       responseMode: ResponseMode?,
       state: String?,
-      scope: Scope?
+      scope: Scope?,
+      vpFormats: VpFormats
     ) {
       self.idTokenType = idTokenType
       self.presentationDefinition = presentationDefinition
@@ -55,6 +57,7 @@ extension ResolvedRequestData {
       self.responseMode = responseMode
       self.state = state
       self.scope = scope
+      self.vpFormats = vpFormats
     }
   }
 }

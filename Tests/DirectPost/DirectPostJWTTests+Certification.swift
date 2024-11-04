@@ -56,7 +56,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -68,7 +68,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -154,7 +156,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -166,7 +168,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -253,7 +257,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -265,7 +269,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)

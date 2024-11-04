@@ -143,7 +143,7 @@ final class DirectPostTests: DiXCTest {
       name: "Bob"
     )
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -153,7 +153,9 @@ final class DirectPostTests: DiXCTest {
       signingKey: try KeyController.generateRSAPrivateKey(),
       signingKeySet: WebKeySet(keys: []),
       supportedClientIdSchemes: [],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let jws = try jose.build(
@@ -283,7 +285,7 @@ final class DirectPostTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -302,7 +304,9 @@ final class DirectPostTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -390,7 +394,7 @@ final class DirectPostTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     
-    let wallet: WalletOpenId4VPConfiguration = .init(
+    let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -409,7 +413,9 @@ final class DirectPostTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -450,7 +456,7 @@ final class DirectPostTests: DiXCTest {
       
       let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
       
-      let wallet: WalletOpenId4VPConfiguration = .init(
+      let wallet: SiopOpenId4VPConfiguration = .init(
         subjectSyntaxTypesSupported: [
           .decentralizedIdentifier,
           .jwkThumbprint
@@ -469,7 +475,9 @@ final class DirectPostTests: DiXCTest {
             )
           ])
         ],
-        vpFormatsSupported: []
+        vpFormatsSupported: [],
+        jarConfiguration: .default,
+        vpConfiguration: VPConfiguration.default()
       )
       
       let jws = try jose.build(

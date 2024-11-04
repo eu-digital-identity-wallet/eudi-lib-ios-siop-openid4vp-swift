@@ -22,7 +22,7 @@ public enum JarmSpec {
 public extension JarmSpec {
   init(
     clientMetaData: ClientMetaData.Validated?,
-    walletOpenId4VPConfig: WalletOpenId4VPConfiguration?
+    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
   ) throws {
 
     guard let clientMetaData = clientMetaData else {
