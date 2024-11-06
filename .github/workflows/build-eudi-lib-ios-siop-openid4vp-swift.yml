@@ -1,7 +1,11 @@
 ---
 name: eudi-lib-ios-siop-openid4vp-swift
 on:
-  - push
+  pull_request:
+    types: [opened, reopened]
+  push:
+    branches: ['main']
+    tags: [ v* ]
 jobs:
   build:
     runs-on: "macos-14"
