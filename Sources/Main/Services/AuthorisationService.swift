@@ -79,7 +79,7 @@ public actor AuthorisationService: AuthorisationServiceType {
         "response": joseResponse
       ], uniquingKeysWith: { _, new in
         new
-      })
+      }).filter { $0.key != "vp_token" }
       
       let post = VerifierFormPost(
         additionalHeaders: ["Content-Type": ContentType.form.rawValue],
