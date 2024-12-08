@@ -22,7 +22,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMajor(from: "0.2.0")
+      .upToNextMajor(from: "0.2.1")
     ),
     .package(
       url: "https://github.com/apple/swift-certificates.git",
