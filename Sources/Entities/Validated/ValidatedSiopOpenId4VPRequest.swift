@@ -424,6 +424,23 @@ public extension ValidatedSiopOpenId4VPRequest {
         supportedScheme: scheme,
         clientId: clientId
       )
+    case .redirectUri:
+      guard let url = URL(string: clientId) else {
+        throw ValidatedAuthorizationError.validationError("Client id must be uri for redirectUri scheme")
+      }
+      
+      let configUrl = config?
+        .supportedClientIdSchemes
+        .first(where: { $0.scheme == scheme.scheme })?
+        .redirectUri
+      
+      guard url == configUrl else {
+        throw ValidatedAuthorizationError.validationError("Client id must be uri for redirectUri scheme")
+      }
+      
+      return .redirectUri(
+        clientId: url
+      )
     }
   }
   
