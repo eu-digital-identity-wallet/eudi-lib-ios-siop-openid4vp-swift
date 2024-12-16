@@ -33,6 +33,8 @@ public enum SupportedClientIdScheme {
       return .did
     case .verifierAttestation:
       return .verifierAttestation
+    case .redirectUri:
+      return .redirectUri
     }
   }
 
@@ -52,9 +54,20 @@ public enum SupportedClientIdScheme {
       return "did"
     case .verifierAttestation:
       return "verifierAttestation"
+    case .redirectUri:
+      return "redirectUri"
     }
   }
   
+  var redirectUri: URL? {
+    switch self {
+    case .redirectUri(let clientId):
+      return clientId
+    default:
+      return nil
+    }
+  }
+  case redirectUri(clientId: URL)
   case preregistered(clients: [String: PreregisteredClient])
   case x509SanUri(trust: CertificateTrust)
   case x509SanDns(trust: CertificateTrust)
