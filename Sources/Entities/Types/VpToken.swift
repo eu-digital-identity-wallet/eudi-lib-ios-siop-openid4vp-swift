@@ -45,16 +45,14 @@ public struct VpToken: Encodable {
 
   // Helper function to encode individual VerifiablePresentation cases
   private func encodeToken(_ token: VerifiablePresentation) throws -> JSON {
-    let jsonData: Data
     switch token {
     case .generic(let value):
-      jsonData = try JSONEncoder().encode(value)
+      return JSON(value)
     case .msoMdoc(let value):
-      jsonData = try JSONEncoder().encode(value)
+      return JSON(value)
     case .json(let json):
-      jsonData = try JSONEncoder().encode(json)
+      return json
     }
-    return try JSON(data: jsonData)
   }
 
   public func encode(to encoder: Encoder) throws {
