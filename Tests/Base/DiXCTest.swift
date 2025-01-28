@@ -30,6 +30,14 @@ class DiXCTest: XCTestCase {
     super.tearDown()
   }
   
+  func testContainer() {
+    let reporting = DependencyContainer.shared.resolve(
+      type: Reporting.self,
+      mode: .new
+    )
+    
+    XCTAssert(reporting is MockReporter)
+  }
 }
 
 extension DiXCTest {
