@@ -38,5 +38,7 @@ public struct JWTClaimNames {
   // RFC 7519 "jti" (JWT ID) Claim
   public static let jwtId = "jti"
 
+  public static let subjectJWK = "sub_jwk"
+  
   private init() {}
 }
