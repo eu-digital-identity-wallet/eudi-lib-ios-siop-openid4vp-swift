@@ -1,0 +1,82 @@
+/*
+ * Copyright (c) 2023 European Commission
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+public struct VerifierId {
+  public let scheme: ClientIdScheme
+  public let originalClientId: OriginalClientId
+  
+  public var clientId: OriginalClientId {
+    let prefix: String? = {
+      switch scheme {
+      case .redirectUri:
+        return OpenId4VPSpec.clientIdSchemeRedirectUri
+      case .x509SanUri:
+        return OpenId4VPSpec.clientIdSchemeX509SanUri
+      case .x509SanDns:
+        return OpenId4VPSpec.clientIdSchemeX509SanDns
+      case .verifierAttestation:
+        return OpenId4VPSpec.clientIdSchemeVerifierAttestation
+      default:
+        return nil
+      }
+    }()
+    
+    var result = ""
+    if let prefix = prefix {
+      result.append(prefix)
+      result.append(OpenId4VPSpec.clientIdSchemeSeparator)
+    }
+    result.append(originalClientId)
+    return result
+  }
+  
+  public func toString() -> String {
+    clientId
+  }
+  
+  public static func parse(clientId: String) -> Result<VerifierId, Error> {
+    return Result {
+      func invalid(_ message: String) -> Error {
+        return ValidatedAuthorizationError.validationError(message)
+      }
+      
+      if !clientId.contains(OpenId4VPSpec.clientIdSchemeSeparator) {
+        return VerifierId(scheme: .preRegistered, originalClientId: clientId)
+        
+      } else {
+        let parts = clientId.split(separator: OpenId4VPSpec.clientIdSchemeSeparator, maxSplits: 1)
+        guard parts.count == 2 else {
+          throw invalid("Invalid clientId format")
+        }
+        let schemeString = String(parts[0])
+        let originalClientId = String(parts[1])
+        
+        guard let scheme = ClientIdScheme(rawValue: schemeString) else {
+          throw invalid("'\(clientId)' does not contain a valid Client ID Scheme")
+        }
+        
+        switch scheme {
+        case .preRegistered:
+          throw invalid("'\(ClientIdScheme.preRegistered)' cannot be used as a Client ID Scheme")
+        case .redirectUri, .x509SanUri, .x509SanDns, .verifierAttestation:
+          return VerifierId(scheme: scheme, originalClientId: originalClientId)
+        case .https, .did:
+          return VerifierId(scheme: scheme, originalClientId: clientId)
+        }
+      }
+    }
+  }
+}
+
