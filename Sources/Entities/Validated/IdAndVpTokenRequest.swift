@@ -21,7 +21,6 @@ extension ValidatedSiopOpenId4VPRequest {
     let idTokenType: IdTokenType
     let presentationDefinitionSource: PresentationDefinitionSource
     let clientMetaDataSource: ClientMetaDataSource?
-    let clientIdScheme: ClientIdScheme?
     let clientId: String
     let client: Client
     let nonce: String
@@ -34,7 +33,6 @@ extension ValidatedSiopOpenId4VPRequest {
       idTokenType: IdTokenType,
       presentationDefinitionSource: PresentationDefinitionSource,
       clientMetaDataSource: ClientMetaDataSource?,
-      clientIdScheme: ClientIdScheme?,
       clientId: String,
       client: Client,
       nonce: String,
@@ -46,7 +44,6 @@ extension ValidatedSiopOpenId4VPRequest {
       self.idTokenType = idTokenType
       self.presentationDefinitionSource = presentationDefinitionSource
       self.clientMetaDataSource = clientMetaDataSource
-      self.clientIdScheme = clientIdScheme
       self.clientId = clientId
       self.client = client
       self.nonce = nonce
