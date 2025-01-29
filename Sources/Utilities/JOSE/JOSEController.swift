@@ -68,10 +68,10 @@ public class JOSEController {
     let claimSet = try ([
       JWTClaimNames.issuer: issuerClaim,
       JWTClaimNames.subject: issuerClaim,
-      JWTClaimNames.audience: idTokenData.client.id,
+      JWTClaimNames.audience: idTokenData.client.id.clientId,
       JWTClaimNames.issuedAt: Int(iat.timeIntervalSince1970.rounded()),
       JWTClaimNames.expirationTime: Int(exp.timeIntervalSince1970.rounded()),
-      "sub_jwk": subjectJwk.toDictionary()
+      JWTClaimNames.subjectJWK: subjectJwk.toDictionary()
     ] as [String: Any])
       .merging(holderInfo.toDictionary(), uniquingKeysWith: { _, new in
         new
