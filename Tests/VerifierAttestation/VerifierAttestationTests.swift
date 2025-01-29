@@ -47,8 +47,7 @@ final class VerifierAttestaionTestsTests: XCTestCase {
     let client = try await ValidatedSiopOpenId4VPRequest.getClient(
       clientId: clientId,
       jwt: jwt.compactSerializedString,
-      config: config,
-      scheme: "verifier_attestation"
+      config: config
     )
     
     switch client {
@@ -85,8 +84,7 @@ final class VerifierAttestaionTestsTests: XCTestCase {
       _ = try await ValidatedSiopOpenId4VPRequest.getClient(
         clientId: clientId,
         jwt: jwt.compactSerializedString,
-        config: config,
-        scheme: "verifier_attestation"
+        config: config
       )
       
       // If no error is thrown, this assertion will fail the test
