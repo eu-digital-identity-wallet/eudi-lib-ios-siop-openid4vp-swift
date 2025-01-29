@@ -64,7 +64,8 @@ public extension AuthorizationResponse {
         let payload: AuthorizationResponsePayload = .siopAuthenticationResponse(
           idToken: idToken,
           state: try request.state ?? { throw AuthorizationError.invalidState }(), 
-          nonce: try request.state ?? { throw AuthorizationError.invalidNonce }()
+          nonce: try request.state ?? { throw AuthorizationError.invalidNonce }(),
+          clientId: resolvedRequest.client.id
         )
         self = try .buildAuthorizationResponse(
           responseMode: request.responseMode,
@@ -82,7 +83,8 @@ public extension AuthorizationResponse {
           verifiableCredential: [],
           presentationSubmission: presentationSubmission,
           state: request.state ?? "", 
-          nonce: request.nonce
+          nonce: request.nonce,
+          clientId: resolvedRequest.client.id
         )
         self = try .buildAuthorizationResponse(
           responseMode: request.responseMode,
