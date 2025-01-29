@@ -30,6 +30,17 @@ public enum ResolvedRequestData {
       return nil
     }
   }
+  
+  var client: Client {
+    switch self {
+    case .vpToken(let request):
+      return request.client
+    case .idAndVpToken(let request):
+      return request.client
+    case .idToken(let request):
+      return request.client
+    }
+  }
 }
 
 public extension ResolvedRequestData {
