@@ -68,7 +68,7 @@ public enum SupportedClientIdScheme {
     }
   }
   case redirectUri(clientId: URL)
-  case preregistered(clients: [String: PreregisteredClient])
+  case preregistered(clients: [OriginalClientId: PreregisteredClient])
   case x509SanUri(trust: CertificateTrust)
   case x509SanDns(trust: CertificateTrust)
   case did(lookup: DIDPublicKeyLookupAgentType)

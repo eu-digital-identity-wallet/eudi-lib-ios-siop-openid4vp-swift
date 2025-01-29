@@ -16,7 +16,7 @@
 import Foundation
 
 public struct PreregisteredClient {
-  public let clientId: String
+  public let clientId: OriginalClientId
   public let legalName: String
   public let jarSigningAlg: JWSAlgorithm
   public let jwkSetSource: WebKeySource
