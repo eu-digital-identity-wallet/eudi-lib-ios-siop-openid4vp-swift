@@ -180,6 +180,6 @@ private extension X509CertificateChainVerifier {
       }
     }
     
-    return dataObjects
+    return dataObjects.isEmpty ? parseCertificateData(from: base64Strings) : dataObjects
   }
 }
