@@ -65,27 +65,18 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
     
-    let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME].string
-    
-    if let clientId = clientId {
-      if payloadcClientId != clientId {
-        throw ValidatedAuthorizationError.clientIdMismatch(clientId, payloadcClientId)
-      }
-    }
-    
     let responseType = try ResponseType(authorizationRequestObject: payload)
     
-    try await Self.validateSignature(
+    try await Self.verify(
       token: jwt,
       clientId: clientId,
       walletConfiguration: walletConfiguration
     )
     
     let client = try await Self.getClient(
-      clientId: payloadcClientId,
+      clientId: clientId,
       jwt: jwt,
-      config: walletConfiguration,
-      scheme: clientIdScheme
+      config: walletConfiguration
     )
     
     // Initialize the validated request based on the response type
@@ -140,12 +131,10 @@ public extension ValidatedSiopOpenId4VPRequest {
       throw ValidatedAuthorizationError.missingRequiredField(".nonce")
     }
     
-    let clientIdScheme = payload[Constants.CLIENT_ID_SCHEME].string
-    
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
     
-    try await ValidatedSiopOpenId4VPRequest.validateSignature(
+    try await ValidatedSiopOpenId4VPRequest.verify(
       token: request,
       clientId: clientId,
       walletConfiguration: walletConfiguration
@@ -154,8 +143,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     let client = try await Self.getClient(
       clientId: clientId,
       jwt: request,
-      config: walletConfiguration,
-      scheme: clientIdScheme
+      config: walletConfiguration
     )
     
     // Initialize the validated request based on the response type
@@ -223,8 +211,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       
       let client = try await Self.getClient(
         clientId: payloadcClientId,
-        config: walletConfiguration,
-        scheme: authorizationRequestData.clientIdScheme
+        config: walletConfiguration
       )
       
       let jsonData = try JSONEncoder().encode(authorizationRequestData)
@@ -370,13 +357,19 @@ public extension ValidatedSiopOpenId4VPRequest {
 
 public extension ValidatedSiopOpenId4VPRequest {
   static func getClient(
-    clientId: String,
+    clientId: String?,
     jwt: JWTString,
-    config: SiopOpenId4VPConfiguration?,
-    scheme: String?
+    config: SiopOpenId4VPConfiguration?
   ) async throws -> Client {
+    
+    guard let clientId else {
+      throw ValidatedAuthorizationError.validationError("clientId is missing")
+    }
     guard
-      let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first(where: { $0.scheme.rawValue == scheme }) ?? config?.supportedClientIdSchemes.first
+      let verifierId = try? VerifierId.parse(clientId: clientId).get(),
+      let scheme = config?.supportedClientIdSchemes.first(
+        where: { $0.scheme.rawValue == verifierId.scheme.rawValue }
+      ) ?? config?.supportedClientIdSchemes.first
     else {
       throw ValidatedAuthorizationError.validationError("No supported client Id scheme")
     }
@@ -446,11 +439,13 @@ public extension ValidatedSiopOpenId4VPRequest {
   
   static func getClient(
     clientId: String,
-    config: SiopOpenId4VPConfiguration?,
-    scheme: String?
+    config: SiopOpenId4VPConfiguration?
   ) async throws -> Client {
     guard
-      let scheme: SupportedClientIdScheme = config?.supportedClientIdSchemes.first(where: { $0.scheme.rawValue == scheme }) ?? config?.supportedClientIdSchemes.first
+      let verifierId = try? VerifierId.parse(clientId: clientId).get(),
+      let scheme = config?.supportedClientIdSchemes.first(
+        where: { $0.scheme.rawValue == verifierId.scheme.rawValue }
+      ) ?? config?.supportedClientIdSchemes.first
     else {
       throw ValidatedAuthorizationError.validationError("No supported client Id scheme")
     }
@@ -562,7 +557,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     )
   }
   
-  static func validateSignature(
+  static func verify(
     token: JWTString,
     clientId: String?,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
@@ -584,7 +579,6 @@ private extension ValidatedSiopOpenId4VPRequest {
     return .vpToken(request: .init(
       presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
       clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
-      clientIdScheme: try .init(authorizationRequestData: authorizationRequestData),
       clientId: clientId,
       client: .preRegistered(clientId: clientId, legalName: clientId),
       nonce: nonce,
@@ -605,7 +599,6 @@ private extension ValidatedSiopOpenId4VPRequest {
     .idToken(request: .init(
       idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
-      clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       client: client,
       nonce: nonce,
@@ -626,7 +619,6 @@ private extension ValidatedSiopOpenId4VPRequest {
     return .vpToken(request: .init(
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
-      clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       client: client,
       nonce: nonce,
@@ -649,7 +641,6 @@ private extension ValidatedSiopOpenId4VPRequest {
       idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
-      clientIdScheme: try .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       client: client,
       nonce: nonce,

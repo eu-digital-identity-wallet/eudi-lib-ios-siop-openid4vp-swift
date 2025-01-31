@@ -37,28 +37,14 @@ public actor AccessValidator {
   }
   
   private func doValidate(clientId: String?, jws: JWS) async throws {
-    guard let dictionary = try JSONSerialization.jsonObject(with: jws.payload.data()) as? [String: Any] else {
-      throw ValidatedAuthorizationError.validationError("Invalid JWS payload")
-    }
-    let claimSet = dictionary
     
     guard let clientId = clientId else {
       throw ValidatedAuthorizationError.missingRequiredField("client_id")
     }
     
-    guard let jwtClientId = claimSet["client_id"] as? String else {
-      throw ValidatedAuthorizationError.invalidClientId
-    }
-    
-    guard clientId == jwtClientId else {
-      throw ValidatedAuthorizationError.clientIdMismatch(clientId, jwtClientId)
-    }
-    
-    guard let scheme = claimSet["client_id_scheme"] as? String else {
-      throw ValidatedAuthorizationError.unsupportedClientIdScheme(nil)
-    }
-    
-    guard let clientIdScheme = ClientIdScheme(rawValue: scheme) else {
+    guard
+      let clientIdScheme = try? VerifierId.parse(clientId: clientId).get().scheme
+    else {
       throw ValidatedAuthorizationError.unsupportedClientIdScheme(nil)
     }
     
@@ -134,8 +120,10 @@ public actor AccessValidator {
       throw ValidatedAuthorizationError.validationError("Could not locate leaf certificate")
     }
 
+    let verifierId = VerifierId.parse(clientId: clientId)
     let alternativeNames = alternativeNames(leafCertificate)
-    if !alternativeNames.contains(clientId) {
+    if let originalClientId = try? verifierId.get().originalClientId,
+       !alternativeNames.contains(originalClientId) {
       throw ValidatedAuthorizationError.validationError("Client id (\(clientId) not part of list (\(alternativeNames))")
     }
     
