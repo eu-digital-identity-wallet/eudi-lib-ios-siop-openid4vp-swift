@@ -80,13 +80,15 @@ public actor AuthorisationService: AuthorisationServiceType {
         data: data
       )
       
+      let dictionary = try? data.toDictionary()
       let post = VerifierFormPost(
         additionalHeaders: [
           "Content-Type": ContentType.form.rawValue
         ],
         url: url,
         formData: [
-          "response": joseResponse
+          "response": joseResponse,
+          "state": dictionary?["state"] ?? "",
         ]
       )
       
