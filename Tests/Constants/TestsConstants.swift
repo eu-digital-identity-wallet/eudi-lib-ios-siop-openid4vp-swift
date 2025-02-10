@@ -405,7 +405,7 @@ struct TestsConstants {
     if result != errSecSuccess {
       bytes = (0 ..< 16).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) }
     }
-    return Data(bytes).base64EncodedString()
+    return Data(bytes).base64URLEncodedString()
   }
   
   static func presentationSubmission(_ presentationDefinition: PresentationDefinition) -> PresentationSubmission {
