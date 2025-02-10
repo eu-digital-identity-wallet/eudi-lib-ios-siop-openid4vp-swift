@@ -376,8 +376,8 @@ public extension ValidatedSiopOpenId4VPRequest {
     
     switch scheme {
     case .preregistered(let clients):
-      guard let client = clients[clientId] else {
-        throw ValidatedAuthorizationError.validationError("preregistered client nort found")
+      guard let client = clients[verifierId.originalClientId] else {
+        throw ValidatedAuthorizationError.validationError("preregistered client not found")
       }
       return .preRegistered(
         clientId: clientId,
