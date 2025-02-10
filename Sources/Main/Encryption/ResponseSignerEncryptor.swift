@@ -155,17 +155,11 @@ private extension ResponseSignerEncryptor {
     
     let jwe = try JWE(
       header: header,
-      payload: Payload(data
-        .toDictionary()
-        .merging([
-          JWTClaimNames.issuer: holderId
-        ], uniquingKeysWith: { _, new in
-          new
-        }).toThrowingJSONData()
+      payload: Payload(
+        data.toDictionary().toThrowingJSONData()
       ),
       encrypter: keyAndEncryptor.encrypter
     )
-    
     return jwe
   }
   
