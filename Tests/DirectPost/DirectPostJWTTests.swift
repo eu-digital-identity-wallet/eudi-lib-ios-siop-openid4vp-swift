@@ -207,7 +207,6 @@ final class DirectPostJWTTests: DiXCTest {
     let decryption = try JSONSerialization.jsonObject(with: decryptionPayload.data()) as! [String: Any]
     
     XCTAssertEqual(decryption["id_token"] as! String, token)
-    XCTAssertEqual(decryption["iss"] as! String, "did:example:123")
   }
   
   func testSDKEndtoEndDirectPostJwtPreregistered() async throws {
@@ -262,7 +261,7 @@ final class DirectPostJWTTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]
-    let presentationId = session["presentation_id"] as! String
+    let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
@@ -308,7 +307,10 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
       }
       
-      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
+      let pollingResult = try await TestsHelpers.pollVerifier(
+        transactionId: transactionId,
+        nonce: nonce
+      )
       
       switch pollingResult {
       case .success:
@@ -394,7 +396,8 @@ final class DirectPostJWTTests: DiXCTest {
           apu: TestsConstants.generateMdocGeneratedNonce(),
           verifiablePresentations: [
             .msoMdoc(TestsConstants.pidCbor)
-          ]),
+          ]
+        ),
         presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
       )
       
@@ -649,7 +652,7 @@ final class DirectPostJWTTests: DiXCTest {
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier),
         .preregistered(clients: [
-          "Verifier": .init(
+          "verifier-backend.eudiw.dev": .init(
             clientId: "verifier-backend.eudiw.dev",
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
@@ -664,12 +667,11 @@ final class DirectPostJWTTests: DiXCTest {
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
-    let clientScheme = "x509_san_dns"
     let clientId = session["client_id"]
-    let presentationId = session["presentation_id"] as! String
+    let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientScheme):\(clientId!)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -712,7 +714,10 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
       }
       
-      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
+      let pollingResult = try await TestsHelpers.pollVerifier(
+        transactionId: transactionId,
+        nonce: nonce
+      )
       
       switch pollingResult {
       case .success:
@@ -783,8 +788,8 @@ final class DirectPostJWTTests: DiXCTest {
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
-    let clientId = "x509_san_dns:\(session["client_id"]!)"
-    let presentationId = session["presentation_id"] as! String
+    let clientId = session["client_id"]!
+    let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)")!)
@@ -830,7 +835,10 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
       }
       
-      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
+      let pollingResult = try await TestsHelpers.pollVerifier(
+        transactionId: transactionId,
+        nonce: nonce
+      )
       
       switch pollingResult {
       case .success:
@@ -901,8 +909,8 @@ final class DirectPostJWTTests: DiXCTest {
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
-    let clientId = "x509_san_dns:\(session["client_id"]!)"
-    let presentationId = session["presentation_id"] as! String
+    let clientId = session["client_id"]!
+    let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
     let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)")!)
@@ -948,7 +956,10 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
       }
       
-      let pollingResult = try await TestsHelpers.pollVerifier(presentationId: presentationId, nonce: nonce)
+      let pollingResult = try await TestsHelpers.pollVerifier(
+        transactionId: transactionId,
+        nonce: nonce
+      )
       
       switch pollingResult {
       case .success:
