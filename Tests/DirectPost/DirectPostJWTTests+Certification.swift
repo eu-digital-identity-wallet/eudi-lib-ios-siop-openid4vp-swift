@@ -91,9 +91,12 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.certCbor)
-        ]),
+        vpToken: .init(
+          apu: TestsConstants.generateMdocGeneratedNonce(),
+          verifiablePresentations: [
+            .msoMdoc(TestsConstants.certCbor)
+          ]
+        ),
         presentationSubmission: .init(
           id: "psId",
           definitionID: "psId",
