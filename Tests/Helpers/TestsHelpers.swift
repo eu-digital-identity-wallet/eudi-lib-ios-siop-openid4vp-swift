@@ -175,9 +175,9 @@ class TestsHelpers {
     return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
   }
   
-  static func pollVerifier(presentationId: String, nonce: String) async throws -> Result<String, FetchError>{
+  static func pollVerifier(transactionId: String, nonce: String) async throws -> Result<String, FetchError>{
     let fetcher = Fetcher<String>()
-    let pollingUrl = URL(string: "\(TestsConstants.host)/ui/presentations/\(presentationId)?nonce=\(nonce)")!
+    let pollingUrl = URL(string: "\(TestsConstants.host)/ui/presentations/\(transactionId)?nonce=\(nonce)")!
     return try await fetcher.fetchString(url: pollingUrl)
   }
 }
