@@ -19,16 +19,16 @@ import SwiftASN1
 
 public enum Client {
   case preRegistered(
-    clientId: String,
+    clientId: OriginalClientId,
     legalName: String
   )
   case redirectUri(clientId: URL)
   case x509SanDns(
-    clientId: String,
+    clientId: OriginalClientId,
     certificate: Certificate
   )
   case x509SanUri(
-    clientId: String,
+    clientId: OriginalClientId,
     certificate: Certificate
   )
 
@@ -37,26 +37,44 @@ public enum Client {
   )
 
   case attested(
-    clientId: String
+    clientId: OriginalClientId
   )
 
    /**
     * The id of the client.
     */
-  public var id: String {
+  public var id: VerifierId {
     switch self {
     case .preRegistered(let clientId, _):
-      return clientId
+      return .init(
+        scheme: .preRegistered,
+        originalClientId: clientId
+      )
     case .redirectUri(let clientId):
-      return clientId.absoluteString
+      return .init(
+        scheme: .redirectUri,
+        originalClientId: clientId.absoluteString
+      )
     case .x509SanDns(let clientId, _):
-      return clientId
+      return .init(
+        scheme: .x509SanDns,
+        originalClientId: clientId
+      )
     case .x509SanUri(let clientId, _):
-      return clientId
+      return .init(
+        scheme: .x509SanUri,
+        originalClientId: clientId
+      )
     case .didClient(let did):
-      return did.string
+      return .init(
+        scheme: .did,
+        originalClientId: did.string
+      )
     case .attested(let clientId):
-      return clientId
+      return .init(
+        scheme: .verifierAttestation,
+        originalClientId: clientId
+      )
     }
   }
 

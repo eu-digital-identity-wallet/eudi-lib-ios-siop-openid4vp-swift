@@ -86,9 +86,8 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
   }
 
   public func authorize(url: URL) async throws -> AuthorizationRequest {
-    let authorizationRequestData = AuthorisationRequestObject(from: url)
-    return try await AuthorizationRequest(
-      authorizationRequestData: authorizationRequestData,
+    return try await .init(
+      authorizationRequestData: .init(from: url),
       walletConfiguration: walletConfiguration
     )
   }
@@ -140,7 +139,9 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
     )
 
     return try await dispatcher.dispatch(
-      poster: Poster(session: walletConfiguration?.session ?? URLSession.shared)
+      poster: Poster(
+        session: walletConfiguration?.session ?? URLSession.shared
+      )
     )
   }
 

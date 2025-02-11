@@ -15,6 +15,8 @@
  */
 import Foundation
 
+public typealias OriginalClientId = String
+
 public enum RequestUriMethod: CustomStringConvertible {
   case GET, POST
   

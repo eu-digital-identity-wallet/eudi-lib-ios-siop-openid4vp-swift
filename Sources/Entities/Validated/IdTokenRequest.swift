@@ -19,7 +19,6 @@ extension ValidatedSiopOpenId4VPRequest {
   public struct IdTokenRequest {
     let idTokenType: IdTokenType
     let clientMetaDataSource: ClientMetaDataSource?
-    let clientIdScheme: ClientIdScheme?
     let clientId: String
     let client: Client
     let nonce: String
@@ -30,7 +29,6 @@ extension ValidatedSiopOpenId4VPRequest {
     public init(
       idTokenType: IdTokenType,
       clientMetaDataSource: ClientMetaDataSource?,
-      clientIdScheme: ClientIdScheme?,
       clientId: String,
       client: Client,
       nonce: String,
@@ -40,7 +38,6 @@ extension ValidatedSiopOpenId4VPRequest {
     ) {
       self.idTokenType = idTokenType
       self.clientMetaDataSource = clientMetaDataSource
-      self.clientIdScheme = clientIdScheme
       self.clientId = clientId
       self.client = client
       self.nonce = nonce

@@ -25,7 +25,7 @@ import SwiftyJSON
 public enum ClientIdScheme: String, Codable {
   case preRegistered = "pre-registered"
   case redirectUri = "redirect_uri"
-  case entityId = "entity_id"
+  case https = "https"
   case did = "did"
   case x509SanDns = "x509_san_dns"
   case x509SanUri = "x509_san_uri"
@@ -34,7 +34,7 @@ public enum ClientIdScheme: String, Codable {
 
 /// Extension providing additional functionality to the `ClientIdScheme` enumeration.
 extension ClientIdScheme {
-
+  
   /// Initializes a `ClientIdScheme` based on the authorization request object.
   /// - Parameter authorizationRequestObject: The authorization request object.
   /// - Throws: An error if the client ID scheme is unsupported.
@@ -46,15 +46,16 @@ extension ClientIdScheme {
       scheme == "x509_san_dns" ||
       scheme == "x509_san_uri" ||
       scheme == "did" ||
+      scheme == "https" ||
       scheme == "verifier_attestation",
       let clientIdScheme = ClientIdScheme(rawValue: scheme)
     else {
       throw ValidatedAuthorizationError.unsupportedClientIdScheme(scheme)
     }
-
+    
     self = clientIdScheme
   }
-
+  
   /// Initializes a `ClientIdScheme` based on the authorization request data.
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Throws: An error if the client ID scheme is unsupported.
@@ -65,7 +66,32 @@ extension ClientIdScheme {
     else {
       throw ValidatedAuthorizationError.unsupportedClientIdScheme(authorizationRequestData.clientIdScheme)
     }
-
+    
     self = clientIdScheme
+  }
+  
+  /// Creates a new instance of `ClientIdScheme` from a raw value.
+  ///
+  /// - Parameter rawValue: The raw string value representing the client ID scheme.
+  /// - Returns: An instance of `ClientIdScheme` if the raw value matches a valid scheme, or `nil` otherwise.
+  public init?(rawValue: String) {
+    switch rawValue {
+    case "pre-registered":
+      self = .preRegistered
+    case "redirect_uri":
+      self = .redirectUri
+    case "https":
+      self = .https
+    case "did":
+      self = .did
+    case "x509_san_dns":
+      self = .x509SanDns
+    case "x509_san_uri":
+      self = .x509SanUri
+    case "verifier_attestation":
+      self = .verifierAttestation
+    default:
+      return nil // Return nil if the raw value doesn't match any case
+    }
   }
 }

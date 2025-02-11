@@ -41,7 +41,7 @@ public struct X509CertificateChainVerifier {
     
     let certificates = try convertStringsToData(
       base64Strings: base64Certificates
-    ).compactMap { 
+    ).compactMap {
       SecCertificateCreateWithData(nil, $0 as CFData)
     }
     
@@ -68,8 +68,8 @@ public struct X509CertificateChainVerifier {
       var error: CFError?
       _ = SecTrustEvaluateWithError(trust!, &error)
       return .recoverableFailure(error?.localizedDescription ?? "Unknown .recoverableFailure")
-               
-     } else {
+      
+    } else {
       return .failure
     }
   }
@@ -169,17 +169,16 @@ public struct X509CertificateChainVerifier {
 private extension X509CertificateChainVerifier {
   
   func convertStringsToData(base64Strings: [String]) throws -> [Data] {
-    var dataObjects: [Data] = []
-    for base64String in base64Strings {
+    base64Strings.compactMap { base64String in
       if let data = Data(base64Encoded: base64String),
-         let string = String(data: data, encoding: .utf8)?.removeCertificateDelimiters(),
-         let encodedData = Data(base64Encoded: string) {
-        dataObjects.append(encodedData)
-      } else {
-        throw DataConversionError.conversionFailed("Failed to convert base64 string: \(base64String)")
+         let string = String(
+          data: data,
+          encoding: .utf8
+         )?.removeCertificateDelimiters(),
+         let finalData = Data(base64Encoded: string) {
+        return finalData
       }
+      return Data(base64Encoded: base64String)
     }
-    
-    return dataObjects
   }
 }

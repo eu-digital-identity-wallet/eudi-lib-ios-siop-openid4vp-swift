@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
-
-public struct PreregisteredClient {
-  public let clientId: OriginalClientId
-  public let legalName: String
-  public let jarSigningAlg: JWSAlgorithm
-  public let jwkSetSource: WebKeySource
-
-  public init(
-    clientId: String,
-    legalName: String,
-    jarSigningAlg: JWSAlgorithm,
-    jwkSetSource: WebKeySource
-  ) {
-    self.clientId = clientId
-    self.legalName = legalName
-    self.jarSigningAlg = jarSigningAlg
-    self.jwkSetSource = jwkSetSource
-  }
+public struct OpenId4VPSpec {
+  public static let clientIdSchemeSeparator: Character = ":"
+  public static let clientIdSchemePreRegistered = "pre-registered"
+  public static let clientIdSchemeRedirectUri = "redirect_uri"
+  public static let clientIdSchemeHttps = "https"
+  public static let clientIdSchemeDid = "did"
+  public static let clientIdSchemeX509SanUri = "x509_san_uri"
+  public static let clientIdSchemeX509SanDns = "x509_san_dns"
+  public static let clientIdSchemeVerifierAttestation = "verifier_attestation"
 }
+

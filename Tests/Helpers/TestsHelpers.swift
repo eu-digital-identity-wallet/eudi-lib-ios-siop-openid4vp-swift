@@ -61,7 +61,7 @@ class TestsHelpers {
       "response_mode":  "direct_post.jwt",
       "nonce": nonce,
       "presentation_definition": [
-        "id": "32f54163-7166-48f1-93d8-ff217bdb0653",
+        "id": TestsConstants.testPresentationId,
         "input_descriptors": [
           [
             "id": "wa_driver_license",
@@ -175,9 +175,9 @@ class TestsHelpers {
     return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
   }
   
-  static func pollVerifier(presentationId: String, nonce: String) async throws -> Result<String, FetchError>{
+  static func pollVerifier(transactionId: String, nonce: String) async throws -> Result<String, FetchError>{
     let fetcher = Fetcher<String>()
-    let pollingUrl = URL(string: "\(TestsConstants.host)/ui/presentations/\(presentationId)?nonce=\(nonce)")!
+    let pollingUrl = URL(string: "\(TestsConstants.host)/ui/presentations/\(transactionId)?nonce=\(nonce)")!
     return try await fetcher.fetchString(url: pollingUrl)
   }
 }

@@ -67,29 +67,35 @@ public actor AuthorisationService: AuthorisationServiceType {
         formData: payload
       )
 
-      let result: Result<(String, Bool), PostError> = await poster.check(key: "redirect_uri", request: post.urlRequest)
+      let result: Result<(String, Bool), PostError> = await poster.check(
+        key: "redirect_uri",
+        request: post.urlRequest
+      )
       return try result.get()
-    case .directPostJwt(let url, let data, let jarmSpec):
-      let encryptor = ResponseSignerEncryptor()
-      let joseResponse = try await encryptor.signEncryptResponse(spec: jarmSpec, data: data)
       
-      let dictionary = try data.toDictionary()
-      let payload = dictionary.merging([
-        "state": dictionary["state"] ?? "",
-        "response": joseResponse
-      ], uniquingKeysWith: { _, new in
-        new
-      }).filter { $0.key != "vp_token" }
+    case .directPostJwt(let url, let data, let jarmSpec):
+      let encryptor: ResponseSignerEncryptor = .init()
+      let joseResponse = try await encryptor.signEncryptResponse(
+        spec: jarmSpec,
+        data: data
+      )
       
       let post = VerifierFormPost(
-        additionalHeaders: ["Content-Type": ContentType.form.rawValue],
+        additionalHeaders: [
+          "Content-Type": ContentType.form.rawValue
+        ],
         url: url,
-        formData: payload
+        formData: [
+          "response": joseResponse
+        ]
       )
       
       self.joseResponse = joseResponse
       
-      let result: Result<(String, Bool), PostError> = await poster.check(key: "redirect_uri", request: post.urlRequest)
+      let result: Result<(String, Bool), PostError> = await poster.check(
+        key: "redirect_uri",
+        request: post.urlRequest
+      )
       return try result.get()
       
     case .query, .queryJwt, .fragment, .fragmentJwt:

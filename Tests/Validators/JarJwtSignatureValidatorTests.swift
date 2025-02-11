@@ -84,11 +84,12 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
     let scheme = "pre-registered"
     
     let jws = try JWS(
-      header: .init(
-        algorithm: algorithm
-      ),
+      header: .init(parameters: [
+        "alg": algorithm.rawValue,
+        "typ": "oauth-authz-req+jwt"
+      ]),
       payload: try Payload([
-        "client_id_scheme": scheme
+        "client_id": "\(scheme):\(clientId)"
       ].toThrowingJSONData()),
       signer: Signer(
         signatureAlgorithm: algorithm,
@@ -102,11 +103,11 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
         jwt: jws.compactSerializedString
       )
     } catch {
-      XCTAssert(error.localizedDescription == ValidatedAuthorizationError.invalidClientId.localizedDescription)
+      XCTAssert(false)
       return
     }
     
-    XCTAssert(false)
+    XCTAssert(true)
   }
   
   func testJarJwtSignature_WhenInputsAreValidWithoutPregistered_ThenAssertSuccess() async throws {
@@ -122,12 +123,12 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
     let scheme = "did"
     
     let jws = try JWS(
-      header: .init(
-        algorithm: algorithm
-      ),
+      header: .init(parameters: [
+        "alg": algorithm.rawValue,
+        "typ": "oauth-authz-req+jwt"
+      ]),
       payload: try Payload([
-        "client_id": clientId,
-        "client_id_scheme": scheme
+        "client_id": "\(scheme):\(clientId)"
       ].toThrowingJSONData()),
       signer: Signer(
         signatureAlgorithm: algorithm,
