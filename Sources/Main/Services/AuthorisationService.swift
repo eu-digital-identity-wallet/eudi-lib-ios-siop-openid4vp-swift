@@ -74,21 +74,19 @@ public actor AuthorisationService: AuthorisationServiceType {
       return try result.get()
       
     case .directPostJwt(let url, let data, let jarmSpec):
-      let encryptor = ResponseSignerEncryptor()
+      let encryptor: ResponseSignerEncryptor = .init()
       let joseResponse = try await encryptor.signEncryptResponse(
         spec: jarmSpec,
         data: data
       )
       
-      let dictionary = try? data.toDictionary()
       let post = VerifierFormPost(
         additionalHeaders: [
           "Content-Type": ContentType.form.rawValue
         ],
         url: url,
         formData: [
-          "response": joseResponse,
-          "state": dictionary?["state"] ?? "",
+          "response": joseResponse
         ]
       )
       
