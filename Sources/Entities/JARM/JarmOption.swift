@@ -26,7 +26,10 @@ public indirect enum JarmOption {
     responseEncryptionEnc: JOSEEncryptionMethod,
     signingKeySet: WebKeySet
   )
-  case signedAndEncryptedResponse(signed: JarmOption, encrypted: JarmOption)
+  case signedAndEncryptedResponse(
+    signed: JarmOption,
+    encrypted: JarmOption
+  )
 }
 
 public extension JarmOption {
