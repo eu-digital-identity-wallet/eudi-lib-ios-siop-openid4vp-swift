@@ -296,8 +296,8 @@ final class DirectPostTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          "verifier-backend.eudiw.dev": .init(
-            clientId: "verifier-backend.eudiw.dev",
+          TestsConstants.testClientId: .init(
+            clientId: TestsConstants.testClientId,
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
@@ -316,10 +316,9 @@ final class DirectPostTests: DiXCTest {
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#06"
-    let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)")!)
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -342,7 +341,7 @@ final class DirectPostTests: DiXCTest {
         vpToken: .init(
           apu: TestsConstants.generateMdocGeneratedNonce(),
           verifiablePresentations: [
-            .msoMdoc(TestsConstants.pidCbor)
+            .msoMdoc(TestsConstants.cbor)
           ]),
         presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
       )

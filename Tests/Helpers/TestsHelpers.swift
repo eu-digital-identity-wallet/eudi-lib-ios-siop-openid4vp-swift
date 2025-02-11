@@ -61,7 +61,7 @@ class TestsHelpers {
       "response_mode":  "direct_post.jwt",
       "nonce": nonce,
       "presentation_definition": [
-        "id": "32f54163-7166-48f1-93d8-ff217bdb0653",
+        "id": TestsConstants.testPresentationId,
         "input_descriptors": [
           [
             "id": "wa_driver_license",

@@ -245,8 +245,8 @@ final class DirectPostJWTTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          "verifier-backend.eudiw.dev": .init(
-            clientId: "verifier-backend.eudiw.dev",
+          TestsConstants.testClientId: .init(
+            clientId: TestsConstants.testClientId,
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
@@ -282,11 +282,7 @@ final class DirectPostJWTTests: DiXCTest {
         vpToken: .init(verifiablePresentations: [
           .generic(TestsConstants.cbor)
         ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        presentationSubmission: TestsConstants.testPresentationSubmission
       )
       
       // Generate a direct post authorisation response
@@ -348,8 +344,8 @@ final class DirectPostJWTTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          "verifier-backend.eudiw.dev": .init(
-            clientId: "verifier-backend.eudiw.dev",
+          TestsConstants.testClientId: .init(
+            clientId: TestsConstants.testClientId,
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
@@ -369,10 +365,9 @@ final class DirectPostJWTTests: DiXCTest {
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#04"
-    let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)")!)
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -395,7 +390,7 @@ final class DirectPostJWTTests: DiXCTest {
         vpToken: .init(
           apu: TestsConstants.generateMdocGeneratedNonce(),
           verifiablePresentations: [
-            .msoMdoc(TestsConstants.pidCbor)
+            .msoMdoc(TestsConstants.cbor)
           ]
         ),
         presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
@@ -446,7 +441,7 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .redirectUri(clientId: URL(string: "verifier-backend.eudiw.dev")!)
+        .redirectUri(clientId: URL(string: TestsConstants.testClientId)!)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .default,
@@ -461,10 +456,9 @@ final class DirectPostJWTTests: DiXCTest {
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#08"
-    let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)")!)
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -487,7 +481,7 @@ final class DirectPostJWTTests: DiXCTest {
         vpToken: .init(
           apu: TestsConstants.generateMdocGeneratedNonce(),
           verifiablePresentations: [
-            .msoMdoc(TestsConstants.pidCbor)
+            .msoMdoc(TestsConstants.cbor)
           ]),
         presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
       )
@@ -539,8 +533,8 @@ final class DirectPostJWTTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          "verifier-backend.eudiw.dev": .init(
-            clientId: "verifier-backend.eudiw.dev",
+          TestsConstants.testClientId: .init(
+            clientId: TestsConstants.testClientId,
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
@@ -556,10 +550,9 @@ final class DirectPostJWTTests: DiXCTest {
     // Add your own URL here that you can obtain from
     // https://verifier.eudiw.dev/
     let url = "#07"
-    let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)")!)
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -582,7 +575,7 @@ final class DirectPostJWTTests: DiXCTest {
         vpToken: .init(
           apu: TestsConstants.generateMdocGeneratedNonce(),
           verifiablePresentations: [
-            .msoMdoc(TestsConstants.pidCbor)
+            .msoMdoc(TestsConstants.cbor)
           ]),
         presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
       )
@@ -619,8 +612,9 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
-    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
-    let privateKey = try KeyController.generateECDHPrivateKey()
+    let rsaPublicKey = try KeyController.generateRSAPublicKey(
+      from: rsaPrivateKey
+    )
     
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
@@ -638,7 +632,6 @@ final class DirectPostJWTTests: DiXCTest {
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
     
-    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -646,19 +639,13 @@ final class DirectPostJWTTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      decentralizedIdentifier: try .init(
+        rawValue: "did:example:123"
+      ),
+      signingKey: rsaPrivateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier),
-        .preregistered(clients: [
-          "verifier-backend.eudiw.dev": .init(
-            clientId: "verifier-backend.eudiw.dev",
-            legalName: "Verifier",
-            jarSigningAlg: .init(.RS256),
-            jwkSetSource: .fetchByReference(url: publicKeysURL)
-          )
-        ])
+        .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .default,
@@ -686,14 +673,12 @@ final class DirectPostJWTTests: DiXCTest {
 
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
+        vpToken: .init(
+          apu: TestsConstants.generateMdocGeneratedNonce(),
+          verifiablePresentations: [
+            .generic(TestsConstants.cbor)
         ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        presentationSubmission: TestsConstants.testPresentationSubmission
       )
       
       // Generate a direct post authorisation response
@@ -759,7 +744,6 @@ final class DirectPostJWTTests: DiXCTest {
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
     
-    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -771,15 +755,7 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier),
-        .preregistered(clients: [
-          "Verifier": .init(
-            clientId: "verifier-backend.eudiw.dev",
-            legalName: "Verifier",
-            jarSigningAlg: .init(.RS256),
-            jwkSetSource: .fetchByReference(url: publicKeysURL)
-          )
-        ])
+        .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .default,
@@ -810,11 +786,7 @@ final class DirectPostJWTTests: DiXCTest {
         vpToken: .init(verifiablePresentations: [
           .generic(TestsConstants.cbor)
         ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        presentationSubmission: TestsConstants.testPresentationSubmission
       )
       
       // Generate a direct post authorisation response
@@ -862,7 +834,6 @@ final class DirectPostJWTTests: DiXCTest {
     
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
-    let privateKey = try KeyController.generateECDHPrivateKey()
     
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
@@ -880,7 +851,6 @@ final class DirectPostJWTTests: DiXCTest {
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
     
-    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -889,18 +859,10 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      signingKey: rsaPrivateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier),
-        .preregistered(clients: [
-          "Verifier": .init(
-            clientId: "verifier-backend.eudiw.dev",
-            legalName: "Verifier",
-            jarSigningAlg: .init(.RS256),
-            jwkSetSource: .fetchByReference(url: publicKeysURL)
-          )
-        ])
+        .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .default,
@@ -931,11 +893,7 @@ final class DirectPostJWTTests: DiXCTest {
         vpToken: .init(verifiablePresentations: [
           .generic(TestsConstants.sdJwt)
         ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        presentationSubmission: TestsConstants.testPresentationSubmission
       )
       
       // Generate a direct post authorisation response
@@ -953,6 +911,7 @@ final class DirectPostJWTTests: DiXCTest {
       case .accepted:
         XCTAssert(true)
       default:
+        XCTExpectFailure("Please make sure you have a valid sd-jwt with a valid key binding jwt")
         XCTAssert(false)
       }
       
@@ -1017,10 +976,9 @@ final class DirectPostJWTTests: DiXCTest {
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#05"
-    let clientId = "verifier-backend.eudiw.dev"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)")!)
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -1041,9 +999,8 @@ final class DirectPostJWTTests: DiXCTest {
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(
-          apu: TestsConstants.generateMdocGeneratedNonce(),
           verifiablePresentations: [
-            .msoMdoc(TestsConstants.pidCbor)
+            .generic(TestsConstants.cbor)
           ]),
         presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
       )

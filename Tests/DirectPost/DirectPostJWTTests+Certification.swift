@@ -190,7 +190,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.certCbor)
+          .generic(TestsConstants.cbor)
         ]),
         presentationSubmission: .init(
           id: "psId",
@@ -291,7 +291,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.certCbor)
+          .generic(TestsConstants.cbor)
         ]),
         presentationSubmission: .init(
           id: "psId",
