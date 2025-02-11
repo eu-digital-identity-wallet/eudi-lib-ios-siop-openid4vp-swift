@@ -97,7 +97,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       )
     case .vpAndIdToken:
       self = try ValidatedSiopOpenId4VPRequest.createIdVpToken(
-        clientId: payloadcClientId,
+        clientId: client.id.originalClientId,
         client: client,
         nonce: nonce,
         authorizationRequestObject: payload
@@ -418,7 +418,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         clientId: clientId
       )
     case .redirectUri:
-      guard let url = URL(string: clientId) else {
+      guard let url = URL(string: verifierId.originalClientId) else {
         throw ValidatedAuthorizationError.validationError("Client id must be uri for redirectUri scheme")
       }
       
