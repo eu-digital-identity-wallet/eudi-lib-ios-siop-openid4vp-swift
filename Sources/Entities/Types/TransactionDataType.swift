@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public struct TransactionDataType: Codable, CustomStringConvertible {
+public struct TransactionDataType: Codable, Equatable, CustomStringConvertible {
   public let value: String
   
   public init(value: String) throws {
