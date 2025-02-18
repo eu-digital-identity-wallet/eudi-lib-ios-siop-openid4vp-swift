@@ -39,13 +39,13 @@ public actor AccessValidator {
   private func doValidate(clientId: String?, jws: JWS) async throws {
     
     guard let clientId = clientId else {
-      throw ValidatedAuthorizationError.missingRequiredField("client_id")
+      throw ValidationError.missingRequiredField("client_id")
     }
     
     guard
       let clientIdScheme = try? VerifierId.parse(clientId: clientId).get().scheme
     else {
-      throw ValidatedAuthorizationError.unsupportedClientIdScheme(nil)
+      throw ValidationError.unsupportedClientIdScheme(nil)
     }
     
     switch clientIdScheme {
@@ -97,13 +97,13 @@ public actor AccessValidator {
     
     let header = jws.header
     guard let chain: [String] = header.x5c else {
-      throw ValidatedAuthorizationError.validationError("x5c header field does not contain a serialized leaf certificate")
+      throw ValidationError.validationError("x5c header field does not contain a serialized leaf certificate")
     }
     
     let certificates: [Certificate] = parseCertificates(from: chain)
 
     guard !certificates.isEmpty else {
-      throw ValidatedAuthorizationError.validationError("x5c header field does not contain a serialized leaf certificate")
+      throw ValidationError.validationError("x5c header field does not contain a serialized leaf certificate")
     }
     
     switch supportedClientIdScheme {
@@ -111,27 +111,27 @@ public actor AccessValidator {
          .x509SanUri(let trust):
       let trust = trust(chain)
       if !trust {
-        throw ValidatedAuthorizationError.validationError("Could not trust certificate chain")
+        throw ValidationError.validationError("Could not trust certificate chain")
       }
-    default: throw ValidatedAuthorizationError.validationError("Invalid client id scheme for x509")
+    default: throw ValidationError.validationError("Invalid client id scheme for x509")
     }
     
     guard let leafCertificate = certificates.first else {
-      throw ValidatedAuthorizationError.validationError("Could not locate leaf certificate")
+      throw ValidationError.validationError("Could not locate leaf certificate")
     }
 
     let verifierId = VerifierId.parse(clientId: clientId)
     let alternativeNames = alternativeNames(leafCertificate)
     if let originalClientId = try? verifierId.get().originalClientId,
        !alternativeNames.contains(originalClientId) {
-      throw ValidatedAuthorizationError.validationError("Client id (\(clientId) not part of list (\(alternativeNames))")
+      throw ValidationError.validationError("Client id (\(clientId) not part of list (\(alternativeNames))")
     }
     
     let publicKey = leafCertificate.publicKey
     let pem = try publicKey.serializeAsPEM().pemString
     
     guard let signingAlgorithm = jws.header.algorithm else {
-      throw ValidatedAuthorizationError.validationError("JWS header does not contain algorith field")
+      throw ValidationError.validationError("JWS header does not contain algorith field")
     }
     
     if let secKey = KeyController.convertPEMToPublicKey(pem, algorithm: signingAlgorithm) {
@@ -143,11 +143,11 @@ public actor AccessValidator {
       )) ?? false
       
       if !verified {
-        throw ValidatedAuthorizationError.validationError("Unable to verify signature using public key from leaf certificate")
+        throw ValidationError.validationError("Unable to verify signature using public key from leaf certificate")
       }
 
     } else {
-      throw ValidatedAuthorizationError.validationError("Unable to decode public key from leaf certificate")
+      throw ValidationError.validationError("Unable to decode public key from leaf certificate")
     }
   }
   
@@ -159,7 +159,7 @@ public actor AccessValidator {
     
     guard let supportedClientIdScheme = supportedClientIdScheme,
           supportedClientIdScheme.scheme == .preRegistered else {
-      throw ValidatedAuthorizationError.unsupportedClientIdScheme(
+      throw ValidationError.unsupportedClientIdScheme(
         supportedClientIdScheme?.scheme.rawValue
       )
     }
@@ -167,13 +167,13 @@ public actor AccessValidator {
     switch supportedClientIdScheme {
     case .preregistered(let clients):
       guard let client = clients[clientId] else {
-        throw ValidatedAuthorizationError.validationError("Client with client_id \(clientId) is not pre-registered")
+        throw ValidationError.validationError("Client with client_id \(clientId) is not pre-registered")
       }
       try await verifySignature(
         jws: jws,
         client: client
       )
-    default: throw ValidatedAuthorizationError.unsupportedClientIdScheme(
+    default: throw ValidationError.unsupportedClientIdScheme(
       supportedClientIdScheme.scheme.rawValue
     )
     }
@@ -185,7 +185,7 @@ public actor AccessValidator {
   ) async throws {
     
     if jws.header.typ != objectType.rawValue {
-      throw ValidatedAuthorizationError.validationError("Header object type mismatch")
+      throw ValidationError.validationError("Header object type mismatch")
     }
     
     let jwk = await resolver.resolve(source: client.jwkSetSource)
@@ -194,7 +194,7 @@ public actor AccessValidator {
       guard let key = set?.keys.first,
             let algorithm = SignatureAlgorithm(rawValue: client.jarSigningAlg.name)
       else {
-        throw ValidatedAuthorizationError.validationError("Could not resolve key from JWK source")
+        throw ValidationError.validationError("Could not resolve key from JWK source")
       }
       
       let publicKey = try RSAPublicKey(data: key.toDictionary().toThrowingJSONData())
@@ -205,15 +205,15 @@ public actor AccessValidator {
       ) {
         let isValid = jws.isValid(for: verifier)
         if !isValid {
-          throw ValidatedAuthorizationError.validationError("Unable to verify signature")
+          throw ValidationError.validationError("Unable to verify signature")
         }
         
       } else {
-        throw ValidatedAuthorizationError.validationError("Unable to verify signature")
+        throw ValidationError.validationError("Unable to verify signature")
       }
 
     case .failure:
-      throw ValidatedAuthorizationError.validationError("Could not resolve key from JWK source")
+      throw ValidationError.validationError("Could not resolve key from JWK source")
     }
   }
 }
@@ -243,6 +243,6 @@ public extension AccessValidator {
       }
     }
 
-    throw ValidatedAuthorizationError.validationError("Unable to verif JWS")
+    throw ValidationError.validationError("Unable to verif JWS")
   }
 }

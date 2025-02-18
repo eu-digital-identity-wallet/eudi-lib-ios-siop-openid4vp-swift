@@ -35,7 +35,7 @@ internal extension JWS {
         with: payload,
         options: []
     ) as? [String: Any] else {
-      throw ValidatedAuthorizationError.validationError("Invalid JWS payload")
+      throw ValidationError.validationError("Invalid JWS payload")
     }
       
     guard
@@ -43,7 +43,7 @@ internal extension JWS {
       let jwkDict = cnf["jwk"] as? [String: Any],
       let jwk = convertJSONToPublicKey(json: jwkDict)
     else {
-      throw ValidatedAuthorizationError.validationError("Cannot locate cnf/jwk in payload")
+      throw ValidationError.validationError("Cannot locate cnf/jwk in payload")
     }
       
     return VerifierAttestationClaims(

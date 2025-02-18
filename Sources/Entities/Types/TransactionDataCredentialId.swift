@@ -20,7 +20,7 @@ public struct TransactionDataCredentialId: Codable, Equatable, CustomStringConve
   
   public init(value: String) throws {
     guard !value.isEmpty else {
-      throw ValidatedAuthorizationError.validationError(
+      throw ValidationError.validationError(
         "TransactionDataCredentialId value cannot be empty"
       )
     }

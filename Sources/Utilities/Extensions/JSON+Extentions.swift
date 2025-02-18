@@ -32,7 +32,7 @@ extension JSON {
   /// - Returns: The string value associated with the given key.
   func requiredString(_ name: String) throws -> String {
     guard let value = self[name].string else {
-      throw ValidatedAuthorizationError.validationError(
+      throw ValidationError.validationError(
         "Missing or invalid required property '\(name)'"
       )
     }
@@ -45,7 +45,7 @@ extension JSON {
   /// - Returns: An array of strings associated with the given key.
   func requiredStringArray(_ name: String) throws -> [String] {
     guard let array = self[name].array, array.allSatisfy({ $0.string != nil }) else {
-      throw ValidatedAuthorizationError.validationError(
+      throw ValidationError.validationError(
         "Property '\(name)' is not an array or contains non-string values"
       )
     }

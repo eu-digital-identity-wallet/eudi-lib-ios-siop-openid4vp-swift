@@ -26,11 +26,11 @@ public extension JarmSpec {
   ) throws {
 
     guard let clientMetaData = clientMetaData else {
-      throw ValidatedAuthorizationError.invalidJarmClientMetadata
+      throw ValidationError.invalidJarmClientMetadata
     }
 
     guard let walletOpenId4VPConfig = walletOpenId4VPConfig else {
-      throw ValidatedAuthorizationError.invalidWalletConfiguration
+      throw ValidationError.invalidWalletConfiguration
     }
 
     self = .resolution(

@@ -97,7 +97,7 @@ final class DirectPostTests: DiXCTest {
         }
       default: XCTAssert(false, "Incorrect response type")
       }
-    } catch ValidatedAuthorizationError.negativeConsent {
+    } catch ValidationError.negativeConsent {
       XCTAssert(true)
       return
     } catch {

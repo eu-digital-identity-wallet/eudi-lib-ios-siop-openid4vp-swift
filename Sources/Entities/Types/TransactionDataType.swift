@@ -20,7 +20,7 @@ public struct TransactionDataType: Codable, Equatable, CustomStringConvertible {
   
   public init(value: String) throws {
     guard !value.isEmpty else {
-      throw ValidatedAuthorizationError.validationError(
+      throw ValidationError.validationError(
         "TransactionDataType value cannot be empty"
       )
     }

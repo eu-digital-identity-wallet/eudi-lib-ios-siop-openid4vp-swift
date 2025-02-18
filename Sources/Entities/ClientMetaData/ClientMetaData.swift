@@ -87,7 +87,7 @@ public struct ClientMetaData: Codable, Equatable {
     let dictionaryObject = metaData.dictionaryObject ?? [:]
     self.jwksUri = try? dictionaryObject.getValue(
       for: "jwks_uri",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     let jwks = metaData["jwks"].dictionaryObject
@@ -95,34 +95,34 @@ public struct ClientMetaData: Codable, Equatable {
     
     self.idTokenSignedResponseAlg = try? dictionaryObject.getValue(
       for: "id_token_signed_response_alg",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     self.idTokenEncryptedResponseAlg = try? dictionaryObject.getValue(
       for: "id_token_encrypted_response_alg",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     self.idTokenEncryptedResponseEnc = try? dictionaryObject.getValue(
       for: "id_token_encrypted_response_enc",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     self.subjectSyntaxTypesSupported = (try? dictionaryObject.getValue(
       for: "subject_syntax_types_supported",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )) ?? []
     
     self.authorizationSignedResponseAlg = try? dictionaryObject.getValue(
       for: "authorization_signed_response_alg",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     self.authorizationEncryptedResponseAlg = try? dictionaryObject.getValue(
       for: "authorization_encrypted_response_alg",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     self.authorizationEncryptedResponseEnc = try? dictionaryObject.getValue(
       for: "authorization_encrypted_response_enc",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormats]
@@ -138,12 +138,12 @@ public struct ClientMetaData: Codable, Equatable {
   /// - Throws: An error if the metadata string is invalid or cannot be converted to a dictionary.
   public init(metaDataString: String) throws {
     guard let metaData = try metaDataString.convertToDictionary() else {
-      throw ValidatedAuthorizationError.invalidClientMetadata
+      throw ValidationError.invalidClientMetadata
     }
     
     self.jwksUri = try? metaData.getValue(
       for: "jwks_uri",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     let jwks = metaData["jwks"] as? [String: Any]
@@ -151,35 +151,35 @@ public struct ClientMetaData: Codable, Equatable {
     
     self.idTokenSignedResponseAlg = try metaData.getValue(
       for: "id_token_signed_response_alg",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     self.idTokenEncryptedResponseAlg = try metaData.getValue(
       for: "id_token_encrypted_response_alg",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     self.idTokenEncryptedResponseEnc = try metaData.getValue(
       for: "id_token_encrypted_response_enc",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     self.subjectSyntaxTypesSupported = try metaData.getValue(
       for: "subject_syntax_types_supported",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     self.authorizationSignedResponseAlg = try? metaData.getValue(
       for: "authorization_signed_response_alg",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     self.authorizationEncryptedResponseAlg = try? metaData.getValue(
       for: "authorization_encrypted_response_alg",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     self.authorizationEncryptedResponseEnc = try? metaData.getValue(
       for: "authorization_encrypted_response_enc",
-      error: ValidatedAuthorizationError.invalidClientMetadata
+      error: ValidationError.invalidClientMetadata
     )
     
     let vpFormatsDictionary: JSON = JSON(metaData)[Self.vpFormats]

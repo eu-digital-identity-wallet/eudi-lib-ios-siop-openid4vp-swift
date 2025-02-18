@@ -186,7 +186,7 @@ public struct VpFormats: Equatable {
     
     for (formatName, instances) in groupedFormats {
       guard instances.count == 1 else {
-        throw ValidatedAuthorizationError.validationError("Multiple instances \(instances.count) found for \(formatName).")
+        throw ValidationError.validationError("Multiple instances \(instances.count) found for \(formatName).")
       }
     }
   }

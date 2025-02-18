@@ -31,7 +31,7 @@ public enum ResponseMode {
   ///           or a `ValidatedAuthorizationError.unsupportedResponseMode` if the response mode is unsupported.
   public init(authorizationRequestObject: JSON) throws {
     guard let responseMode = authorizationRequestObject["response_mode"].string else {
-      throw ValidatedAuthorizationError.missingRequiredField(".responseMode")
+      throw ValidationError.missingRequiredField(".responseMode")
     }
 
     switch responseMode {
@@ -40,31 +40,31 @@ public enum ResponseMode {
          let uri = URL(string: responseUri) {
         self = .directPost(responseURI: uri)
       } else {
-        throw ValidatedAuthorizationError.missingRequiredField(".responseUri")
+        throw ValidationError.missingRequiredField(".responseUri")
       }
     case "direct_post.jwt":
       if let responseUri = authorizationRequestObject["response_uri"].string,
          let uri = URL(string: responseUri) {
          self = .directPostJWT(responseURI: uri)
       } else {
-        throw ValidatedAuthorizationError.missingRequiredField(".responseUri")
+        throw ValidationError.missingRequiredField(".responseUri")
       }
     case "query":
       if let redirectUri = authorizationRequestObject["redirect_uri"].string,
          let uri = URL(string: redirectUri) {
         self = .query(responseURI: uri)
       } else {
-        throw ValidatedAuthorizationError.missingRequiredField(".redirectUri")
+        throw ValidationError.missingRequiredField(".redirectUri")
       }
     case "fragment":
       if let redirectUri = authorizationRequestObject["redirect_uri"].string,
          let uri = URL(string: redirectUri) {
         self = .fragment(responseURI: uri)
       } else {
-        throw ValidatedAuthorizationError.missingRequiredField(".redirectUri")
+        throw ValidationError.missingRequiredField(".redirectUri")
       }
     default:
-      throw ValidatedAuthorizationError.unsupportedResponseMode(responseMode)
+      throw ValidationError.unsupportedResponseMode(responseMode)
     }
   }
 
@@ -75,7 +75,7 @@ public enum ResponseMode {
   ///           or a `ValidatedAuthorizationError.unsupportedResponseMode` if the response mode is unsupported.
   public init(authorizationRequestData: AuthorisationRequestObject) throws {
     guard let responseMode = authorizationRequestData.responseMode else {
-      throw ValidatedAuthorizationError.missingRequiredField(".responseMode")
+      throw ValidationError.missingRequiredField(".responseMode")
     }
 
     switch responseMode {
@@ -84,31 +84,31 @@ public enum ResponseMode {
          let uri = URL(string: responseUri) {
         self = .directPost(responseURI: uri)
       } else {
-        throw ValidatedAuthorizationError.missingRequiredField(".responseUri")
+        throw ValidationError.missingRequiredField(".responseUri")
       }
     case "direct_post.jwt":
       if let responseUri = authorizationRequestData.responseUri,
          let uri = URL(string: responseUri) {
          self = .directPostJWT(responseURI: uri)
       } else {
-        throw ValidatedAuthorizationError.missingRequiredField(".responseUri")
+        throw ValidationError.missingRequiredField(".responseUri")
       }
     case "query":
       if let redirectUri = authorizationRequestData.redirectUri,
          let uri = URL(string: redirectUri) {
         self = .query(responseURI: uri)
       } else {
-        throw ValidatedAuthorizationError.missingRequiredField(".redirectUri")
+        throw ValidationError.missingRequiredField(".redirectUri")
       }
     case "fragment":
       if let redirectUri = authorizationRequestData.redirectUri,
          let uri = URL(string: redirectUri) {
         self = .fragment(responseURI: uri)
       } else {
-        throw ValidatedAuthorizationError.missingRequiredField(".redirectUri")
+        throw ValidationError.missingRequiredField(".redirectUri")
       }
     default:
-      throw ValidatedAuthorizationError.unsupportedResponseMode(responseMode)
+      throw ValidationError.unsupportedResponseMode(responseMode)
     }
   }
 }

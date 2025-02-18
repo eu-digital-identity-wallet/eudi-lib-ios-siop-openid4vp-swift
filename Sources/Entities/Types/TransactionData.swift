@@ -57,7 +57,7 @@ public struct TransactionData: Codable {
     let decodedData = try Base64UrlNoPadding.decodeToByteString(s)
     guard let decodedString = String(data: decodedData, encoding: .utf8),
           let jsonData = decodedString.data(using: .utf8) else {
-      throw ValidatedAuthorizationError.validationError("Unable to decode transaction data")
+      throw ValidationError.validationError("Unable to decode transaction data")
     }
     return try JSON(data: jsonData)
   }
@@ -71,7 +71,7 @@ public struct TransactionData: Codable {
         return false
       }
     }) else {
-      throw ValidatedAuthorizationError.validationError(
+      throw ValidationError.validationError(
         "Unsupported transaction data type: \(String(describing: self.type))"
       )
     }
@@ -80,7 +80,7 @@ public struct TransactionData: Codable {
     let hashAlgorithmsSet = Set(algorithms)
     let supportedHashAlgorithms = supportedType.hashAlgorithms
     guard !supportedHashAlgorithms.intersection(hashAlgorithmsSet).isEmpty else {
-      throw ValidatedAuthorizationError.validationError(
+      throw ValidationError.validationError(
         "Unsupported hash algorithms: \(String(describing: self.hashAlgorithms))"
       )
     }
@@ -90,7 +90,7 @@ public struct TransactionData: Codable {
   private func hasCorrectIds(_ query: PresentationQuery) throws {
     let requestedCredentialIds = query.requestedCredentialIds()
     guard requestedCredentialIds.containsAll(try self.credentialIds()) else {
-      throw ValidatedAuthorizationError.validationError(
+      throw ValidationError.validationError(
         "Invalid credential IDs: \(String(describing: self.credentialIds))"
       )
     }
@@ -173,7 +173,7 @@ struct Base64UrlNoPadding {
   static func decodeToByteString(_ string: String) throws -> Data {
     
     guard let data = Data(base64UrlEncoded: string) else {
-      throw ValidatedAuthorizationError.validationError("Invalid base64 string")
+      throw ValidationError.validationError("Invalid base64 string")
     }
     
     return data

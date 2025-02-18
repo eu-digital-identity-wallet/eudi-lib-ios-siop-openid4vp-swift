@@ -382,9 +382,9 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     do {
       _ = try await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
-    } catch let error as ValidatedAuthorizationError {
+    } catch let error as ValidationError {
       switch error {
-      case ValidatedAuthorizationError.unsupportedResponseType:
+      case ValidationError.unsupportedResponseType:
         XCTAssert(true)
       default:
         XCTAssert(false)

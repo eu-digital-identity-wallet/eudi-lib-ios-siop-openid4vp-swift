@@ -35,11 +35,11 @@ public extension AuthorizationRequest {
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
     guard let authorizationRequestData = authorizationRequestData else {
-      throw ValidatedAuthorizationError.noAuthorizationData
+      throw ValidationError.noAuthorizationData
     }
 
     guard !authorizationRequestData.hasConflicts else {
-      throw ValidatedAuthorizationError.conflictingData
+      throw ValidationError.conflictingData
     }
 
     if let request = authorizationRequestData.request {

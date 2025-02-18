@@ -67,7 +67,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
     case .jwt(request: let data):
       switch data {
       case .idToken:
-        throw ValidatedAuthorizationError.unsupportedResponseType(".idToken")
+        throw ValidationError.unsupportedResponseType(".idToken")
       case .vpToken(let request):
         return request.presentationDefinition
       case .idAndVpToken(let request):
@@ -76,7 +76,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
     case .notSecured(let data):
       switch data {
       case .idToken:
-        throw ValidatedAuthorizationError.unsupportedResponseType(".idToken")
+        throw ValidationError.unsupportedResponseType(".idToken")
       case .vpToken(let request):
         return request.presentationDefinition
       case .idAndVpToken(let request):
