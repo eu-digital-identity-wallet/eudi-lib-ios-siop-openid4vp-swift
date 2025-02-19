@@ -23,8 +23,8 @@ public struct OpenId4VPSpec {
   public static let clientIdSchemeX509SanDns = "x509_san_dns"
   public static let clientIdSchemeVerifierAttestation = "verifier_attestation"
   
-  public static let TRANSACTION_DATA_TYPE = "transaction_data_type"
-  public static let TRANSACTION_DATA_CREDENTIAL_IDS = "transaction_data_credential_ids"
-  public static let TRANSACTION_DATA_HASH_ALGORITHMS = "transaction_data_hash_algorithms"
+  public static let TRANSACTION_DATA_TYPE = "type"
+  public static let TRANSACTION_DATA_CREDENTIAL_IDS = "credential_ids"
+  public static let TRANSACTION_DATA_HASH_ALGORITHMS = "transaction_data_hashes_alg"
 }
 
