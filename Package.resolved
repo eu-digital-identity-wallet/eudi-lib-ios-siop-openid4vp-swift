@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "revision" : "21e03b18e4ea349edd21c016b9e0b3a2063285bf",
-        "version" : "0.2.1"
+        "revision" : "773d7cccdf3d2df4fc6f7629a6076dfe4b2b680d",
+        "version" : "0.3.0"
       }
     },
     {
