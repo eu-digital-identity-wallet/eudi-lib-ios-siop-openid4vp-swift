@@ -25,6 +25,7 @@ extension ResolvedRequestData {
     public let responseMode: ResponseMode?
     public let state: String?
     public let vpFormats: VpFormats
+    let transactionData: [TransactionData]?
     
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///
@@ -42,7 +43,8 @@ extension ResolvedRequestData {
       nonce: String,
       responseMode: ResponseMode?,
       state: String?,
-      vpFormats: VpFormats
+      vpFormats: VpFormats,
+      transactionData: [TransactionData]? = nil
     ) {
       self.presentationDefinition = presentationDefinition
       self.clientMetaData = clientMetaData
@@ -51,6 +53,7 @@ extension ResolvedRequestData {
       self.responseMode = responseMode
       self.state = state
       self.vpFormats = vpFormats
+      self.transactionData = transactionData
     }
   }
 }

@@ -26,6 +26,18 @@ public struct TransactionData: Codable {
     self.value = value
   }
   
+  public init(
+    type: TransactionDataType,
+    credentialIds: [TransactionDataCredentialId],
+    hashAlgorithms: [HashAlgorithm]?
+  ) {
+    self = Self.create(
+      type: type,
+      credentialIds: credentialIds,
+      hashAlgorithms: hashAlgorithms
+    )
+  }
+  
   public func type() throws -> TransactionDataType {
     try decode(value).type()
   }
@@ -42,21 +54,22 @@ public struct TransactionData: Codable {
   public static func parse(
     _ s: String,
     supportedTypes: [SupportedTransactionDataType],
-    query: PresentationQuery
+    presentationDefinition: PresentationDefinition
   ) -> Result<TransactionData, Error> {
     Result {
       let transactionData = TransactionData(value: s)
       try transactionData.isSupported(supportedTypes)
-      try transactionData.hasCorrectIds(query)
+      try transactionData.hasCorrectIds(presentationDefinition.inputDescriptors.map { $0.id })
       return transactionData
     }
   }
   
   /// Decodes the base64-encoded string to JSON.
-  private func decode(_ s: String) throws -> JSON {
+  internal func decode(_ s: String) throws -> JSON {
     let decodedData = try Base64UrlNoPadding.decodeToByteString(s)
-    guard let decodedString = String(data: decodedData, encoding: .utf8),
-          let jsonData = decodedString.data(using: .utf8) else {
+    guard
+      let decodedString = String(data: decodedData, encoding: .utf8),
+      let jsonData = decodedString.data(using: .utf8) else {
       throw ValidationError.validationError("Unable to decode transaction data")
     }
     return try JSON(data: jsonData)
@@ -86,9 +99,11 @@ public struct TransactionData: Codable {
     }
   }
   
-  /// Validates if the transaction data has the correct credential IDs as per the presentation query.
-  private func hasCorrectIds(_ query: PresentationQuery) throws {
-    let requestedCredentialIds = query.requestedCredentialIds()
+  /// Validates if the transaction data has the correct credential IDs as per the ids.
+  private func hasCorrectIds(_ ids: [String]) throws {
+    let requestedCredentialIds = try ids.map {
+      try TransactionDataCredentialId(value: $0)
+    }
     guard requestedCredentialIds.containsAll(try self.credentialIds()) else {
       throw ValidationError.validationError(
         "Invalid credential IDs: \(String(describing: self.credentialIds))"
@@ -129,7 +144,7 @@ public struct TransactionData: Codable {
 
 // MARK: - JSON Helper Extensions for TransactionData
 
-private extension JSON {
+internal extension JSON {
   
   func type() throws -> TransactionDataType {
     let typeValue = try self.requiredString(OpenId4VPSpec.TRANSACTION_DATA_TYPE)
@@ -148,12 +163,6 @@ private extension JSON {
     let ids = try self.requiredStringArray(OpenId4VPSpec.TRANSACTION_DATA_CREDENTIAL_IDS)
     return try ids.map { try TransactionDataCredentialId(value: $0) }
   }
-}
-
-/// Dummy protocol representing the presentation query.
-/// TODO: Replace this
-public protocol PresentationQuery {
-  func requestedCredentialIds() -> [TransactionDataCredentialId]
 }
 
 /// Extension to compare arrays of TransactionDataCredentialId.

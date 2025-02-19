@@ -24,6 +24,17 @@ public enum ValidatedSiopOpenId4VPRequest {
   case idToken(request: IdTokenRequest)
   case vpToken(request: VpTokenRequest)
   case idAndVpToken(request: IdAndVpTokenRequest)
+  
+  public var transactionData: [String]? {
+    switch self {
+    case .idToken(let request):
+      return nil
+    case .vpToken(let request):
+      return request.transactionData
+    case .idAndVpToken(let request):
+      return request.transactionData
+    }
+  }
 }
 
 // Extension for ValidatedSiopOpenId4VPRequest
@@ -585,7 +596,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       responseMode: try? .init(authorizationRequestData: authorizationRequestData),
       requestUriMethod: .init(method: authorizationRequestData.requestUriMethod),
       state: authorizationRequestData.state,
-      vpFormats: try (formats ?? VpFormats.empty())
+      vpFormats: try (formats ?? VpFormats.empty()),
+      transactionData: authorizationRequestData.transactionData
     ))
   }
   
@@ -625,7 +637,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       requestUriMethod: .init(method: authorizationRequestObject[Constants.REQUEST_URI_METHOD].string),
       state: authorizationRequestObject[Constants.STATE].string,
-      vpFormats: try (formats ?? VpFormats.default())
+      vpFormats: try (formats ?? VpFormats.default()),
+      transactionData: authorizationRequestObject[Constants.TRANSACTION_DATA].array?.compactMap { $0.string }
     ))
   }
   
@@ -647,7 +660,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       scope: authorizationRequestObject[Constants.SCOPE].stringValue,
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       state: authorizationRequestObject[Constants.STATE].string,
-      vpFormats: try (formats ?? VpFormats.default())
+      vpFormats: try (formats ?? VpFormats.default()),
+      transactionData: authorizationRequestObject[Constants.TRANSACTION_DATA].array?.compactMap { $0.string }
     ))
   }
   

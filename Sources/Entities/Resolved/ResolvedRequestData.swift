@@ -51,6 +51,7 @@ public extension ResolvedRequestData {
   ///   - presentationDefinitionResolver: The resolver for presentation definition.
   ///   - validatedAuthorizationRequest: The validated SiopOpenId4VPRequest.
   init(
+    vpConfiguration: VPConfiguration,
     clientMetaDataResolver: ClientMetaDataResolver,
     presentationDefinitionResolver: PresentationDefinitionResolver,
     validatedAuthorizationRequest: ValidatedSiopOpenId4VPRequest
@@ -58,10 +59,14 @@ public extension ResolvedRequestData {
     switch validatedAuthorizationRequest {
     case .idToken(let request):
       let clientMetaDataSource = request.clientMetaDataSource
-      let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
-
+      let clientMetaData = try? await clientMetaDataResolver.resolve(
+        source: clientMetaDataSource
+      ).get()
+      
       let validator = ClientMetaDataValidator()
-      let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData)
+      let validatedClientMetaData = try? await validator.validate(
+        clientMetaData: clientMetaData
+      )
       
       self = .idToken(request: .init(
         idTokenType: request.idTokenType,
@@ -75,7 +80,7 @@ public extension ResolvedRequestData {
     case .vpToken(let request):
       let clientMetaDataSource = request.clientMetaDataSource
       let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
-
+      
       let validator = ClientMetaDataValidator()
       let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData)
       
@@ -84,9 +89,9 @@ public extension ResolvedRequestData {
           source: request.presentationDefinitionSource
         ).get()
       else {
-        throw ResolvedAuthorisationError.invalidClientData
+        throw ResolvedAuthorisationError.invalidPresentationDefinitionData
       }
-
+      
       self = .vpToken(request: .init(
         presentationDefinition: presentationDefinition,
         clientMetaData: validatedClientMetaData,
@@ -94,12 +99,17 @@ public extension ResolvedRequestData {
         nonce: request.nonce,
         responseMode: request.responseMode,
         state: request.state,
-        vpFormats: request.vpFormats
+        vpFormats: request.vpFormats,
+        transactionData: try Self.parseTransactionData(
+          transactionData: request.transactionData,
+          vpConfiguration: vpConfiguration,
+          presentationDefinition: presentationDefinition
+        )
       ))
     case .idAndVpToken(request: let request):
       let clientMetaDataSource = request.clientMetaDataSource
       let clientMetaData = try? await clientMetaDataResolver.resolve(source: clientMetaDataSource).get()
-
+      
       let validator = ClientMetaDataValidator()
       let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData)
       
@@ -108,9 +118,9 @@ public extension ResolvedRequestData {
           source: request.presentationDefinitionSource
         ).get()
       else {
-        throw ResolvedAuthorisationError.invalidClientData
+        throw ResolvedAuthorisationError.invalidPresentationDefinitionData
       }
-
+      
       self = .idAndVpToken(request: .init(
         idTokenType: request.idTokenType,
         presentationDefinition: presentationDefinition,
@@ -120,7 +130,12 @@ public extension ResolvedRequestData {
         responseMode: request.responseMode,
         state: request.state,
         scope: request.scope,
-        vpFormats: request.vpFormats
+        vpFormats: request.vpFormats,
+        transactionData: try Self.parseTransactionData(
+          transactionData: request.transactionData,
+          vpConfiguration: vpConfiguration,
+          presentationDefinition: presentationDefinition
+        )
       ))
     }
   }
@@ -133,6 +148,26 @@ public extension ResolvedRequestData {
       return request.client.legalName
     case .idAndVpToken(let request):
       return request.client.legalName
+    }
+  }
+}
+
+private extension ResolvedRequestData {
+  static func parseTransactionData(
+    transactionData: [String]?,
+    vpConfiguration: VPConfiguration,
+    presentationDefinition: PresentationDefinition
+  ) throws -> [TransactionData]? {
+    /// If there is no transactionData in the request, return nil.
+    guard let data = transactionData else { return nil }
+    
+    /// For each item in data, attempt to parse and unwrap it.
+    return try data.compactMap { item in
+      try TransactionData.parse(
+        item,
+        supportedTypes: vpConfiguration.supportedTransactionDataTypes,
+        presentationDefinition: presentationDefinition
+      ).get()
     }
   }
 }
