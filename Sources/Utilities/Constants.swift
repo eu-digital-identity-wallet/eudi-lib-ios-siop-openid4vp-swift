@@ -27,6 +27,7 @@ public struct Constants {
   public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
   public static let REQUEST_URI_METHOD = "request_url_method"
   public static let CLIENT_METADATA = "client_metadata"
+  public static let TRANSACTION_DATA = "transaction_data"
   
   public static let clientMetaDataJWKSString = """
   {
