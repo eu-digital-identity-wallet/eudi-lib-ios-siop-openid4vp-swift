@@ -32,7 +32,12 @@ public struct VPConfiguration {
           .msoMdoc
         ]
       ),
-      supportedTransactionDataTypes: []
+      supportedTransactionDataTypes: [
+        .init(
+          type: .init(value: "authorization"),
+          hashAlgorithms: Set([.sha256])
+        )
+      ]
     )
   }
   
