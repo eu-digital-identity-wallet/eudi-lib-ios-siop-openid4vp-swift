@@ -15,29 +15,6 @@
  */
 import Foundation
 
-public struct SupportedTransactionDataType: Codable {
-  public let type: TransactionDataType
-  public let hashAlgorithms: Set<HashAlgorithm>
-  
-  public init(type: TransactionDataType, hashAlgorithms: Set<HashAlgorithm>) throws {
-    guard !hashAlgorithms.isEmpty else {
-      throw NSError(domain: "SupportedTransactionDataTypeError", code: 1, userInfo: [NSLocalizedDescriptionKey: "hashAlgorithms cannot be empty"])
-    }
-    guard hashAlgorithms.contains(HashAlgorithm.sha256) else {
-      throw NSError(domain: "SupportedTransactionDataTypeError", code: 2, userInfo: [NSLocalizedDescriptionKey: "'sha-256' must be a supported hash algorithm"])
-    }
-    self.type = type
-    self.hashAlgorithms = hashAlgorithms
-  }
-  
-  public static func `default`() -> SupportedTransactionDataType {
-    try! .init(
-      type: .init(value: "transaction_data"),
-      hashAlgorithms: .init([.sha256])
-    )
-  }
-}
-
 public struct SiopOpenId4VPConfiguration {
   public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
   public let preferredSubjectSyntaxType: SubjectSyntaxType
@@ -52,7 +29,6 @@ public struct SiopOpenId4VPConfiguration {
   public let jarConfiguration: JARConfiguration
   public let vpConfiguration: VPConfiguration
   public let session: Networking
-  public let supportedTransactionData: SupportedTransactionDataType
   
   public init(
     subjectSyntaxTypesSupported: [SubjectSyntaxType],
@@ -67,8 +43,7 @@ public struct SiopOpenId4VPConfiguration {
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
     jarConfiguration: JARConfiguration = .default,
     vpConfiguration: VPConfiguration = VPConfiguration.default(),
-    session: Networking = Self.walletSession,
-    supportedTransactionData: SupportedTransactionDataType = SupportedTransactionDataType.default()
+    session: Networking = Self.walletSession
   ) {
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
     self.preferredSubjectSyntaxType = preferredSubjectSyntaxType
@@ -83,7 +58,6 @@ public struct SiopOpenId4VPConfiguration {
     self.jarConfiguration = jarConfiguration
     self.vpConfiguration = vpConfiguration
     self.session = session
-    self.supportedTransactionData = supportedTransactionData
   }
   
   internal init() throws {
@@ -100,7 +74,6 @@ public struct SiopOpenId4VPConfiguration {
     jarConfiguration = .default
     vpConfiguration = VPConfiguration.default()
     session = URLSession.shared
-    supportedTransactionData = SupportedTransactionDataType.default()
   }
   
   public static let walletSession: Networking = {
