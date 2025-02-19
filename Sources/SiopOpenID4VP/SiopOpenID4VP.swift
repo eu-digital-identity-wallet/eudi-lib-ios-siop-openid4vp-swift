@@ -86,7 +86,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
   }
 
   public func authorize(url: URL) async throws -> AuthorizationRequest {
-    return try await .init(
+    try await .init(
       authorizationRequestData: .init(from: url),
       walletConfiguration: walletConfiguration
     )
