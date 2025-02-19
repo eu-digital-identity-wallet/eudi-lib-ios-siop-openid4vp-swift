@@ -384,6 +384,28 @@ struct TestsConstants {
     return "https://verifier-backend.eudiw.dev/wallet/public-keys.json"
   }
   
+  static var presentationDefinition = PresentationDefinition(
+    id: UUID().uuidString,
+    inputDescriptors: [
+      .init(
+        id: "cred1",
+        name: nil,
+        purpose: nil,
+        formatContainer: nil,
+        constraints: .init(fields: []),
+        groups: nil
+      ),
+      .init(
+        id: "cred2",
+        name: nil,
+        purpose: nil,
+        formatContainer: nil,
+        constraints: .init(fields: []),
+        groups: nil
+      )
+    ]
+  )
+  
   static var signedResponseAlg = "RS256"
   static var encryptedResponseAlg = "RSA-OAEP-256"
   static var encryptedResponseEnc = "A128CBC-HS256"

@@ -318,7 +318,11 @@ final class DirectPostTests: DiXCTest {
     let url = "#06"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")

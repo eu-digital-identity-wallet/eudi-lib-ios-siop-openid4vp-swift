@@ -76,7 +76,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -174,7 +178,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -275,7 +283,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")

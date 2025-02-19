@@ -72,7 +72,11 @@ final class DirectPostJWTTests: DiXCTest {
     let url = "#04"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -163,7 +167,11 @@ final class DirectPostJWTTests: DiXCTest {
     let url = "#08"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -257,7 +265,11 @@ final class DirectPostJWTTests: DiXCTest {
     let url = "#07"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -547,7 +559,11 @@ final class DirectPostJWTTests: DiXCTest {
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -654,7 +670,11 @@ final class DirectPostJWTTests: DiXCTest {
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -759,7 +779,11 @@ final class DirectPostJWTTests: DiXCTest {
     let url = "#05"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -864,7 +888,11 @@ final class DirectPostJWTTests: DiXCTest {
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -974,7 +1002,11 @@ final class DirectPostJWTTests: DiXCTest {
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
