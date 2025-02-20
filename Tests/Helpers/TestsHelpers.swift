@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import SwiftyJSON
 
 @testable import SiopOpenID4VP
 
@@ -37,6 +38,73 @@ class TestsHelpers {
     ]
     
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody, options: [])
+    request.httpBody = jsonData
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    
+    let (data, _) = try await URLSession.shared.data(for: request)
+    return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+  }
+  
+  static func transactionDataBase64String() -> String {
+  
+    var json = JSON()
+    json[OpenId4VPSpec.TRANSACTION_DATA_TYPE].string = "manual-type"
+    json[OpenId4VPSpec.TRANSACTION_DATA_CREDENTIAL_IDS].arrayObject = ["wa_driver_license"]
+    json[OpenId4VPSpec.TRANSACTION_DATA_HASH_ALGORITHMS].arrayObject = ["sha-256"]
+    
+    // Serialize JSON to string.
+    guard
+      let jsonString = json.rawString(),
+      let data = jsonString.data(using: .utf8) else {
+      fatalError("Failed to serialize JSON")
+    }
+    
+    return data.base64URLEncodedString()
+  }
+  
+  static func getDirectPostJwtSession(
+    nonce: String,
+    transactionData: JSON
+  ) async throws -> [String: Any] {
+    
+    // Replace this URL with the endpoint you want to send the POST request to
+    let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
+    
+    // Create a POST request
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    
+    // Set the request body data (e.g., JSON data)
+    let jsonBody = [
+      "type": "vp_token",
+      "response_mode":  "direct_post.jwt",
+      "nonce": nonce,
+      "transaction_data": transactionData,
+      "presentation_definition": [
+        "id": TestsConstants.testPresentationId,
+        "input_descriptors": [
+          [
+            "id": "wa_driver_license",
+            "name": "Washington State Business License",
+            "purpose": "We can only allow licensed Washington State business representatives into the WA Business Conference",
+            "constraints": [
+              "fields": [
+                [
+                  "path": [
+                    "$.credentialSubject.dateOfBirth",
+                    "$.credentialSubject.dob",
+                    "$.vc.credentialSubject.dateOfBirth",
+                    "$.vc.credentialSubject.dob"
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ] as JSON
+    
+    let jsonData = try JSONSerialization.data(withJSONObject: jsonBody.object, options: [])
     request.httpBody = jsonData
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
     

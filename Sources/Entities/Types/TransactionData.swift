@@ -111,6 +111,24 @@ public struct TransactionData: Codable {
     }
   }
   
+  /// Convenience initializer to build a JSON from components.
+  internal static func json(
+    type: TransactionDataType,
+    credentialIds: [TransactionDataCredentialId],
+    hashAlgorithms: [HashAlgorithm]? = nil
+  ) -> JSON {
+    
+    var json = JSON()
+    json[OpenId4VPSpec.TRANSACTION_DATA_TYPE].string = type.value
+    json[OpenId4VPSpec.TRANSACTION_DATA_CREDENTIAL_IDS].arrayObject = credentialIds.map { $0.value }
+    
+    if let hashAlgorithms = hashAlgorithms, !hashAlgorithms.isEmpty {
+      json[OpenId4VPSpec.TRANSACTION_DATA_HASH_ALGORITHMS].arrayObject = hashAlgorithms.map { $0.name }
+    }
+    
+    return json
+  }
+  
   /// Convenience initializer to build a TransactionData from components.
   public static func create(
     type: TransactionDataType,

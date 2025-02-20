@@ -190,7 +190,10 @@ public extension ValidatedSiopOpenId4VPRequest {
     authorizationRequestData: AuthorisationRequestObject,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
-    let requesrUriMethod: RequestUriMethod = .init(method: authorizationRequestData.requestUriMethod)
+    let requesrUriMethod: RequestUriMethod = .init(
+      method: authorizationRequestData.requestUriMethod
+    )
+    
     if let request = authorizationRequestData.request {
       try await self.init(
         request: request,
