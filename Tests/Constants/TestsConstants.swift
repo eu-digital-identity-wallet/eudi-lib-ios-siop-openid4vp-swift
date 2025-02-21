@@ -16,6 +16,9 @@
 import Foundation
 import PresentationExchange
 import CryptoKit
+import CryptoSwift
+import JOSESwift
+import Security
 
 @testable import SiopOpenID4VP
 
@@ -49,7 +52,7 @@ struct TestsConstants {
       vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
     )
   }
-
+  
   public static let testPresentationId = "32f54163-7166-48f1-93d8-ff217bdb0653"
   public static let testPresentationSubmission: PresentationSubmission = .init(
     id: "028b39fd-33b6-46a1-8887-2ef654771d7f",
@@ -63,43 +66,55 @@ struct TestsConstants {
     ]
   )
   
+  public static let testPresentationSubmissionSdJwt: PresentationSubmission = .init(
+    id: "028b39fd-33b6-46a1-8887-2ef654771d7f",
+    definitionID: TestsConstants.testPresentationId,
+    descriptorMap: [
+      .init(
+        id: "eu.europa.ec.eudi.pid.1",
+        format: "dc+sd-jwt",
+        path: "$"
+      )
+    ]
+  )
+  
   public static let testClientId = "dev.verifier-backend.eudiw.dev"
   public static let clientId = "x509_san_dns:\(Self.testClientId)"
   
   public static let testNonce = "0S6_WzA2Mj"
   public static let testScope = "one two three"
-
+  
   public static let testResponseMode: ResponseMode = .directPost(responseURI: URL(string: "https://respond.here")!)
-
+  
   static func generateRandomJWT() -> String {
     // Define the header
     let header = #"{"alg":"HS256","typ":"JWT"}"#
-
+    
     // Define the claims
     let claims = #"{"iss":"issuer","sub":"subject","aud":["audience"],"exp":1679911600,"iat":1657753200}"#
-
+    
     // Create the base64url-encoded segments
     let encodedHeader = header.base64urlEncode
     let encodedClaims = claims.base64urlEncode
-
+    
     // Concatenate the header and claims segments with a dot separator
     let encodedToken = "\(encodedHeader).\(encodedClaims)"
-
+    
     // Define the secret key for signing
     let secretKey = "your_secret_key".data(using: .utf8)!
-
+    
     // Sign the token with HMAC-SHA256
-    let signature = HMAC<SHA256>.authenticationCode(for: Data(encodedToken.utf8), using: SymmetricKey(data: secretKey))
-
+    let signature = CryptoKit.HMAC<SHA256>.authenticationCode(for: Data(encodedToken.utf8), using: SymmetricKey(data: secretKey))
+    
     // Base64url-encode the signature
     let encodedSignature = Data(signature).base64EncodedString()
-
+    
     // Concatenate the encoded token and signature with a dot separator
     let jwt = "\(encodedToken).\(encodedSignature)"
-
+    
     return jwt
   }
-
+  
   static func generateRandomBase64String() -> String? {
     let randomData = Data.randomData(length: 32)
     let base64URL = randomData.base64URLEncodedString()
@@ -287,7 +302,7 @@ struct TestsConstants {
   "&nonce=n-0S6_WzA2Mj"
   
   static var validOutOfScopeAuthorizeUrl: URL {
-
+    
     let presentationDefinitionJson = try! String(
       contentsOf: Bundle.module.url(forResource: "minimal_example", withExtension: "json")!
     )
@@ -435,6 +450,38 @@ struct TestsConstants {
   
   static var sdJwt = "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogInZjK3NkLWp3dCIsICJ4NWMiOiBbIk1JSURBRENDQW9hZ0F3SUJBZ0lVR2F6SzNndW5wMkFrVnpvODI0a0JHNGhWKzFnd0NnWUlLb1pJemowRUF3SXdYREVlTUJ3R0ExVUVBd3dWVUVsRUlFbHpjM1ZsY2lCRFFTQXRJRlZVSURBeE1TMHdLd1lEVlFRS0RDUkZWVVJKSUZkaGJHeGxkQ0JTWldabGNtVnVZMlVnU1cxd2JHVnRaVzUwWVhScGIyNHhDekFKQmdOVkJBWVRBbFZVTUI0WERUSTFNREV4TkRFeU5UY3lNMW9YRFRJMk1EUXdPVEV5TlRjeU1sb3dVekVWTUJNR0ExVUVBd3dNVUVsRUlFUlRJQzBnTURBek1TMHdLd1lEVlFRS0RDUkZWVVJKSUZkaGJHeGxkQ0JTWldabGNtVnVZMlVnU1cxd2JHVnRaVzUwWVhScGIyNHhDekFKQmdOVkJBWVRBbFZVTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFQXk1Mlo0ZG9RNk1DZEF1RzFVOWZGRmZLdmxobUdibXRTVlhkRjdCTnl2a3RtUWJjaDU4aFpPZkl0SDhqMjl3Y1UzT0dmM25ORW8xRkc4bzF2T29yYTZPQ0FTMHdnZ0VwTUI4R0ExVWRJd1FZTUJhQUZMTnN1SkVYSE5la0dtWXhoMExoaThCQXpKVWJNQnNHQTFVZEVRUVVNQktDRUdsemMzVmxjaTVsZFdScGR5NWtaWFl3RmdZRFZSMGxBUUgvQkF3d0NnWUlLNEVDQWdBQUFRSXdRd1lEVlIwZkJEd3dPakE0b0RhZ05JWXlhSFIwY0hNNkx5OXdjbVZ3Y205a0xuQnJhUzVsZFdScGR5NWtaWFl2WTNKc0wzQnBaRjlEUVY5VlZGOHdNUzVqY213d0hRWURWUjBPQkJZRUZIN1FJR1FTYkxncURTOFBkcTVVdS9JeVgzK0lNQTRHQTFVZER3RUIvd1FFQXdJSGdEQmRCZ05WSFJJRVZqQlVobEpvZEhSd2N6b3ZMMmRwZEdoMVlpNWpiMjB2WlhVdFpHbG5hWFJoYkMxcFpHVnVkR2wwZVMxM1lXeHNaWFF2WVhKamFHbDBaV04wZFhKbExXRnVaQzF5WldabGNtVnVZMlV0Wm5KaGJXVjNiM0pyTUFvR0NDcUdTTTQ5QkFNQ0EyZ0FNR1VDTUZoNEUrU2JvZ3hGRHphbFF0M3RWV1drY3F4NmhjSW1VUTZVVndMZUJXUFJvS2dweUNueUdwK3lMSERXckd2b09RSXhBTzE1NUFIK1QzTWcxNE9jNlFuYzZIdDZvK1l1SU44NnZvTzZHa3djb25Ic3JjQlNqNVR3SmNxTkI1cXRmN0kxOXc9PSJdfQ.eyJfc2QiOiBbIi0xc2h1bklfajZmcjgtUlJSQ0V4TDlLUEZmQTNIVFJhY01CSGFMRmdKOE0iLCAiQjhWeXBILWotcVNORWppLTNiNGZtdUJ3cnI4eWJlbmFWR3B1WjYtVm5UQSIsICJGTGpTbndsUmpyUkFGT3BuaW9YSDdyOWNhcFQtdlExYlFhOFJSYnVlcFpJIiwgIlB1NUY5WjB4bTRQbUtIWFl6OWVWTTgtM2M0Unk5LWE5bTM3Y0FvMklPRTgiLCAiU0wxNHNoLWlLVmxPOWNGUC1MT2Zqd3B2VDFsbV9uUFZDYTJDU2V4UlgxdyIsICJycWxicnNWMTc1Vlk4b1BmWi10ZVpGMWpBRmhrT3dZVUgtRTZCQkpPUTdrIl0sICJpc3MiOiAiaHR0cHM6Ly9kZXYuaXNzdWVyLmV1ZGl3LmRldiIsICJpYXQiOiAxNzM3Njc2ODAwLCAiZXhwIjogMTc0NTQ0OTIwMCwgInZjdCI6ICJ1cm46ZXUuZXVyb3BhLmVjLmV1ZGk6cGlkOjEiLCAic3RhdHVzIjogeyJpZGVudGlmaWVyX2xpc3QiOiB7ImlkIjogOTMsICJ1cmkiOiAiaHR0cHM6Ly9pc3N1ZXIuZXVkaXcuZGV2L2lkZW50aWZpZXJfbGlzdC9GQy9ldS5ldXJvcGEuZWMuZXVkaS5waWQuMS8zMzAwZjBhNS1jNWQ3LTQwNzUtOWFiOC1kMWYxOTkyZTU3ZmIifSwgInN0YXR1c19saXN0IjogeyJpZHgiOiA5MywgInVyaSI6ICJodHRwczovL2lzc3Vlci5ldWRpdy5kZXYvdG9rZW5fc3RhdHVzX2xpc3QvRkMvZXUuZXVyb3BhLmVjLmV1ZGkucGlkLjEvMzMwMGYwYTUtYzVkNy00MDc1LTlhYjgtZDFmMTk5MmU1N2ZiIn19LCAiX3NkX2FsZyI6ICJzaGEtMjU2IiwgImNuZiI6IHsiandrIjogeyJrdHkiOiAiRUMiLCAiY3J2IjogIlAtMjU2IiwgIngiOiAiemZ3Tkh6dXhFUjJVMEJiVVE5SllQZUZXYWZXM2l2V3cxTTNUWk5rbHEyNCIsICJ5IjogIkQ2Z3htQWNLbE0xM1FTcEFrWUxzVUI1Q09nMTJOT18zWE9oT2NjbXpQT00ifX19.m3XrLBrnUqg8PtW6Yrcf1XniHstKjZxnNUYYgW7bPq-0X0hZ0rO-hEGhS74_19fjHWo9PTvrU0dJrBYlroOvfQ~WyJFbDVWUnBEMnNKNjk2dzVkeF9sS1BBIiwgImJpcnRoZGF0ZSIsICIxOTU2LTAxLTI0Il0~WyJvMVhJUmxpS1VSUGpHN01lVmdXT3dnIiwgImlzc3VpbmdfY291bnRyeSIsICJGQyJd~WyJPdTVFSnVBYzJsT2gtWFdaVUF1NGFnIiwgImdpdmVuX25hbWUiLCAibGFzdCJd~WyJhZUdMYmctRktTQzBXQjZCZFNOWDhnIiwgImlzc3VpbmdfYXV0aG9yaXR5IiwgIlRlc3QgUElEIGlzc3VlciJd~WyJnRGxsLTE3QlJabzZXclEtVWlweHF3IiwgIjE4IiwgdHJ1ZV0~WyJRUGJzZ1ZuZTNzOFVuSzBDX1NqM2VRIiwgImFnZV9lcXVhbF9vcl9vdmVyIiwgeyJfc2QiOiBbImRXdFBLUUZjQVIxYmZHX1FoN1dzbjZWSFdxblpUUjRaeU82ZGVDcExGYzgiXX1d~WyJmbUtUajI5dUFVN2hrQ2lEa2hodEVRIiwgImZhbWlseV9uYW1lIiwgImZpcnN0Il0~eyJhbGciOiJFUzI1NiIsInR5cCI6ImtiK2p3dCJ9.eyJhdWQiOiJ2ZXJpZmllci1iYWNrZW5kLmV1ZGl3LmRldiIsIm5vbmNlIjoiYjcwZjE3MTYtZjZjYS00NWE3LWFkMjQtZjliNmIwYTVkMDc3IiwiaWF0IjoxNzM4MzE1NDk2LCJzZF9oYXNoIjoiQ28tejY4ZmI1RkJpcXNZX05DbXR3TWJ6WFBFbktnUWVkMTE4M0RHLUlHZyJ9.LsM1xZpNc0twIR5unn9fsOFTpfBSptmRttQ-3MmiRkIIuHgUYh5BqVIAqPkDwqu27tBSM4csjCK_fOZu9--Fqw"
   
+  static let sdJwtVcPid = "eyJ4NWMiOlsiTUlJRExUQ0NBcktnQXdJQkFnSVVMOHM1VHM2MzVrNk9oclJGTWxzU1JBU1lvNll3Q2dZSUtvWkl6ajBFQXdJd1hERWVNQndHQTFVRUF3d1ZVRWxFSUVsemMzVmxjaUJEUVNBdElGVlVJREF4TVMwd0t3WURWUVFLRENSRlZVUkpJRmRoYkd4bGRDQlNaV1psY21WdVkyVWdTVzF3YkdWdFpXNTBZWFJwYjI0eEN6QUpCZ05WQkFZVEFsVlVNQjRYRFRJME1URXlPVEV4TWpnek5Wb1hEVEkyTVRFeU9URXhNamd6TkZvd2FURWRNQnNHQTFVRUF3d1VSVlZFU1NCU1pXMXZkR1VnVm1WeWFXWnBaWEl4RERBS0JnTlZCQVVUQXpBd01URXRNQ3NHQTFVRUNnd2tSVlZFU1NCWFlXeHNaWFFnVW1WbVpYSmxibU5sSUVsdGNHeGxiV1Z1ZEdGMGFXOXVNUXN3Q1FZRFZRUUdFd0pWVkRCWk1CTUdCeXFHU000OUFnRUdDQ3FHU000OUF3RUhBMElBQkFXYTlVYXI3b1AxWmJHRmJzRkE0ZzMxUHpOR1pjd2gydlI3UENrazBZaUFMNGNocnNsZzljajFrQnlueVppN25acllnUE9KN3gwYXRSRmRreGZYanRDamdnRkRNSUlCUHpBTUJnTlZIUk1CQWY4RUFqQUFNQjhHQTFVZEl3UVlNQmFBRkxOc3VKRVhITmVrR21ZeGgwTGhpOEJBekpVYk1DY0dBMVVkRVFRZ01CNkNIR1JsZGk1cGMzTjFaWEl0WW1GamEyVnVaQzVsZFdScGR5NWtaWFl3RWdZRFZSMGxCQXN3Q1FZSEtJR01YUVVCQmpCREJnTlZIUjhFUERBNk1EaWdOcUEwaGpKb2RIUndjem92TDNCeVpYQnliMlF1Y0d0cExtVjFaR2wzTG1SbGRpOWpjbXd2Y0dsa1gwTkJYMVZVWHpBeExtTnliREFkQmdOVkhRNEVGZ1FVOGVIQS9NWHZreUNGNFExaW91WFAwc3BpTVVnd0RnWURWUjBQQVFIL0JBUURBZ2VBTUYwR0ExVWRFZ1JXTUZTR1VtaDBkSEJ6T2k4dloybDBhSFZpTG1OdmJTOWxkUzFrYVdkcGRHRnNMV2xrWlc1MGFYUjVMWGRoYkd4bGRDOWhjbU5vYVhSbFkzUjFjbVV0WVc1a0xYSmxabVZ5Wlc1alpTMW1jbUZ0WlhkdmNtc3dDZ1lJS29aSXpqMEVBd0lEYVFBd1pnSXhBSmpLU0EzQTdrWU9CWXdKQ09PY3JjYVJDRGVWVGZjdllZQ1I4QWp5blVpMjVJL3Rrc0RDRkE1K21hQ0xmbWtVS1FJeEFPVmpHc2dsdVF3VE41MG85N1dtaWxIYmxXNE44K3FBcm1zQkM4alRJdXRuS2ZjNHlaM3U1UTF1WllJbGJ0S1NyZz09Il0sImtpZCI6IjI3Mjg1NDYwOTcyMTEyMDczMjkzODg2ODI5ODc5OTI0NTAzNDE3NDEwMjkzODUzNCIsInR5cCI6InZjK3NkLWp3dCIsImFsZyI6IkVTMjU2In0.eyJwbGFjZV9vZl9iaXJ0aCI6eyJfc2QiOlsiMUhCMEM2THVWcWE4cjRqX1FBSzAzdDFWcVhTWjBQUFU3WWw3RHNkdUdfZyIsIjU5ZHhGSWFOamRUOE12TXpYTHNxTUpuR3dFaDd2dmx3TjFENDdHSGc1TlUiXX0sIl9zZCI6WyI1VWMtZllRZmZqTGlBRVVINjJlMDBRcHh2WnpNRmxxM2NuY08xa2hSVlZVIiwiQWhfbVFyNG1qY1dZbDVILWdLXy1IaDFxSWRUTHJ3ek5DcGlDN0hnNWFVbyIsIkFrWjdERjZ5elJPZGczSE9fZU1ZRHRzSERLQkx3NzdtdC1qeVRkS2NxNjQiLCJCeUwtZ0hIWHN5SVVJM1FqMi1pLUMxdnhpbGlwblFmMW1hVzlLU1J6WF8wIiwiRUEwZjlEbjJpSy02ZGxnVTZEV201eDVCMk42RHh2SmZJS3BEY2xRc1RFUSIsIkZIRW1xME5kVk9NSk5VdjV3SHNwRDZOYWljVFc4M19sRk42UDFqVWtjOVUiLCJSOE5jdlpXQk5Za1hiOWdQSW5WV3FEd3MyYVBnb0JYSGQtcERjRlB1YmhZIiwiVG1OcjRfYnQzTjd1aFA5WmVQNzgzN19selZzR1B6bVZTNzBCc0ZucURQdyIsIll1RGwtR204dGF1VzUyM2V4VHFYYU9kZVBhX18xN08wWW1jNUhRc0hXSXMiLCJfaG5lZnNDMTZkNE5lMEZ4eGNHbGxFTHFaX0djQ2RlWnBEZ3VrLUoyUXdvIiwiY1pINDRhYmk1UzJTUVlqb2p5YXlMWWtIZ1N1czJBNzdLc0pQOHJmNHdvOCIsImN5NVZibV9HQ0RLelp5X2plSVpPNldCbVotNmp5VjV6NkZKZkZObVNPNUUiLCJmZFQyQ0FpS0ozSXRiWkt4Mk9FN29MUEpHQzFTTFFOalBYRzY5T1RVOHFBIiwiaWNFbmpQTnVEYkxzRF9RbTBoLXh2RmxscXdHNzBPQWEyQkxGVV9EMjN1WSJdLCJhZGRyZXNzIjp7Il9zZCI6WyJGUVNrVnhpMWxCSDM2ejVzRjlPeUlZNjZ5aFVhMXhkZDV5N1lkbkpyai1BIiwiT2F6MkQxeG5qeExYTUlfZmNVRmMxQXFTbFlsaDdaeUdaLVozaWdNbDdqMCIsImkwOGg1VVo5a1dzR2hJamV0MVo5YlI1cUNkZ0hYQk5idnMtbm15TWVJTzAiLCJvQlNpV1FaT2tWRHpOV1BwU2VOWFBCYTNnMnBIaEJvT3hPNnNkenkxeWNBIiwicjBHZnJDbEVLN1VQYmkwU3VVN0VlV0g5RE44VnVOQU92bVZ4VS1sMFQ1VSIsInZTMjM2TzZwZnZFcy05d04yOEdNbTk0bmpsemcyN3pYb3UwNmcwdnlqNHciXX0sInZjdCI6InVybjpldS5ldXJvcGEuZWMuZXVkaTpwaWQ6MSIsIl9zZF9hbGciOiJzaGEzLTI1NiIsImlzcyI6Imh0dHBzOi8vZGV2Lmlzc3Vlci1iYWNrZW5kLmV1ZGl3LmRldiIsImNuZiI6eyJqd2siOnsia3R5IjoiUlNBIiwiZSI6IkFRQUIiLCJ1c2UiOiJzaWciLCJraWQiOiJhMTVmZTZjMC1hZjIzLTRmMmYtODRjYS0wMTg1Mjg3Zjk0NjUiLCJpYXQiOjE3Mzk0NTQ3ODAsIm4iOiJwTnJ2RnlQYnZ4NEhHV3QxdTdzeDJFMUEzVGlFTkc3SDd4STZtenF2MWVCN3ZLYzNBOWE0NndOVVZyYnVsYlVrem05ZEVBWWQxZUMtTnNiT0NwODZXMjd0Um8yenVBZjh1VHpQN2I2TS0yZWhzR1UxZkMzMENOdUtiUXFCNG5BMHNCcE9uc1ZoajhjNGcyQ2hiOFZEN0U5U0dzX2h0ZEtZbHQ4T29WQjVQeXMtX2RTbGxfTFdLX3BtN29YLXJXbjJvaHcySlRIRllWWnJ5OUlPeTNLU2NGR2VINFR5cEtsaWhPZDBsNWJUWWczOHY5ZXdXZ2hTSlZsYVhRVlNGRlUzUm0xcmtsV2w2NHdnaERzdUdRXzQtMGNzcEpNZXhRdmlSZXIxODl5aDhuMjBMdHRMandOV2JwZWU5Vk8zVnZQNkhyemFEZGlpeFhfTzREN1hONTQxZncifX0sImV4cCI6MTgwMjUyNjc4MSwiaWF0IjoxNzM5NDU0NzgxLCJhZ2VfZXF1YWxfb3Jfb3ZlciI6eyJfc2QiOlsiaG1PcDNBSnFRY2JuM2lCbnZTQjF2WC1wemRHcnBzQVZSc1JVNEZHWHdTRSJdfX0.Fp80G4eN-amA_wRIvlqHxx2qghnljVs_PH5O7Ni7RTK80gaUOXPhsjfYz5cRcLcNTKlaFAZF8PB5W5uicHzzyQ~WyIwSWtZV0NqT3hqTk5KZDJMa21DN013IiwiZmFtaWx5X25hbWUiLCJOZWFsIl0~"
+  
+  static let sdJwtVcPidKey = """
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEApNrvFyPbvx4HGWt1u7sx2E1A3TiENG7H7xI6mzqv1eB7vKc3
+A9a46wNUVrbulbUkzm9dEAYd1eC+NsbOCp86W27tRo2zuAf8uTzP7b6M+2ehsGU1
+fC30CNuKbQqB4nA0sBpOnsVhj8c4g2Chb8VD7E9SGs/htdKYlt8OoVB5Pys+/dSl
+l/LWK/pm7oX+rWn2ohw2JTHFYVZry9IOy3KScFGeH4TypKlihOd0l5bTYg38v9ew
+WghSJVlaXQVSFFU3Rm1rklWl64wghDsuGQ/4+0cspJMexQviRer189yh8n20LttL
+jwNWbpee9VO3VvP6HrzaDdiixX/O4D7XN541fwIDAQABAoIBACGK1EPijWcU/n/L
+EBDq9SjcCxsX0Tpz4eVAUcFczwMW4kZPxY9X5JcYvdPI88FtMnh4Szij7fUi/cDa
+cXjSzgZliwykb1E9+stb1ri6YSgT/V+NMDU8il81ADTQgv3mM6ozKBUA9ylQcSy2
+ABLkUb4mo3+GFZgvqdFkwC7NV2YlHFeLGAtHBqx29DlNaRMKel6ikXjwuhkO/GIa
+CIwBSgyKwAWo171JlehsIgrvMKaTvrJzkdQdLkg0nzAs+sjpDuQHpa+xgYHOCxWN
+CHkZUyv3t17IjjT0pUAMw8F1Fn6/L87GICzjCo+52uOkAe74ZP7Px4z88MiJI7KA
+Zg40P20CgYEA0L/YvKkn6wdFY3XjujsWfUbaYQsXkWsFJXK5GuSKY7cvCFbS8v9e
+C2TXuWcag9TXyTZgMEuEkVR8cB1tiS1ov2T48LpCUb/qkk5Pbd5Rea/vQH1GSmb7
+aizaDWo4JoRNX8D4R+lO3V52o6m3z8wc9MemW0z7QfWKvFVfqVI8fXsCgYEAyiua
+VS9a8fzePQNlkIy2kWGJRG7PpUPi/b0B01TPlqMoKTWocJY/BVcaLP7pOxTA/YTL
+5ndz1vuGAZtn2Oph5gxuAYEOMHwA/hPSiwTPcbS0uvK/AwJxdIELOriub/jiMQwo
+tIL2IdSO3Go5AzKsyQPeEuu+j0XROYWehKujDs0CgYANG26tceWawUsfEqDo6Zrg
+5NkDbOHe9JxPHKP4x07VMgRW/rSiI1yxVHSjJJEqo+ukq7Bgd+1r/qUNmRtumJZS
+JjHnU5qkbWt6IkakfGgbPuvD3dnTBCJXKVfLrda2vGnrUD+GrGSSS8MhRZ/QAV30
+FLEiXHQOUS+T4bxu8kXwDwKBgQCvT4wvHjdg7APTKKTj6gFOpCOiIe0RxIKLwWBZ
+34t7dtQWmB8OMltHyDY8mneo8eBAdu1RVngvDkEwF5C/us9V66VgzIZ/aKh7qrjC
+MFOqqCaojmMwuuejPVt9ejRZiJqsKX0Kux2wTF/tpnb13PWUAjSKd77xAnvhw4qo
+RSXKaQKBgBuq/2c5H5r1PDtDIiffnG1uhq7J1XXFeEv19aaR651dI4ewhUVmShej
+7MddFuVWXS+orbnTXxqoDUJLtRVtvAb7xsbNpsUOVKx/w9CmsRgFY79zABaA2CTh
+d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
+-----END RSA PRIVATE KEY-----
+"""
+  
   static func generateMdocGeneratedNonce() -> String {
     var bytes = [UInt8](repeating: 0, count: 16)
     let result = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
@@ -458,7 +505,7 @@ struct TestsConstants {
           format: "mso_mdoc",
           path: "$"
         )
-      }
+        }
     )
   }
   
@@ -469,5 +516,104 @@ struct TestsConstants {
         kdJwtAlgorithms: ["PS256"]
       )
     )
+  }
+  
+  static func sdJwtPresentations(transactiondata: [TransactionData]?) -> String {
+    
+    func sha3_256Hash(_ input: String) -> String {
+      let inputData = Array(input.utf8) // Convert to [UInt8] for CryptoSwift
+      let digest = SHA3(variant: .sha256).calculate(for: inputData)
+      return Data(digest).base64URLEncodedString()
+    }
+    
+    let sdHash = sha3_256Hash(sdJwtVcPid)
+    
+    return try! generateVerifiablePresentation(
+      sdJwtVc: sdJwtVcPid,
+      privateKey: KeyController.generateRSAPrivateKey(),
+      audience: "Verifier",
+      nonce: Self.testNonce,
+      sdHash: sdHash,
+      transactionData: transactiondata
+    )
+  }
+}
+
+func generateVerifiablePresentation(
+  sdJwtVc: String,
+  privateKey: SecKey,
+  audience: String,
+  nonce: String,
+  sdHash: String,
+  transactionData: [TransactionData]?
+) throws -> String {
+  
+  // Create JWT Header
+  let header = try! JWSHeader(parameters: [
+    "alg": "RS256",
+    "typ": "kb+jwt",
+    "kid": "a15fe6c0-af23-4f2f-84ca-0185287f9465"
+  ])
+  
+  let keyData = Data(
+    base64Encoded: TestsConstants.sdJwtVcPidKey
+      .replacingOccurrences(of: "-----BEGIN RSA PRIVATE KEY-----", with: "")
+      .replacingOccurrences(of: "-----END RSA PRIVATE KEY-----", with: "")
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .replacingOccurrences(of: "\n", with: "")
+  )!
+  
+  let attributes: [NSObject : NSObject] = [
+    kSecAttrKeyType: kSecAttrKeyTypeRSA,
+    kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+    kSecAttrKeySizeInBits: NSNumber(value: 2048)
+  ]
+  
+  var error: Unmanaged<CFError>?
+  let privateKey = SecKeyCreateWithData(keyData as CFData, attributes as CFDictionary, &error)!
+  
+  // Prepare claims
+  var claims: [String: Any] = [
+    "aud": audience,
+    "nonce": nonce,
+    "iat": Int(Date().timeIntervalSince1970) - 100000,
+    "exp": Int(Date().timeIntervalSince1970) + 100000,
+    "sd_hash": sdHash
+  ]
+  
+  // Process transaction data hashes if available
+  if let transactionData = transactionData, !transactionData.isEmpty {
+    let hashAlgorithm = "SHA-256"
+    let transactionDataHashes = transactionData.map {
+      $0.value.data(using: .utf8)!.sha256().base64URLEncodedString()
+    }
+    claims["transaction_data_hashes_alg"] = hashAlgorithm
+    claims["transaction_data_hashes"] = transactionDataHashes
+  }
+  
+  // Create JWT Payload
+  let payloadData = try! JSONSerialization.data(withJSONObject: claims, options: [])
+  let payload = Payload(payloadData)
+  
+  // Sign JWT
+  // Create and Sign JWT Using JoseSwift
+  let jws = try JWS(
+    header: header,
+    payload: payload,
+    signer: Signer(
+      signatureAlgorithm: .RS256,
+      key: privateKey
+    )!
+  )
+  let keyBindingJwt = jws.compactSerializedString
+  return "\(sdJwtVc)\(keyBindingJwt)"
+}
+
+extension Data {
+  func base64URLEncodedString() -> String {
+    return self.base64EncodedString()
+      .replacingOccurrences(of: "+", with: "-")
+      .replacingOccurrences(of: "/", with: "_")
+      .replacingOccurrences(of: "=", with: "") // Remove padding
   }
 }
