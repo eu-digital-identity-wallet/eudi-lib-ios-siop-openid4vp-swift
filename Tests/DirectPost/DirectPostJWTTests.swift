@@ -949,7 +949,7 @@ final class DirectPostJWTTests: DiXCTest {
   
   func testSDKEndtoEndDirectPostJwtX509WithTransactionData() async throws {
     
-    let nonce = UUID().uuidString
+    let nonce = TestsConstants.testNonce
     let session = try? await TestsHelpers.getDirectPostJwtSession(
       nonce: nonce,
       transactionData: [
@@ -1033,6 +1033,7 @@ final class DirectPostJWTTests: DiXCTest {
     case .jwt(let request):
       let resolved = request
 
+      var presentation: String?
       switch resolved {
       case .vpToken(let request):
         let transactionData = request.transactionData!.first
@@ -1044,6 +1045,8 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssertEqual(credentialId!.value, "wa_driver_license")
         XCTAssertEqual(hashAlgorithm!.name, "sha-256")
         
+        presentation = TestsConstants.sdJwtPresentations(transactiondata: request.transactionData)
+        
       default:
         XCTFail("Incorrectly resolved")
       }
@@ -1051,11 +1054,10 @@ final class DirectPostJWTTests: DiXCTest {
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(
-          apu: TestsConstants.generateMdocGeneratedNonce(),
           verifiablePresentations: [
-            .generic(TestsConstants.cbor)
+            .generic(presentation!)
         ]),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        presentationSubmission: TestsConstants.testPresentationSubmissionSdJwt
       )
       
       // Generate a direct post authorisation response
