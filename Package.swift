@@ -35,6 +35,10 @@ let package = Package(
       url: "https://github.com/niscy-eudiw/BlueECC.git",
       .upToNextMajor(from: "1.2.4")
     ),
+    .package(
+      url: "https://github.com/krzyzanowskim/CryptoSwift.git",
+      from: "1.8.4"
+    )
   ],
   targets: [
     .target(
@@ -81,6 +85,10 @@ let package = Package(
         .product(
           name: "PresentationExchange",
           package: "eudi-lib-ios-presentation-exchange-swift"
+        ),
+        .product(
+          name: "CryptoSwift",
+          package: "CryptoSwift"
         )
       ],
       path: "Tests"
