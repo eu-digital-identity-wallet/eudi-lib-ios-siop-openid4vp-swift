@@ -518,7 +518,10 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
     )
   }
   
-  static func sdJwtPresentations(transactiondata: [TransactionData]?) -> String {
+  static func sdJwtPresentations(
+    transactiondata: [TransactionData]?,
+    clientID: String
+  ) -> String {
     
     func sha3_256Hash(_ input: String) -> String {
       let inputData = Array(input.utf8) // Convert to [UInt8] for CryptoSwift
@@ -531,7 +534,7 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
     return try! generateVerifiablePresentation(
       sdJwtVc: sdJwtVcPid,
       privateKey: KeyController.generateRSAPrivateKey(),
-      audience: "Verifier",
+      audience: clientID,
       nonce: Self.testNonce,
       sdHash: sdHash,
       transactionData: transactiondata

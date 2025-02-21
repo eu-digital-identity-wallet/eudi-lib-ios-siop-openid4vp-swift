@@ -1045,7 +1045,10 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssertEqual(credentialId!.value, "wa_driver_license")
         XCTAssertEqual(hashAlgorithm!.name, "sha-256")
         
-        presentation = TestsConstants.sdJwtPresentations(transactiondata: request.transactionData)
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId
+        )
         
       default:
         XCTFail("Incorrectly resolved")
