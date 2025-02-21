@@ -46,7 +46,7 @@ class TestsHelpers {
   }
   
   static func transactionDataBase64String() -> String {
-  
+    
     var json = JSON()
     json[OpenId4VPSpec.TRANSACTION_DATA_TYPE].string = "manual-type"
     json[OpenId4VPSpec.TRANSACTION_DATA_CREDENTIAL_IDS].arrayObject = ["wa_driver_license"]
