@@ -212,16 +212,29 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     case .jwt(request: let request):
       let resolved = request
       
+      var presentation: String?
+      var nonce: String?
+      switch resolved {
+      case .vpToken(let request):
+        
+        nonce = request.nonce
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId,
+          nonce: nonce!,
+          useSha3: false
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
+          .generic(presentation!)
         ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        presentationSubmission: TestsConstants.testPresentationSubmission
       )
       
       // Generate a direct post authorisation response
