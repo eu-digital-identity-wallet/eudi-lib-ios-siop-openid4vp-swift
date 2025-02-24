@@ -539,7 +539,6 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
     
     return try! generateVerifiablePresentation(
       sdJwtVc: sdJwtVcPid,
-      privateKey: KeyController.generateRSAPrivateKey(),
       audience: clientID,
       nonce: nonce,
       sdHash: sdHash,
@@ -550,7 +549,6 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
 
 func generateVerifiablePresentation(
   sdJwtVc: String,
-  privateKey: SecKey,
   audience: String,
   nonce: String,
   sdHash: String,

@@ -28,15 +28,6 @@ extension Data {
     return data
   }
   
-  // Encodes the data as a base64 URL-safe string
-  func base64URLEncodedString() -> String {
-    var base64String = self.base64EncodedString()
-    base64String = base64String.replacingOccurrences(of: "/", with: "_")
-    base64String = base64String.replacingOccurrences(of: "+", with: "-")
-    base64String = base64String.replacingOccurrences(of: "=", with: "")
-    return base64String
-  }
-  
   init?(base64UrlEncoded base64Url: String) {
     var base64 = base64Url
       .replacingOccurrences(of: "-", with: "+") // Replace '-' with '+'
