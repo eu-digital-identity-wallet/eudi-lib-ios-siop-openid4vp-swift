@@ -618,8 +618,10 @@ final class DirectPostJWTTests: DiXCTest {
   
   func testSDKEndtoEndDirectPostJwtX509WithRemovedSchemeWithSdJwt() async throws {
     
-    let nonce = UUID().uuidString
-    let session = try? await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
+    let nonce = TestsConstants.testNonce
+    let session = try? await TestsHelpers.getDirectPostJwtSession(
+      nonce: nonce
+    )
     
     guard let session = session else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -687,12 +689,26 @@ final class DirectPostJWTTests: DiXCTest {
     case .jwt(let request):
       let resolved = request
 
+      var presentation: String?
+      switch resolved {
+      case .vpToken(let request):
+        
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId,
+          nonce: TestsConstants.testNonce
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.sdJwt)
+          .generic(presentation!)
         ]),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        presentationSubmission: TestsConstants.testPresentationSubmissionSdJwt
       )
       
       // Generate a direct post authorisation response
@@ -1047,7 +1063,8 @@ final class DirectPostJWTTests: DiXCTest {
         
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
-          clientID: request.client.id.originalClientId
+          clientID: request.client.id.originalClientId,
+          nonce: request.nonce
         )
         
       default:
