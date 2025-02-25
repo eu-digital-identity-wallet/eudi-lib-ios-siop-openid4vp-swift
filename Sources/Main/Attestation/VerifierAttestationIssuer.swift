@@ -49,7 +49,7 @@ actor VerifierAttestationIssuer {
     guard let publicKey: SecKey = try? KeyController.generateECDHPublicKey(
       from: self.algAndKey.key
     ) else {
-      throw ValidatedAuthorizationError.validationError("Unable to get private key")
+      throw ValidationError.validationError("Unable to get private key")
     }
     
     let ecPublicJwk = try ECPublicKey(

@@ -15,10 +15,17 @@
  */
 import Foundation
 
-public typealias Base64Certificate = String
-
-public typealias CertificateTrust = ([Base64Certificate]) -> Bool
-
-public protocol X509CertificateTrustType {
-  func isTrusted(chain: [Base64Certificate]) -> Bool
+public struct TransactionDataCredentialId: Codable, Equatable, CustomStringConvertible {
+  public let value: String
+  
+  public init(value: String) throws {
+    guard !value.isEmpty else {
+      throw ValidationError.validationError(
+        "TransactionDataCredentialId value cannot be empty"
+      )
+    }
+    self.value = value
+  }
+  
+  public var description: String { value }
 }

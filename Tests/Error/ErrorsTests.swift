@@ -59,97 +59,97 @@ class ErrorTests: XCTestCase {
   }
   
   func testUnsupportedClientIdScheme() {
-    let error = ValidatedAuthorizationError.unsupportedClientIdScheme("http")
+    let error = ValidationError.unsupportedClientIdScheme("http")
     XCTAssertEqual(error.errorDescription, ".unsupportedClientIdScheme http")
   }
 
   func testValidationUnsupportedResponseType() {
-    let error = ValidatedAuthorizationError.unsupportedResponseType("token")
+    let error = ValidationError.unsupportedResponseType("token")
     XCTAssertEqual(error.errorDescription, ".unsupportedResponseType Optional(\"token\")")
   }
 
   func testUnsupportedResponseMode() {
-    let error = ValidatedAuthorizationError.unsupportedResponseMode(nil)
+    let error = ValidationError.unsupportedResponseMode(nil)
     XCTAssertEqual(error.errorDescription, ".unsupportedResponseMode ")
   }
 
   func testUnsupportedIdTokenType() {
-    let error = ValidatedAuthorizationError.unsupportedIdTokenType("access_token")
+    let error = ValidationError.unsupportedIdTokenType("access_token")
     XCTAssertEqual(error.errorDescription, ".unsupportedIdTokenType access_token")
   }
 
   func testInvalidResponseType() {
-    let error = ValidatedAuthorizationError.invalidResponseType
+    let error = ValidationError.invalidResponseType
     XCTAssertEqual(error.errorDescription, "")
   }
 
   func testInvalidIdTokenType() {
-    let error = ValidatedAuthorizationError.invalidIdTokenType
+    let error = ValidationError.invalidIdTokenType
     XCTAssertEqual(error.errorDescription, ".invalidResponseType")
   }
 
   func testNoAuthorizationData() {
-    let error = ValidatedAuthorizationError.noAuthorizationData
+    let error = ValidationError.noAuthorizationData
     XCTAssertEqual(error.errorDescription, ".noAuthorizationData")
   }
 
   func testInvalidAuthorizationData() {
-    let error = ValidatedAuthorizationError.invalidAuthorizationData
+    let error = ValidationError.invalidAuthorizationData
     XCTAssertEqual(error.errorDescription, "invalidAuthorizationData")
   }
 
   func testInvalidPresentationDefinition() {
-    let error = ValidatedAuthorizationError.invalidPresentationDefinition
+    let error = ValidationError.invalidPresentationDefinition
     XCTAssertEqual(error.errorDescription, ".invalidAuthorizationData")
   }
 
   func testInvalidClientMetadata() {
-    let error = ValidatedAuthorizationError.invalidClientMetadata
+    let error = ValidationError.invalidClientMetadata
     XCTAssertEqual(error.errorDescription, ".invalidClientMetadata")
   }
 
   func testMissingRequiredField() {
-    let error = ValidatedAuthorizationError.missingRequiredField("scope")
+    let error = ValidationError.missingRequiredField("scope")
     XCTAssertEqual(error.errorDescription, ".missingRequiredField scope")
   }
 
   func testInvalidJwtPayload() {
-    let error = ValidatedAuthorizationError.invalidJwtPayload
+    let error = ValidationError.invalidJwtPayload
     XCTAssertEqual(error.errorDescription, ".invalidJwtPayload")
   }
 
   func testInvalidRequestUri() {
-    let error = ValidatedAuthorizationError.invalidRequestUri("http://example.com")
+    let error = ValidationError.invalidRequestUri("http://example.com")
     XCTAssertEqual(error.errorDescription, ".invalidRequestUri http://example.com")
   }
 
   func testConflictingData() {
-    let error = ValidatedAuthorizationError.conflictingData
+    let error = ValidationError.conflictingData
     XCTAssertEqual(error.errorDescription, ".conflictingData")
   }
 
   func testInvalidRequest() {
-    let error = ValidatedAuthorizationError.invalidRequest
+    let error = ValidationError.invalidRequest
     XCTAssertEqual(error.errorDescription, ".invalidRequest")
   }
 
   func testNotSupportedOperation() {
-    let error = ValidatedAuthorizationError.notSupportedOperation
+    let error = ValidationError.notSupportedOperation
     XCTAssertEqual(error.errorDescription, ".notSupportedOperation")
   }
 
   func testInvalidFormat() {
-    let error = ValidatedAuthorizationError.invalidFormat
+    let error = ValidationError.invalidFormat
     XCTAssertEqual(error.errorDescription, ".invalidFormat")
   }
 
   func testUnsupportedConsent() {
-    let error = ValidatedAuthorizationError.unsupportedConsent
+    let error = ValidationError.unsupportedConsent
     XCTAssertEqual(error.errorDescription, ".unsupportedConsent")
   }
 
   func testNegativeConsent() {
-    let error = ValidatedAuthorizationError.negativeConsent
+    let error = ValidationError.negativeConsent
     XCTAssertEqual(error.errorDescription, ".negativeConsent")
   }
   

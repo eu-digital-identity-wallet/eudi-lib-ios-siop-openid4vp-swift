@@ -22,7 +22,7 @@ func tryExtract<T>(
     converter: ((Any) -> T?)? = nil
 ) throws -> T {
   guard let value = json[key] else {
-    throw ValidatedAuthorizationError.validationError("\(key) not found")
+    throw ValidationError.validationError("\(key) not found")
   }
     
   // If converter is provided, use it to convert the value
@@ -36,5 +36,5 @@ func tryExtract<T>(
   }
     
   // Throw error if conversion fails
-  throw ValidatedAuthorizationError.validationError("Failed to convert \(key) to expected type")
+  throw ValidationError.validationError("Failed to convert \(key) to expected type")
 }

@@ -28,6 +28,7 @@ extension ResolvedRequestData {
     let state: String?
     let scope: Scope?
     let vpFormats: VpFormats
+    let transactionData: [TransactionData]?
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -47,7 +48,8 @@ extension ResolvedRequestData {
       responseMode: ResponseMode?,
       state: String?,
       scope: Scope?,
-      vpFormats: VpFormats
+      vpFormats: VpFormats,
+      transactionData: [TransactionData]? = nil
     ) {
       self.idTokenType = idTokenType
       self.presentationDefinition = presentationDefinition
@@ -58,6 +60,7 @@ extension ResolvedRequestData {
       self.state = state
       self.scope = scope
       self.vpFormats = vpFormats
+      self.transactionData = transactionData
     }
   }
 }

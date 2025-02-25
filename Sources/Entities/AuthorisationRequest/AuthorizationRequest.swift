@@ -35,11 +35,11 @@ public extension AuthorizationRequest {
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
     guard let authorizationRequestData = authorizationRequestData else {
-      throw ValidatedAuthorizationError.noAuthorizationData
+      throw ValidationError.noAuthorizationData
     }
 
     guard !authorizationRequestData.hasConflicts else {
-      throw ValidatedAuthorizationError.conflictingData
+      throw ValidationError.conflictingData
     }
 
     if let request = authorizationRequestData.request {
@@ -50,6 +50,7 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
+        vpConfiguration: walletConfiguration?.vpConfiguration ?? VPConfiguration.default(),
         clientMetaDataResolver: ClientMetaDataResolver(
           fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
         ),
@@ -69,6 +70,7 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
+        vpConfiguration: walletConfiguration?.vpConfiguration ?? VPConfiguration.default(),
         clientMetaDataResolver: ClientMetaDataResolver(
           fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
         ),
@@ -85,6 +87,7 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
+        vpConfiguration: walletConfiguration?.vpConfiguration ?? VPConfiguration.default(),
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData

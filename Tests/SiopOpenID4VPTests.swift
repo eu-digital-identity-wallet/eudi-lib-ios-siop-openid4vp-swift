@@ -271,6 +271,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       XCTAssertNotNil(validatedAuthorizationRequestData)
       
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
+        vpConfiguration: walletConfiguration.vpConfiguration,
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
@@ -307,7 +308,11 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
+      vpConfiguration: walletConfiguration.vpConfiguration,
+      clientMetaDataResolver: ClientMetaDataResolver(),
+      presentationDefinitionResolver: PresentationDefinitionResolver(),
+      validatedAuthorizationRequest: validatedAuthorizationRequestData!
     )
     
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
@@ -329,7 +334,12 @@ final class SiopOpenID4VPTests: DiXCTest {
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
     do {
-      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
+        vpConfiguration: walletConfiguration.vpConfiguration,
+        clientMetaDataResolver: ClientMetaDataResolver(),
+        presentationDefinitionResolver: PresentationDefinitionResolver(),
+        validatedAuthorizationRequest: validatedAuthorizationRequestData!
+      )
       
       XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
     } catch _ as FetchError {
@@ -382,9 +392,9 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     do {
       _ = try await ValidatedSiopOpenId4VPRequest(authorizationRequestData: authorizationRequestData!)
-    } catch let error as ValidatedAuthorizationError {
+    } catch let error as ValidationError {
       switch error {
-      case ValidatedAuthorizationError.unsupportedResponseType:
+      case ValidationError.unsupportedResponseType:
         XCTAssert(true)
       default:
         XCTAssert(false)
@@ -432,6 +442,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
     let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
+      vpConfiguration: walletConfiguration.vpConfiguration,
       clientMetaDataResolver: ClientMetaDataResolver(),
       presentationDefinitionResolver: PresentationDefinitionResolver(),
       validatedAuthorizationRequest: validatedAuthorizationRequestData!
@@ -464,6 +475,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       XCTAssertNotNil(validatedAuthorizationRequestData)
       
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
+        vpConfiguration: VPConfiguration.default(),
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
@@ -498,6 +510,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       XCTAssertNotNil(validatedAuthorizationRequestData)
       
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
+        vpConfiguration: walletConfiguration.vpConfiguration,
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
@@ -538,6 +551,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       XCTAssertNotNil(validatedAuthorizationRequestData)
       
       let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
+        vpConfiguration: walletConfiguration.vpConfiguration,
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
         validatedAuthorizationRequest: validatedAuthorizationRequestData
@@ -650,7 +664,9 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     do {
       /// Supply your own validByReferenceAuthorizeUrl here
-      let result = try await sdk.authorize(url: TestsConstants.validByReferenceAuthorizeUrl)
+      let result = try await sdk.authorize(
+        url: TestsConstants.validByReferenceAuthorizeUrl
+      )
       
       switch result {
       case .notSecured(let resolved):

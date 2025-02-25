@@ -14,28 +14,40 @@
  * limitations under the License.
  */
 import Foundation
-import SwiftyJSON
 
 public struct VPConfiguration {
   public let presentationDefinitionUriSupported: Bool = true
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
   public let vpFormats: VpFormats
+  public let supportedTransactionDataTypes: [SupportedTransactionDataType]
   
   public static func `default`() -> VPConfiguration {
-    try! .init(vpFormats: .init(values: [
-      .sdJwtVc(
-        sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
-        kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
+    try! .init(
+      vpFormats: .init(
+        values: [
+          .sdJwtVc(
+            sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
+            kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
+          ),
+          .msoMdoc
+        ]
       ),
-      .msoMdoc
-    ]))
+      supportedTransactionDataTypes: [
+        .init(
+          type: .init(value: "authorization"),
+          hashAlgorithms: Set([.sha256])
+        )
+      ]
+    )
   }
   
   public init(
     presentationDefinitionUriSupported: Bool = true,
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
-    vpFormats: VpFormats
+    vpFormats: VpFormats,
+    supportedTransactionDataTypes: [SupportedTransactionDataType]
   ) {
     self.vpFormats = vpFormats
+    self.supportedTransactionDataTypes = supportedTransactionDataTypes
   }
 }

@@ -30,7 +30,7 @@ public enum ResponseType: String, Codable {
   public init(authorizationRequestObject: JSON) throws {
     let type = authorizationRequestObject["response_type"].stringValue
     guard let responseType = ResponseType(rawValue: type) else {
-      throw ValidatedAuthorizationError.unsupportedResponseType(type.isEmpty ? "unknown" : type)
+      throw ValidationError.unsupportedResponseType(type.isEmpty ? "unknown" : type)
     }
 
     self = responseType
@@ -42,7 +42,7 @@ public enum ResponseType: String, Codable {
   /// - Throws: A `ValidatedAuthorizationError.unsupportedResponseType` if the response type is unsupported.
   public init(authorizationRequestData: AuthorisationRequestObject) throws {
     guard let responseType = ResponseType(rawValue: authorizationRequestData.responseType ?? "") else {
-      throw ValidatedAuthorizationError.unsupportedResponseType(authorizationRequestData.responseType)
+      throw ValidationError.unsupportedResponseType(authorizationRequestData.responseType)
     }
 
     self = responseType

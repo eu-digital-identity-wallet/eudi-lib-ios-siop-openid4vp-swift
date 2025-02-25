@@ -28,7 +28,8 @@ extension ValidatedSiopOpenId4VPRequest {
     let responseMode: ResponseMode?
     let state: String?
     let vpFormats: VpFormats
-
+    let transactionData: [String]?
+    
     public init(
       idTokenType: IdTokenType,
       presentationDefinitionSource: PresentationDefinitionSource,
@@ -39,7 +40,8 @@ extension ValidatedSiopOpenId4VPRequest {
       scope: Scope?,
       responseMode: ResponseMode?,
       state: String?,
-      vpFormats: VpFormats
+      vpFormats: VpFormats,
+      transactionData: [String]?
     ) {
       self.idTokenType = idTokenType
       self.presentationDefinitionSource = presentationDefinitionSource
@@ -51,6 +53,7 @@ extension ValidatedSiopOpenId4VPRequest {
       self.responseMode = responseMode
       self.state = state
       self.vpFormats = vpFormats
+      self.transactionData = transactionData
     }
   }
 }

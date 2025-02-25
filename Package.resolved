@@ -19,12 +19,21 @@
       }
     },
     {
+      "identity" : "cryptoswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
+      "state" : {
+        "revision" : "729e01bc9b9dab466ac85f21fb9ee2bc1c61b258",
+        "version" : "1.8.4"
+      }
+    },
+    {
       "identity" : "eudi-lib-ios-presentation-exchange-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "revision" : "21e03b18e4ea349edd21c016b9e0b3a2063285bf",
-        "version" : "0.2.1"
+        "revision" : "773d7cccdf3d2df4fc6f7629a6076dfe4b2b680d",
+        "version" : "0.3.0"
       }
     },
     {

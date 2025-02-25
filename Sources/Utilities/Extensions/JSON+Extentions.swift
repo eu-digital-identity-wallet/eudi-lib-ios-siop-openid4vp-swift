@@ -25,4 +25,40 @@ extension JSON {
     let jsonData = try self.rawData()
     return try JSONDecoder().decode(T.self, from: jsonData)
   }
+  
+  /// Retrieves a required string value from a JSON object.
+  /// - Parameter name: The key of the required string property.
+  /// - Throws: An error if the property is missing or not a string.
+  /// - Returns: The string value associated with the given key.
+  func requiredString(_ name: String) throws -> String {
+    guard let value = self[name].string else {
+      throw ValidationError.validationError(
+        "Missing or invalid required property '\(name)'"
+      )
+    }
+    return value
+  }
+  
+  /// Retrieves a required array of strings from a JSON object.
+  /// - Parameter name: The key of the required string array property.
+  /// - Throws: An error if the property is missing, not an array, or contains non-string values.
+  /// - Returns: An array of strings associated with the given key.
+  func requiredStringArray(_ name: String) throws -> [String] {
+    guard let array = self[name].array, array.allSatisfy({ $0.string != nil }) else {
+      throw ValidationError.validationError(
+        "Property '\(name)' is not an array or contains non-string values"
+      )
+    }
+    return array.compactMap { $0.string }
+  }
+  
+  /// Retrieves an optional array of strings from a JSON object.
+  /// - Parameter name: The key of the optional string array property.
+  /// - Returns: An array of strings if the property exists and is valid, otherwise `nil`.
+  func optionalStringArray(_ name: String) -> [String]? {
+    guard let array = self[name].array, array.allSatisfy({ $0.string != nil }) else {
+      return nil
+    }
+    return array.compactMap { $0.string }
+  }
 }

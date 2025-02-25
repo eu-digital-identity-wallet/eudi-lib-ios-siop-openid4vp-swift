@@ -75,7 +75,12 @@ final class JOSETests: DiXCTest {
     
     XCTAssertNotNil(validatedAuthorizationRequestData)
     
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(clientMetaDataResolver: ClientMetaDataResolver(), presentationDefinitionResolver: PresentationDefinitionResolver(), validatedAuthorizationRequest: validatedAuthorizationRequestData!)
+    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
+      vpConfiguration: VPConfiguration.default(),
+      clientMetaDataResolver: ClientMetaDataResolver(),
+      presentationDefinitionResolver: PresentationDefinitionResolver(),
+      validatedAuthorizationRequest: validatedAuthorizationRequestData!
+    )
     
     XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
     

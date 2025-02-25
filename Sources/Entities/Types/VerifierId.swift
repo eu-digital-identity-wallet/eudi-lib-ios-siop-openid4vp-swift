@@ -49,7 +49,7 @@ public struct VerifierId {
   public static func parse(clientId: String) -> Result<VerifierId, Error> {
     return Result {
       func invalid(_ message: String) -> Error {
-        return ValidatedAuthorizationError.validationError(message)
+        return ValidationError.validationError(message)
       }
       
       if !clientId.contains(OpenId4VPSpec.clientIdSchemeSeparator) {

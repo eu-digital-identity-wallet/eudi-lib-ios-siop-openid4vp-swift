@@ -50,7 +50,7 @@ extension ClientIdScheme {
       scheme == "verifier_attestation",
       let clientIdScheme = ClientIdScheme(rawValue: scheme)
     else {
-      throw ValidatedAuthorizationError.unsupportedClientIdScheme(scheme)
+      throw ValidationError.unsupportedClientIdScheme(scheme)
     }
     
     self = clientIdScheme
@@ -64,7 +64,7 @@ extension ClientIdScheme {
       authorizationRequestData.clientIdScheme == "pre-registered",
       let clientIdScheme = ClientIdScheme(rawValue: authorizationRequestData.clientIdScheme ?? "")
     else {
-      throw ValidatedAuthorizationError.unsupportedClientIdScheme(authorizationRequestData.clientIdScheme)
+      throw ValidationError.unsupportedClientIdScheme(authorizationRequestData.clientIdScheme)
     }
     
     self = clientIdScheme

@@ -69,6 +69,6 @@ public extension JarmOption {
       return
     }
 
-    throw ValidatedAuthorizationError.invalidJarmOption
+    throw ValidationError.invalidJarmOption
   }
 }

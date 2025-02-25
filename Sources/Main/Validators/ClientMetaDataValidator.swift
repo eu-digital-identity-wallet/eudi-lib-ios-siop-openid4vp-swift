@@ -38,10 +38,10 @@ internal actor ClientMetaDataValidator {
     let subjectSyntaxTypesSupported: [SubjectSyntaxType] = clientMetaData.subjectSyntaxTypesSupported.compactMap { SubjectSyntaxType(rawValue: $0) }
     
     if !clientMetaData.authorizationEncryptedResponseAlg.isNilOrEmpty && clientMetaData.authorizationEncryptedResponseEnc.isNilOrEmpty {
-      throw ValidatedAuthorizationError.validationError("authorizationEncryptedResponseAlg exists, authorizationEncryptedResponseEnc does not exist, both should exist")
+      throw ValidationError.validationError("authorizationEncryptedResponseAlg exists, authorizationEncryptedResponseEnc does not exist, both should exist")
       
     } else if clientMetaData.authorizationEncryptedResponseAlg.isNilOrEmpty && !clientMetaData.authorizationEncryptedResponseEnc.isNilOrEmpty {
-      throw ValidatedAuthorizationError.validationError("authorizationEncryptedResponseAlg does not exist, authorizationEncryptedResponseEnc exists, both should exist")
+      throw ValidationError.validationError("authorizationEncryptedResponseAlg does not exist, authorizationEncryptedResponseEnc exists, both should exist")
     }
     
     let formats = try? VpFormats(from: clientMetaData.vpFormats)
@@ -97,12 +97,12 @@ private extension ClientMetaDataValidator {
       
       switch response {
       case .success(let webKeys):
-        return try webKeys ?? { throw ValidatedAuthorizationError.validationError("Client meta data has no valid JWK source") }()
-      default: throw ValidatedAuthorizationError.validationError("Client meta data has no valid JWK source")
+        return try webKeys ?? { throw ValidationError.validationError("Client meta data has no valid JWK source") }()
+      default: throw ValidationError.validationError("Client meta data has no valid JWK source")
       }
       
     } else {
-      throw ValidatedAuthorizationError.validationError("Client meta data has no valid JWK source")
+      throw ValidationError.validationError("Client meta data has no valid JWK source")
     }
   }
 }

@@ -89,7 +89,7 @@ private extension ResponseSignerEncryptor {
         signingKey: signingKey,
         data: data
       )
-    default: throw ValidatedAuthorizationError.invalidJarmOption
+    default: throw ValidationError.invalidJarmOption
     }
   }
   
@@ -101,7 +101,7 @@ private extension ResponseSignerEncryptor {
     data: AuthorizationResponsePayload
   ) throws -> JWS {
     guard let signatureAlgorithm = SignatureAlgorithm(rawValue: responseSigningAlg.name) else {
-      throw ValidatedAuthorizationError.unsupportedAlgorithm(responseSigningAlg.name)
+      throw ValidationError.unsupportedAlgorithm(responseSigningAlg.name)
     }
     
     let keyAndSigner = try self.keyAndSigner(
@@ -196,7 +196,7 @@ private extension ResponseSignerEncryptor {
         payload: Payload(signedJwt.compactSerializedData),
         encrypter: keyAndEncryptor.encrypter
       )
-    default: throw ValidatedAuthorizationError.validationError("Unable to retrieve encrypted from  JarmOption")
+    default: throw ValidationError.validationError("Unable to retrieve encrypted from  JarmOption")
     }
   }
   
@@ -207,17 +207,17 @@ private extension ResponseSignerEncryptor {
   ) throws -> (key: WebKeySet.Key, signer: Signer) {
     let key = try keySet.keys.first { key in
       key.alg == jwsAlgorithm.rawValue
-    } ?? { throw ValidatedAuthorizationError.invalidJWTWebKeySet }()
+    } ?? { throw ValidationError.invalidJWTWebKeySet }()
     
     guard let alg = key.alg, let signatureAlgorithm = SignatureAlgorithm(rawValue: alg) else {
-      throw ValidatedAuthorizationError.unsupportedAlgorithm(key.alg ?? "")
+      throw ValidationError.unsupportedAlgorithm(key.alg ?? "")
     }
     
     guard let signer = Signer(
       signatureAlgorithm: signatureAlgorithm,
       key: signingKey
     ) else {
-      throw ValidatedAuthorizationError.invalidSigningKey
+      throw ValidationError.invalidSigningKey
     }
     return (key, signer)
   }
@@ -236,7 +236,7 @@ private extension ResponseSignerEncryptor {
     if let firstKey = encrypters.keys.first, let firstValue = encrypters[firstKey] {
       return (key: firstKey, encrypter: firstValue)
     }
-    throw ValidatedAuthorizationError.validationError("Unable to create key/encryptor pair")
+    throw ValidationError.validationError("Unable to create key/encryptor pair")
   }
   
   // swiftlint:disable line_length
@@ -249,11 +249,11 @@ private extension ResponseSignerEncryptor {
     let data = try key.toDictionary().toThrowingJSONData()
     
     guard let keyAlgorithm: KeyManagementAlgorithm = .init(rawValue: jweAlgorithm.name) else {
-      throw ValidatedAuthorizationError.validationError("Create encrypter - Unknown key management algorithm")
+      throw ValidationError.validationError("Create encrypter - Unknown key management algorithm")
     }
 
     guard let contentEncryptionAlgorithm: ContentEncryptionAlgorithm = .init(rawValue: encryptionMethod.name) else {
-      throw ValidatedAuthorizationError.validationError("Create encrypter - Unknown content encryption algorithm")
+      throw ValidationError.validationError("Create encrypter - Unknown content encryption algorithm")
     }
     
     if JWEAlgorithm.Family.parse(.RSA).contains(jweAlgorithm) {
@@ -272,7 +272,7 @@ private extension ResponseSignerEncryptor {
         encryptionKey: publicKey
       )
     } else {
-      throw ValidatedAuthorizationError.validationError("JWE Algorithm should be of the RSA or ECDH family")
+      throw ValidationError.validationError("JWE Algorithm should be of the RSA or ECDH family")
     }
   }
 

@@ -29,11 +29,11 @@ public enum IdTokenType: String, Codable {
   ///           or a `ValidatedAuthorizationError.unsupportedIdTokenType` if the id_token_type is unsupported.
   public init(authorizationRequestObject: JSON) throws {
     guard let idTokenType = authorizationRequestObject["id_token_type"].string else {
-      throw ValidatedAuthorizationError.invalidIdTokenType
+      throw ValidationError.invalidIdTokenType
     }
 
     guard let responseType = IdTokenType(rawValue: idTokenType) else {
-      throw ValidatedAuthorizationError.unsupportedIdTokenType(idTokenType)
+      throw ValidationError.unsupportedIdTokenType(idTokenType)
     }
 
     self = responseType
@@ -46,11 +46,11 @@ public enum IdTokenType: String, Codable {
   ///           or a `ValidatedAuthorizationError.unsupportedIdTokenType` if the id_token_type is unsupported.
   public init(authorizationRequestData: AuthorisationRequestObject) throws {
     guard let idTokenType = authorizationRequestData.idTokenType else {
-      throw ValidatedAuthorizationError.invalidIdTokenType
+      throw ValidationError.invalidIdTokenType
     }
 
     guard let responseType = IdTokenType(rawValue: idTokenType) else {
-      throw ValidatedAuthorizationError.unsupportedIdTokenType(authorizationRequestData.idTokenType)
+      throw ValidationError.unsupportedIdTokenType(authorizationRequestData.idTokenType)
     }
 
     self = responseType

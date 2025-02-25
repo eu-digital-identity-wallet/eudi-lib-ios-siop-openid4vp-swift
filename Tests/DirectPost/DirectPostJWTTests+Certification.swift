@@ -76,7 +76,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -89,11 +93,28 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     case .jwt(request: let request):
       let resolved = request
       
+      var presentation: String?
+      var nonce: String?
+      switch resolved {
+      case .vpToken(let request):
+        
+        nonce = request.nonce
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId,
+          nonce: nonce!,
+          useSha3: false
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(
           verifiablePresentations: [
-            .generic(TestsConstants.sdJwt)
+            .generic(presentation!)
           ]
         ),
         presentationSubmission: TestsConstants.testPresentationSubmission
@@ -174,7 +195,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -187,16 +212,29 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     case .jwt(request: let request):
       let resolved = request
       
+      var presentation: String?
+      var nonce: String?
+      switch resolved {
+      case .vpToken(let request):
+        
+        nonce = request.nonce
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId,
+          nonce: nonce!,
+          useSha3: false
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
+          .generic(presentation!)
         ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
-        )
+        presentationSubmission: TestsConstants.testPresentationSubmission
       )
       
       // Generate a direct post authorisation response
@@ -275,7 +313,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")

@@ -72,7 +72,11 @@ final class DirectPostJWTTests: DiXCTest {
     let url = "#04"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -163,7 +167,11 @@ final class DirectPostJWTTests: DiXCTest {
     let url = "#08"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -257,7 +265,11 @@ final class DirectPostJWTTests: DiXCTest {
     let url = "#07"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -547,7 +559,11 @@ final class DirectPostJWTTests: DiXCTest {
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -602,8 +618,10 @@ final class DirectPostJWTTests: DiXCTest {
   
   func testSDKEndtoEndDirectPostJwtX509WithRemovedSchemeWithSdJwt() async throws {
     
-    let nonce = UUID().uuidString
-    let session = try? await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
+    let nonce = TestsConstants.testNonce
+    let session = try? await TestsHelpers.getDirectPostJwtSession(
+      nonce: nonce
+    )
     
     guard let session = session else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -654,7 +672,11 @@ final class DirectPostJWTTests: DiXCTest {
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -667,12 +689,26 @@ final class DirectPostJWTTests: DiXCTest {
     case .jwt(let request):
       let resolved = request
 
+      var presentation: String?
+      switch resolved {
+      case .vpToken(let request):
+        
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId,
+          nonce: TestsConstants.testNonce
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.sdJwt)
+          .generic(presentation!)
         ]),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        presentationSubmission: TestsConstants.testPresentationSubmissionSdJwt
       )
       
       // Generate a direct post authorisation response
@@ -759,7 +795,11 @@ final class DirectPostJWTTests: DiXCTest {
     let url = "#05"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -864,7 +904,11 @@ final class DirectPostJWTTests: DiXCTest {
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")
@@ -885,6 +929,155 @@ final class DirectPostJWTTests: DiXCTest {
             .generic(TestsConstants.cbor)
         ]),
         presentationSubmission: TestsConstants.testPresentationSubmission
+      )
+      
+      // Generate a direct post authorisation response
+      let response = try? XCTUnwrap(AuthorizationResponse(
+        resolvedRequest: resolved,
+        consent: consent,
+        walletOpenId4VPConfig: wallet
+      ), "Expected item to be non-nil")
+      
+      // Dispatch
+      XCTAssertNotNil(response)
+      
+      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
+      switch result {
+      case .accepted:
+        XCTAssert(true)
+      default:
+        XCTAssert(false)
+      }
+      
+      let pollingResult = try await TestsHelpers.pollVerifier(
+        transactionId: transactionId,
+        nonce: nonce
+      )
+      
+      switch pollingResult {
+      case .success:
+        XCTAssert(true)
+      case .failure:
+        XCTAssert(false)
+      }
+    }
+  }
+  
+  func testSDKEndtoEndDirectPostJwtX509WithTransactionData() async throws {
+    
+    let nonce = TestsConstants.testNonce
+    let session = try? await TestsHelpers.getDirectPostJwtSession(
+      nonce: nonce,
+      transactionData: [
+        TransactionData.json(
+          type: try .init(value: "authorization"),
+          credentialIds: [
+            try .init(value: "wa_driver_license")
+          ],
+          hashAlgorithms: [HashAlgorithm.sha256]
+        )
+      ]
+    )
+    
+    guard let session = session else {
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
+      return
+    }
+    
+    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+    let rsaPublicKey = try KeyController.generateRSAPublicKey(
+      from: rsaPrivateKey
+    )
+    
+    let rsaJWK = try RSAPublicKey(
+      publicKey: rsaPublicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": UUID().uuidString,
+        "alg": "RS256"
+      ])
+    
+    let chainVerifier = { certificates in
+      let chainVerifier = X509CertificateChainVerifier()
+      let verified = try? chainVerifier.verifyCertificateChain(
+        base64Certificates: certificates
+      )
+      return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
+    }
+    
+    let keySet = try WebKeySet(jwk: rsaJWK)
+    let wallet: SiopOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try .init(
+        rawValue: "did:example:123"
+      ),
+      signingKey: rsaPrivateKey,
+      signingKeySet: keySet,
+      supportedClientIdSchemes: [
+        .x509SanDns(trust: chainVerifier)
+      ],
+      vpFormatsSupported: [],
+      jarConfiguration: .default,
+      vpConfiguration: VPConfiguration.default()
+    )
+    
+    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let url = session["request_uri"]
+    let clientId = session["client_id"]
+    let transactionId = session["transaction_id"] as! String
+    
+    overrideDependencies()
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)"
+      )!
+    )
+    
+    guard let result = result else {
+      XCTExpectFailure("this tests depends on a local verifier running")
+      XCTAssert(false)
+      return
+    }
+    
+    switch result {
+    case .notSecured: break
+    case .jwt(let request):
+      let resolved = request
+
+      var presentation: String?
+      switch resolved {
+      case .vpToken(let request):
+        let transactionData = request.transactionData!.first
+        let type = try! transactionData!.type()
+        let credentialId = try! transactionData!.credentialIds().first
+        let hashAlgorithm = try! transactionData!.hashAlgorithms().first
+        
+        XCTAssertEqual(type.value, "authorization")
+        XCTAssertEqual(credentialId!.value, "wa_driver_license")
+        XCTAssertEqual(hashAlgorithm!.name, "sha-256")
+        
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId,
+          nonce: request.nonce
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
+      // Obtain consent
+      let consent: ClientConsent = .vpToken(
+        vpToken: .init(
+          verifiablePresentations: [
+            .generic(presentation!)
+        ]),
+        presentationSubmission: TestsConstants.testPresentationSubmissionSdJwt
       )
       
       // Generate a direct post authorisation response
@@ -974,7 +1167,11 @@ final class DirectPostJWTTests: DiXCTest {
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
-    let result = try? await sdk.authorize(url: URL(string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)")!)
+    let result = try? await sdk.authorize(
+      url: URL(
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
+      )!
+    )
     
     guard let result = result else {
       XCTExpectFailure("this tests depends on a local verifier running")

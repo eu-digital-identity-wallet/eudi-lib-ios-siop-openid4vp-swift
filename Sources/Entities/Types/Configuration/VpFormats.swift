@@ -21,7 +21,7 @@ public struct VpFormatsTO: Codable, Equatable {
   public let jwtVp: JwtVpTO?
   public let ldpVp: LdpVpTO?
   public let msoMdoc: JSON?
-  
+
   public init(
     vcSdJwt: VcSdJwtTO? = nil,
     jwtVp: JwtVpTO? = nil,
@@ -33,7 +33,7 @@ public struct VpFormatsTO: Codable, Equatable {
     self.ldpVp = ldpVp
     self.msoMdoc = msoMdoc
   }
-  
+
   enum CodingKeys: String, CodingKey {
     case vcSdJwt = "vc+sd-jwt"
     case jwtVp = "jwt_vp"
@@ -45,12 +45,12 @@ public struct VpFormatsTO: Codable, Equatable {
 public struct VcSdJwtTO: Codable, Equatable {
   public let sdJwtAlgorithms: [String]?
   public let kdJwtAlgorithms: [String]?
-  
+
   enum CodingKeys: String, CodingKey {
     case sdJwtAlgorithms = "sd-jwt_alg_values"
     case kdJwtAlgorithms = "kb-jwt_alg_values"
   }
-  
+
   public init(
     sdJwtAlgorithms: [String]?,
     kdJwtAlgorithms: [String]?
@@ -62,7 +62,7 @@ public struct VcSdJwtTO: Codable, Equatable {
 
 public struct JwtVpTO: Codable, Equatable {
   public let alg: [String]
-  
+
   public init(alg: [String]) {
     self.alg = alg
   }
@@ -70,18 +70,18 @@ public struct JwtVpTO: Codable, Equatable {
 
 public struct LdpVpTO: Codable, Equatable {
   public let proofType: [String]
-  
+
   enum CodingKeys: String, CodingKey {
     case proofType = "proof_type"
   }
-  
+
   public init(proofType: [String]) {
     self.proofType = proofType
   }
 }
 
 public enum VpFormat: Equatable {
-  
+
   case sdJwtVc(
     sdJwtAlgorithms: [JWSAlgorithm],
     kbJwtAlgorithms: [JWSAlgorithm]
@@ -89,16 +89,16 @@ public enum VpFormat: Equatable {
   case msoMdoc
   case jwtVp(algorithms: [String])
   case ldpVp(proofTypes: [String])
-  
+
   public static func createSdJwtVc(
     sdJwtAlgorithms: [JWSAlgorithm],
     kbJwtAlgorithms: [JWSAlgorithm]
   ) -> VpFormat {
-    
+
     guard !sdJwtAlgorithms.isEmpty else {
       fatalError("SD-JWT algorithms cannot be empty")
     }
-    
+
     return .sdJwtVc(
       sdJwtAlgorithms: sdJwtAlgorithms,
       kbJwtAlgorithms: kbJwtAlgorithms
@@ -119,7 +119,7 @@ public extension VpFormat {
       return .LDP_VP
     }
   }
-  
+
   enum FormatName: String {
     case MSO_MDOC
     case SD_JWT_VC
@@ -129,10 +129,10 @@ public extension VpFormat {
 }
 
 public struct VpFormats: Equatable {
-  
+
   static let vpFormats = "vp_formats"
   public let values: [VpFormat]
-  
+
   public static func `default`() throws -> VpFormats {
     try VpFormats(values: [
       .sdJwtVc(
@@ -141,11 +141,11 @@ public struct VpFormats: Equatable {
       )
     ])
   }
-  
+
   public static func empty() throws -> VpFormats {
     try VpFormats(values: [])
   }
-  
+
   public init?(jsonString: String?) throws {
     guard let jsonString = jsonString else {
       return nil
@@ -153,12 +153,12 @@ public struct VpFormats: Equatable {
     let json = JSON(parseJSON: jsonString)
     try? self.init(json: json)
   }
-  
+
   public init?(json: JSON) throws {
     guard let dictionaryObject = json.dictionaryObject else {
       return nil
     }
-    
+
     let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormats]
     if let formats = try? vpFormatsDictionary.decoded(as: [VpFormatsTO].self) {
       try? self.init(from: formats)
@@ -166,125 +166,125 @@ public struct VpFormats: Equatable {
       return nil
     }
   }
-  
+
   public init(formats: VpFormat...) throws {
     self.values = formats
     try VpFormats.ensureUniquePerFormat(formats: formats)
   }
-  
+
   public init(values: [VpFormat]) throws {
     self.values = values
     try VpFormats.ensureUniquePerFormat(formats: values)
   }
-  
+
   func contains(_ format: VpFormat) -> Bool {
     return values.contains(where: { $0 == format })
   }
-  
+
   private static func ensureUniquePerFormat(formats: [VpFormat]) throws {
     let groupedFormats = Dictionary(grouping: formats) { $0.formatName() }
-    
+
     for (formatName, instances) in groupedFormats {
       guard instances.count == 1 else {
-        throw ValidatedAuthorizationError.validationError("Multiple instances \(instances.count) found for \(formatName).")
+        throw ValidationError.validationError("Multiple instances \(instances.count) found for \(formatName).")
       }
     }
   }
 }
 
 public extension VpFormats {
-  
+
   // New initializer that accepts a VpFormatsTO object
   init?(from to: VpFormatsTO?) throws {
-    
+
     guard let to = to else {
       return nil
     }
-    
+
     var formats: [VpFormat] = []
-    
+
     if let vcSdJwt = to.vcSdJwt {
       let sdJwtAlgorithms = vcSdJwt.sdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
       let kbJwtAlgorithms = vcSdJwt.kdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
-      
+
       let sdJwtVcFormat = VpFormat.sdJwtVc(
         sdJwtAlgorithms: sdJwtAlgorithms,
         kbJwtAlgorithms: kbJwtAlgorithms
       )
       formats.append(sdJwtVcFormat)
     }
-    
+
     if to.msoMdoc != nil {
       let msoMdocFormat = VpFormat.msoMdoc
       formats.append(msoMdocFormat)
     }
-    
+
     if let jwtVp = to.jwtVp {
       let jwtVpFormat = VpFormat.jwtVp(algorithms: jwtVp.alg)
       formats.append(jwtVpFormat)
     }
-    
+
     if let ldpVp = to.ldpVp {
       let ldpVpFormat = VpFormat.ldpVp(proofTypes: ldpVp.proofType)
       formats.append(ldpVpFormat)
     }
-    
+
     try self.init(values: formats)
   }
-  
+
   // New initializer that accepts an array of VpFormatsTO objects
   init?(from tos: [VpFormatsTO]?) throws {
-    
+
     guard let tos = tos else {
       return nil
     }
-    
+
     var formats: [VpFormat] = []
-    
+
     for to in tos {
       // Convert VcSdJwtTO if it exists
       if let vcSdJwt = to.vcSdJwt {
         let sdJwtAlgorithms = vcSdJwt.sdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
         let kbJwtAlgorithms = vcSdJwt.kdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
-        
+
         let sdJwtVcFormat = VpFormat.sdJwtVc(
           sdJwtAlgorithms: sdJwtAlgorithms,
           kbJwtAlgorithms: kbJwtAlgorithms
         )
         formats.append(sdJwtVcFormat)
       }
-      
+
       // Add msoMdoc if it exists
       if to.msoMdoc != nil {
         let msoMdocFormat = VpFormat.msoMdoc
         formats.append(msoMdocFormat)
       }
-      
+
       // Convert JwtVpTO if it exists
       if let jwtVp = to.jwtVp {
         let jwtVpFormat = VpFormat.jwtVp(algorithms: jwtVp.alg)
         formats.append(jwtVpFormat)
       }
-      
+
       // Convert LdpVpTO if it exists
       if let ldpVp = to.ldpVp {
         let ldpVpFormat = VpFormat.ldpVp(proofTypes: ldpVp.proofType)
         formats.append(ldpVpFormat)
       }
     }
-    
+
     try self.init(values: formats)
   }
-  
+
   // Convert VpFormats to JSON
   func toJSON() -> JSON {
     var jsonArray: [JSON] = []
-    
+
     for format in values {
       let jsonFormat = format.toJSON()
       jsonArray.append(jsonFormat)
     }
-    
+
     return JSON([Self.vpFormats: jsonArray])
   }
 }
@@ -301,7 +301,7 @@ extension VpFormat {
       )
     case .msoMdoc:
       return JSON(["msoMdoc": JSON()])
-      
+
     case .jwtVp(let algorithms):
       return JSON([
         "jwtVp": ["algorithms": algorithms]

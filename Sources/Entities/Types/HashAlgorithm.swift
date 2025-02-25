@@ -15,10 +15,18 @@
  */
 import Foundation
 
-public typealias Base64Certificate = String
-
-public typealias CertificateTrust = ([Base64Certificate]) -> Bool
-
-public protocol X509CertificateTrustType {
-  func isTrusted(chain: [Base64Certificate]) -> Bool
+/// IANA registered Hash Algorithms
+///
+/// See: [IANA Named Information](https://www.iana.org/assignments/named-information/named-information.xhtml)
+public struct HashAlgorithm: Codable, Hashable, CustomStringConvertible {
+  public let name: String
+  
+  public init(name: String) {
+    precondition(!name.isEmpty, "HashAlgorithm name cannot be empty")
+    self.name = name
+  }
+  
+  public var description: String { name }
+  
+  public static let sha256 = HashAlgorithm(name: "sha-256")
 }

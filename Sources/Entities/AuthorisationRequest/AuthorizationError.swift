@@ -53,6 +53,9 @@ public enum AuthorizationError: LocalizedError {
   /// Invalid method
   case invalidRequestUriMethod
   
+  /// Invalid transaction data
+  case invalidTransactionData
+  
   /// A localized description of the error.
   public var errorDescription: String? {
     switch self {
@@ -80,6 +83,8 @@ public enum AuthorizationError: LocalizedError {
       return ".unsupportedRequestUriMethod\(method)"
     case .invalidRequestUriMethod:
       return ".invalidRequestUriMethod"
+    case .invalidTransactionData:
+      return ".invalidTransactionData"
     }
   }
 }

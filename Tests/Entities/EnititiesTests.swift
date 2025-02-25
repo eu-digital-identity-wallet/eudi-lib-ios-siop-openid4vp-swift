@@ -210,7 +210,7 @@ final class VpFormatsTests: XCTestCase {
     let format = VpFormat.jwtVp(algorithms: ["RS256"])
     
     XCTAssertThrowsError(try VpFormats(values: [format, format])) { error in
-      guard let validationError = error as? ValidatedAuthorizationError else {
+      guard let validationError = error as? ValidationError else {
         return XCTFail("Unexpected error type")
       }
       XCTAssertEqual(validationError, .validationError("Multiple instances 2 found for JWT_VP."))

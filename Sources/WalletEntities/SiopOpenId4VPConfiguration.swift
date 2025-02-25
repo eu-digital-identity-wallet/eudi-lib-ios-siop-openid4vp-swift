@@ -29,7 +29,7 @@ public struct SiopOpenId4VPConfiguration {
   public let jarConfiguration: JARConfiguration
   public let vpConfiguration: VPConfiguration
   public let session: Networking
-
+  
   public init(
     subjectSyntaxTypesSupported: [SubjectSyntaxType],
     preferredSubjectSyntaxType: SubjectSyntaxType,
@@ -59,7 +59,7 @@ public struct SiopOpenId4VPConfiguration {
     self.vpConfiguration = vpConfiguration
     self.session = session
   }
-
+  
   internal init() throws {
     subjectSyntaxTypesSupported = []
     preferredSubjectSyntaxType = .decentralizedIdentifier
@@ -75,15 +75,15 @@ public struct SiopOpenId4VPConfiguration {
     vpConfiguration = VPConfiguration.default()
     session = URLSession.shared
   }
-
+  
   public static let walletSession: Networking = {
     /*let delegate = SelfSignedSessionDelegate()
-    let configuration = URLSessionConfiguration.default
-    return URLSession(
-      configuration: configuration,
-      delegate: delegate,
-      delegateQueue: nil
-    )*/
+     let configuration = URLSessionConfiguration.default
+     return URLSession(
+     configuration: configuration,
+     delegate: delegate,
+     delegateQueue: nil
+     )*/
     URLSession.shared
   }()
 }

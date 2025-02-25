@@ -24,6 +24,17 @@ public enum ValidatedSiopOpenId4VPRequest {
   case idToken(request: IdTokenRequest)
   case vpToken(request: VpTokenRequest)
   case idAndVpToken(request: IdAndVpTokenRequest)
+  
+  public var transactionData: [String]? {
+    switch self {
+    case .idToken(let request):
+      return nil
+    case .vpToken(let request):
+      return request.transactionData
+    case .idAndVpToken(let request):
+      return request.transactionData
+    }
+  }
 }
 
 // Extension for ValidatedSiopOpenId4VPRequest
@@ -41,7 +52,7 @@ public extension ValidatedSiopOpenId4VPRequest {
   ) async throws {
     
     guard let requestUrl = URL(string: requestUri) else {
-      throw ValidatedAuthorizationError.invalidRequestUri(requestUri)
+      throw ValidationError.invalidRequestUri(requestUri)
     }
     
     let jwt = try await Self.getJWT(
@@ -53,16 +64,16 @@ public extension ValidatedSiopOpenId4VPRequest {
     
     // Extract the payload from the JSON Web Token
     guard let payload = JSONWebToken(jsonWebToken: jwt)?.payload else {
-      throw ValidatedAuthorizationError.invalidAuthorizationData
+      throw ValidationError.invalidAuthorizationData
     }
     
     // Extract the client ID and nonce from the payload
     guard let payloadcClientId = payload[Constants.CLIENT_ID].string else {
-      throw ValidatedAuthorizationError.missingRequiredField(".clientId")
+      throw ValidationError.missingRequiredField(".clientId")
     }
     
     guard let nonce = payload[Constants.NONCE].string else {
-      throw ValidatedAuthorizationError.missingRequiredField(".nonce")
+      throw ValidationError.missingRequiredField(".nonce")
     }
     
     let responseType = try ResponseType(authorizationRequestObject: payload)
@@ -103,7 +114,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         authorizationRequestObject: payload
       )
     case .code:
-      throw ValidatedAuthorizationError.unsupportedResponseType(".code")
+      throw ValidationError.unsupportedResponseType(".code")
     }
   }
   
@@ -119,16 +130,16 @@ public extension ValidatedSiopOpenId4VPRequest {
     
     // Extract the payload from the JSON Web Token
     guard let payload = jsonWebToken?.payload else {
-      throw ValidatedAuthorizationError.invalidAuthorizationData
+      throw ValidationError.invalidAuthorizationData
     }
     
     // Extract the client ID and nonce from the payload
     guard let clientId = payload[Constants.CLIENT_ID].string else {
-      throw ValidatedAuthorizationError.missingRequiredField(".clientId")
+      throw ValidationError.missingRequiredField(".clientId")
     }
     
     guard let nonce = payload[Constants.NONCE].string else {
-      throw ValidatedAuthorizationError.missingRequiredField(".nonce")
+      throw ValidationError.missingRequiredField(".nonce")
     }
     
     // Determine the response type from the payload
@@ -170,7 +181,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         authorizationRequestObject: payload
       )
     case .code:
-      throw ValidatedAuthorizationError.unsupportedResponseType(".code")
+      throw ValidationError.unsupportedResponseType(".code")
     }
   }
   
@@ -179,7 +190,10 @@ public extension ValidatedSiopOpenId4VPRequest {
     authorizationRequestData: AuthorisationRequestObject,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
-    let requesrUriMethod: RequestUriMethod = .init(method: authorizationRequestData.requestUriMethod)
+    let requesrUriMethod: RequestUriMethod = .init(
+      method: authorizationRequestData.requestUriMethod
+    )
+    
     if let request = authorizationRequestData.request {
       try await self.init(
         request: request,
@@ -201,12 +215,12 @@ public extension ValidatedSiopOpenId4VPRequest {
       
       // Extract the nonce from the authorization request data
       guard let nonce = authorizationRequestData.nonce else {
-        throw ValidatedAuthorizationError.missingRequiredField(".nonce")
+        throw ValidationError.missingRequiredField(".nonce")
       }
       
       // Extract the client ID from the authorization request data
       guard let payloadcClientId = authorizationRequestData.clientId else {
-        throw ValidatedAuthorizationError.missingRequiredField(".clientId")
+        throw ValidationError.missingRequiredField(".clientId")
       }
       
       let client = try await Self.getClient(
@@ -241,7 +255,7 @@ public extension ValidatedSiopOpenId4VPRequest {
           authorizationRequestObject: payload
         )
       case .code:
-        throw ValidatedAuthorizationError.unsupportedResponseType(".code")
+        throw ValidationError.unsupportedResponseType(".code")
       }
     }
   }
@@ -312,7 +326,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     switch jwtResult {
     case .success(let string):
       return try Self.extractJWT(string)
-    case .failure: throw ValidatedAuthorizationError.invalidJwtPayload
+    case .failure: throw ValidationError.invalidJwtPayload
     }
   }
   
@@ -350,7 +364,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     switch jwtResult {
     case .success(let string):
       return try Self.extractJWT(string)
-    case .failure: throw ValidatedAuthorizationError.invalidJwtPayload
+    case .failure: throw ValidationError.invalidJwtPayload
     }
   }
 }
@@ -363,7 +377,7 @@ public extension ValidatedSiopOpenId4VPRequest {
   ) async throws -> Client {
     
     guard let clientId else {
-      throw ValidatedAuthorizationError.validationError("clientId is missing")
+      throw ValidationError.validationError("clientId is missing")
     }
     guard
       let verifierId = try? VerifierId.parse(clientId: clientId).get(),
@@ -371,13 +385,13 @@ public extension ValidatedSiopOpenId4VPRequest {
         where: { $0.scheme.rawValue == verifierId.scheme.rawValue }
       ) ?? config?.supportedClientIdSchemes.first
     else {
-      throw ValidatedAuthorizationError.validationError("No supported client Id scheme")
+      throw ValidationError.validationError("No supported client Id scheme")
     }
     
     switch scheme {
     case .preregistered(let clients):
       guard let client = clients[verifierId.originalClientId] else {
-        throw ValidatedAuthorizationError.validationError("preregistered client not found")
+        throw ValidationError.validationError("preregistered client not found")
       }
       return .preRegistered(
         clientId: clientId,
@@ -387,16 +401,16 @@ public extension ValidatedSiopOpenId4VPRequest {
     case .x509SanUri,
         .x509SanDns:
       guard let jws = try? JWS(compactSerialization: jwt) else {
-        throw ValidatedAuthorizationError.validationError("Unable to process JWT")
+        throw ValidationError.validationError("Unable to process JWT")
       }
       
       guard let chain: [String] = jws.header.x5c else {
-        throw ValidatedAuthorizationError.validationError("No certificate in header")
+        throw ValidationError.validationError("No certificate in header")
       }
       
       let certificates: [Certificate] = parseCertificates(from: chain)
       guard let certificate = certificates.first else {
-        throw ValidatedAuthorizationError.validationError("No certificate in chain")
+        throw ValidationError.validationError("No certificate in chain")
       }
       
       return .x509SanUri(
@@ -419,7 +433,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       )
     case .redirectUri:
       guard let url = URL(string: verifierId.originalClientId) else {
-        throw ValidatedAuthorizationError.validationError("Client id must be uri for redirectUri scheme")
+        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
       }
       
       let configUrl = config?
@@ -428,7 +442,7 @@ public extension ValidatedSiopOpenId4VPRequest {
         .redirectUri
       
       guard url == configUrl else {
-        throw ValidatedAuthorizationError.validationError("Client id must be uri for redirectUri scheme")
+        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
       }
       
       return .redirectUri(
@@ -447,13 +461,13 @@ public extension ValidatedSiopOpenId4VPRequest {
         where: { $0.scheme.rawValue == verifierId.scheme.rawValue }
       ) ?? config?.supportedClientIdSchemes.first
     else {
-      throw ValidatedAuthorizationError.validationError("No supported client Id scheme")
+      throw ValidationError.validationError("No supported client Id scheme")
     }
     
     switch scheme {
     case .preregistered(let clients):
       guard let client = clients[clientId] else {
-        throw ValidatedAuthorizationError.validationError("preregistered client nort found")
+        throw ValidationError.validationError("preregistered client nort found")
       }
       return .preRegistered(
         clientId: clientId,
@@ -461,7 +475,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       )
     case .redirectUri:
       guard let url = URL(string: clientId) else {
-        throw ValidatedAuthorizationError.validationError("Client id must be uri for redirectUri scheme")
+        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
       }
       
       let configUrl = config?
@@ -470,14 +484,14 @@ public extension ValidatedSiopOpenId4VPRequest {
         .redirectUri
       
       guard url == configUrl else {
-        throw ValidatedAuthorizationError.validationError("Client id must be uri for redirectUri scheme")
+        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
       }
       
       return .redirectUri(
         clientId: url
       )
     default:
-      throw ValidatedAuthorizationError.validationError("Scheme \(scheme) not supported")
+      throw ValidationError.validationError("Scheme \(scheme) not supported")
     }
   }
 }
@@ -491,16 +505,16 @@ private extension ValidatedSiopOpenId4VPRequest {
     clientId: String
   ) throws -> Client {
     guard case let .verifierAttestation(verifier, clockSkew) = supportedScheme else {
-      throw ValidatedAuthorizationError.validationError("Scheme should be verifier attestation")
+      throw ValidationError.validationError("Scheme should be verifier attestation")
     }
     
     guard let jws = try? JWS(compactSerialization: jwt) else {
-      throw ValidatedAuthorizationError.validationError("Unable to process JWT")
+      throw ValidationError.validationError("Unable to process JWT")
     }
     
     let expectedType = JOSEObjectType(rawValue: "verifier-attestation+jwt")
     guard jws.header.typ == expectedType?.rawValue else {
-      throw ValidatedAuthorizationError.validationError("verifier-attestation+jwt not found in JWT header")
+      throw ValidationError.validationError("verifier-attestation+jwt not found in JWT header")
     }
     
     _ = try jws.validate(using: verifier)
@@ -529,22 +543,22 @@ private extension ValidatedSiopOpenId4VPRequest {
   ) async throws -> Client {
     
     guard let kid = jws.header.kid else {
-      throw ValidatedAuthorizationError.validationError("kid not found in JWT header")
+      throw ValidationError.validationError("kid not found in JWT header")
     }
     
     guard
       let keyUrl = AbsoluteDIDUrl.parse(kid),
       keyUrl.string.hasPrefix(clientId)
     else {
-      throw ValidatedAuthorizationError.validationError("kid not found in JWT header")
+      throw ValidationError.validationError("kid not found in JWT header")
     }
     
     guard let clientIdAsDID = DID.parse(clientId) else {
-      throw ValidatedAuthorizationError.validationError("Invalid DID")
+      throw ValidationError.validationError("Invalid DID")
     }
     
     guard let publicKey = await keyLookup.resolveKey(from: clientIdAsDID) else {
-      throw ValidatedAuthorizationError.validationError("Unable to extract public key from DID")
+      throw ValidationError.validationError("Unable to extract public key from DID")
     }
     
     try AccessValidator.verifyJWS(
@@ -585,7 +599,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       responseMode: try? .init(authorizationRequestData: authorizationRequestData),
       requestUriMethod: .init(method: authorizationRequestData.requestUriMethod),
       state: authorizationRequestData.state,
-      vpFormats: try (formats ?? VpFormats.empty())
+      vpFormats: try (formats ?? VpFormats.empty()),
+      transactionData: authorizationRequestData.transactionData
     ))
   }
   
@@ -625,7 +640,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       requestUriMethod: .init(method: authorizationRequestObject[Constants.REQUEST_URI_METHOD].string),
       state: authorizationRequestObject[Constants.STATE].string,
-      vpFormats: try (formats ?? VpFormats.default())
+      vpFormats: try (formats ?? VpFormats.default()),
+      transactionData: authorizationRequestObject[Constants.TRANSACTION_DATA].array?.compactMap { $0.string }
     ))
   }
   
@@ -647,7 +663,8 @@ private extension ValidatedSiopOpenId4VPRequest {
       scope: authorizationRequestObject[Constants.SCOPE].stringValue,
       responseMode: try? .init(authorizationRequestObject: authorizationRequestObject),
       state: authorizationRequestObject[Constants.STATE].string,
-      vpFormats: try (formats ?? VpFormats.default())
+      vpFormats: try (formats ?? VpFormats.default()),
+      transactionData: authorizationRequestObject[Constants.TRANSACTION_DATA].array?.compactMap { $0.string }
     ))
   }
   
@@ -665,13 +682,13 @@ private extension ValidatedSiopOpenId4VPRequest {
           throw error
         }
       } else {
-        throw ValidatedAuthorizationError.invalidJwtPayload
+        throw ValidationError.invalidJwtPayload
       }
     } else {
       if string.isValidJWT() {
         return string
       } else {
-        throw ValidatedAuthorizationError.invalidJwtPayload
+        throw ValidationError.invalidJwtPayload
       }
     }
   }
@@ -742,41 +759,41 @@ private extension SiopOpenId4VPConfiguration {
     let jws = try JWS(compactSerialization: jwt)
     
     guard expectedClient != nil else {
-      throw ValidatedAuthorizationError.validationError("expectedClient should not be nil")
+      throw ValidationError.validationError("expectedClient should not be nil")
     }
     
     guard expectedWalletNonce != nil else {
-      throw ValidatedAuthorizationError.validationError("expectedWalletNonce should not be nil")
+      throw ValidationError.validationError("expectedWalletNonce should not be nil")
     }
     
     guard let jwsClientID = getValueForKey(
       from: jwt,
       key: "client_id"
     ) as? String else {
-      throw ValidatedAuthorizationError.validationError("client_id should not be nil")
+      throw ValidationError.validationError("client_id should not be nil")
     }
     
     guard jwsClientID == expectedClient else {
-      throw ValidatedAuthorizationError.validationError("client_id's do not match")
+      throw ValidationError.validationError("client_id's do not match")
     }
     
     guard let jwsNonce = getValueForKey(
       from: jwt,
       key: ValidatedSiopOpenId4VPRequest.WALLET_NONCE_FORM_PARAM
     ) as? String else {
-      throw ValidatedAuthorizationError.validationError("nonce should not be nil")
+      throw ValidationError.validationError("nonce should not be nil")
     }
     
     guard jwsNonce == expectedWalletNonce else {
-      throw ValidatedAuthorizationError.validationError("nonce's do not match")
+      throw ValidationError.validationError("nonce's do not match")
     }
     
     guard let algorithm = jws.header.algorithm else {
-      throw ValidatedAuthorizationError.validationError("algorithm should not be nil")
+      throw ValidationError.validationError("algorithm should not be nil")
     }
     
     guard jarConfiguration.supportedAlgorithms.contains(where: { $0.name == algorithm.rawValue }) else {
-      throw ValidatedAuthorizationError.validationError("nonce's do not match")
+      throw ValidationError.validationError("nonce's do not match")
     }
   }
   
