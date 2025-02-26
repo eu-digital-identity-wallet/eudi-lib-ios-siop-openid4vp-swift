@@ -15,15 +15,7 @@
  */
 import Foundation
 
-struct DCQLId {
-  
-  @discardableResult
-  static func ensureValid(_ value: String) -> Bool {
-    return true
-  }
+public enum PresentationQuery {
+    case byPresentationDefinition(PresentationDefinition)
+    case byDigitalCredentialsQuery(DCQL)
 }
-
-public struct DCQL {
-  
-}
-

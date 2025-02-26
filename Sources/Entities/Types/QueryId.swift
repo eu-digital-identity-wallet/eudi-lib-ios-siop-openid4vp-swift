@@ -15,15 +15,19 @@
  */
 import Foundation
 
-struct DCQLId {
+public struct QueryId: Hashable {
+  // The underlying value (equivalent to the `value` in the Kotlin value class)
+  public let value: String
   
-  @discardableResult
-  static func ensureValid(_ value: String) -> Bool {
-    return true
+  // Public initializer to ensure the value is valid, similar to the `init` block in Kotlin
+  public init(value: String) {
+    // Equivalent to `DCQLId.ensureValid(value)` in Kotlin
+    DCQLId.ensureValid(value)
+    self.value = value
+  }
+  
+  // Public custom description (equivalent to `toString()` in Kotlin)
+  public var description: String {
+    return value
   }
 }
-
-public struct DCQL {
-  
-}
-

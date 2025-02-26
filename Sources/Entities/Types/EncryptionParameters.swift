@@ -15,15 +15,6 @@
  */
 import Foundation
 
-struct DCQLId {
-  
-  @discardableResult
-  static func ensureValid(_ value: String) -> Bool {
-    return true
-  }
+public enum EncryptionParameters {
+  case diffieHellman(apu: Base64URL)
 }
-
-public struct DCQL {
-  
-}
-

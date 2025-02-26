@@ -27,7 +27,7 @@ public enum ValidatedSiopOpenId4VPRequest {
   
   public var transactionData: [String]? {
     switch self {
-    case .idToken(let request):
+    case .idToken:
       return nil
     case .vpToken(let request):
       return request.transactionData
@@ -590,8 +590,13 @@ private extension ValidatedSiopOpenId4VPRequest {
     let formats = try? VpFormats(
       jsonString: authorizationRequestData.clientMetaData
     )
+    
+    let querySource = try parseQuerySource(
+      authorizationRequestData: authorizationRequestData
+    )
+    
     return .vpToken(request: .init(
-      presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
+      querySource: querySource,
       clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
       clientId: clientId,
       client: .preRegistered(clientId: clientId, legalName: clientId),
@@ -631,8 +636,13 @@ private extension ValidatedSiopOpenId4VPRequest {
     authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
     let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_METADATA].string)
+    
+    let querySource = try parseQuerySource(
+      authorizationRequestObject: authorizationRequestObject
+    )
+    
     return .vpToken(request: .init(
-      presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
+      querySource: querySource,
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       client: client,
@@ -653,9 +663,14 @@ private extension ValidatedSiopOpenId4VPRequest {
     authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
     let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_METADATA].string)
+    
+    let querySource = try parseQuerySource(
+      authorizationRequestObject: authorizationRequestObject
+    )
+    
     return .idAndVpToken(request: .init(
       idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
-      presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
+      querySource: querySource,
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       client: client,
@@ -666,6 +681,14 @@ private extension ValidatedSiopOpenId4VPRequest {
       vpFormats: try (formats ?? VpFormats.default()),
       transactionData: authorizationRequestObject[Constants.TRANSACTION_DATA].array?.compactMap { $0.string }
     ))
+  }
+  
+  private static func parseQuerySource(authorizationRequestData: AuthorisationRequestObject) throws -> QuerySource {
+    .byPresentationDefinitionSource(try .init(authorizationRequestData: authorizationRequestData))
+  }
+  
+  private static func parseQuerySource(authorizationRequestObject: JSON) throws -> QuerySource {
+    .byPresentationDefinitionSource(try .init(authorizationRequestObject: authorizationRequestObject))
   }
   
   /// Extracts the JWT token from a given JSON string or JWT string.
@@ -750,6 +773,7 @@ private class TimeChecks: JWTClaimsSetVerifier {
 }
 
 private extension SiopOpenId4VPConfiguration {
+  
   func ensureValid(
     expectedClient: String?,
     expectedWalletNonce: String?,

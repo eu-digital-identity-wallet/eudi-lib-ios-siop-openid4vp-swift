@@ -18,37 +18,31 @@ import SwiftyJSON
 
 public typealias Base64URL = String
 
+public enum VerifiablePresentation {
+  case generic(String)
+  case json(JSON)
+}
+
+// Custom error types for encoding
+public enum VpTokenError: Error {
+  case notExpected
+  case notSupported
+}
+
 public struct VpToken: Encodable {
   
-  public let apu: Base64URL?
   public let verifiablePresentations: [VerifiablePresentation]
   
   public init(
-    apu: Base64URL? = nil,
     verifiablePresentations: [VerifiablePresentation]
   ) {
-    self.apu = apu
     self.verifiablePresentations = verifiablePresentations
-  }
-  
-  public enum VerifiablePresentation {
-    case generic(String)
-    case msoMdoc(String)
-    case json(JSON)
-  }
-  
-  // Custom error types for encoding
-  public enum VpTokenError: Error {
-    case notExpected
-    case notSupported
   }
 
   // Helper function to encode individual VerifiablePresentation cases
   private func encodeToken(_ token: VerifiablePresentation) throws -> JSON {
     switch token {
     case .generic(let value):
-      return JSON(value)
-    case .msoMdoc(let value):
       return JSON(value)
     case .json(let json):
       return json
@@ -72,8 +66,6 @@ public struct VpToken: Encodable {
       
       switch token {
       case .generic(let value):
-        try container.encode(value)
-      case .msoMdoc(let value):
         try container.encode(value)
       case .json(let json):
         try container.encode(json)

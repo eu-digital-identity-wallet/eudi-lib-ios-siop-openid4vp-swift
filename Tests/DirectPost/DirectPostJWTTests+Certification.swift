@@ -26,7 +26,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     
     /// To get this URL,  visit https://demo.certification.openid.net/
     /// and run a happy flow no state test then proceed to assign the request uri to the variable below
-    let url = "#01"
+    let url = "https://demo.certification.openid.net/test/a/dtsiflit/requesturi/KgAfiVWeBTAJXR5vYbX6VtQFQ9Mc8FCESpxyrUGiy0JpCkX8eKnBDwpXrqwdQmar%23M7s0FJZIvqUjIIxWV5uEY1aS_7B8_E28pGr2RYM2Nls"
     let clientId = "demo.certification.openid.net"
     
     guard !url.isEmpty else {
@@ -111,13 +111,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       }
       
       // Obtain consent
+      let submission = TestsConstants.testPresentationSubmission
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(presentation!)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(
-          verifiablePresentations: [
-            .generic(presentation!)
-          ]
-        ),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
+        )
       )
       
       // Generate a direct post authorisation response
@@ -230,11 +232,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       }
       
       // Obtain consent
+      let submission = TestsConstants.testPresentationSubmission
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(presentation!)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(presentation!)
-        ]),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
+        )
       )
       
       // Generate a direct post authorisation response
@@ -331,14 +337,18 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       let resolved = request
       
       // Obtain consent
+      let submission: PresentationSubmission = .init(
+        id: "psId",
+        definitionID: "psId",
+        descriptorMap: []
+      )
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(TestsConstants.cbor)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
-        ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
         )
       )
       

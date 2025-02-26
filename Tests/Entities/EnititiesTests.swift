@@ -40,6 +40,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     
     let tokenData = ResolvedRequestData.IdAndVpTokenData(
       idTokenType: idTokenType,
+      presentationQuery: .byPresentationDefinition(presentationDefinition),
       presentationDefinition: presentationDefinition,
       clientMetaData: clientMetaData,
       client: .preRegistered(clientId: clientId, legalName: clientId),

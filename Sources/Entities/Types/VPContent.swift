@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
 
-struct DCQLId {
+public enum VpContent {
+  case presentationExchange(
+    verifiablePresentations: [VerifiablePresentation],
+    presentationSubmission: PresentationSubmission
+  )
   
-  @discardableResult
-  static func ensureValid(_ value: String) -> Bool {
-    return true
-  }
+  case dcql(verifiablePresentations: [QueryId: VerifiablePresentation])
 }
-
-public struct DCQL {
-  
-}
-

@@ -55,7 +55,8 @@ public extension AuthorizationResponse {
   init(
     resolvedRequest: ResolvedRequestData,
     consent: ClientConsent,
-    walletOpenId4VPConfig: SiopOpenId4VPConfiguration? = nil
+    walletOpenId4VPConfig: SiopOpenId4VPConfiguration? = nil,
+    encryptionParameters: EncryptionParameters? = nil
   ) throws {
     switch consent {
     case .idToken(let idToken):
@@ -65,7 +66,8 @@ public extension AuthorizationResponse {
           idToken: idToken,
           state: try request.state ?? { throw AuthorizationError.invalidState }(), 
           nonce: try request.state ?? { throw AuthorizationError.invalidNonce }(),
-          clientId: resolvedRequest.client.id
+          clientId: resolvedRequest.client.id,
+          encryptionParameters: encryptionParameters
         )
         self = try .buildAuthorizationResponse(
           responseMode: request.responseMode,
@@ -75,16 +77,16 @@ public extension AuthorizationResponse {
         )
       default: throw AuthorizationError.unsupportedResolution
       }
-    case .vpToken(let vpToken, let presentationSubmission):
+    case .vpToken(let vpContent):
       switch resolvedRequest {
       case .vpToken(let request):
         let payload : AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
-          vpToken: vpToken,
+          vpContent: vpContent,
           verifiableCredential: [],
-          presentationSubmission: presentationSubmission,
           state: request.state ?? "", 
           nonce: request.nonce,
-          clientId: resolvedRequest.client.id
+          clientId: resolvedRequest.client.id,
+          encryptionParameters: encryptionParameters
         )
         self = try .buildAuthorizationResponse(
           responseMode: request.responseMode,
