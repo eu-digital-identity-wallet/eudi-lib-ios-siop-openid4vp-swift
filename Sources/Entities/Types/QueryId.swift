@@ -15,19 +15,26 @@
  */
 import Foundation
 
-public struct QueryId: Hashable {
-  // The underlying value (equivalent to the `value` in the Kotlin value class)
+public struct QueryId: Hashable, Codable {
+  
   public let value: String
   
-  // Public initializer to ensure the value is valid, similar to the `init` block in Kotlin
-  public init(value: String) {
-    // Equivalent to `DCQLId.ensureValid(value)` in Kotlin
-    DCQLId.ensureValid(value)
-    self.value = value
+  public init(value: String) throws {
+    self.value = try DCQLId.ensureValid(value)
   }
   
-  // Public custom description (equivalent to `toString()` in Kotlin)
   public var description: String {
     return value
+  }
+  
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(value)
+  }
+  
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let decodedValue = try container.decode(String.self)
+    try self.init(value: decodedValue)
   }
 }
