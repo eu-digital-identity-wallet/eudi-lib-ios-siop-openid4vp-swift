@@ -53,9 +53,11 @@ final class DCQLTests: XCTestCase {
     do {
       let dcql = try DCQL(from: json)
       print(dcql)
+      XCTAssert(true)
       
     } catch {
       print(error)
+      XCTAssert(false)
     }
   }
   
@@ -86,9 +88,11 @@ final class DCQLTests: XCTestCase {
     do {
       let dcql = try DCQL(from: json)
       print(dcql)
+      XCTAssert(true)
       
     } catch {
       print(error)
+      XCTAssert(false)
     }
   }
   
@@ -120,9 +124,127 @@ final class DCQLTests: XCTestCase {
     do {
       let dcql = try DCQL(from: json)
       print(dcql)
+      XCTAssert(true)
       
     } catch {
       print(error)
+      XCTAssert(false)
+    }
+  }
+  
+  func testComplex() throws {
+      
+    let dcqlString = """
+    {
+      "credentials": [
+        {
+          "id": "mdl-id",
+          "format": "mso_mdoc",
+          "meta": {
+            "doctype_value": "org.iso.18013.5.1.mDL"
+          },
+          "claims": [
+            {
+              "id": "given_name",
+              "path": ["org.iso.18013.5.1", "given_name"]
+            },
+            {
+              "id": "family_name",
+              "path": ["org.iso.18013.5.1", "family_name"]
+            },
+            {
+              "id": "portrait",
+              "path": ["org.iso.18013.5.1", "portrait"]
+            }
+          ]
+        },
+        {
+          "id": "mdl-address",
+          "format": "mso_mdoc",
+          "meta": {
+            "doctype_value": "org.iso.18013.5.1.mDL"
+          },
+          "claims": [
+            {
+              "id": "resident_address",
+              "path": ["org.iso.18013.5.1", "resident_address"]
+            },
+            {
+              "id": "resident_country",
+              "path": ["org.iso.18013.5.1", "resident_country"]
+            }
+          ]
+        },
+        {
+          "id": "photo_card-id",
+          "format": "mso_mdoc",
+          "meta": {
+            "doctype_value": "org.iso.23220.photoid.1"
+          },
+          "claims": [
+            {
+              "id": "given_name",
+              "path": ["org.iso.18013.5.1", "given_name"]
+            },
+            {
+              "id": "family_name",
+              "path": ["org.iso.18013.5.1", "family_name"]
+            },
+            {
+              "id": "portrait",
+              "path": ["org.iso.18013.5.1", "portrait"]
+            }
+          ]
+        },
+        {
+          "id": "photo_card-address",
+          "format": "mso_mdoc",
+          "meta": {
+            "doctype_value": "org.iso.23220.photoid.1"
+          },
+          "claims": [
+            {
+              "id": "resident_address",
+              "path": ["org.iso.18013.5.1", "resident_address"]
+            },
+            {
+              "id": "resident_country",
+              "path": ["org.iso.18013.5.1", "resident_country"]
+            }
+          ]
+        }
+      ],
+      "credential_sets": [
+        {
+          "purpose": "Identification",
+          "options": [
+            [ "mdl-id" ],
+            [ "photo_card-id" ]
+          ]
+        },
+        {
+          "purpose": "Proof of address",
+          "required": false,
+          "options": [
+            [ "mdl-address" ],
+            [ "photo_card-address" ]
+          ]
+        }
+      ]
+    }
+    """
+    
+    let data = dcqlString.data(using: .utf8)!
+    let json = try! JSON(data: data)
+      
+    do {
+      let dcql = try DCQL(from: json)
+      print(dcql)
+      XCTAssert(true)
+      
+    } catch {
+      print(error)
+      XCTAssert(false)
     }
   }
 }

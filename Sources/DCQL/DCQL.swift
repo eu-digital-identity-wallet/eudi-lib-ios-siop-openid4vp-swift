@@ -81,20 +81,20 @@ public struct CredentialSetQuery: Codable {
 public struct ClaimId: Codable, Hashable {
   public let value: String
   
-  public init(_ value: String) {
-    ClaimId.ensureValid(value)
+  public init(_ value: String) throws {
+    try ClaimId.ensureValid(value)
     self.value = value
   }
   
-  public static func ensureValid(_ value: String) {
-    // Add validation logic similar to DCQLId.ensureValid(value)
+  public static func ensureValid(_ value: String) throws {
+    try DCQLId.ensureValid(value)
   }
   
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let value = try container.decode(String.self)
-    ClaimId.ensureValid(value)
-    self.init(value)
+    try ClaimId.ensureValid(value)
+    try self.init(value)
   }
   
   public func encode(to encoder: Encoder) throws {
