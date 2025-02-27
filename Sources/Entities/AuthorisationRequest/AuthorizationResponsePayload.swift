@@ -132,7 +132,8 @@ public enum AuthorizationResponsePayload: Encodable {
          try container.encode(VpToken(verifiablePresentations: verifiablePresentations), forKey: .vpToken)
          try container.encode(state, forKey: .state)
        case .dcql(let verifiablePresentations):
-         throw ValidationError.validationError("DCQL not supported yet")
+         try container.encode(state, forKey: .state)
+         try container.encode(VpContent .encodeDCQLQuery(verifiablePresentations),forKey: .vpToken)
        }
      case .noConsensusResponseData(let state, let message):
        try container.encode(state, forKey: .state)
