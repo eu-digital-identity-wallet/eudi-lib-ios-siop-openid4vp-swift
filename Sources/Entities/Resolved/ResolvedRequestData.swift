@@ -111,7 +111,26 @@ public extension ResolvedRequestData {
             transactionData: try Self.parseTransactionData(
               transactionData: request.transactionData,
               vpConfiguration: vpConfiguration,
-              presentationDefinition: presentationDefinition
+              presentationQuery: presentationQuery
+            )
+          )
+        )
+      case .dcqlQuery(let dcql):
+        let presentationQuery: PresentationQuery = .byDigitalCredentialsQuery(dcql)
+        
+        self = .vpToken(
+          request: .init(
+            presentationQuery: presentationQuery,
+            clientMetaData: validatedClientMetaData,
+            client: request.client,
+            nonce: request.nonce,
+            responseMode: request.responseMode,
+            state: request.state,
+            vpFormats: request.vpFormats,
+            transactionData: try Self.parseTransactionData(
+              transactionData: request.transactionData,
+              vpConfiguration: vpConfiguration,
+              presentationQuery: presentationQuery
             )
           )
         )
@@ -148,9 +167,28 @@ public extension ResolvedRequestData {
           transactionData: try Self.parseTransactionData(
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
-            presentationDefinition: presentationDefinition
+            presentationQuery: presentationQuery
           )
         ))
+      case .dcqlQuery(let dcql):
+        let presentationQuery: PresentationQuery = .byDigitalCredentialsQuery(dcql)
+        
+        self = .vpToken(
+          request: .init(
+            presentationQuery: presentationQuery,
+            clientMetaData: validatedClientMetaData,
+            client: request.client,
+            nonce: request.nonce,
+            responseMode: request.responseMode,
+            state: request.state,
+            vpFormats: request.vpFormats,
+            transactionData: try Self.parseTransactionData(
+              transactionData: request.transactionData,
+              vpConfiguration: vpConfiguration,
+              presentationQuery: presentationQuery
+            )
+          )
+        )
       default: throw ValidationError.validationError("Only presentation definition supported for now")
       }
     }
@@ -172,7 +210,7 @@ private extension ResolvedRequestData {
   static func parseTransactionData(
     transactionData: [String]?,
     vpConfiguration: VPConfiguration,
-    presentationDefinition: PresentationDefinition
+    presentationQuery: PresentationQuery
   ) throws -> [TransactionData]? {
     /// If there is no transactionData in the request, return nil.
     guard let data = transactionData else { return nil }
@@ -182,7 +220,7 @@ private extension ResolvedRequestData {
       try TransactionData.parse(
         item,
         supportedTypes: vpConfiguration.supportedTransactionDataTypes,
-        presentationDefinition: presentationDefinition
+        presentationQuery: presentationQuery
       ).get()
     }
   }
