@@ -1557,7 +1557,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     switch result {
     case .notSecured: break
-    case .jwt(request: let request):
+    case .jwt(let request):
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(

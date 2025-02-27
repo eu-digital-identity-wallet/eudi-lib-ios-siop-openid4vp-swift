@@ -21,21 +21,33 @@ public typealias CredentialSets = [CredentialSetQuery]
 public typealias CredentialSet = Set<QueryId>
 public typealias ClaimSet = Set<ClaimId>
 
-public struct CredentialQuery: Codable {
+public struct CredentialQuery: Decodable {
   enum CodingKeys: String, CodingKey {
     case id = "id"
     case format = "format"
     case meta = "meta"
+    case claims = "claims"
+    case claimSets = "claim_sets"
   }
   
   public let id: QueryId
   public let format: Format
   public let meta: JSON?
+  public let claims: [ClaimsQuery]?
+  public let claimSets: [ClaimSet]?
   
-  public init(id: QueryId, format: Format, meta: JSON? = nil) {
+  public init(
+    id: QueryId,
+    format: Format,
+    meta: JSON? = nil,
+    claims: [ClaimsQuery]? = nil,
+    claimSets: [ClaimSet]? = nil
+  ) {
     self.id = id
     self.format = format
     self.meta = meta
+    self.claims = claims
+    self.claimSets = claimSets
   }
 }
 
@@ -118,7 +130,7 @@ public struct DCQLId {
   }
 }
 
-public struct DCQL: Codable {
+public struct DCQL: Decodable {
   enum CodingKeys: String, CodingKey {
     case credentials = "credentials"
     case credentialSets = "credential_sets"
@@ -137,6 +149,7 @@ public struct DCQL: Codable {
   }
   
   init(from json: JSON) throws {
+    
     let credentialsData = try json["credentials"].rawData()
     let credentials = try JSONDecoder().decode(Credentials.self, from: credentialsData)
     
@@ -183,3 +196,185 @@ public extension CredentialSetQuery {
     }
   }
 }
+
+public struct ClaimsQuery: Decodable {
+  public let id: ClaimId?
+  public let path: ClaimPath?
+  public let values: [String]?
+  public let namespace: MsoMdocNamespace?
+  public let claimName: MsoMdocClaimName?
+  
+  enum CodingKeys: String, CodingKey {
+    case id = "id"
+    case path = "path"
+    case values = "values"
+    case namespace = "namespace"
+    case claimName = "claim_name"
+  }
+  
+  // Companion methods equivalent in Swift
+  public static func sdJwtVc(id: ClaimId? = nil, path: ClaimPath, values: [String]? = nil) -> ClaimsQuery {
+    return ClaimsQuery(id: id, path: path, values: values, namespace: nil, claimName: nil)
+  }
+  
+  public static func mdoc(id: ClaimId? = nil, values: [String]? = nil, namespace: MsoMdocNamespace, claimName: MsoMdocClaimName) -> ClaimsQuery {
+    return ClaimsQuery(id: id, path: nil, values: values, namespace: namespace, claimName: claimName)
+  }
+  
+  public static func ensureMsoMdocExtensions(claimsQuery: ClaimsQuery) {
+    // Placeholder for ensuring the mdoc extensions; no precondition checks
+    // Just an example of how you could access the properties.
+    let _ = claimsQuery.namespace
+    let _ = claimsQuery.claimName
+  }
+}
+
+
+public struct DCQLMetaSdJwtVcExtensions: Codable {
+  
+  public let vctValues: [String]?
+  
+  enum CodingKeys: String, CodingKey {
+    case vctValues = "vct_values"
+  }
+}
+
+
+public enum MsoMdocError: Error {
+  case emptyNamespace
+  case emptyClaimName
+  case emptyDocType
+}
+
+public struct DCQLMetaMsoMdocExtensions: Codable {
+  /**
+   * Specifies an allowed value for the doctype of the requested Verifiable Credential.
+   * It MUST be a valid doctype identifier as defined.
+   */
+  public let doctypeValue: MsoMdocDocType?
+  
+  enum CodingKeys: String, CodingKey {
+    case doctypeValue = "doctype_value"
+  }
+}
+
+public struct MsoMdocDocType: Codable, CustomStringConvertible {
+  public let value: String
+  
+  // Throwing initializer that checks if the value is not empty
+  public init(value: String) throws {
+    guard !value.isEmpty else {
+      throw MsoMdocError.emptyDocType
+    }
+    self.value = value
+  }
+  
+  public var description: String {
+    return value
+  }
+  
+  // Codable conformance
+  enum CodingKeys: String, CodingKey {
+    case value
+  }
+  
+  // Encode the value for JSON
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(value)
+  }
+  
+  // Decode the value from JSON
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let decodedValue = try container.decode(String.self)
+    
+    guard !decodedValue.isEmpty else {
+      throw MsoMdocError.emptyDocType
+    }
+    
+    self.value = decodedValue
+  }
+}
+
+public struct MsoMdocClaimsQueryExtension: Decodable {
+  // Namespace of the data element within the mdoc (Optional)
+  public let namespace: MsoMdocNamespace?
+  
+  // Data element identifier within the provided namespace (Optional)
+  public let claimName: MsoMdocClaimName?
+  
+  // Coding keys to map JSON keys to the struct properties
+  enum CodingKeys: String, CodingKey {
+    case namespace = "namespace"
+    case claimName = "claim_name"
+  }
+}
+
+public struct MsoMdocNamespace: Decodable, CustomStringConvertible {
+  public let namespace: String
+  
+  public init(_ namespace: String) throws {
+    guard !namespace.isEmpty else {
+      throw MsoMdocError.emptyNamespace
+    }
+    self.namespace = namespace
+  }
+  
+  public var description: String {
+    return namespace
+  }
+  
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let namespace = try container.decode(String.self)
+    
+    // Validate the namespace during decoding
+    if namespace.isEmpty {
+      throw MsoMdocError.emptyNamespace
+    }
+    
+    self.namespace = namespace
+  }
+}
+
+public struct MsoMdocClaimName: Codable, CustomStringConvertible {
+  public let value: String
+  
+  // Initializer that throws an error if the value is empty
+  public init(value: String) throws {
+    guard !value.isEmpty else {
+      throw MsoMdocError.emptyClaimName
+    }
+    self.value = value
+  }
+  
+  public var description: String {
+    return value
+  }
+  
+  // Codable conformance to handle encoding/decoding
+  enum CodingKeys: String, CodingKey {
+    case value
+  }
+  
+  // Encode the value for JSON
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(value)
+  }
+  
+  // Decode the value from JSON
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let decodedValue = try container.decode(String.self)
+    
+    guard !decodedValue.isEmpty else {
+      throw MsoMdocError.emptyClaimName
+    }
+    
+    self.value = decodedValue
+  }
+}
+
+
