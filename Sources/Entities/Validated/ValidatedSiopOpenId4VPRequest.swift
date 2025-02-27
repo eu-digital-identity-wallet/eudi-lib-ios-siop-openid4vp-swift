@@ -712,7 +712,7 @@ private extension ValidatedSiopOpenId4VPRequest {
   
   private static func parseQuerySource(authorizationRequestObject: JSON) throws -> QuerySource {
     
-    let hasPd = authorizationRequestObject[Constants.PRESENTATION_DEFINITION].dictionaryObject != nil
+    let hasPd = authorizationRequestObject[Constants.PRESENTATION_DEFINITION].string != nil || authorizationRequestObject[Constants.PRESENTATION_DEFINITION].dictionary != nil 
     let hasPdUri = authorizationRequestObject[Constants.PRESENTATION_DEFINITION_URI].string != nil
     // let hasScope = authorizationRequestObject[Constants.SCOPE].string != nil
     let hasDcqlQuery = authorizationRequestObject[Constants.DCQL_QUERY].dictionaryObject != nil
