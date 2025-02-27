@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Foundation
+import SwiftyJSON
 
 public enum VpContent {
   case presentationExchange(
@@ -21,4 +23,21 @@ public enum VpContent {
   )
   
   case dcql(verifiablePresentations: [QueryId: VerifiablePresentation])
+  
+  static func encodeDCQLQuery(
+    _ query: [QueryId: VerifiablePresentation]
+  ) -> [String: JSON] {
+    
+    var components: [String: JSON] = [:]
+    for (key, value) in query {
+      switch value {
+      case .generic(let value):
+        components[key.value] = JSON(value)
+      case .json(let value):
+        components[key.value] = value
+      }
+    }
+    
+    return components
+  }
 }
