@@ -684,11 +684,55 @@ private extension ValidatedSiopOpenId4VPRequest {
   }
   
   private static func parseQuerySource(authorizationRequestData: AuthorisationRequestObject) throws -> QuerySource {
-    .byPresentationDefinitionSource(try .init(authorizationRequestData: authorizationRequestData))
+    let hasPd = authorizationRequestData.presentationDefinition != nil
+    let hasPdUri = authorizationRequestData.presentationDefinitionUri != nil
+    // let hasScope = authorizationRequestObject[Constants.SCOPE].string != nil
+    let hasDcqlQuery = authorizationRequestData.dcqlQuery != nil
+    
+    let querySourceCount = [hasPd, hasPdUri, hasDcqlQuery].filter { $0 }.count
+    
+    if querySourceCount > 1 {
+      throw ValidationError.multipleQuerySources
+    }
+    
+    if hasPd || hasPdUri {
+      return .byPresentationDefinitionSource(
+        try .init(authorizationRequestData: authorizationRequestData)
+      )
+    } else if hasDcqlQuery {
+      guard let json = authorizationRequestData.dcqlQuery else {
+        throw ValidationError.invalidQuerySource
+      }
+      return .dcqlQuery(try .init(from: json))
+      
+    } else {
+      throw ValidationError.invalidQuerySource
+    }
   }
   
   private static func parseQuerySource(authorizationRequestObject: JSON) throws -> QuerySource {
-    .byPresentationDefinitionSource(try .init(authorizationRequestObject: authorizationRequestObject))
+    
+    let hasPd = authorizationRequestObject[Constants.PRESENTATION_DEFINITION].dictionaryObject != nil
+    let hasPdUri = authorizationRequestObject[Constants.PRESENTATION_DEFINITION_URI].string != nil
+    // let hasScope = authorizationRequestObject[Constants.SCOPE].string != nil
+    let hasDcqlQuery = authorizationRequestObject[Constants.DCQL_QUERY].dictionaryObject != nil
+    
+    let querySourceCount = [hasPd, hasPdUri, hasDcqlQuery].filter { $0 }.count
+    
+    if querySourceCount > 1 {
+      throw ValidationError.multipleQuerySources
+    }
+    
+    if hasPd || hasPdUri {
+      return .byPresentationDefinitionSource(
+        try .init(authorizationRequestObject: authorizationRequestObject)
+      )
+    } else if hasDcqlQuery {
+      return .dcqlQuery(try .init(from: authorizationRequestObject[Constants.DCQL_QUERY]))
+      
+    } else {
+      throw ValidationError.invalidQuerySource
+    }
   }
   
   /// Extracts the JWT token from a given JSON string or JWT string.
@@ -731,7 +775,6 @@ private enum JWTVerificationError: Error {
   case activeBeforeIssuance
 }
 
-// Date utility functions similar to DateUtils in Kotlin
 private struct DateUtils {
   static func isAfter(_ date1: Date, _ date2: Date, _ skew: TimeInterval) -> Bool {
     return date1.timeIntervalSince(date2) > skew
