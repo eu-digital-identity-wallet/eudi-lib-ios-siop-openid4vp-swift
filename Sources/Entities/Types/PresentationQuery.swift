@@ -16,6 +16,6 @@
 import Foundation
 
 public enum PresentationQuery {
-    case byPresentationDefinition(PresentationDefinition)
-    case byDigitalCredentialsQuery(DCQL)
+  case byPresentationDefinition(PresentationDefinition)
+  case byDigitalCredentialsQuery(DCQL)
 }
