@@ -45,7 +45,10 @@ public enum ValidationError: LocalizedError, Equatable {
   case invalidWalletConfiguration
   case unsupportedAlgorithm(String?)
   case invalidSigningKey
-
+  case emptyValue
+  case multipleQuerySources
+  case invalidQuerySource
+  
   public var errorDescription: String? {
     switch self {
     case .validationError(let message):
@@ -106,6 +109,12 @@ public enum ValidationError: LocalizedError, Equatable {
       return "unsupportedAlgorithm \(algorithm ?? "-")"
     case .invalidSigningKey:
       return ".invalidSigningKey"
+    case .emptyValue:
+      return ".emptyValue"
+    case .multipleQuerySources:
+      return ".multipleQuerySources"
+    case .invalidQuerySource:
+      return ".invalidQuerySource"
     }
   }
 }
