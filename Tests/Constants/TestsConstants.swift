@@ -59,7 +59,7 @@ struct TestsConstants {
     definitionID: TestsConstants.testPresentationId,
     descriptorMap: [
       .init(
-        id: "eu.europa.ec.eudi.pid.1",
+        id: "wa_driver_license",
         format: "mso_mdoc",
         path: "$"
       )
@@ -71,7 +71,7 @@ struct TestsConstants {
     definitionID: TestsConstants.testPresentationId,
     descriptorMap: [
       .init(
-        id: "eu.europa.ec.eudi.pid.1",
+        id: "wa_driver_license",
         format: "dc+sd-jwt",
         path: "$"
       )
@@ -523,18 +523,6 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
     useSha3: Bool = true
   ) -> String {
     
-    func sha3_256Hash(_ input: String) -> String {
-      let inputData = Array(input.utf8)
-      let digest = SHA3(variant: .sha256).calculate(for: inputData)
-      return Data(digest).base64URLEncodedString()
-    }
-    
-    func sha256Hash(_ input: String) -> String {
-      let inputData = Array(input.utf8)
-      let digest = SHA256.hash(data: inputData)
-      return Data(digest).base64URLEncodedString()
-    }
-    
     let sdHash = useSha3 ? sha3_256Hash(sdJwtVcPid) : sha256Hash(sdJwtVcPid)
     
     return try! generateVerifiablePresentation(
@@ -588,11 +576,9 @@ func generateVerifiablePresentation(
   
   // Process transaction data hashes if available
   if let transactionData = transactionData, !transactionData.isEmpty {
-    let hashAlgorithm = "SHA-256"
+    let hashAlgorithm = "sha-256"
     let transactionDataHashes = transactionData.map {
-      let inputData = Array($0.value.utf8)
-      let digest = SHA256.hash(data: inputData)
-      return Data(digest).base64URLEncodedString()
+      return sha256Hash($0.value)
     }
     claims["transaction_data_hashes_alg"] = hashAlgorithm
     claims["transaction_data_hashes"] = transactionDataHashes
@@ -623,4 +609,16 @@ extension Data {
       .replacingOccurrences(of: "/", with: "_")
       .replacingOccurrences(of: "=", with: "") // Remove padding
   }
+}
+
+func sha3_256Hash(_ input: String) -> String {
+  let inputData = Array(input.utf8)
+  let digest = SHA3(variant: .sha256).calculate(for: inputData)
+  return Data(digest).base64URLEncodedString()
+}
+
+func sha256Hash(_ input: String) -> String {
+  let inputData = Array(input.utf8)
+  let digest = SHA256.hash(data: inputData)
+  return Data(digest).base64URLEncodedString()
 }
