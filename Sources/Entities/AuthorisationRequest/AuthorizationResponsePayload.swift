@@ -30,7 +30,6 @@ public enum AuthorizationResponsePayload: Encodable {
   /// An OpenID Connect 4 Verifiable Presentation authorization response payload.
   case openId4VPAuthorizationResponse(
     vpContent: VpContent,
-    verifiableCredential: [JWTString],
     state: String,
     nonce: String,
     clientId: VerifierId,
@@ -41,7 +40,6 @@ public enum AuthorizationResponsePayload: Encodable {
   case siopOpenId4VPAuthenticationResponse(
     idToken: JWTString,
     vpContent: VpContent,
-    verifiableCredential: [JWTString],
     state: String,
     nonce: String,
     clientId: VerifierId,
@@ -77,9 +75,9 @@ public enum AuthorizationResponsePayload: Encodable {
     switch self {
     case .siopAuthenticationResponse(_, _, _, _, let encryptionParameters):
       return encryptionParameters
-    case .openId4VPAuthorizationResponse(_, _, _, _, _, let encryptionParameters):
+    case .openId4VPAuthorizationResponse(_, _, _, _, let encryptionParameters):
       return encryptionParameters
-    case .siopOpenId4VPAuthenticationResponse(_, _, _, _, _, _, let encryptionParameters):
+    case .siopOpenId4VPAuthenticationResponse(_, _, _, _, _, let encryptionParameters):
       return encryptionParameters
     default: return nil
     }
@@ -98,9 +96,9 @@ public enum AuthorizationResponsePayload: Encodable {
     switch self {
     case .siopAuthenticationResponse(_, _, let nonce, _, _):
       nonce
-    case .openId4VPAuthorizationResponse(_, _, _, let nonce, _, _):
+    case .openId4VPAuthorizationResponse(_, _, let nonce, _, _):
       nonce
-    case .siopOpenId4VPAuthenticationResponse(_, _, _, _, let nonce, _, _):
+    case .siopOpenId4VPAuthenticationResponse(_, _, _, let nonce, _, _):
       nonce
     default:
       ""
@@ -117,7 +115,6 @@ public enum AuthorizationResponsePayload: Encodable {
        try container.encode(idToken, forKey: .idToken)
      case .openId4VPAuthorizationResponse(
       let vpContent,
-      _,
       let state,
       _,
       _,

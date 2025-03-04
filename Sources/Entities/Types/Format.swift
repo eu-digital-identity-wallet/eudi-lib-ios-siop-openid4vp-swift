@@ -43,7 +43,6 @@ public struct Format: Hashable, Codable {
     self.format = format
   }
   
-  // Custom description (equivalent to `toString()` in Kotlin)
   public var description: String {
     return format
   }
@@ -59,7 +58,6 @@ public struct Format: Hashable, Codable {
     try container.encode(format)
   }
   
-  // Static properties (equivalent to Kotlin's `companion object`)
   public static func MsoMdoc() throws -> Format {
     return try Format(format: OpenId4VPSpec.FORMAT_MSO_MDOC)
   }

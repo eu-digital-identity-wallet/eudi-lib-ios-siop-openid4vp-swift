@@ -82,7 +82,6 @@ public extension AuthorizationResponse {
       case .vpToken(let request):
         let payload : AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
           vpContent: vpContent,
-          verifiableCredential: [],
           state: request.state ?? "", 
           nonce: request.nonce,
           clientId: resolvedRequest.client.id,

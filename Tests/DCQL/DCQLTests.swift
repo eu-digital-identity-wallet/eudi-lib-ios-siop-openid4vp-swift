@@ -247,4 +247,57 @@ final class DCQLTests: XCTestCase {
       XCTAssert(false)
     }
   }
+  
+  func testParse() throws {
+    
+    let jsonString = """
+    {
+      "credentials": [
+        {
+          "id": "my_credential",
+          "format": "mso_mdoc",
+          "meta": {
+            "doctype_value": "org.iso.7367.1.mVRC"
+          },
+          "claims": [
+            {
+              "namespace": "org.iso.7367.1",
+              "claim_name": "vehicle_holder"
+            },
+            {
+              "namespace": "org.iso.18013.5.1",
+              "claim_name": "first_name"
+            }
+          ]
+        }
+      ]
+    }
+    """
+    let data = jsonString.data(using: .utf8)!
+    let json = try! JSON(data: data)
+    let primary = try DCQL(from: json)
+    
+    let secondary = try DCQL(
+      credentials: [
+        .mdoc(
+          id: .init(value: "my_credential"),
+          msoMdocMeta: .init(
+            doctypeValue: .init(value: "org.iso.7367.1.mVRC")
+          ),
+          claims: [
+            .mdoc(
+              namespace: .init("org.iso.7367.1"),
+              claimName: .init(claimName: "vehicle_holder")
+            ),
+            .mdoc(
+              namespace: .init("org.iso.18013.5.1"),
+              claimName: .init(claimName: "first_name")
+            )
+          ]
+        )
+      ]
+    )
+      
+    print("**********\(primary == secondary)")
+  }
 }
