@@ -18,10 +18,10 @@ import Foundation
 public protocol WebKeyResolverType {
 
   /// The input type for resolving web keys.
-  associatedtype InputType
+  associatedtype InputType: Sendable
 
   /// The output type for resolved web keys. Must be Codable and Equatable.
-  associatedtype OutputType: Codable, Equatable
+  associatedtype OutputType: Codable, Equatable, Sendable
 
   /// The error type for resolving web keys. Must conform to the Error protocol.
   associatedtype ErrorType: Error

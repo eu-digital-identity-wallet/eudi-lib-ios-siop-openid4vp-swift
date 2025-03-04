@@ -18,7 +18,7 @@ import PresentationExchange
 
 extension ResolvedRequestData {
   public struct VpTokenData {
-    public let presentationDefinition: PresentationDefinition
+    public let presentationQuery: PresentationQuery
     public let clientMetaData: ClientMetaData.Validated?
     public let client: Client
     public let nonce: String
@@ -37,7 +37,7 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state value.
     public init(
-      presentationDefinition: PresentationDefinition,
+      presentationQuery: PresentationQuery,
       clientMetaData: ClientMetaData.Validated?,
       client: Client,
       nonce: String,
@@ -46,7 +46,7 @@ extension ResolvedRequestData {
       vpFormats: VpFormats,
       transactionData: [TransactionData]? = nil
     ) {
-      self.presentationDefinition = presentationDefinition
+      self.presentationQuery = presentationQuery
       self.clientMetaData = clientMetaData
       self.client = client
       self.nonce = nonce

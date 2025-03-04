@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum DispatchOutcome: Codable, Equatable {
+public enum DispatchOutcome: Codable, Equatable, Sendable {
   case accepted(redirectURI: URL?)
   case rejected(reason: String)
 
