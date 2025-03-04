@@ -1013,9 +1013,7 @@ final class DirectPostJWTTests: DiXCTest {
         .jwkThumbprint
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(
-        rawValue: "did:example:123"
-      ),
+      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: rsaPrivateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
@@ -1028,13 +1026,13 @@ final class DirectPostJWTTests: DiXCTest {
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
-    let clientId = session["client_id"]
+    let clientId = session["client_id"]!
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
     let result = try? await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)"
+        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
       )!
     )
     
@@ -1064,7 +1062,7 @@ final class DirectPostJWTTests: DiXCTest {
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
           clientID: request.client.id.originalClientId,
-          nonce: request.nonce
+          nonce: TestsConstants.testNonce
         )
         
       default:
@@ -1073,9 +1071,8 @@ final class DirectPostJWTTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(
-          verifiablePresentations: [
-            .generic(presentation!)
+        vpToken: .init(verifiablePresentations: [
+          .generic(presentation!)
         ]),
         presentationSubmission: TestsConstants.testPresentationSubmissionSdJwt
       )
