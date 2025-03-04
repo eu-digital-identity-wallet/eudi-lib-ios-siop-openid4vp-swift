@@ -16,7 +16,7 @@
 import Foundation
 import SwiftyJSON
 
-public enum VpContent {
+public enum VpContent: Sendable {
   case presentationExchange(
     verifiablePresentations: [VerifiablePresentation],
     presentationSubmission: PresentationSubmission

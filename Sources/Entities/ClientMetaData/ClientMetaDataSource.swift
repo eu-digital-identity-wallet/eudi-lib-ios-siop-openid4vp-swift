@@ -18,7 +18,7 @@ import PresentationExchange
 import SwiftyJSON
 
 /// An enumeration representing different data sources for client metadata.
-public enum ClientMetaDataSource {
+public enum ClientMetaDataSource: Sendable {
   case passByValue(metaData: ClientMetaData)
 }
 

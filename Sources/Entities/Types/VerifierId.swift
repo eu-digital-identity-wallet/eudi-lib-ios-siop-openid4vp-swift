@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public struct VerifierId {
+public struct VerifierId: Sendable {
   public let scheme: ClientIdScheme
   public let originalClientId: OriginalClientId
   

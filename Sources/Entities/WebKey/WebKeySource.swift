@@ -16,7 +16,7 @@
 import Foundation
 
 /// An enumeration representing different data sources for Web Keys
-public enum WebKeySource {
+public enum WebKeySource: Sendable {
   case passByValue(webKeys: WebKeySet)
   case fetchByReference(url: URL)
 }

@@ -22,7 +22,7 @@ import SwiftyJSON
  */
 
 /// An enumeration representing different client ID schemes.
-public enum ClientIdScheme: String, Codable {
+public enum ClientIdScheme: String, Codable, Sendable {
   case preRegistered = "pre-registered"
   case redirectUri = "redirect_uri"
   case https = "https"

@@ -16,7 +16,7 @@
 import Foundation
 
 /// An enumeration representing errors that can occur during the resolution of presentation definitions.
-public enum ResolvingError: LocalizedError {
+public enum ResolvingError: LocalizedError, Sendable {
   /// The source for resolving presentation definitions is invalid.
   case invalidSource
 

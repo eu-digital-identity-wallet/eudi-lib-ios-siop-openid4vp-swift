@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import Foundation
-import SwiftyJSON
+@preconcurrency import SwiftyJSON
 
 public typealias Base64URL = String
 
-public enum VerifiablePresentation: Encodable {
+public enum VerifiablePresentation: Encodable, Sendable {
   case generic(String)
   case json(JSON)
 }

@@ -16,7 +16,7 @@
 import Foundation
 
 /// An enumeration representing different types of authorization response payloads.
-public enum AuthorizationResponsePayload: Encodable {
+public enum AuthorizationResponsePayload: Encodable, Sendable {
   
   /// An SIOP authentication response payload.
   case siopAuthenticationResponse(

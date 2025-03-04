@@ -16,7 +16,7 @@
 import Foundation
 
 /// An enumeration representing different types of authorization responses.
-public enum AuthorizationResponse {
+public enum AuthorizationResponse: Sendable {
   /// A direct POST authorization response.
   case directPost(url: URL, data: AuthorizationResponsePayload)
 
