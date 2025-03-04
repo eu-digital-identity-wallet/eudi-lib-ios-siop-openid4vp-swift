@@ -342,7 +342,6 @@ final class DirectPostTests: DiXCTest {
       
       // Obtain consent
       let submission = TestsConstants.presentationSubmission(presentationDefinition!)
-      let apu = TestsConstants.generateMdocGeneratedNonce()
       let verifiablePresentations: [VerifiablePresentation] = [
         .generic(TestsConstants.cbor)
       ]

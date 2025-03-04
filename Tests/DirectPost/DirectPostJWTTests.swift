@@ -1410,7 +1410,6 @@ final class DirectPostJWTTests: DiXCTest {
     
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
