@@ -58,7 +58,12 @@ public struct X509CertificateChainVerifier {
     
     // Evaluate the trust
     var trustResult: SecTrustResultType = .invalid
-    _ = SecTrustEvaluate(trust!, &trustResult)
+    
+    guard let trust = trust else {
+      return .failure
+    }
+    
+    _ = SecTrustEvaluate(trust, &trustResult)
     
     // Check if the trust evaluation was successful
     if trustResult == .unspecified {
@@ -66,7 +71,7 @@ public struct X509CertificateChainVerifier {
       
     } else if trustResult == .recoverableTrustFailure {
       var error: CFError?
-      _ = SecTrustEvaluateWithError(trust!, &error)
+      _ = SecTrustEvaluateWithError(trust, &error)
       return .recoverableFailure(error?.localizedDescription ?? "Unknown .recoverableFailure")
       
     } else {
