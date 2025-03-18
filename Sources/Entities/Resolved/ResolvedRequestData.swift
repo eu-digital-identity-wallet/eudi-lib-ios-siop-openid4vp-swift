@@ -88,6 +88,10 @@ public extension ResolvedRequestData {
       
       let validator = ClientMetaDataValidator()
       let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData)
+      let common = VpFormats.common(
+        request.vpFormats,
+        vpConfiguration.vpFormats
+      ) ?? request.vpFormats
       
       switch request.querySource {
       case .byPresentationDefinitionSource(let source):
@@ -107,7 +111,7 @@ public extension ResolvedRequestData {
             nonce: request.nonce,
             responseMode: request.responseMode,
             state: request.state,
-            vpFormats: request.vpFormats,
+            vpFormats: common,
             transactionData: try Self.parseTransactionData(
               transactionData: request.transactionData,
               vpConfiguration: vpConfiguration,
@@ -126,7 +130,7 @@ public extension ResolvedRequestData {
             nonce: request.nonce,
             responseMode: request.responseMode,
             state: request.state,
-            vpFormats: request.vpFormats,
+            vpFormats: common,
             transactionData: try Self.parseTransactionData(
               transactionData: request.transactionData,
               vpConfiguration: vpConfiguration,
@@ -142,6 +146,11 @@ public extension ResolvedRequestData {
       
       let validator = ClientMetaDataValidator()
       let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData)
+      
+      let common = VpFormats.common(
+        request.vpFormats,
+        vpConfiguration.vpFormats
+      ) ?? request.vpFormats
       
       switch request.querySource {
       case .byPresentationDefinitionSource(let source):
@@ -163,7 +172,7 @@ public extension ResolvedRequestData {
           responseMode: request.responseMode,
           state: request.state,
           scope: request.scope,
-          vpFormats: request.vpFormats,
+          vpFormats: common,
           transactionData: try Self.parseTransactionData(
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
@@ -181,7 +190,7 @@ public extension ResolvedRequestData {
             nonce: request.nonce,
             responseMode: request.responseMode,
             state: request.state,
-            vpFormats: request.vpFormats,
+            vpFormats: common,
             transactionData: try Self.parseTransactionData(
               transactionData: request.transactionData,
               vpConfiguration: vpConfiguration,

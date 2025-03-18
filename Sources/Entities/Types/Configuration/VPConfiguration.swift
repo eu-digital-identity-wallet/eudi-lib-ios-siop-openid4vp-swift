@@ -29,7 +29,7 @@ public struct VPConfiguration {
             sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
             kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
           ),
-          .msoMdoc
+          .msoMdoc(algorithms: [JWSAlgorithm(.ES256)])
         ]
       ),
       supportedTransactionDataTypes: [

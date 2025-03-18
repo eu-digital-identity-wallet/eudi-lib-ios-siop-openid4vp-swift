@@ -196,7 +196,7 @@ final class VpFormatsTests: XCTestCase {
     )
     let jwtVpFormat = VpFormat.jwtVp(algorithms: ["RS256"])
     let ldpVpFormat = VpFormat.ldpVp(proofTypes: ["ProofType1"])
-    let msoMdocFormat = VpFormat.msoMdoc
+    let msoMdocFormat = VpFormat.msoMdoc(algorithms: [JWSAlgorithm(.ES256)])
     
     let vpFormats = try VpFormats(values: [sdJwtFormat, jwtVpFormat, ldpVpFormat, msoMdocFormat])
     
@@ -217,10 +217,10 @@ final class VpFormatsTests: XCTestCase {
       XCTAssertEqual(validationError, .validationError("Multiple instances 2 found for JWT_VP."))
     }
   }
-
+  
   
   func testFormatNames() {
-    XCTAssertEqual(VpFormat.msoMdoc.formatName(), .MSO_MDOC)
+    XCTAssertEqual(VpFormat.msoMdoc(algorithms: []).formatName(), .MSO_MDOC)
     XCTAssertEqual(VpFormat.sdJwtVc(sdJwtAlgorithms: [], kbJwtAlgorithms: []).formatName(), .SD_JWT_VC)
     XCTAssertEqual(VpFormat.jwtVp(algorithms: []).formatName(), .JWT_VP)
     XCTAssertEqual(VpFormat.ldpVp(proofTypes: []).formatName(), .LDP_VP)
@@ -292,7 +292,7 @@ final class VpFormatsTests: XCTestCase {
   func testVpFormatsDefaultCreation() throws {
     let defaultFormats = try VpFormats.default()
     
-    XCTAssertEqual(defaultFormats.values.count, 1)
+    XCTAssertEqual(defaultFormats.values.count, 2)
     XCTAssertEqual(defaultFormats.values.first?.formatName(), .SD_JWT_VC)
   }
   
@@ -301,14 +301,79 @@ final class VpFormatsTests: XCTestCase {
       vcSdJwt: VcSdJwtTO(sdJwtAlgorithms: ["ES256"], kdJwtAlgorithms: ["ES256"]),
       jwtVp: JwtVpTO(alg: ["RS256"]),
       ldpVp: LdpVpTO(proofType: ["ProofType"]),
-      msoMdoc: JSON()
+      msoMdoc: MsoMdocTO(algorithms: ["ES256"])
     )
     
     let vpFormats = try VpFormats(from: to)
     
     XCTAssertEqual(vpFormats?.values.count, 4)
     XCTAssertTrue(vpFormats?.contains(.jwtVp(algorithms: ["RS256"])) ?? false)
-    XCTAssertTrue(vpFormats?.contains(.msoMdoc) ?? false)
+    XCTAssertTrue(vpFormats?.contains(.msoMdoc(algorithms: [.init(.ES256)])) ?? false)
+  }
+  
+  func testVpFormatsIntersectWithCommonElements() throws {
+    let format1 = VpFormat.sdJwtVc(
+      sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
+      kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
+    )
+    
+    let format2 = VpFormat.jwtVp(algorithms: ["RS256"])
+    
+    let vpFormats1 = try VpFormats(values: [format1, format2])
+    let vpFormats2 = try VpFormats(values: [format1])
+    
+    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    
+    XCTAssertNotNil(intersection)
+    XCTAssertEqual(intersection?.values.count, 1)
+    XCTAssertTrue(intersection?.contains(format1) ?? false)
+  }
+  
+  func testVpFormatsIntersectWithNoCommonElements() throws {
+    let vpFormats1 = try VpFormats(values: [
+      .sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)])
+    ])
+    
+    let vpFormats2 = try VpFormats(values: [
+      .jwtVp(algorithms: ["RS256"])
+    ])
+    
+    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    
+    XCTAssertNil(intersection)
+  }
+  
+  func testVpFormatsIntersectWithIdenticalFormats() throws {
+    let format = VpFormat.ldpVp(proofTypes: ["ProofType1"])
+    
+    let vpFormats1 = try VpFormats(values: [format])
+    let vpFormats2 = try VpFormats(values: [format])
+    
+    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    
+    XCTAssertNotNil(intersection)
+    XCTAssertEqual(intersection?.values.count, 1)
+    XCTAssertTrue(intersection?.contains(format) ?? false)
+  }
+  
+  func testVpFormatsIntersectWithEmptySet() throws {
+    let vpFormats1 = try VpFormats(values: [])
+    let vpFormats2 = try VpFormats(values: [
+      .jwtVp(algorithms: ["RS256"])
+    ])
+    
+    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    
+    XCTAssertNil(intersection)
+  }
+  
+  func testVpFormatsIntersectWithBothEmpty() throws {
+    let vpFormats1 = try VpFormats(values: [])
+    let vpFormats2 = try VpFormats(values: [])
+    
+    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    
+    XCTAssertNil(intersection)
   }
 }
 
