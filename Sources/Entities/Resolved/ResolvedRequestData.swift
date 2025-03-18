@@ -92,6 +92,11 @@ public extension ResolvedRequestData {
         throw ResolvedAuthorisationError.invalidPresentationDefinitionData
       }
       
+      let common = VpFormats.common(
+        request.vpFormats,
+        vpConfiguration.vpFormats
+      ) ?? request.vpFormats
+      
       self = .vpToken(
         request: .init(
           presentationDefinition: presentationDefinition,
@@ -100,7 +105,7 @@ public extension ResolvedRequestData {
           nonce: request.nonce,
           responseMode: request.responseMode,
           state: request.state,
-          vpFormats: request.vpFormats,
+          vpFormats: common,
           transactionData: try Self.parseTransactionData(
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
@@ -123,6 +128,11 @@ public extension ResolvedRequestData {
         throw ResolvedAuthorisationError.invalidPresentationDefinitionData
       }
       
+      let common = VpFormats.common(
+        request.vpFormats,
+        vpConfiguration.vpFormats
+      ) ?? request.vpFormats
+      
       self = .idAndVpToken(request: .init(
         idTokenType: request.idTokenType,
         presentationDefinition: presentationDefinition,
@@ -132,7 +142,7 @@ public extension ResolvedRequestData {
         responseMode: request.responseMode,
         state: request.state,
         scope: request.scope,
-        vpFormats: request.vpFormats,
+        vpFormats: common,
         transactionData: try Self.parseTransactionData(
           transactionData: request.transactionData,
           vpConfiguration: vpConfiguration,
