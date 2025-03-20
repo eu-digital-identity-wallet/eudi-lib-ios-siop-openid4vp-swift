@@ -214,17 +214,17 @@ public struct VpFormats: Equatable {
   }
   
   public static func common(_ this: VpFormats, _ that: VpFormats) -> VpFormats? {
-    var intersectedFormats: [VpFormat] = []
+    var commonFormats: [VpFormat] = []
     
     for format in this.values {
       if that.contains(format) {
-        intersectedFormats.append(format)
+        commonFormats.append(format)
       }
     }
     
-    return intersectedFormats.isEmpty ?
+    return commonFormats.isEmpty ?
     nil :
-    try? VpFormats(values: intersectedFormats)
+    try? VpFormats(values: commonFormats)
   }
   
   private static func ensureUniquePerFormat(formats: [VpFormat]) throws {
