@@ -43,38 +43,24 @@ public struct X509CertificateChainVerifier {
       base64Strings: base64Certificates
     ).compactMap {
       SecCertificateCreateWithData(nil, $0 as CFData)
+    }.compactMap {
+      SecCertificateContainer(certificate: $0)
     }
     
     if certificates.isEmpty {
       return .failure
     }
     
-    // Create a certificate trust object
-    var trust: SecTrust?
-    let policy = SecPolicyCreateBasicX509()
-    
-    // Set the certificate chain and policy for trust evaluation
-    SecTrustCreateWithCertificates(certificates as CFTypeRef, policy, &trust)
-    
-    // Evaluate the trust
-    var trustResult: SecTrustResultType = .invalid
-    
-    guard let trust = trust else {
+    switch SecCertificateHelper.validateCertificateChain(
+      certificates: certificates
+    ) {
+    case .invalid, .deny, .fatalTrustFailure, .otherError:
       return .failure
-    }
-    
-    _ = SecTrustEvaluate(trust, &trustResult)
-    
-    // Check if the trust evaluation was successful
-    if trustResult == .unspecified {
+    case .proceed, .unspecified:
       return .success
-      
-    } else if trustResult == .recoverableTrustFailure {
-      var error: CFError?
-      _ = SecTrustEvaluateWithError(trust, &error)
-      return .recoverableFailure(error?.localizedDescription ?? "Unknown .recoverableFailure")
-      
-    } else {
+    case .recoverableTrustFailure:
+      return .recoverableFailure("Recoverable failure")
+    @unknown default:
       return .failure
     }
   }

@@ -62,7 +62,7 @@ public extension AuthorizationRequest {
       self = .jwt(request: resolvedSiopOpenId4VPRequestData)
         
     } else if let requestUri = authorizationRequestData.requestUri {
-      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
+      let validated = try await ValidatedSiopOpenId4VPRequest(
         requestUri: requestUri,
         requestUriMethod: .init(method: authorizationRequestData.requestUriMethod),
         clientId: authorizationRequestData.clientId,
@@ -70,27 +70,31 @@ public extension AuthorizationRequest {
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        vpConfiguration: walletConfiguration?.vpConfiguration ?? VPConfiguration.default(),
+        vpConfiguration: walletConfiguration?.vpConfiguration ?? .default(),
         clientMetaDataResolver: ClientMetaDataResolver(
-          fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
+          fetcher: Fetcher(
+            session: walletConfiguration?.session ?? URLSession.shared
+          )
         ),
         presentationDefinitionResolver: PresentationDefinitionResolver(
-          fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
+          fetcher: Fetcher(
+            session: walletConfiguration?.session ?? URLSession.shared
+          )
         ),
-        validatedAuthorizationRequest: validatedAuthorizationRequestData
+        validatedAuthorizationRequest: validated
       )
       self = .jwt(request: resolvedSiopOpenId4VPRequestData)
     } else {
-      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
+      let validated = try await ValidatedSiopOpenId4VPRequest(
         authorizationRequestData: authorizationRequestData,
         walletConfiguration: walletConfiguration
       )
 
       let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        vpConfiguration: walletConfiguration?.vpConfiguration ?? VPConfiguration.default(),
+        vpConfiguration: walletConfiguration?.vpConfiguration ?? .default(),
         clientMetaDataResolver: ClientMetaDataResolver(),
         presentationDefinitionResolver: PresentationDefinitionResolver(),
-        validatedAuthorizationRequest: validatedAuthorizationRequestData
+        validatedAuthorizationRequest: validated
       )
 
       self = .notSecured(data: resolvedSiopOpenId4VPRequestData)
