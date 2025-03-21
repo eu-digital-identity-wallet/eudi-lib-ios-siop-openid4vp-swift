@@ -17,7 +17,7 @@ import Foundation
 import JOSESwift
 import SwiftyJSON
 
-public struct WebKeySet: Codable, Equatable {
+public struct WebKeySet: Codable, Equatable, Sendable {
   public let keys: [Key]
 
   public init(keys: [Key]) {
@@ -43,7 +43,7 @@ public struct WebKeySet: Codable, Equatable {
 }
 
 public extension WebKeySet {
-  struct Key: Codable, Equatable, Hashable {
+  struct Key: Codable, Equatable, Hashable, Sendable {
 
     public let kty: String
     public let use: String

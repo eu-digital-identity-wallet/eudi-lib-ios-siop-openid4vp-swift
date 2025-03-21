@@ -34,7 +34,9 @@ public enum ClientConsent {
      - vpToken the vp_token to be included in the authorization response
      - presentationSubmission the presentation submission to be included in the authorization response
     */
-  case vpToken(vpToken: VpToken, presentationSubmission: PresentationSubmission)
+  case vpToken(
+    vpContent: VpContent
+  )
 
   /**
    In response to a SiopOpenId4VPAuthentication
@@ -43,7 +45,10 @@ public enum ClientConsent {
      - vpToken the vp_token to be included in the authorization response
      - presentationSubmission the presentation submission to be included in the authorization response
     */
-  case idAndVPToken(idToken: JWTString, vpToken: VpToken, presentationSubmission: PresentationSubmission)
+  case idAndVPToken(
+    idToken: JWTString,
+    vpContent: VpContent
+  )
 
   /**
    No consensus. Holder decided to reject the request

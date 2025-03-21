@@ -69,7 +69,12 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       case .idToken:
         throw ValidationError.unsupportedResponseType(".idToken")
       case .vpToken(let request):
-        return request.presentationDefinition
+        switch request.presentationQuery {
+        case .byPresentationDefinition(let presentationDefinition):
+          return presentationDefinition
+        case .byDigitalCredentialsQuery(_):
+          throw ValidationError.validationError("Insupported presentation query")
+        }
       case .idAndVpToken(let request):
         return request.presentationDefinition
       }
@@ -78,7 +83,12 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       case .idToken:
         throw ValidationError.unsupportedResponseType(".idToken")
       case .vpToken(let request):
-        return request.presentationDefinition
+        switch request.presentationQuery {
+        case .byPresentationDefinition(let presentationDefinition):
+          return presentationDefinition
+        case .byDigitalCredentialsQuery(_):
+          throw ValidationError.validationError("Insupported presentation query")
+        }
       case .idAndVpToken(let request):
         return request.presentationDefinition
       }

@@ -341,13 +341,15 @@ final class DirectPostTests: DiXCTest {
       XCTAssertNotNil(presentationDefinition)
       
       // Obtain consent
+      let submission = TestsConstants.presentationSubmission(presentationDefinition!)
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(TestsConstants.cbor)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(
-          apu: TestsConstants.generateMdocGeneratedNonce(),
-          verifiablePresentations: [
-            .msoMdoc(TestsConstants.cbor)
-          ]),
-        presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
+        )
       )
       
       // Generate a direct post authorisation response

@@ -18,10 +18,10 @@ import PresentationExchange
 
 public protocol PresentationDefinitionResolverType {
   /// The input type for resolving presentation definitions.
-  associatedtype InputType
+  associatedtype InputType: Sendable
 
   /// The output type for resolved presentation definitions. Must be Codable.
-  associatedtype OutputType: Codable
+  associatedtype OutputType: Codable, Sendable
 
   /// The error type for resolving presentation definitions. Must conform to the Error protocol.
   associatedtype ErrorType: Error

@@ -15,8 +15,26 @@
  */
 import Foundation
 
-/// An enumeration representing different data sources for Web Keys
-public enum WebKeySource: Sendable {
-  case passByValue(webKeys: WebKeySet)
-  case fetchByReference(url: URL)
+public struct QueryId: Hashable, Codable {
+  
+  public let value: String
+  
+  public init(value: String) throws {
+    self.value = try DCQLId.ensureValid(value)
+  }
+  
+  public var description: String {
+    return value
+  }
+  
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(value)
+  }
+  
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let decodedValue = try container.decode(String.self)
+    try self.init(value: decodedValue)
+  }
 }

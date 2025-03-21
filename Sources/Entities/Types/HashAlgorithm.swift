@@ -18,7 +18,7 @@ import Foundation
 /// IANA registered Hash Algorithms
 ///
 /// See: [IANA Named Information](https://www.iana.org/assignments/named-information/named-information.xhtml)
-public struct HashAlgorithm: Codable, Hashable, CustomStringConvertible {
+public struct HashAlgorithm: Codable, Hashable, CustomStringConvertible, Sendable {
   public let name: String
   
   public init(name: String) {
