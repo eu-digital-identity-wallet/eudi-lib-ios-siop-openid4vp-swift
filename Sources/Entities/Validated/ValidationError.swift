@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum ValidationError: LocalizedError, Equatable {
+public enum ValidationError: AuthorizationRequestError, Equatable {
   case validationError(String)
   case unsupportedClientIdScheme(String?)
   case unsupportedResponseType(String?)
