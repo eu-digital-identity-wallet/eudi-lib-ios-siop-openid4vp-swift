@@ -112,3 +112,20 @@ public enum ResponseMode {
     }
   }
 }
+
+internal extension ResponseMode {
+  func isJarm() -> Bool {
+    switch self {
+    case .directPost(responseURI: let responseURI):
+      return false
+    case .directPostJWT(responseURI: let responseURI):
+      return true
+    case .query(responseURI: let responseURI):
+      return false
+    case .fragment(responseURI: let responseURI):
+      return false
+    case .none:
+      return false
+    }
+  }
+}
