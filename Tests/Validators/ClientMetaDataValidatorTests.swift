@@ -37,7 +37,6 @@ final class ClientMetaDataValidatorTests: XCTestCase {
     
     do {
       let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
-        jwksUri: TestsConstants.validByReferenceWebKeyUrlString,
         jwks: nil,
         idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
         idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
@@ -61,7 +60,6 @@ final class ClientMetaDataValidatorTests: XCTestCase {
     
     do {
       let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
-        jwksUri: TestsConstants.invalidUrlString,
         jwks: nil,
         idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
         idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
@@ -83,7 +81,6 @@ final class ClientMetaDataValidatorTests: XCTestCase {
   func testValidate_WhenPassByValue_ThenReturnSuccess() async throws {
     
     let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
-      jwksUri: nil,
       jwks: TestsConstants.sampleValidJWKS,
       idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
       idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,

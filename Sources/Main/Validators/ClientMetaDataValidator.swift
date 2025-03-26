@@ -90,17 +90,6 @@ private extension ClientMetaDataValidator {
        let keys = try? JSON(jwks.convertToDictionary() ?? [:]) {
       return try WebKeySet(keys)
       
-    } else if let jwksUri = clientMetaData.jwksUri,
-              let uri = URL(string: jwksUri) {
-      let webKeyResolver = WebKeyResolver()
-      let response = await webKeyResolver.resolve(source: .fetchByReference(url: uri))
-      
-      switch response {
-      case .success(let webKeys):
-        return try webKeys ?? { throw ValidationError.validationError("Client meta data has no valid JWK source") }()
-      default: throw ValidationError.validationError("Client meta data has no valid JWK source")
-      }
-      
     } else {
       throw ValidationError.validationError("Client meta data has no valid JWK source")
     }
