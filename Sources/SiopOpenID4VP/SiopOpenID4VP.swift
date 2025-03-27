@@ -82,6 +82,11 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       case .idAndVpToken(let request):
         return request.presentationDefinition
       }
+    case .inValidResolution(
+      let error,
+      let dispatchDetails
+    ):
+      throw ValidationError.validationError("Invalid resolution")
     }
   }
 
