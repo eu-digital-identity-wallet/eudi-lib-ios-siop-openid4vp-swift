@@ -37,7 +37,7 @@ final class ClientMetaDataValidatorTests: XCTestCase {
     
     do {
       let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
-        jwks: nil,
+        jwks: TestsConstants.webKeyJson,
         idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
         idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
         idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
@@ -60,7 +60,7 @@ final class ClientMetaDataValidatorTests: XCTestCase {
     
     do {
       let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
-        jwks: nil,
+        jwks: TestsConstants.webKeyJson,
         idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
         idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
         idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
