@@ -74,7 +74,7 @@ public enum SupportedRequestUriMethod {
   public static let defaultOption: SupportedRequestUriMethod = .both(
     post: PostOptions(
       includeWalletMetadata: true,
-      useWalletNonce: NonceOption.use(byteLength: 32)
+      useWalletNonce: NonceOption.doNotUse
     )
   )
 }
