@@ -16,51 +16,26 @@
 import Foundation
 import Foundation
 
-public struct ErrorDispatchDetails: Codable {
+public struct ErrorDispatchDetails {
   public let responseMode: ResponseMode
   public let nonce: String?
   public let state: String?
   public let clientId: VerifierId?
+  public let jarmSpec: JarmSpec?
   
   // Default initializer
   public init(
     responseMode: ResponseMode,
     nonce: String? = nil,
     state: String? = nil,
-    clientId: VerifierId?
+    clientId: VerifierId?,
+    jarmSpec: JarmSpec?
   ) {
     self.responseMode = responseMode
     self.nonce = nonce
     self.state = state
     self.clientId = clientId
-  }
-  
-  // MARK: - Codable Conformance
-  
-  public init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    responseMode = try .init(authorizationRequestObject: .init())
-    nonce = try container.decodeIfPresent(String.self, forKey: .nonce)
-    state = try container.decodeIfPresent(String.self, forKey: .state)
-    clientId = .init(
-      scheme: .preRegistered,
-      originalClientId: .init()
-    )
-  }
-  
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    try container.encodeIfPresent(nonce, forKey: .nonce)
-    try container.encodeIfPresent(state, forKey: .state)
-  }
-  
-  // MARK: - Coding Keys
-  
-  private enum CodingKeys: String, CodingKey {
-    case responseMode
-    case nonce
-    case state
-    case clientId
+    self.jarmSpec = jarmSpec
   }
 }
 

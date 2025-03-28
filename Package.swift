@@ -17,10 +17,6 @@ let package = Package(
       from: "3.0.0"
     ),
     .package(
-      url: "https://github.com/birdrides/mockingbird.git",
-      .upToNextMinor(from: "0.20.0")
-    ),
-    .package(
       url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
       .upToNextMajor(from: "0.3.0")
     ),
@@ -74,10 +70,6 @@ let package = Package(
       name: "SiopOpenID4VPTests",
       dependencies: [
         "SiopOpenID4VP",
-        .product(
-          name: "Mockingbird",
-          package: "mockingbird"
-        ),
         .product(
           name: "JOSESwift",
           package: "JOSESwift"

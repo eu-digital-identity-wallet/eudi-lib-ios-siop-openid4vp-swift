@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import Combine
 import XCTest
 import JOSESwift
 import PresentationExchange
@@ -22,8 +21,6 @@ import PresentationExchange
 @testable import SiopOpenID4VP
 
 final class SiopOpenID4VPTests: DiXCTest {
-  
-  var subscriptions = Set<AnyCancellable>()
   
   func preRegisteredWalletConfiguration() throws -> SiopOpenId4VPConfiguration {
     
@@ -181,27 +178,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
     XCTAssert(presentationDefinition.inputDescriptors.count == 1)
   }
-  
-  func testSDKValidationResolutionGivenDataByReferenceIsValid() async throws {
-    
-    let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-    let sdk = SiopOpenID4VP(
-      walletConfiguration: walletConfiguration
-    )
-    
-    overrideDependencies()
-    
-    do {
-      let presentationDefinition = try await sdk.process(url: TestsConstants.validByReferenceAuthorizeUrl)
-      
-      XCTAssert(presentationDefinition.id == "32f54163-7166-48f1-93d8-ff217bdb0653")
-      XCTAssert(presentationDefinition.inputDescriptors.count == 1)
-    } catch _ as FetchError {
-      XCTAssert(true)
-    } catch {
-      XCTAssert(true)
-    }
-  }
+
   
   func testSDKValidationResolutionGivenDataIsInvalid() async throws {
     
@@ -618,69 +595,6 @@ final class SiopOpenID4VPTests: DiXCTest {
       XCTAssert(true)
     } catch {
       
-    }
-  }
-  
-  func testSDKAuthorisationResolutionWithPublisherValidationResolutionGivenDataByReferenceIsValid() throws {
-    
-    let expectation = XCTestExpectation(description: "Authorisation request succesful")
-    
-    let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-    let sdk = SiopOpenID4VP(
-      walletConfiguration: walletConfiguration
-    )
-    
-    overrideDependencies()
-    
-    /// Supply your own validByReferenceAuthorizeUrl here
-    sdk.authorizationPublisher(for: TestsConstants.validByReferenceAuthorizeUrl)
-      .sink { completion in
-        expectation.fulfill()
-      } receiveValue: { value in
-        switch value {
-        case .notSecured(let resolved):
-          switch resolved {
-          case .vpToken:
-            XCTAssert(true)
-          default:
-            XCTAssert(false, "Invalid resolution")
-          }
-        default:
-          XCTAssert(false, "Invalid resolution")
-        }
-      }.store(in: &subscriptions)
-    
-    wait(for: [expectation], timeout: 10.0)
-  }
-  
-  func testSDKAuthorisationValidationGivenDataByReferenceIsValid() async throws {
-    
-    let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-    let sdk = SiopOpenID4VP(
-      walletConfiguration: walletConfiguration
-    )
-    
-    overrideDependencies()
-    
-    do {
-      /// Supply your own validByReferenceAuthorizeUrl here
-      let result = try await sdk.authorize(
-        url: TestsConstants.validByReferenceAuthorizeUrl
-      )
-      
-      switch result {
-      case .notSecured(let resolved):
-        switch resolved {
-        case .vpToken:
-          XCTAssert(true)
-        default:
-          XCTAssert(false, "Invalid resolution")
-        }
-      default:
-        XCTAssert(false, "Invalid resolution")
-      }
-    } catch {
-      XCTAssert(true)
     }
   }
 }

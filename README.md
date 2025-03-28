@@ -228,7 +228,6 @@ Library currently supports `response_type` equal to `id_token` or `vp_token id_t
 * JSONPath support: [Sextant](https://github.com/KittyMac/Sextant.git)
 * Lint support: [SwiftLint](https://github.com/realm/SwiftLint.git)
 * JWS, JWE, and JWK support: [JOSESwift](https://github.com/airsidemobile/JOSESwift.git)
-* Testing support: [Mockingbird](https://github.com/birdrides/mockingbird.git)
 
 ## License details
 

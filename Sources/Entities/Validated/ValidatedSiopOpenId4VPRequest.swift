@@ -27,12 +27,76 @@ public enum ValidatedSiopOpenId4VPRequest {
   
   public var transactionData: [String]? {
     switch self {
-    case .idToken(let request):
+    case .idToken:
       return nil
     case .vpToken(let request):
       return request.transactionData
     case .idAndVpToken(let request):
       return request.transactionData
+    }
+  }
+  
+  public var responseMode: ResponseMode? {
+    switch self {
+    case .idToken(let request):
+      request.responseMode
+    case .vpToken(let request):
+      request.responseMode
+    case .idAndVpToken(let request):
+      request.responseMode
+    }
+  }
+  
+  public var nonce: String? {
+    switch self {
+    case .idToken(let request):
+      request.nonce
+    case .vpToken(let request):
+      request.nonce
+    case .idAndVpToken(let request):
+      request.nonce
+    }
+  }
+  
+  public var state: String? {
+    switch self {
+    case .idToken(let request):
+      request.state
+    case .vpToken(let request):
+      request.state
+    case .idAndVpToken(let request):
+      request.state
+    }
+  }
+  
+  public var clientId: VerifierId {
+    switch self {
+    case .idToken(let request):
+      request.client.id
+    case .vpToken(let request):
+      request.client.id
+    case .idAndVpToken(let request):
+      request.client.id
+    }
+  }
+  
+  public func clientMetaData() async -> ClientMetaData.Validated? {
+    let source = switch self {
+    case .idToken(let request):
+      request.clientMetaDataSource
+    case .vpToken(let request):
+      request.clientMetaDataSource
+    case .idAndVpToken(let request):
+      request.clientMetaDataSource
+    }
+    
+    switch source {
+    case .passByValue(let metadata):
+      return try? await ClientMetaDataValidator().validate(
+        clientMetaData: metadata
+      )
+    case .none:
+      return nil
     }
   }
 }

@@ -116,13 +116,13 @@ public enum ResponseMode {
 internal extension ResponseMode {
   func isJarm() -> Bool {
     switch self {
-    case .directPost(responseURI: let responseURI):
+    case .directPost:
       return false
-    case .directPostJWT(responseURI: let responseURI):
+    case .directPostJWT:
       return true
-    case .query(responseURI: let responseURI):
+    case .query:
       return false
-    case .fragment(responseURI: let responseURI):
+    case .fragment:
       return false
     case .none:
       return false

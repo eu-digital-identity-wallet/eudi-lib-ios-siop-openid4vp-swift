@@ -340,15 +340,6 @@ struct TestsConstants {
     return URL(string: encodedUrlString)!
   }
   
-  static var validByReferenceAuthorizeUrl: URL {
-    let urlString = String(
-      format: nonNormativeByReferenceUrlString,
-      "https://us-central1-dx4b-4c2d8.cloudfunctions.net/api_ecommbx/presentation_definition/32f54163-7166-48f1-93d8-ff217bdb0653"
-    )
-    
-    return URL(string: urlString)!
-  }
-  
   static var validByScopesAuthorizeUrl: URL {
     let urlString = String(
       format: nonNormativeScopesUrlString,

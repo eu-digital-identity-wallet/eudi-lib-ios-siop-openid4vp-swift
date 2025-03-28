@@ -28,6 +28,7 @@ public struct SiopOpenId4VPConfiguration {
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition]
   public let jarConfiguration: JARConfiguration
   public let vpConfiguration: VPConfiguration
+  public let errorDispatchPolicy: ErrorDispatchPolicy
   public let session: Networking
   
   public init(
@@ -43,6 +44,7 @@ public struct SiopOpenId4VPConfiguration {
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
     jarConfiguration: JARConfiguration = .default,
     vpConfiguration: VPConfiguration = VPConfiguration.default(),
+    errorDispatchPolicy: ErrorDispatchPolicy = .onlyAuthenticatedClients,
     session: Networking = Self.walletSession
   ) {
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
@@ -57,6 +59,7 @@ public struct SiopOpenId4VPConfiguration {
     self.knownPresentationDefinitionsPerScope = knownPresentationDefinitionsPerScope
     self.jarConfiguration = jarConfiguration
     self.vpConfiguration = vpConfiguration
+    self.errorDispatchPolicy = errorDispatchPolicy
     self.session = session
   }
   
@@ -73,6 +76,7 @@ public struct SiopOpenId4VPConfiguration {
     knownPresentationDefinitionsPerScope = [:]
     jarConfiguration = .default
     vpConfiguration = VPConfiguration.default()
+    errorDispatchPolicy = .onlyAuthenticatedClients
     session = URLSession.shared
   }
   

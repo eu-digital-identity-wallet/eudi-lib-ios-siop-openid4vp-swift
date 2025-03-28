@@ -56,6 +56,9 @@ public enum AuthorizationError: LocalizedError {
   /// Invalid transaction data
   case invalidTransactionData
   
+  /// Non dispatchable error.
+  case nonDispatchableError
+  
   /// A localized description of the error.
   public var errorDescription: String? {
     switch self {
@@ -85,6 +88,8 @@ public enum AuthorizationError: LocalizedError {
       return ".invalidRequestUriMethod"
     case .invalidTransactionData:
       return ".invalidTransactionData"
+    case .nonDispatchableError:
+      return ".nonDispatchableError"
     }
   }
 }

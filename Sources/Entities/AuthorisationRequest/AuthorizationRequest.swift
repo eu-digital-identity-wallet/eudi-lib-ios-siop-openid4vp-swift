@@ -23,10 +23,17 @@ public enum AuthorizationRequest {
 
   /// A JWT authorization request.
   case jwt(request: ResolvedRequestData)
+  
+  /// The resolution was not succesful
+  case inValidResolution(
+    error: AuthorizationRequestError,
+    dispatchDetails: ErrorDispatchDetails?
+  )
 }
 
 /// An extension providing an initializer for the `AuthorizationRequest` enumeration.
 public extension AuthorizationRequest {
+  
   /// Initializes an `AuthorizationRequest` using the provided authorization request data.
   /// - Parameters:
   ///   - authorizationRequestData: The authorization request data to process.
@@ -34,70 +41,152 @@ public extension AuthorizationRequest {
     authorizationRequestData: AuthorisationRequestObject?,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
+    
+    var validated: ValidatedSiopOpenId4VPRequest? = nil
+    var resolved: ResolvedRequestData? = nil
+    
     guard let authorizationRequestData = authorizationRequestData else {
-      throw ValidationError.noAuthorizationData
+      let details: ErrorDispatchDetails? = switch walletConfiguration?.errorDispatchPolicy {
+      case .none:
+        nil
+      case .allClients:
+        await Self.errorDetails()
+      case .onlyAuthenticatedClients:
+        nil
+      }
+      self = .inValidResolution(
+        error: ValidationError.noAuthorizationData,
+        dispatchDetails: details
+      )
+      return
     }
-
+    
     guard !authorizationRequestData.hasConflicts else {
-      throw ValidationError.conflictingData
+      self = await .inValidResolution(
+        error: ValidationError.conflictingData,
+        dispatchDetails: Self.errorDetails(authorizationRequestData)
+      )
+      return
     }
+    
+    do {
+      validated = try await Self.validateRequest(authorizationRequestData, walletConfiguration)
+      
+      guard let validated = validated else {
+        throw ValidationError.validationError("Validated data are nil")
+      }
+      
+      resolved = try await Self.resolveRequest(validated, walletConfiguration)
+      guard let resolved = resolved else {
+        throw ValidationError.validationError("Resolved data are nil")
+      }
+      
+      self = authorizationRequestData.request != nil ? .jwt(request: resolved) : .notSecured(data: resolved)
+      
+    } catch let error as AuthorizationRequestError {
+      self = await .inValidResolution(
+        error: error,
+        dispatchDetails: Self.errorDetails(
+          authorizationRequestData,
+          validated,
+          walletConfiguration
+        )
+      )
+    } catch {
+      self = await .inValidResolution(
+        error: ValidationError.validationError(
+          error.localizedDescription
+        ),
+        dispatchDetails: Self.errorDetails(
+          authorizationRequestData,
+          validated,
+          walletConfiguration
+        )
+      )
+    }
+  }
 
+  private static func validateRequest(
+    _ authorizationRequestData: AuthorisationRequestObject,
+    _ walletConfiguration: SiopOpenId4VPConfiguration?
+  ) async throws -> ValidatedSiopOpenId4VPRequest? {
     if let request = authorizationRequestData.request {
-      let validatedAuthorizationRequestData = try await ValidatedSiopOpenId4VPRequest(
+      return try await .init(
         request: request,
-        requestUriMethod: .init(method: authorizationRequestData.requestUriMethod),
+        requestUriMethod: .init(
+          method: authorizationRequestData.requestUriMethod
+        ),
         walletConfiguration: walletConfiguration
       )
-
-      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        vpConfiguration: walletConfiguration?.vpConfiguration ?? VPConfiguration.default(),
-        clientMetaDataResolver: ClientMetaDataResolver(
-          fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
-        ),
-        presentationDefinitionResolver: PresentationDefinitionResolver(
-          fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)
-        ),
-        validatedAuthorizationRequest: validatedAuthorizationRequestData
-      )
-      self = .jwt(request: resolvedSiopOpenId4VPRequestData)
-        
     } else if let requestUri = authorizationRequestData.requestUri {
-      let validated = try await ValidatedSiopOpenId4VPRequest(
+      return try await .init(
         requestUri: requestUri,
-        requestUriMethod: .init(method: authorizationRequestData.requestUriMethod),
+        requestUriMethod: .init(
+          method: authorizationRequestData.requestUriMethod
+        ),
         clientId: authorizationRequestData.clientId,
         walletConfiguration: walletConfiguration
       )
-
-      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        vpConfiguration: walletConfiguration?.vpConfiguration ?? .default(),
-        clientMetaDataResolver: ClientMetaDataResolver(
-          fetcher: Fetcher(
-            session: walletConfiguration?.session ?? URLSession.shared
-          )
-        ),
-        presentationDefinitionResolver: PresentationDefinitionResolver(
-          fetcher: Fetcher(
-            session: walletConfiguration?.session ?? URLSession.shared
-          )
-        ),
-        validatedAuthorizationRequest: validated
-      )
-      self = .jwt(request: resolvedSiopOpenId4VPRequestData)
     } else {
-      let validated = try await ValidatedSiopOpenId4VPRequest(
+      return try await .init(
         authorizationRequestData: authorizationRequestData,
         walletConfiguration: walletConfiguration
       )
-
-      let resolvedSiopOpenId4VPRequestData = try await ResolvedRequestData(
-        vpConfiguration: walletConfiguration?.vpConfiguration ?? .default(),
-        clientMetaDataResolver: ClientMetaDataResolver(),
-        presentationDefinitionResolver: PresentationDefinitionResolver(),
-        validatedAuthorizationRequest: validated
-      )
-
-      self = .notSecured(data: resolvedSiopOpenId4VPRequestData)
     }
+  }
+
+  private static func resolveRequest(
+    _ validated: ValidatedSiopOpenId4VPRequest,
+    _ walletConfiguration: SiopOpenId4VPConfiguration?
+  ) async throws -> ResolvedRequestData? {
+    return try await .init(
+      vpConfiguration: walletConfiguration?.vpConfiguration ?? .default(),
+      clientMetaDataResolver: ClientMetaDataResolver(fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)),
+      presentationDefinitionResolver: PresentationDefinitionResolver(fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)),
+      validatedAuthorizationRequest: validated
+    )
+  }
+  
+  private static func errorDetails(
+    _ authorizationRequestData: AuthorisationRequestObject? = nil,
+    _ validated: ValidatedSiopOpenId4VPRequest? = nil,
+    _ walletConfiguration: SiopOpenId4VPConfiguration? = nil
+  ) async -> ErrorDispatchDetails? {
+    
+    func jarmSpec() async throws -> JarmSpec {
+      try await JarmSpec(
+        clientMetaData: validated?.clientMetaData(),
+        walletOpenId4VPConfig: walletConfiguration
+      )
+    }
+    
+    if let validated = validated,
+       let responseMode = validated.responseMode {
+      return await .init(
+        responseMode: responseMode,
+        nonce: validated.nonce,
+        state: validated.state,
+        clientId: validated.clientId,
+        jarmSpec: try? jarmSpec()
+      )
+      
+    } else if let authorizationRequestData = authorizationRequestData,
+              let responseMode = authorizationRequestData.validResponseMode {
+      return await .init(
+        responseMode: responseMode,
+        nonce: authorizationRequestData.nonce,
+        state: authorizationRequestData.state,
+        clientId: validated?.clientId,
+        jarmSpec: try? jarmSpec()
+      )
+    } else {
+      return nil
+    }
+  }
+}
+
+internal extension AuthorisationRequestObject {
+  var validResponseMode: ResponseMode? {
+    return try? ResponseMode(authorizationRequestData: self)
   }
 }
