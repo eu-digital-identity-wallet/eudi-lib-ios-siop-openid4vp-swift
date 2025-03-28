@@ -17,6 +17,7 @@ import Foundation
 
 public enum PostError: Error {
   case invalidUrl
+  case invalidResponse
   case networkError(Error)
 
   /**
@@ -26,6 +27,8 @@ public enum PostError: Error {
    */
   public var localizedDescription: String {
     switch self {
+    case .invalidResponse:
+      return "Inalid response"
     case .invalidUrl:
       return "Invalid URL"
     case .networkError(let error):
@@ -116,6 +119,33 @@ public struct Poster: Posting {
       let success = (response as? HTTPURLResponse)?.statusCode.isWithinRange(200...299) ?? false
       
       return .success((value, success))
+    } catch let error as NSError {
+      if error.domain == NSURLErrorDomain {
+        return .failure(.networkError(error))
+      } else {
+        return .failure(.networkError(error))
+      }
+    } catch {
+      return .failure(.networkError(error))
+    }
+  }
+  
+  /**
+   Performs a POST request with the provided URLRequest.
+
+   - Parameters:
+      - request: The URLRequest to be used for the POST request.
+
+   - Returns: A String or an error.
+   */
+  public func postString(request: URLRequest) async -> Result<String, PostError> {
+    do {
+      let (data, _) = try await self.session.data(for: request)
+      if let string = String(data: data, encoding: .utf8) {
+        return .success(string)
+      } else {
+        return .failure(.invalidResponse)
+      }
     } catch let error as NSError {
       if error.domain == NSURLErrorDomain {
         return .failure(.networkError(error))
