@@ -81,7 +81,7 @@ public extension AuthorizationRequest {
         throw ValidationError.validationError("Resolved data are nil")
       }
       
-      self = authorizationRequestData.request != nil ? .jwt(request: resolved) : .notSecured(data: resolved)
+      self = authorizationRequestData.requestUri != nil ? .jwt(request: resolved) : .notSecured(data: resolved)
       
     } catch let error as AuthorizationRequestError {
       self = await .inValidResolution(
