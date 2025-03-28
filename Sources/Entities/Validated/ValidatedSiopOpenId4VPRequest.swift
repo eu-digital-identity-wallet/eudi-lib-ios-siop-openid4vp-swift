@@ -422,7 +422,7 @@ public extension ValidatedSiopOpenId4VPRequest {
       formData: combinedJSON.dictionary ?? [:]
     )
     
-    let jwtResult: Result<String, PostError> = await poster.post(
+    let jwtResult: Result<String, PostError> = await poster.postString(
       request: post.urlRequest
     )
     switch jwtResult {
@@ -826,10 +826,6 @@ private extension SiopOpenId4VPConfiguration {
       throw ValidationError.validationError("expectedClient should not be nil")
     }
     
-    guard expectedWalletNonce != nil else {
-      throw ValidationError.validationError("expectedWalletNonce should not be nil")
-    }
-    
     guard let jwsClientID = getValueForKey(
       from: jwt,
       key: "client_id"
@@ -837,19 +833,22 @@ private extension SiopOpenId4VPConfiguration {
       throw ValidationError.validationError("client_id should not be nil")
     }
     
-    guard jwsClientID == expectedClient else {
+    let id = try? VerifierId.parse(clientId: jwsClientID).get()
+    guard id?.originalClientId == expectedClient else {
       throw ValidationError.validationError("client_id's do not match")
     }
     
-    guard let jwsNonce = getValueForKey(
-      from: jwt,
-      key: ValidatedSiopOpenId4VPRequest.WALLET_NONCE_FORM_PARAM
-    ) as? String else {
-      throw ValidationError.validationError("nonce should not be nil")
-    }
-    
-    guard jwsNonce == expectedWalletNonce else {
-      throw ValidationError.validationError("nonce's do not match")
+    if expectedWalletNonce != nil {
+      guard let jwsNonce = getValueForKey(
+        from: jwt,
+        key: ValidatedSiopOpenId4VPRequest.WALLET_NONCE_FORM_PARAM
+      ) as? String else {
+        throw ValidationError.validationError("nonce should not be nil")
+      }
+      
+      guard jwsNonce == expectedWalletNonce else {
+        throw ValidationError.validationError("nonce's do not match")
+      }
     }
     
     guard let algorithm = jws.header.algorithm else {
