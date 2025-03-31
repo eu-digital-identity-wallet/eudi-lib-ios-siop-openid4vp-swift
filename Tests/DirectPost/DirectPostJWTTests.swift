@@ -120,7 +120,8 @@ final class DirectPostJWTTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
   
@@ -314,7 +315,8 @@ final class DirectPostJWTTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
   
@@ -613,7 +615,8 @@ final class DirectPostJWTTests: DiXCTest {
       case .failure:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
   
@@ -742,7 +745,8 @@ final class DirectPostJWTTests: DiXCTest {
       case .failure:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
  
@@ -843,7 +847,8 @@ final class DirectPostJWTTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
  
@@ -960,7 +965,8 @@ final class DirectPostJWTTests: DiXCTest {
       case .failure:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
   
@@ -1106,7 +1112,8 @@ final class DirectPostJWTTests: DiXCTest {
       case .failure:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
   
@@ -1218,7 +1225,8 @@ final class DirectPostJWTTests: DiXCTest {
       case .failure:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
   
@@ -1300,7 +1308,8 @@ final class DirectPostJWTTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-    default: break
+    default:
+      break
     }
   }
   
