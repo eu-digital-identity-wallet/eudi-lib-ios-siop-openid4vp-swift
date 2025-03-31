@@ -135,7 +135,8 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
   
@@ -253,7 +254,8 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
   
@@ -357,7 +359,8 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       default:
         XCTAssert(true)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
 }
