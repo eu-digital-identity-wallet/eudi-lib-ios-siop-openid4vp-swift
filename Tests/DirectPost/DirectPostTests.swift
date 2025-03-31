@@ -206,7 +206,8 @@ final class DirectPostTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-    default: break
+    default:
+      XCTAssert(false)
     }
   }
 }
