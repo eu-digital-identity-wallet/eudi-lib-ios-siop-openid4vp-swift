@@ -151,6 +151,18 @@ Library tackles this dispatching via the Dispatcher class.
 let authorizationResponse // from previous step
 let dispatchResponse = dispatch.dispatch(response: authorizationResponse)
 ```
+...or if something went wrong and you would like to dispatch an error:
+
+```swift
+switch result {
+case .inValidResolution(let error, let details):
+    let result: DispatchOutcome = try await sdk.dispatch(
+        error: error,
+        details: details
+    )
+    ...
+```
+
 
 ## SIOPv2 & OpenId4VP features supported
 

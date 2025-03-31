@@ -121,6 +121,7 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
       }
     default:
+      XCTExpectFailure()
       XCTAssert(false)
     }
   }
@@ -316,6 +317,7 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
       }
     default:
+      XCTExpectFailure()
       XCTAssert(false)
     }
   }
@@ -848,6 +850,7 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
       }
     default:
+      XCTExpectFailure()
       XCTAssert(false)
     }
   }

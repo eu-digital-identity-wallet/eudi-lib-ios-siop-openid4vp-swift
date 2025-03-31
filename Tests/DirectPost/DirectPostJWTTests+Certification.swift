@@ -136,6 +136,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
         XCTAssert(false)
       }
     default:
+      XCTExpectFailure()
       XCTAssert(false)
     }
   }
@@ -255,6 +256,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
         XCTAssert(false)
       }
     default:
+      XCTExpectFailure()
       XCTAssert(false)
     }
   }
@@ -360,6 +362,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
         XCTAssert(true)
       }
     default:
+      XCTExpectFailure()
       XCTAssert(false)
     }
   }
