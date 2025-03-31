@@ -35,7 +35,7 @@ public actor ErrorDispatcher: DispatcherType {
   public func dispatch(poster: any Posting) async throws -> DispatchOutcome {
     
     guard let response = error.responseWith(details: details) else {
-      return .rejected(reason: "")
+      return .rejected(reason: "Unsupported response mode")
     }
     
     let result = try await service.formCheck(
@@ -72,7 +72,6 @@ internal extension AuthorizationRequestError {
         data: payload,
         jarmSpec:  jarmSpec
       )
-      
     default:
       return nil
     }

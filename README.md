@@ -151,7 +151,7 @@ Library tackles this dispatching via the Dispatcher class.
 let authorizationResponse // from previous step
 let dispatchResponse = dispatch.dispatch(response: authorizationResponse)
 ```
-...or if something went wrong and you would like to dispatch an error:
+...or if something went wrong and you would like to dispatch an error and, the error is dispatchable:
 
 ```swift
 switch result {

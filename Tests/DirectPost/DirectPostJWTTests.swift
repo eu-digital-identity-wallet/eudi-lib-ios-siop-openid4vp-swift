@@ -1284,12 +1284,11 @@ final class DirectPostJWTTests: DiXCTest {
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
-    let clientId = session["client_id"]!
     
     overrideDependencies()
     let result = try? await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
+        string: "eudi-wallet://authorize?request_uri=\(url!)"
       )!
     )
     
@@ -1306,7 +1305,7 @@ final class DirectPostJWTTests: DiXCTest {
         details: details
       )
       switch result {
-      case .accepted:
+      case .rejected:
         XCTAssert(true)
       default:
         XCTAssert(false)
