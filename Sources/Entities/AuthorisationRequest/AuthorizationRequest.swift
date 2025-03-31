@@ -170,10 +170,9 @@ public extension AuthorizationRequest {
         jarmSpec: try? jarmSpec()
       )
       
-    } else if let authorizationRequestData = authorizationRequestData,
-              let responseMode = authorizationRequestData.validResponseMode {
+    } else if let authorizationRequestData = authorizationRequestData {
       return await .init(
-        responseMode: responseMode,
+        responseMode: authorizationRequestData.validResponseMode,
         nonce: authorizationRequestData.nonce,
         state: authorizationRequestData.state,
         clientId: validated?.clientId,
@@ -186,7 +185,7 @@ public extension AuthorizationRequest {
 }
 
 internal extension AuthorisationRequestObject {
-  var validResponseMode: ResponseMode? {
-    return try? ResponseMode(authorizationRequestData: self)
+  var validResponseMode: ResponseMode {
+    return (try? ResponseMode(authorizationRequestData: self)) ?? .none
   }
 }
