@@ -25,7 +25,7 @@ public enum AuthorizationRequest {
   case jwt(request: ResolvedRequestData)
   
   /// The resolution was not succesful
-  case inValidResolution(
+  case invalidResolution(
     error: AuthorizationRequestError,
     dispatchDetails: ErrorDispatchDetails?
   )
@@ -54,7 +54,7 @@ public extension AuthorizationRequest {
       case .onlyAuthenticatedClients:
         nil
       }
-      self = .inValidResolution(
+      self = .invalidResolution(
         error: ValidationError.noAuthorizationData,
         dispatchDetails: details
       )
@@ -62,7 +62,7 @@ public extension AuthorizationRequest {
     }
     
     guard !authorizationRequestData.hasConflicts else {
-      self = await .inValidResolution(
+      self = await .invalidResolution(
         error: ValidationError.conflictingData,
         dispatchDetails: Self.errorDetails(authorizationRequestData)
       )
@@ -84,7 +84,7 @@ public extension AuthorizationRequest {
       self = authorizationRequestData.requestUri != nil ? .jwt(request: resolved) : .notSecured(data: resolved)
       
     } catch let error as AuthorizationRequestError {
-      self = await .inValidResolution(
+      self = await .invalidResolution(
         error: error,
         dispatchDetails: Self.errorDetails(
           authorizationRequestData,
@@ -93,7 +93,7 @@ public extension AuthorizationRequest {
         )
       )
     } catch {
-      self = await .inValidResolution(
+      self = await .invalidResolution(
         error: ValidationError.validationError(
           error.localizedDescription
         ),
