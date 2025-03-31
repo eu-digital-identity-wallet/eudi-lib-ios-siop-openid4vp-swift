@@ -443,6 +443,11 @@ public extension ValidatedSiopOpenId4VPRequest {
     guard let clientId else {
       throw ValidationError.validationError("clientId is missing")
     }
+    
+    guard !clientId.isEmpty else {
+      throw ValidationError.validationError("clientId is missing")
+    }
+    
     guard
       let verifierId = try? VerifierId.parse(clientId: clientId).get(),
       let scheme = config?.supportedClientIdSchemes.first(
