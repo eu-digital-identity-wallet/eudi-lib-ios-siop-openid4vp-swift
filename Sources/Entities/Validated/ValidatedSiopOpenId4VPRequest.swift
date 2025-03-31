@@ -822,7 +822,7 @@ private extension SiopOpenId4VPConfiguration {
     
     let jws = try JWS(compactSerialization: jwt)
     
-    guard expectedClient != nil else {
+    guard let expectedClient = expectedClient else {
       throw ValidationError.validationError("expectedClient should not be nil")
     }
     
@@ -834,7 +834,8 @@ private extension SiopOpenId4VPConfiguration {
     }
     
     let id = try? VerifierId.parse(clientId: jwsClientID).get()
-    guard id?.originalClientId == expectedClient else {
+    let expectedId = try? VerifierId.parse(clientId: expectedClient).get()
+    guard id?.originalClientId == expectedId?.originalClientId else {
       throw ValidationError.validationError("client_id's do not match")
     }
     
