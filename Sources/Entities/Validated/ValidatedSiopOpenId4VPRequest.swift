@@ -402,24 +402,20 @@ public extension ValidatedSiopOpenId4VPRequest {
   ) async throws -> String {
     
     // Building a combined JSON object
-    var combinedJSON = JSON()
+    var combined: [String: Any] = [:]
     if let walletMetaData = walletMetaData {
-      combinedJSON[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData
-    } else {
-      combinedJSON[Self.WALLET_METADATA_FORM_PARAM] = JSON.null
+      combined[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject
     }
     
     // Convert nonce to JSON and add to combined JSON
     if let nonce = nonce {
-      combinedJSON[Self.WALLET_NONCE_FORM_PARAM] = JSON(nonce)
-    } else {
-      combinedJSON[Self.WALLET_NONCE_FORM_PARAM] = JSON.null
+      combined[Self.WALLET_NONCE_FORM_PARAM] = nonce
     }
     
     let post = VerifierFormPost(
       additionalHeaders: ["Content-Type": ContentType.form.rawValue],
       url: requestUrl,
-      formData: combinedJSON.dictionary ?? [:]
+      formData: combined
     )
     
     let jwtResult: Result<String, PostError> = await poster.postString(
