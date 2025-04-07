@@ -34,16 +34,13 @@ public enum AuthorizationResponse {
 
   /// A fragment JWT authorization response.
   case fragmentJwt(url: URL, data: AuthorizationResponsePayload, jarmSpec: JarmSpec)
-
-  /// Coding keys for encoding the enumeration.
-  enum CodingKeys: String, CodingKey {
-    case directPost
-    case directPostJwt
-    case query
-    case queryJwt
-    case fragment
-    case fragmentJwt
-  }
+  
+  case invalidRequest(
+    error: AuthorizationRequestError,
+    nonce: String?,
+    state: String?,
+    clientId: VerifierId?
+  )
 }
 
 /// An extension providing additional functionality to the `AuthorizationResponse` enumeration.

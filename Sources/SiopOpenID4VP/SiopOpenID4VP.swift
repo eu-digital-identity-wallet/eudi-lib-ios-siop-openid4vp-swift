@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import Combine
 @_exported import PresentationExchange
 
 /**
@@ -27,7 +26,6 @@ import Combine
 public protocol SiopOpenID4VPType {
   func process(url: URL) async throws -> PresentationDefinition
   func authorize(url: URL) async throws -> AuthorizationRequest
-  func authorizationPublisher(for url: URL) -> AnyPublisher<AuthorizationRequest, Error>
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome
   func submit()
@@ -82,6 +80,8 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       case .idAndVpToken(let request):
         return request.presentationDefinition
       }
+    case .invalidResolution:
+      throw ValidationError.validationError("Invalid resolution")
     }
   }
 
@@ -90,24 +90,6 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       authorizationRequestData: .init(from: url),
       walletConfiguration: walletConfiguration
     )
-  }
-
-  public func authorizationPublisher(for url: URL) -> AnyPublisher<AuthorizationRequest, Error> {
-    Future<AuthorizationRequest, Error> { promise in
-      Task {
-        do {
-          let authorizationRequestData = AuthorisationRequestObject(from: url)
-          let result =  try await AuthorizationRequest(
-            authorizationRequestData: authorizationRequestData,
-            walletConfiguration: self.walletConfiguration
-          )
-          promise(.success(result))
-        } catch {
-          promise(.failure(error))
-        }
-      }
-    }
-    .eraseToAnyPublisher()
   }
 
   /**
@@ -145,6 +127,31 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
     )
   }
 
+  /**
+   Dispatches an autorisation request.
+
+   - Parameters:
+    - response: An AuthorizationResponse
+
+   - Returns: A DispatchOutcome enum
+   */
+  public func dispatch(
+    error: AuthorizationRequestError,
+    details: ErrorDispatchDetails?
+  ) async throws -> DispatchOutcome {
+
+    let dispatcher = ErrorDispatcher(
+      error: error,
+      details: details
+    )
+
+    return try await dispatcher.dispatch(
+      poster: Poster(
+        session: walletConfiguration?.session ?? URLSession.shared
+      )
+    )
+  }
+  
   /**
    WIP: Consent to matches
    */

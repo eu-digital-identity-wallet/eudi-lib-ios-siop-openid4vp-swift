@@ -80,6 +80,11 @@ public extension Dictionary where Key == String, Value == Any {
           return URLQueryItem(name: key, value: stringValue)
         }
         queryItems.append(contentsOf: arrayQueryItems)
+      } else if let dictionaryValue = value as? [String: Any] {
+        let dictionaryQueryItems = dictionaryValue.toQueryItems()
+        queryItems.append(contentsOf: dictionaryQueryItems.map { item in
+          URLQueryItem(name: "\(key)[\(item.name)]", value: item.value)
+        })
       }
     }
     return queryItems
