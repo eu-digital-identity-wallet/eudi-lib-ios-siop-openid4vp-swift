@@ -266,7 +266,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     } catch _ as FetchError {
       XCTAssert(true)
     } catch {
-      
+      XCTAssert(false)
     }
   }
   
@@ -398,7 +398,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     } catch _ as FetchError {
       XCTAssert(true)
     } catch {
-      
+      XCTAssert(false)
     }
   }
   
