@@ -75,10 +75,6 @@ let package = Package(
       dependencies: [
         "SiopOpenID4VP",
         .product(
-          name: "Mockingbird",
-          package: "mockingbird"
-        ),
-        .product(
           name: "JOSESwift",
           package: "JOSESwift"
         ),

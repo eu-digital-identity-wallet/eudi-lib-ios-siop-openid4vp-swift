@@ -97,11 +97,11 @@ final class X509CertificateTests: XCTestCase {
     _ = SecTrustEvaluate(trust!, &trustResult)
     
     // Check if the trust evaluation was successful
-    if trustResult == .unspecified {
-      print("Certificate chain is valid.")
+    if trustResult == .unspecified || trustResult == .proceed || trustResult == .recoverableTrustFailure {
+      XCTAssert(true)
     } else {
         
-      print("Certificate chain is NOT valid.")
+      XCTAssert(false)
     }
   }
   

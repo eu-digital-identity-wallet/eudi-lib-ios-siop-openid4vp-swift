@@ -151,6 +151,18 @@ Library tackles this dispatching via the Dispatcher class.
 let authorizationResponse // from previous step
 let dispatchResponse = dispatch.dispatch(response: authorizationResponse)
 ```
+...or if something went wrong and you would like to dispatch an error and, the error is dispatchable:
+
+```swift
+switch result {
+case .inValidResolution(let error, let details):
+    let result: DispatchOutcome = try await sdk.dispatch(
+        error: error,
+        details: details
+    )
+    ...
+```
+
 
 ## SIOPv2 & OpenId4VP features supported
 
@@ -228,7 +240,6 @@ Library currently supports `response_type` equal to `id_token` or `vp_token id_t
 * JSONPath support: [Sextant](https://github.com/KittyMac/Sextant.git)
 * Lint support: [SwiftLint](https://github.com/realm/SwiftLint.git)
 * JWS, JWE, and JWK support: [JOSESwift](https://github.com/airsidemobile/JOSESwift.git)
-* Testing support: [Mockingbird](https://github.com/birdrides/mockingbird.git)
 
 ## License details
 

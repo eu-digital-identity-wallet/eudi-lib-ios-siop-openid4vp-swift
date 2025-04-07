@@ -50,7 +50,12 @@ public enum AuthorizationResponsePayload: Encodable, Sendable {
   case failure
 
   /// An invalid request response payload.
-  case invalidRequest(error: AuthorizationError, state: String)
+  case invalidRequest(
+    error: AuthorizationRequestError,
+    nonce: String?,
+    state: String?,
+    clientId: VerifierId?
+  )
 
   /// A response payload indicating no consensus response data.
   case noConsensusResponseData(state: String, error: String)

@@ -22,7 +22,6 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
   
   static let vpFormats = "vp_formats"
   
-  public let jwksUri: String?
   public let jwks: String?
   public let idTokenSignedResponseAlg: String?
   public let idTokenEncryptedResponseAlg: String?
@@ -35,7 +34,6 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
   
   /// Coding keys for encoding and decoding the structure.
   enum CodingKeys: String, CodingKey {
-    case jwksUri = "jwks_uri"
     case jwks = "jwks"
     case idTokenSignedResponseAlg = "id_token_signed_response_alg"
     case idTokenEncryptedResponseAlg = "id_token_encrypted_response_alg"
@@ -49,14 +47,12 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
   
   /// Initializes a `ClientMetaData` instance with the provided values.
   /// - Parameters:
-  ///   - jwksUri: The JWKS URI.
   ///   - jwks: A JWK set.
   ///   - idTokenSignedResponseAlg: The ID token signed response algorithm.
   ///   - idTokenEncryptedResponseAlg: The ID token encrypted response algorithm.
   ///   - idTokenEncryptedResponseEnc: The ID token encrypted response encryption.
   ///   - subjectSyntaxTypesSupported: The subject syntax types supported.
   public init(
-    jwksUri: String? = nil,
     jwks: String? = nil,
     idTokenSignedResponseAlg: String? = nil,
     idTokenEncryptedResponseAlg: String?,
@@ -67,7 +63,6 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
     authorizationEncryptedResponseEnc: String?,
     vpFormats: VpFormatsTO?
   ) {
-    self.jwksUri = jwksUri
     self.jwks = jwks
     self.idTokenSignedResponseAlg = idTokenSignedResponseAlg
     self.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg
@@ -85,10 +80,6 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
   public init(metaData: JSON) throws {
     
     let dictionaryObject = metaData.dictionaryObject ?? [:]
-    self.jwksUri = try? dictionaryObject.getValue(
-      for: "jwks_uri",
-      error: ValidationError.invalidClientMetadata
-    )
     
     let jwks = metaData["jwks"].dictionaryObject
     self.jwks = jwks?.toJSONString()
@@ -140,11 +131,6 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
     guard let metaData = try metaDataString.convertToDictionary() else {
       throw ValidationError.invalidClientMetadata
     }
-    
-    self.jwksUri = try? metaData.getValue(
-      for: "jwks_uri",
-      error: ValidationError.invalidClientMetadata
-    )
     
     let jwks = metaData["jwks"] as? [String: Any]
     self.jwks = jwks?.toJSONString()

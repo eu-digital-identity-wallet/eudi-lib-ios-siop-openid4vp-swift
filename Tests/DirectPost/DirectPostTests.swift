@@ -17,7 +17,6 @@ import Foundation
 import CryptoKit
 
 import XCTest
-import Mockingbird
 import JOSESwift
 
 @testable import SiopOpenID4VP
@@ -108,165 +107,6 @@ final class DirectPostTests: DiXCTest {
     XCTAssert(false)
   }
   
-  func testPostDirectPostAuthorisationResponseGivenValidResolutionAndConsent() async throws {
-    
-    let validator = ClientMetaDataValidator()
-    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
-    
-    // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .idToken(
-      request: .init(
-        idTokenType: .attesterSigned,
-        clientMetaData: metaData,
-        client: Constants.testClient,
-        nonce: TestsConstants.testNonce,
-        responseMode: TestsConstants.testResponseMode,
-        state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope
-      )
-    )
-    
-    let kid = UUID()
-    let jose = JOSEController()
-    
-    let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
-    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
-    let rsaJWK = try RSAPublicKey(
-      publicKey: publicKey,
-      additionalParameters: [
-        "use": "sig",
-        "kid": kid.uuidString
-      ])
-    
-    let holderInfo: HolderInfo = .init(
-      email: "email@example.com",
-      name: "Bob"
-    )
-    
-    let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: try KeyController.generateRSAPrivateKey(),
-      signingKeySet: WebKeySet(keys: []),
-      supportedClientIdSchemes: [],
-      vpFormatsSupported: [],
-      jarConfiguration: .default,
-      vpConfiguration: VPConfiguration.default()
-    )
-    
-    let jws = try jose.build(
-      request: resolved,
-      holderInfo: holderInfo,
-      walletConfiguration: wallet,
-      rsaJWK: rsaJWK,
-      signingKey: privateKey!,
-      kid: kid
-    )
-    
-    XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
-    
-    // Obtain consent
-    let consent: ClientConsent = .idToken(idToken: jws)
-    
-    // Generate a direct post authorisation response
-    let response = try? AuthorizationResponse(
-      resolvedRequest: resolved,
-      consent: consent,
-      walletOpenId4VPConfig: nil
-    )
-    
-    XCTAssertNotNil(response)
-    
-    let service = mock(AuthorisationServiceType.self)
-    let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.formCheck(poster: any(), response: any())) ~> ("", true)
-    let result: DispatchOutcome = try await dispatcher.dispatch()
-    
-    XCTAssertNotNil(result)
-  }
-  
-  func testPostDirectPostAuthorisationResponseGivenValidResolutionAndNegativeConsent() async throws {
-    
-    let validator = ClientMetaDataValidator()
-    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
-    
-    // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .idToken(
-      request: .init(
-        idTokenType: .attesterSigned,
-        clientMetaData: metaData,
-        client: Constants.testClient,
-        nonce: TestsConstants.testNonce,
-        responseMode: TestsConstants.testResponseMode,
-        state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope
-      )
-    )
-    
-    let kid = UUID()
-    let jose = JOSEController()
-    
-    let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
-    let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
-    let rsaJWK = try RSAPublicKey(
-      publicKey: publicKey,
-      additionalParameters: [
-        "use": "sig",
-        "kid": kid.uuidString
-      ])
-    
-    let holderInfo: HolderInfo = .init(
-      email: "email@example.com",
-      name: "Bob"
-    )
-    
-    let jws = try jose.build(
-      request: resolved,
-      holderInfo: holderInfo,
-      walletConfiguration: .init(
-        subjectSyntaxTypesSupported: [
-          .decentralizedIdentifier,
-          .jwkThumbprint
-        ],
-        preferredSubjectSyntaxType: .jwkThumbprint,
-        decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-        signingKey: try KeyController.generateRSAPrivateKey(),
-        signingKeySet: WebKeySet(keys: []),
-        supportedClientIdSchemes: [],
-        vpFormatsSupported: []
-      ),
-      rsaJWK: rsaJWK,
-      signingKey: privateKey!,
-      kid: kid
-    )
-    
-    XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
-    
-    // Obtain consent
-    let consent: ClientConsent = .negative(message: "user_cancelled")
-    
-    // Generate a direct post authorisation response
-    let response = try? AuthorizationResponse(
-      resolvedRequest: resolved,
-      consent: consent,
-      walletOpenId4VPConfig: nil
-    )
-    
-    XCTAssertNotNil(response)
-    
-    let service = mock(AuthorisationServiceType.self)
-    let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
-    await given(service.formCheck(poster: any(), response: any())) ~> ("", true)
-    let result: DispatchOutcome = try await dispatcher.dispatch()
-    
-    XCTAssertNotNil(result)
-  }
-  
-  
   func testSDKEndtoEndDirectPostVpToken() async throws {
     
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
@@ -331,7 +171,6 @@ final class DirectPostTests: DiXCTest {
     }
     
     switch result {
-    case .notSecured: break
     case .jwt(request: let request):
       let presentationDefinition = try?  XCTUnwrap(
         request.presentationDefinition,
@@ -369,6 +208,9 @@ final class DirectPostTests: DiXCTest {
       default:
         XCTAssert(false)
       }
+    default:
+      XCTExpectFailure()
+      XCTAssert(false)
     }
   }
 }

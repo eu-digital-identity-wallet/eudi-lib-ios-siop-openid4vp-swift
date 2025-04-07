@@ -35,6 +35,70 @@ public enum ValidatedSiopOpenId4VPRequest {
       return request.transactionData
     }
   }
+  
+  public var responseMode: ResponseMode? {
+    switch self {
+    case .idToken(let request):
+      request.responseMode
+    case .vpToken(let request):
+      request.responseMode
+    case .idAndVpToken(let request):
+      request.responseMode
+    }
+  }
+  
+  public var nonce: String? {
+    switch self {
+    case .idToken(let request):
+      request.nonce
+    case .vpToken(let request):
+      request.nonce
+    case .idAndVpToken(let request):
+      request.nonce
+    }
+  }
+  
+  public var state: String? {
+    switch self {
+    case .idToken(let request):
+      request.state
+    case .vpToken(let request):
+      request.state
+    case .idAndVpToken(let request):
+      request.state
+    }
+  }
+  
+  public var clientId: VerifierId {
+    switch self {
+    case .idToken(let request):
+      request.client.id
+    case .vpToken(let request):
+      request.client.id
+    case .idAndVpToken(let request):
+      request.client.id
+    }
+  }
+  
+  public func clientMetaData() async -> ClientMetaData.Validated? {
+    let source = switch self {
+    case .idToken(let request):
+      request.clientMetaDataSource
+    case .vpToken(let request):
+      request.clientMetaDataSource
+    case .idAndVpToken(let request):
+      request.clientMetaDataSource
+    }
+    
+    switch source {
+    case .passByValue(let metadata):
+      return try? await ClientMetaDataValidator().validate(
+        clientMetaData: metadata
+      )
+    case .none:
+      return nil
+    }
+  }
 }
 
 // Extension for ValidatedSiopOpenId4VPRequest
@@ -338,27 +402,23 @@ public extension ValidatedSiopOpenId4VPRequest {
   ) async throws -> String {
     
     // Building a combined JSON object
-    var combinedJSON = JSON()
+    var combined: [String: Any] = [:]
     if let walletMetaData = walletMetaData {
-      combinedJSON[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData
-    } else {
-      combinedJSON[Self.WALLET_METADATA_FORM_PARAM] = JSON.null
+      combined[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject
     }
     
     // Convert nonce to JSON and add to combined JSON
     if let nonce = nonce {
-      combinedJSON[Self.WALLET_NONCE_FORM_PARAM] = JSON(nonce)
-    } else {
-      combinedJSON[Self.WALLET_NONCE_FORM_PARAM] = JSON.null
+      combined[Self.WALLET_NONCE_FORM_PARAM] = nonce
     }
     
     let post = VerifierFormPost(
       additionalHeaders: ["Content-Type": ContentType.form.rawValue],
       url: requestUrl,
-      formData: combinedJSON.dictionary ?? [:]
+      formData: combined
     )
     
-    let jwtResult: Result<String, PostError> = await poster.post(
+    let jwtResult: Result<String, PostError> = await poster.postString(
       request: post.urlRequest
     )
     switch jwtResult {
@@ -379,6 +439,11 @@ public extension ValidatedSiopOpenId4VPRequest {
     guard let clientId else {
       throw ValidationError.validationError("clientId is missing")
     }
+    
+    guard !clientId.isEmpty else {
+      throw ValidationError.validationError("clientId is missing")
+    }
+    
     guard
       let verifierId = try? VerifierId.parse(clientId: clientId).get(),
       let scheme = config?.supportedClientIdSchemes.first(
@@ -825,12 +890,8 @@ private extension SiopOpenId4VPConfiguration {
     
     let jws = try JWS(compactSerialization: jwt)
     
-    guard expectedClient != nil else {
+    guard let expectedClient = expectedClient else {
       throw ValidationError.validationError("expectedClient should not be nil")
-    }
-    
-    guard expectedWalletNonce != nil else {
-      throw ValidationError.validationError("expectedWalletNonce should not be nil")
     }
     
     guard let jwsClientID = getValueForKey(
@@ -840,19 +901,23 @@ private extension SiopOpenId4VPConfiguration {
       throw ValidationError.validationError("client_id should not be nil")
     }
     
-    guard jwsClientID == expectedClient else {
+    let id = try? VerifierId.parse(clientId: jwsClientID).get()
+    let expectedId = try? VerifierId.parse(clientId: expectedClient).get()
+    guard id?.originalClientId == expectedId?.originalClientId else {
       throw ValidationError.validationError("client_id's do not match")
     }
     
-    guard let jwsNonce = getValueForKey(
-      from: jwt,
-      key: ValidatedSiopOpenId4VPRequest.WALLET_NONCE_FORM_PARAM
-    ) as? String else {
-      throw ValidationError.validationError("nonce should not be nil")
-    }
-    
-    guard jwsNonce == expectedWalletNonce else {
-      throw ValidationError.validationError("nonce's do not match")
+    if expectedWalletNonce != nil {
+      guard let jwsNonce = getValueForKey(
+        from: jwt,
+        key: ValidatedSiopOpenId4VPRequest.WALLET_NONCE_FORM_PARAM
+      ) as? String else {
+        throw ValidationError.validationError("nonce should not be nil")
+      }
+      
+      guard jwsNonce == expectedWalletNonce else {
+        throw ValidationError.validationError("nonce's do not match")
+      }
     }
     
     guard let algorithm = jws.header.algorithm else {

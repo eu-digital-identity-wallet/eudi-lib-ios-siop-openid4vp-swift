@@ -45,7 +45,6 @@ public struct Constants {
 
   public static func testClientMetaData() -> ClientMetaData {
     .init(
-      jwksUri: "",
       jwks: Constants.clientMetaDataJWKSString,
       idTokenSignedResponseAlg: ".idTokenSignedResponseAlg",
       idTokenEncryptedResponseAlg: "RS256",

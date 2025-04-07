@@ -16,7 +16,6 @@
 import Foundation
 import XCTest
 import JOSESwift
-import Mockingbird
 
 @testable import SiopOpenID4VP
 
@@ -89,7 +88,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     }
     
     switch result {
-    case .notSecured: break
     case .jwt(request: let request):
       let resolved = request
       
@@ -139,6 +137,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       default:
         XCTAssert(false)
       }
+    default:
+      XCTExpectFailure()
+      XCTAssert(false)
     }
   }
   
@@ -210,7 +211,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     }
     
     switch result {
-    case .notSecured: break
     case .jwt(request: let request):
       let resolved = request
       
@@ -261,6 +261,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       default:
         XCTAssert(false)
       }
+    default:
+      XCTExpectFailure()
+      XCTAssert(false)
     }
   }
   
@@ -332,7 +335,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     }
     
     switch result {
-    case .notSecured: break
     case .jwt(request: let request):
       let resolved = request
       
@@ -369,6 +371,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       default:
         XCTAssert(true)
       }
+    default:
+      XCTExpectFailure()
+      XCTAssert(false)
     }
   }
 }

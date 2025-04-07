@@ -59,7 +59,7 @@ public struct X509CertificateChainVerifier {
     case .proceed, .unspecified:
       return .success
     case .recoverableTrustFailure:
-      return .recoverableFailure("Unknown .recoverableFailure")
+      return .recoverableFailure("Recoverable failure")
     @unknown default:
       return .failure
     }
