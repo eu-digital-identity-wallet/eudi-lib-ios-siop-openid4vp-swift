@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import PresentationExchange
 
 public enum PresentationQuery {
   case byPresentationDefinition(PresentationDefinition)

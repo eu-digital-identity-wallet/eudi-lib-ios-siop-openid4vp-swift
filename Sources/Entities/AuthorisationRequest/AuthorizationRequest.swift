@@ -110,8 +110,8 @@ public extension AuthorizationRequest {
     _ authorizationRequestData: AuthorisationRequestObject,
     _ walletConfiguration: SiopOpenId4VPConfiguration?
   ) async throws -> ValidatedSiopOpenId4VPRequest? {
-    if let request = authorizationRequestData.request {
-      return try await .init(
+    return if let request = authorizationRequestData.request {
+      try await .init(
         request: request,
         requestUriMethod: .init(
           method: authorizationRequestData.requestUriMethod
@@ -119,7 +119,7 @@ public extension AuthorizationRequest {
         walletConfiguration: walletConfiguration
       )
     } else if let requestUri = authorizationRequestData.requestUri {
-      return try await .init(
+      try await .init(
         requestUri: requestUri,
         requestUriMethod: .init(
           method: authorizationRequestData.requestUriMethod
@@ -128,7 +128,7 @@ public extension AuthorizationRequest {
         walletConfiguration: walletConfiguration
       )
     } else {
-      return try await .init(
+      try await .init(
         authorizationRequestData: authorizationRequestData,
         walletConfiguration: walletConfiguration
       )
@@ -141,8 +141,16 @@ public extension AuthorizationRequest {
   ) async throws -> ResolvedRequestData? {
     return try await .init(
       vpConfiguration: walletConfiguration?.vpConfiguration ?? .default(),
-      clientMetaDataResolver: ClientMetaDataResolver(fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)),
-      presentationDefinitionResolver: PresentationDefinitionResolver(fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)),
+      clientMetaDataResolver: ClientMetaDataResolver(
+        fetcher: Fetcher(
+          session: walletConfiguration?.session ?? URLSession.shared
+        )
+      ),
+      presentationDefinitionResolver: PresentationDefinitionResolver(
+        fetcher: Fetcher(
+          session: walletConfiguration?.session ?? URLSession.shared
+        )
+      ),
       validatedAuthorizationRequest: validated
     )
   }
@@ -160,9 +168,9 @@ public extension AuthorizationRequest {
       )
     }
     
-    if let validated = validated,
+    return if let validated = validated,
        let responseMode = validated.responseMode {
-      return await .init(
+      await .init(
         responseMode: responseMode,
         nonce: validated.nonce,
         state: validated.state,
@@ -171,7 +179,7 @@ public extension AuthorizationRequest {
       )
       
     } else if let authorizationRequestData = authorizationRequestData {
-      return await .init(
+      await .init(
         responseMode: authorizationRequestData.validResponseMode,
         nonce: authorizationRequestData.nonce,
         state: authorizationRequestData.state,
@@ -179,7 +187,7 @@ public extension AuthorizationRequest {
         jarmSpec: try? jarmSpec()
       )
     } else {
-      return nil
+      nil
     }
   }
 }
