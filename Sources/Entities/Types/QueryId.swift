@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public struct QueryId: Hashable, Codable {
+public struct QueryId: Hashable, Codable, Sendable {
   
   public let value: String
   

@@ -143,9 +143,11 @@ public extension ValidatedSiopOpenId4VPRequest {
     let responseType = try ResponseType(authorizationRequestObject: payload)
     
     try await Self.verify(
+      validator: AccessValidator(
+        walletOpenId4VPConfig: walletConfiguration
+      ),
       token: jwt,
-      clientId: clientId,
-      walletConfiguration: walletConfiguration
+      clientId: clientId
     )
     
     let client = try await Self.getClient(
@@ -209,10 +211,12 @@ public extension ValidatedSiopOpenId4VPRequest {
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
     
-    try await ValidatedSiopOpenId4VPRequest.verify(
+    try await Self.verify(
+      validator: AccessValidator(
+        walletOpenId4VPConfig: walletConfiguration
+      ),
       token: request,
-      clientId: clientId,
-      walletConfiguration: walletConfiguration
+      clientId: clientId
     )
     
     let client = try await Self.getClient(
@@ -626,8 +630,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       throw ValidationError.validationError("Unable to extract public key from DID")
     }
     
-    try AccessValidator.verifyJWS(
-      jws: jws,
+    try jws.verifyJWS(
       publicKey: publicKey
     )
     
@@ -637,12 +640,10 @@ private extension ValidatedSiopOpenId4VPRequest {
   }
   
   static func verify(
+    validator: AccessValidating,
     token: JWTString,
-    clientId: String?,
-    walletConfiguration: SiopOpenId4VPConfiguration? = nil
+    clientId: String?
   ) async throws {
-    
-    let validator = AccessValidator(walletOpenId4VPConfig: walletConfiguration)
     try? await validator.validate(clientId: clientId, jwt: token)
   }
   

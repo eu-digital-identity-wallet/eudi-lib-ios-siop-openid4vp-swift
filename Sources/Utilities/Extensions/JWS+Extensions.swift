@@ -97,3 +97,32 @@ internal extension JWS {
     return RSAPublicKey(modulus: n, exponent: e)
   }
 }
+
+public extension JWS {
+  
+  func verifyJWS(publicKey: SecKey) throws {
+
+    let keyAttributes = SecKeyCopyAttributes(publicKey) as? [CFString: Any]
+    let keyType = keyAttributes?[kSecAttrKeyType as CFString] as? String
+
+    if keyType == (kSecAttrKeyTypeRSA as String) {
+      if let verifier = Verifier(
+        signatureAlgorithm: .RS256,
+        key: publicKey
+      ) {
+        _ = try self.validate(using: verifier)
+        return
+      }
+    } else if keyType == (kSecAttrKeyTypeEC as String) {
+      if let verifier = Verifier(
+        signatureAlgorithm: .ES256,
+        key: publicKey
+      ) {
+        _ = try self.validate(using: verifier)
+        return
+      }
+    }
+
+    throw ValidationError.validationError("Unable to verif JWS")
+  }
+}

@@ -26,11 +26,27 @@ public enum ResolvedRequestData {
       switch request.presentationQuery {
       case .byPresentationDefinition(let presentationDefinition):
         return presentationDefinition
-      case .byDigitalCredentialsQuery(let dCQL):
+      case .byDigitalCredentialsQuery:
         return nil
       }
     case .idAndVpToken(let request):
       return request.presentationDefinition
+    default:
+      return nil
+    }
+  }
+  
+  var dcql: DCQL? {
+    switch self {
+    case .vpToken(let request):
+      switch request.presentationQuery {
+      case .byPresentationDefinition:
+        return nil
+      case .byDigitalCredentialsQuery(let dcql):
+        return dcql
+      }
+    case .idAndVpToken:
+      return nil
     default:
       return nil
     }
