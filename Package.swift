@@ -17,10 +17,6 @@ let package = Package(
       from: "3.0.0"
     ),
     .package(
-      url: "https://github.com/birdrides/mockingbird.git",
-      .upToNextMinor(from: "0.20.0")
-    ),
-    .package(
       url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
       .branch("feature/dcql_parameter")
     ),
