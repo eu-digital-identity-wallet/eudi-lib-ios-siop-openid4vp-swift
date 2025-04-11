@@ -26,7 +26,7 @@ public func walletMetaData(cfg: SiopOpenId4VPConfiguration) -> JSON {
   // OpenIdVP
   json[PRESENTATION_DEFINITION_URI_SUPPORTED] = JSON(cfg.vpConfiguration.presentationDefinitionUriSupported)
   
-  json[VP_FORMATS_SUPPORTED] = cfg.vpConfiguration.vpFormats.toJSON()
+  json[VP_FORMATS_SUPPORTED] = cfg.vpConfiguration.vpFormats.toJSON()["vp_formats"]
   
   json[CLIENT_ID_SCHEMES_SUPPORTED] = JSON(cfg.supportedClientIdSchemes.map { $0.name })
   

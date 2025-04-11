@@ -404,7 +404,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     // Building a combined JSON object
     var combined: [String: Any] = [:]
     if let walletMetaData = walletMetaData {
-      combined[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject
+      combined[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject?.toJSONString()
     }
     
     // Convert nonce to JSON and add to combined JSON
@@ -695,7 +695,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     nonce: String,
     authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
-    let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_METADATA].string)
+    let formats = try? VpFormats(json: authorizationRequestObject[Constants.CLIENT_METADATA])
     return .vpToken(request: .init(
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
