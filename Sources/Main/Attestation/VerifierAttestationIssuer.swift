@@ -16,6 +16,10 @@
 import Foundation
 import JOSESwift
 
+extension SignatureAlgorithm: @retroactive @unchecked Sendable {}
+extension Verifier: @retroactive @unchecked Sendable {}
+extension JWS: @retroactive @unchecked Sendable {}
+
 actor VerifierAttestationIssuer {
 
   static let ID = "Attestation Issuer"

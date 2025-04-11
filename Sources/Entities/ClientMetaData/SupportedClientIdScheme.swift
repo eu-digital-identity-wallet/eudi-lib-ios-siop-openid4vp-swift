@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import Foundation
-import JOSESwift
+@preconcurrency import JOSESwift
 
-public enum SupportedClientIdScheme {
+public enum SupportedClientIdScheme: @unchecked Sendable {
   public var scheme: ClientIdScheme {
     switch self {
       

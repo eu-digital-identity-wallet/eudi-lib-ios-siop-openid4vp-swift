@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import XCTest
+@preconcurrency import XCTest
 import JOSESwift
 
 @testable import SiopOpenID4VP

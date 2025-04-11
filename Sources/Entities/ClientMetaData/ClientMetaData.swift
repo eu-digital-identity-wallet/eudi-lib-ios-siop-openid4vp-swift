@@ -179,7 +179,7 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
 
 public extension ClientMetaData {
   
-  struct Validated: Equatable {
+  struct Validated: Equatable, Sendable {
     public let jwkSet: WebKeySet?
     public let idTokenJWSAlg: JWSAlgorithm?
     public let idTokenJWEAlg: JWEAlgorithm?

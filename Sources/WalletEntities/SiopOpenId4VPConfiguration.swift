@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
+@preconcurrency import Foundation
 
-public struct SiopOpenId4VPConfiguration {
+public struct SiopOpenId4VPConfiguration: Sendable {
   public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
   public let preferredSubjectSyntaxType: SubjectSyntaxType
   public let decentralizedIdentifier: DecentralizedIdentifier

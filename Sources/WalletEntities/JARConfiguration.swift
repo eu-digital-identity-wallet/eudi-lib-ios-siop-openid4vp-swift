@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public struct JARConfiguration {
+public struct JARConfiguration: Sendable {
   public let supportedAlgorithms: [JWSAlgorithm]
   public let supportedRequestUriMethods: SupportedRequestUriMethod
   

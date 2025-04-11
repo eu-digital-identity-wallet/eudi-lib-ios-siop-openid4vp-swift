@@ -94,7 +94,7 @@ public struct LdpVpTO: Codable, Equatable, Sendable {
   }
 }
 
-public enum VpFormat: Equatable {
+public enum VpFormat: Equatable, Sendable {
   
   case sdJwtVc(
     sdJwtAlgorithms: [JWSAlgorithm],
@@ -157,7 +157,7 @@ public extension VpFormat {
   }
 }
 
-public struct VpFormats: Equatable {
+public struct VpFormats: Equatable, Sendable {
   
   static let vpFormats = "vp_formats"
   public let values: [VpFormat]

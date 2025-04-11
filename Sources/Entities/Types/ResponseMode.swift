@@ -17,7 +17,7 @@ import Foundation
 import PresentationExchange
 import SwiftyJSON
 
-public enum ResponseMode {
+public enum ResponseMode: Sendable {
   case directPost(responseURI: URL)
   case directPostJWT(responseURI: URL)
   case query(responseURI: URL)
