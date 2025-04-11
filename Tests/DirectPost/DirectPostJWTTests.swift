@@ -92,8 +92,13 @@ final class DirectPostJWTTests: DiXCTest {
       
       XCTAssertNotNil(presentationDefinition)
       
+      guard let presentationDefinition = presentationDefinition else {
+        XCTAssert(false, "Presentation definition expected")
+        return
+      }
+      
       // Obtain consent
-      let submission = TestsConstants.presentationSubmission(presentationDefinition!)
+      let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
         .generic(TestsConstants.cbor)
       ]
@@ -190,8 +195,13 @@ final class DirectPostJWTTests: DiXCTest {
       
       XCTAssertNotNil(presentationDefinition)
       
+      guard let presentationDefinition = presentationDefinition else {
+        XCTAssert(false, "Presentation definition expected")
+        return
+      }
+      
       // Obtain consent
-      let submission = TestsConstants.presentationSubmission(presentationDefinition!)
+      let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
         .generic(TestsConstants.cbor)
       ]
@@ -292,8 +302,13 @@ final class DirectPostJWTTests: DiXCTest {
       
       XCTAssertNotNil(presentationDefinition)
       
+      guard let presentationDefinition = presentationDefinition else {
+        XCTAssert(false, "Presentation definition expected")
+        return
+      }
+      
       // Obtain consent
-      let submission = TestsConstants.presentationSubmission(presentationDefinition!)
+      let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
         .generic(TestsConstants.cbor)
       ]
@@ -836,8 +851,13 @@ final class DirectPostJWTTests: DiXCTest {
       
       XCTAssertNotNil(presentationDefinition)
       
+      guard let presentationDefinition = presentationDefinition else {
+        XCTAssert(false, "Presentation definition expected")
+        return
+      }
+      
       // Obtain consent
-      let submission = TestsConstants.presentationSubmission(presentationDefinition!)
+      let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
         .generic(TestsConstants.cbor)
       ]
@@ -1550,8 +1570,13 @@ final class DirectPostJWTTests: DiXCTest {
       
       XCTAssertNotNil(presentationDefinition)
       
+      guard let presentationDefinition = presentationDefinition else {
+        XCTAssert(false, "Presentation definition expected")
+        return
+      }
+      
       // Obtain consent
-      let submission = TestsConstants.presentationSubmission(presentationDefinition!)
+      let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
         .generic(TestsConstants.cbor)
       ]
