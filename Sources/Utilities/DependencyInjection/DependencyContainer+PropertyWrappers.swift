@@ -16,7 +16,7 @@
 import Foundation
 
 @propertyWrapper
-public struct Injected<T> {
+public struct Injected<T: Sendable>: Sendable {
   private(set) public var wrappedValue: T
   public init(
     container: DIContainer = DependencyContainer.shared,

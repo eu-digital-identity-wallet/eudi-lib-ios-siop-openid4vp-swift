@@ -53,7 +53,7 @@ public struct AbsoluteDIDUrl {
   }
 }
 
-public struct DID {
+public struct DID: Sendable {
   
   public let uri: URL
   

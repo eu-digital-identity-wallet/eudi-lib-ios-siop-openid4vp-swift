@@ -17,7 +17,7 @@ import Foundation
 import X509
 import SwiftASN1
 
-public enum Client {
+public enum Client: Sendable {
   case preRegistered(
     clientId: OriginalClientId,
     legalName: String

@@ -18,7 +18,7 @@ import SwiftyJSON
 
 /// By OpenID Connect Dynamic Client Registration specification
 /// A structure representing client metadata.
-public struct ClientMetaData: Codable, Equatable {
+public struct ClientMetaData: Codable, Equatable, Sendable {
   
   static let vpFormats = "vp_formats"
   
@@ -179,7 +179,7 @@ public struct ClientMetaData: Codable, Equatable {
 
 public extension ClientMetaData {
   
-  struct Validated: Equatable {
+  struct Validated: Equatable, Sendable {
     public let jwkSet: WebKeySet?
     public let idTokenJWSAlg: JWSAlgorithm?
     public let idTokenJWEAlg: JWEAlgorithm?

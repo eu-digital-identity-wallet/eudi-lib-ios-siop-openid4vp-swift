@@ -14,34 +14,30 @@
  * limitations under the License.
  */
 import Foundation
+import SwiftyJSON
 
-public typealias OriginalClientId = String
-
-public enum RequestUriMethod: CustomStringConvertible, Sendable {
-  case GET, POST
+public enum VpContent: Sendable {
+  case presentationExchange(
+    verifiablePresentations: [VerifiablePresentation],
+    presentationSubmission: PresentationSubmission
+  )
   
-  public var description: String {
-    switch self {
-    case .GET:
-      return "GET"
-    case .POST:
-      return "POST"
-    }
-  }
+  case dcql(verifiablePresentations: [QueryId: VerifiablePresentation])
   
-  public init(method: String?) {
-    guard let method = method else {
-      self = .GET
-      return
+  static func encodeDCQLQuery(
+    _ query: [QueryId: VerifiablePresentation]
+  ) -> [String: JSON] {
+    
+    var components: [String: JSON] = [:]
+    for (key, value) in query {
+      switch value {
+      case .generic(let value):
+        components[key.value] = JSON(value)
+      case .json(let value):
+        components[key.value] = value
+      }
     }
     
-    switch method.uppercased() {
-    case "GET":
-      self = .GET
-    case "POST":
-      self = .POST
-    default:
-      self = .GET
-    }
+    return components
   }
 }

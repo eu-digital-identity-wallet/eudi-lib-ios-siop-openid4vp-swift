@@ -88,7 +88,7 @@ class SelfSignedSessionDelegateTests: DiXCTest {
   }
 }
 
-class MockSender: NSObject, URLAuthenticationChallengeSender {
+final class MockSender: NSObject, URLAuthenticationChallengeSender {
   func use(_ credential: URLCredential, for challenge: URLAuthenticationChallenge) {}
   func continueWithoutCredential(for challenge: URLAuthenticationChallenge) {}
   func cancel(_ challenge: URLAuthenticationChallenge) {}

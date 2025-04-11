@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum SupportedRequestUriMethod {
+public enum SupportedRequestUriMethod: Sendable {
   case get
   case post(
     postOptions: PostOptions
@@ -38,7 +38,7 @@ public enum SupportedRequestUriMethod {
     }
   }
   
-  public struct PostOptions {
+  public struct PostOptions: Sendable {
     public let includeWalletMetadata: Bool
     public let useWalletNonce: NonceOption
     

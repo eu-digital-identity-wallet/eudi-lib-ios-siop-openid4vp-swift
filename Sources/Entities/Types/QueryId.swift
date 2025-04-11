@@ -15,16 +15,26 @@
  */
 import Foundation
 
-public protocol DIContainer: Sendable {
-  func register<DependencyType, DependencyInstance>(
-    type: DependencyType.Type,
-    dependency: @escaping () -> DependencyInstance
-  )
-  func register<DependencyType>(key: String, dependency: @escaping () -> DependencyType)
-  func resolve<DependencyType>(type: DependencyType.Type, mode: ResolveMode) -> DependencyType
-  func resolve<DependencyType>(key: String, mode: ResolveMode) -> DependencyType
-
-  func remove<DependencyType>(type: DependencyType.Type)
-  func remove(key: String)
-  func removeAll()
+public struct QueryId: Hashable, Codable, Sendable {
+  
+  public let value: String
+  
+  public init(value: String) throws {
+    self.value = try DCQLId.ensureValid(value)
+  }
+  
+  public var description: String {
+    return value
+  }
+  
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(value)
+  }
+  
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let decodedValue = try container.decode(String.self)
+    try self.init(value: decodedValue)
+  }
 }

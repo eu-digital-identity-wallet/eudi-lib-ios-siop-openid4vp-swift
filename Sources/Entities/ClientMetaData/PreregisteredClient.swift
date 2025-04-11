@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public struct PreregisteredClient {
+public struct PreregisteredClient: Sendable {
   public let clientId: OriginalClientId
   public let legalName: String
   public let jarSigningAlg: JWSAlgorithm

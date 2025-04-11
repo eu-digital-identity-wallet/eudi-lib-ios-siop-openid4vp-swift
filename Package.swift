@@ -1,4 +1,4 @@
-// swift-tools-version: 5.8
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -17,8 +17,8 @@ let package = Package(
       from: "3.0.0"
     ),
     .package(
-      url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMajor(from: "0.3.0")
+      url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
+      .branch("feature/dcql_parameter")
     ),
     .package(
       url: "https://github.com/apple/swift-certificates.git",

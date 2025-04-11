@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public actor ErrorDispatcher: DispatcherType {
+public actor ErrorDispatcher: DispatcherType, Sendable {
   
   public let service: AuthorisationServiceType
   

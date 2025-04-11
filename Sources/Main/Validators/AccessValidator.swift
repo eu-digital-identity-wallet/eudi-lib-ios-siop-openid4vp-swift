@@ -17,7 +17,11 @@ import Foundation
 import JOSESwift
 import X509
 
-public actor AccessValidator {
+public protocol AccessValidating {
+  func validate(clientId: String?, jwt: JWTString) async throws
+}
+
+public actor AccessValidator: AccessValidating {
   
   public let walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
   private let resolver = WebKeyResolver()
@@ -215,34 +219,5 @@ public actor AccessValidator {
     case .failure:
       throw ValidationError.validationError("Could not resolve key from JWK source")
     }
-  }
-}
-
-public extension AccessValidator {
-
-  static func verifyJWS(jws: JWS, publicKey: SecKey) throws {
-
-    let keyAttributes = SecKeyCopyAttributes(publicKey) as? [CFString: Any]
-    let keyType = keyAttributes?[kSecAttrKeyType as CFString] as? String
-
-    if keyType == (kSecAttrKeyTypeRSA as String) {
-      if let verifier = Verifier(
-        signatureAlgorithm: .RS256,
-        key: publicKey
-      ) {
-        _ = try jws.validate(using: verifier)
-        return
-      }
-    } else if keyType == (kSecAttrKeyTypeEC as String) {
-      if let verifier = Verifier(
-        signatureAlgorithm: .ES256,
-        key: publicKey
-      ) {
-        _ = try jws.validate(using: verifier)
-        return
-      }
-    }
-
-    throw ValidationError.validationError("Unable to verif JWS")
   }
 }

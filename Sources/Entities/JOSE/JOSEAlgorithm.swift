@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public class JOSEAlgorithm: Hashable {
+public class JOSEAlgorithm: Hashable, @unchecked Sendable {
 
   public static func == (lhs: JOSEAlgorithm, rhs: JOSEAlgorithm) -> Bool {
     lhs.name == rhs.name
