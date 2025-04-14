@@ -60,4 +60,11 @@ public enum EncryptionRequirement: Equatable {
   case required(
     encryptionRequirementSpecification: EncryptionRequirementSpecification
   )
+  
+  public var isNotRequired: Bool {
+    return switch self {
+    case .notRequired: true
+    case .required: false
+    }
+  }
 }
