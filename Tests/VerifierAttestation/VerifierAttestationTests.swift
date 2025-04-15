@@ -143,7 +143,7 @@ private extension VerifierAttestaionTestsTests {
         )
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .default,
+      jarConfiguration: .noEncrytpionOption,
       vpConfiguration: VPConfiguration.default()
     )
   }
