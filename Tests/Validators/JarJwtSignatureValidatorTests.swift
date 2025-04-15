@@ -184,7 +184,7 @@ private extension JarJwtSignatureValidatorTests {
           )
         ])],
       vpFormatsSupported: [],
-      jarConfiguration: .default,
+      jarConfiguration: .noEncrytpionOption,
       vpConfiguration: VPConfiguration.default()
     )
   }
@@ -226,7 +226,7 @@ private extension JarJwtSignatureValidatorTests {
           )
         ])],
       vpFormatsSupported: [],
-      jarConfiguration: .default,
+      jarConfiguration: .noEncrytpionOption,
       vpConfiguration: VPConfiguration.default()
     )
   }

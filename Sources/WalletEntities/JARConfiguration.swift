@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import JOSESwift
 
 public struct JARConfiguration {
   public let supportedAlgorithms: [JWSAlgorithm]
@@ -22,20 +23,40 @@ public struct JARConfiguration {
   /// Initializer with validation to ensure supportedAlgorithms is not empty
   public init(
     supportedAlgorithms: [JWSAlgorithm],
-    supportedRequestUriMethods: SupportedRequestUriMethod = .defaultOption
+    supportedRequestUriMethods: SupportedRequestUriMethod
   ) {
     precondition(!supportedAlgorithms.isEmpty, "JAR signing algorithms cannot be empty")
     self.supportedAlgorithms = supportedAlgorithms
     self.supportedRequestUriMethods = supportedRequestUriMethods
   }
   
-  /// Default JAR configuration with trusted algorithms ES256, ES384, and ES512
-  public static let `default` = JARConfiguration(
+  /// Default JAR configuration with trusted algorithms ES256
+  public static let encryptionOption: JARConfiguration = .init(
     supportedAlgorithms: [
       JWSAlgorithm(
         .ES256
       )
     ],
-    supportedRequestUriMethods: .defaultOption
+    supportedRequestUriMethods: .encryptionOption
   )
+  
+  public static let noEncrytpionOption: JARConfiguration = .init(
+    supportedAlgorithms: [
+      JWSAlgorithm(
+        .ES256
+      )
+    ],
+    supportedRequestUriMethods: .noEncryptionOption
+  )
+  
+  public var supportedEncryption: EncryptionRequirementSpecification? {
+    return switch supportedRequestUriMethods {
+    case .get: nil
+    case .post(let postOptions), .both(let postOptions):
+      switch postOptions.jarEncryption {
+      case .notRequired: nil
+      case .required(let spec): spec
+      }
+    }
+  }
 }

@@ -332,53 +332,136 @@ public extension ValidatedSiopOpenId4VPRequest {
   ) async throws -> String {
     switch requestUriMethod {
     case .GET:
-      return try await Self.getJwtString(
-        fetcher: Fetcher(
-          session: config?.session ?? URLSession.shared
-        ),
+      try await Self.getJwtViaGET(
+        config: config,
         requestUrl: requestUrl
       )
     case .POST:
-      guard let supportedMethods =
-              config?.jarConfiguration.supportedRequestUriMethods else {
-        throw AuthorizationError.invalidRequestUriMethod
-      }
-      
-      guard let options = supportedMethods.isPostSupported() else {
-        throw AuthorizationError.invalidRequestUriMethod
-      }
-      
-      let nonce: String? = switch options.useWalletNonce {
-      case .doNotUse:
-        nil
-      case .use(let byteLength):
-        NonceGenerator.generate(length: byteLength)
-      }
-      
-      let walletMetaData: JSON? = if options.includeWalletMetadata {
-        if let config = config {
-          walletMetaData(cfg: config)
-        } else {
-          nil
-        }
-      } else {
-        nil
-      }
-      
-      let jwt = try await Self.postJwtString(
-        walletMetaData: walletMetaData,
-        nonce: nonce,
-        requestUrl: requestUrl
+      try await getJwtViaPOST(
+        config: config,
+        requestUrl: requestUrl,
+        clientId: clientId
       )
-      
-      try config?.ensureValid(
-        expectedClient: clientId,
-        expectedWalletNonce: nonce,
-        jwt: jwt
-      )
-      
+    }
+  }
+  
+  private static func getJwtViaGET(
+    config: SiopOpenId4VPConfiguration?,
+    requestUrl: URL
+  ) async throws -> String {
+    return try await Self.getJwtString(
+      fetcher: Fetcher(
+        session: config?.session ?? URLSession.shared
+      ),
+      requestUrl: requestUrl)
+  }
+  
+  private static func getJwtViaPOST(
+    config: SiopOpenId4VPConfiguration?,
+    requestUrl: URL,
+    clientId: String?
+  ) async throws -> String {
+    guard let supportedMethods = config?.jarConfiguration.supportedRequestUriMethods else {
+      throw AuthorizationError.invalidRequestUriMethod
+    }
+
+    guard let options = supportedMethods.isPostSupported() else {
+      throw AuthorizationError.invalidRequestUriMethod
+    }
+
+    let isNotRequired = options.jarEncryption.isNotRequired
+    let nonce = generateNonce(from: options)
+    let keys: (key: SecKey, jwk: ECPrivateKey)? = !isNotRequired ? (try? generateKeysIfNeeded(
+      for: supportedMethods
+    )) : nil
+    
+    let walletMetadata = generateWalletMetadataIfNeeded(
+      config: config,
+      key: keys?.key,
+      include: options.includeWalletMetadata
+    )
+
+    let jwt = try await Self.postJwtString(
+      walletMetaData: walletMetadata,
+      nonce: nonce,
+      requestUrl: requestUrl
+    )
+
+    let finalJwt = try decryptIfNeeded(
+      jwt: jwt,
+      keyManagementAlgorithm: config?.jarConfiguration.supportedEncryption?.supportedEncryptionAlgorithm,
+      contentEncryptionAlgorithm: config?.jarConfiguration.supportedEncryption?.supportedEncryptionMethod,
+      keys: keys
+    )
+    
+    try config?.ensureValid(
+      expectedClient: clientId,
+      expectedWalletNonce: nonce,
+      jwt: finalJwt
+    )
+
+    return finalJwt
+  }
+  
+  private static func generateNonce(from options: PostOptions) -> String? {
+    return switch options.useWalletNonce {
+    case .doNotUse: nil
+    case .use(let byteLength): NonceGenerator.generate(length: byteLength)
+    }
+  }
+  
+  private static func generateKeysIfNeeded(
+    for method: SupportedRequestUriMethod
+  ) throws -> (key: SecKey, jwk: ECPrivateKey)? {
+    switch method {
+    case .post, .both: break
+    default:
+      return nil
+    }
+    let key = try KeyController.generateECDHPrivateKey()
+    let jwk = try ECPrivateKey(privateKey: key)
+    return (key, jwk)
+  }
+  
+  private static func generateWalletMetadataIfNeeded(
+    config: SiopOpenId4VPConfiguration?,
+    key: SecKey?,
+    include: Bool
+  ) -> JSON? {
+    guard include, let config else { return nil }
+    return walletMetaData(cfg: config, key: key)
+  }
+  
+  private static func decryptIfNeeded(
+    jwt: String,
+    keyManagementAlgorithm: KeyManagementAlgorithm?,
+    contentEncryptionAlgorithm: ContentEncryptionAlgorithm?,
+    keys: (key: SecKey, jwk: ECPrivateKey)?
+  ) throws -> String {
+    guard let jwk = keys?.jwk else {
       return jwt
     }
+
+    guard let keyManagementAlgorithm, let contentEncryptionAlgorithm else {
+      throw AuthorizationError.invalidAlgorithms
+    }
+    
+    let encryptedJwe = try JWE(compactSerialization: jwt)
+    guard let decrypter = Decrypter(
+      keyManagementAlgorithm: keyManagementAlgorithm,
+      contentEncryptionAlgorithm: contentEncryptionAlgorithm,
+      decryptionKey: jwk
+    ) else {
+      throw AuthorizationError.jwtDecryptionFailed
+    }
+
+    let payloadData = try encryptedJwe.decrypt(using: decrypter).data()
+    guard let decoded = payloadData.base64EncodedString().base64Decoded(),
+          let jwtString = String(data: decoded, encoding: .utf8) else {
+      throw AuthorizationError.jwtDecryptionFailed
+    }
+
+    return jwtString
   }
   
   fileprivate struct ResultType: Codable {}
@@ -404,7 +487,7 @@ public extension ValidatedSiopOpenId4VPRequest {
     // Building a combined JSON object
     var combined: [String: Any] = [:]
     if let walletMetaData = walletMetaData {
-      combined[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject
+      combined[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject?.toJSONString()
     }
     
     // Convert nonce to JSON and add to combined JSON
@@ -695,7 +778,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     nonce: String,
     authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
-    let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_METADATA].string)
+    let formats = try? VpFormats(json: authorizationRequestObject[Constants.CLIENT_METADATA])
     return .vpToken(request: .init(
       presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
@@ -750,11 +833,7 @@ private extension ValidatedSiopOpenId4VPRequest {
         throw ValidationError.invalidJwtPayload
       }
     } else {
-      if string.isValidJWT() {
-        return string
-      } else {
-        throw ValidationError.invalidJwtPayload
-      }
+      return string
     }
   }
 }

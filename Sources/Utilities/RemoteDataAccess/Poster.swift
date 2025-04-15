@@ -140,7 +140,12 @@ public struct Poster: Posting {
    */
   public func postString(request: URLRequest) async -> Result<String, PostError> {
     do {
-      let (data, _) = try await self.session.data(for: request)
+      let (data, response) = try await self.session.data(for: request)
+      let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+      if !statusCode.isWithinRange(200...299) {
+        return .failure(.invalidResponse)
+      }
+      
       if let string = String(data: data, encoding: .utf8) {
         return .success(string)
       } else {

@@ -15,36 +15,57 @@
  */
 import Foundation
 
+public struct PostOptions {
+  public let includeWalletMetadata: Bool
+  public let useWalletNonce: NonceOption
+  public let jarEncryption: EncryptionRequirement
+  
+  public init(
+    includeWalletMetadata: Bool = false,
+    useWalletNonce: NonceOption = .doNotUse,
+    jarEncryption: EncryptionRequirement = .notRequired
+  ) throws {
+    self.includeWalletMetadata = includeWalletMetadata
+    self.useWalletNonce = useWalletNonce
+    self.jarEncryption = jarEncryption
+    
+    if jarEncryption != .notRequired && includeWalletMetadata == false {
+      throw ValidationError.validationError(
+        "Wallet Metadata must be included when JAR encryption is required"
+      )
+    }
+  }
+}
+
 public enum SupportedRequestUriMethod {
   case get
   case post(
     postOptions: PostOptions
   )
   case both(
-    post: PostOptions
+    postOptions: PostOptions
   )
   
-  public init?(method: String, includeWalletMetadata: Bool = true, useWalletNonce: NonceOption = .use(byteLength: 32)) {
+  public init?(
+    method: String,
+    includeWalletMetadata: Bool = true,
+    useWalletNonce: NonceOption = .use(byteLength: 32)
+  ) throws {
     switch method.uppercased() {
     case "GET":
       self = .get
     case "POST":
-      self = .post(postOptions: .init(
+      guard let options: PostOptions = try? .init(
         includeWalletMetadata: includeWalletMetadata,
         useWalletNonce: useWalletNonce
-      ))
+      ) else {
+        return nil
+      }
+      self = .post(
+        postOptions:options
+      )
     default:
-      return nil // Invalid input returns nil
-    }
-  }
-  
-  public struct PostOptions {
-    public let includeWalletMetadata: Bool
-    public let useWalletNonce: NonceOption
-    
-    public init(includeWalletMetadata: Bool, useWalletNonce: NonceOption) {
-      self.includeWalletMetadata = includeWalletMetadata
-      self.useWalletNonce = useWalletNonce
+      return nil
     }
   }
   
@@ -63,18 +84,32 @@ public enum SupportedRequestUriMethod {
     switch self {
     case .both(let postOptions):
       return postOptions
-    case .post(let options):
-      return options
+    case .post(let postOptions):
+      return postOptions
     case .get:
       return nil
     }
   }
   
-  /// Default instance
-  public static let defaultOption: SupportedRequestUriMethod = .both(
-    post: PostOptions(
+  public static let encryptionOption: SupportedRequestUriMethod = .both(
+    postOptions: try! PostOptions(
       includeWalletMetadata: true,
-      useWalletNonce: NonceOption.use(byteLength: 32)
+      useWalletNonce: NonceOption.use(byteLength: 32),
+      jarEncryption: .required(
+        encryptionRequirementSpecification: .init(
+          supportedEncryptionAlgorithm: .ECDH_ES,
+          supportedEncryptionMethod: .A128CBCHS256,
+          ephemeralEncryptionKeyCurve: .P256
+        )
+      )
+    )
+  )
+  
+  public static let noEncryptionOption: SupportedRequestUriMethod = .both(
+    postOptions: try! PostOptions(
+      includeWalletMetadata: true,
+      useWalletNonce: NonceOption.use(byteLength: 32),
+      jarEncryption: .notRequired
     )
   )
 }

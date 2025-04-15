@@ -59,6 +59,12 @@ public enum AuthorizationError: LocalizedError {
   /// Non dispatchable error.
   case nonDispatchableError
   
+  /// JWT decryption failed.
+  case jwtDecryptionFailed
+  
+  /// Invalid algorithms.
+  case invalidAlgorithms
+  
   /// A localized description of the error.
   public var errorDescription: String? {
     switch self {
@@ -90,6 +96,10 @@ public enum AuthorizationError: LocalizedError {
       return ".invalidTransactionData"
     case .nonDispatchableError:
       return ".nonDispatchableError"
+    case .jwtDecryptionFailed:
+      return ".jwtDecryptionFailed"
+    case .invalidAlgorithms:
+      return ".invalidAlgorithms"
     }
   }
 }
