@@ -40,7 +40,7 @@ public struct JARConfiguration {
     supportedRequestUriMethods: .encryptionOption
   )
   
-  public static let noEncrytpionOption: JARConfiguration = .init(
+  public static let noEncryptionOption: JARConfiguration = .init(
     supportedAlgorithms: [
       JWSAlgorithm(
         .ES256
