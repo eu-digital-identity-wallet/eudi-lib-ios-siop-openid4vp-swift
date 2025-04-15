@@ -81,7 +81,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,
       knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope,
-      jarConfiguration: .default,
+      jarConfiguration: .noEncrytpionOption,
       vpConfiguration: VPConfiguration.default(),
       session: SiopOpenId4VPConfiguration.walletSession
     )
@@ -166,7 +166,10 @@ class VerifierFormPostTests: XCTestCase {
     
     // Add test cases to cover other scenarios for body
     let emptyFormData = [String: Any]()
-    let emptyFormPost = VerifierFormPost(url: URL(string: "https://www.example.com")!, formData: emptyFormData)
+    let emptyFormPost = VerifierFormPost(
+      url: URL(string: "https://www.example.com")!,
+      formData: emptyFormData
+    )
     XCTAssertNotNil(emptyFormPost.body)
   }
   
@@ -233,8 +236,8 @@ final class VpFormatsTests: XCTestCase {
     )
     let json = format.toJSON()
     
-    XCTAssertEqual(json["sdJwtVc"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
-    XCTAssertEqual(json["sdJwtVc"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["vc+sd-jwt"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["vc+sd-jwt"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
   }
   
   func testVpFormatsToJSON() throws {
@@ -244,21 +247,27 @@ final class VpFormatsTests: XCTestCase {
     
     let json = vpFormats.toJSON()
     
-    XCTAssertEqual(json["vp_formats"].arrayValue.count, 2)
+    XCTAssertEqual(json["vp_formats"].dictionaryValue.count, 2)
   }
   
   func testVpFormatsFromJson() throws {
     let jsonString = """
     {
-      "vp_formats": [
-        { "jwt_vp": {
-          "alg": ["RS256"] 
-        }},
-        { "vc+sd-jwt": {
-          "sd-jwt_alg_values": ["ES256"],
-          "kb-jwt_alg_values": ["ES256"]
-        }}
-      ]
+       "vp_formats": {
+              "vc+sd-jwt": {
+                  "sd-jwt_alg_values": [
+                      "ES256"
+                  ],
+                  "kb-jwt_alg_values": [
+                      "ES256"
+                  ]
+              },
+              "mso_mdoc": {
+                  "alg": [
+                      "ES256"
+                  ]
+              }
+          }
     }
     """
     
@@ -389,8 +398,8 @@ class WalletMetaDataTests: XCTestCase {
     
     XCTAssertEqual(json["request_object_signing_alg_values_supported"].arrayValue.map { $0.stringValue }, ["ES256"])
     XCTAssertEqual(json["presentation_definition_uri_supported"].boolValue, true)
-    XCTAssertEqual(json["vp_formats_supported"]["vp_formats"].arrayValue.count, 2)
-    XCTAssertEqual(json["client_id_schemes_supported"].arrayValue.map { $0.stringValue }, ["preRegistered"])
+    XCTAssertEqual(json["vp_formats_supported"].dictionaryValue.count, 2)
+    XCTAssertEqual(json["client_id_schemes_supported"].arrayValue.map { $0.stringValue }, ["pre-registered"])
     XCTAssertEqual(json["response_types_supported"].arrayValue.map { $0.stringValue }, ["vp_token", "id_token"])
     XCTAssertEqual(json["response_modes_supported"].arrayValue.map { $0.stringValue }, ["direct_post", "direct_post.jwt"])
   }

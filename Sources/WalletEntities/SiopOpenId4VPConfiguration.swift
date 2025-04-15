@@ -42,7 +42,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     supportedClientIdSchemes: [SupportedClientIdScheme],
     vpFormatsSupported: [ClaimFormat],
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
-    jarConfiguration: JARConfiguration = .default,
+    jarConfiguration: JARConfiguration = .noEncrytpionOption,
     vpConfiguration: VPConfiguration = VPConfiguration.default(),
     errorDispatchPolicy: ErrorDispatchPolicy = .onlyAuthenticatedClients,
     session: Networking = Self.walletSession
@@ -74,7 +74,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     supportedClientIdSchemes = []
     vpFormatsSupported = []
     knownPresentationDefinitionsPerScope = [:]
-    jarConfiguration = .default
+    jarConfiguration = .noEncrytpionOption
     vpConfiguration = VPConfiguration.default()
     errorDispatchPolicy = .onlyAuthenticatedClients
     session = URLSession.shared

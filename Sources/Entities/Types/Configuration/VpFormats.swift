@@ -192,7 +192,7 @@ public struct VpFormats: Equatable, Sendable {
     }
     
     let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormats]
-    if let formats = try? vpFormatsDictionary.decoded(as: [VpFormatsTO].self) {
+    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsTO.self) {
       try? self.init(from: formats)
     } else {
       return nil
@@ -332,14 +332,18 @@ public extension VpFormats {
   
   // Convert VpFormats to JSON
   func toJSON() -> JSON {
-    var jsonArray: [JSON] = []
+    var mergedFormats: [String: JSON] = [:]
     
     for format in values {
       let jsonFormat = format.toJSON()
-      jsonArray.append(jsonFormat)
+      
+      // Assuming jsonFormat is [String: JSON] — merge it in
+      for (key, value) in jsonFormat {
+        mergedFormats[key] = value
+      }
     }
     
-    return JSON([Self.vpFormats: jsonArray])
+    return JSON([Self.vpFormats: mergedFormats])
   }
 }
 
@@ -348,13 +352,16 @@ extension VpFormat {
   func toJSON() -> JSON {
     switch self {
     case .sdJwtVc(let sdJwtAlgorithms, let kbJwtAlgorithms):
-      return JSON(["sdJwtVc": [
+      return JSON(["vc+sd-jwt": [
         "sd-jwt_alg_values": sdJwtAlgorithms.map { $0.name },
         "kb-jwt_alg_values": kbJwtAlgorithms.map { $0.name }
       ]]
       )
-    case .msoMdoc:
-      return JSON(["msoMdoc": JSON()])
+    case .msoMdoc(let algorithms):
+      return JSON(["mso_mdoc": [
+        "alg": algorithms.map { $0.name }
+      ]
+                  ])
       
     case .jwtVp(let algorithms):
       return JSON([

@@ -45,17 +45,17 @@ public enum SupportedClientIdScheme: @unchecked Sendable {
       * The Client Identifier is known to the Wallet in advance of the Authorization Request.
       */
     case .preregistered:
-      return "preRegistered"
+      return "pre-registered"
     case .x509SanUri:
-      return "x509SanUri"
+      return "x509_san_url"
     case .x509SanDns:
-      return "x509SanDns"
+      return "x509_san_dns"
     case .did:
       return "did"
     case .verifierAttestation:
-      return "verifierAttestation"
+      return "verifier_attestation"
     case .redirectUri:
-      return "redirectUri"
+      return "redirect_uri"
     }
   }
   
