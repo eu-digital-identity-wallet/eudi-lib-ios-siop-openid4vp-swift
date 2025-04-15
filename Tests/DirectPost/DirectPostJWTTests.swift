@@ -57,7 +57,7 @@ final class DirectPostJWTTests: DiXCTest {
         ])
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -154,7 +154,7 @@ final class DirectPostJWTTests: DiXCTest {
         .redirectUri(clientId: URL(string: TestsConstants.testClientId)!)
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -258,7 +258,7 @@ final class DirectPostJWTTests: DiXCTest {
         ])
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -394,7 +394,7 @@ final class DirectPostJWTTests: DiXCTest {
       signingKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -460,7 +460,7 @@ final class DirectPostJWTTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -554,7 +554,7 @@ final class DirectPostJWTTests: DiXCTest {
         ])
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -668,7 +668,7 @@ final class DirectPostJWTTests: DiXCTest {
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -903,7 +903,7 @@ final class DirectPostJWTTests: DiXCTest {
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -1030,7 +1030,7 @@ final class DirectPostJWTTests: DiXCTest {
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -1165,7 +1165,7 @@ final class DirectPostJWTTests: DiXCTest {
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -1278,7 +1278,7 @@ final class DirectPostJWTTests: DiXCTest {
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -1485,7 +1485,7 @@ final class DirectPostJWTTests: DiXCTest {
           .x509SanDns(trust: chainVerifier)
         ],
         vpFormatsSupported: [],
-        jarConfiguration: .noEncrytpionOption,
+        jarConfiguration: .noEncryptionOption,
         vpConfiguration: VPConfiguration.default()
       )
       
