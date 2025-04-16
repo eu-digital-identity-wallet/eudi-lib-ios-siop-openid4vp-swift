@@ -57,7 +57,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -155,7 +155,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -278,7 +278,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       signingKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     

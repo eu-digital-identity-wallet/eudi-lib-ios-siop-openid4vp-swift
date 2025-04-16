@@ -81,7 +81,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,
       knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope,
-      jarConfiguration: .noEncrytpionOption,
+      jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
       session: SiopOpenId4VPConfiguration.walletSession
     )
