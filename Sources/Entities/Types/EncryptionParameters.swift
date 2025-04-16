@@ -16,5 +16,5 @@
 import Foundation
 
 public enum EncryptionParameters: Sendable {
-  case diffieHellman(apu: Base64URL)
+  case apu(Base64URL)
 }

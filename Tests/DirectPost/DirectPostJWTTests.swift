@@ -1799,7 +1799,9 @@ final class DirectPostJWTTests: DiXCTest {
           resolvedRequest: request,
           consent: consent,
           walletOpenId4VPConfig: wallet,
-          encryptionParameters: .diffieHellman(apu: TestsConstants.generateMdocGeneratedNonce())
+          encryptionParameters: .apu(
+            TestsConstants.generateMdocGeneratedNonce()
+          )
         ), "Expected item to be non-nil")
         
         // Dispatch

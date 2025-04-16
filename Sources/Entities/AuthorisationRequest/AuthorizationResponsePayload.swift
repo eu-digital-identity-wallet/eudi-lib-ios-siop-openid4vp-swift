@@ -90,7 +90,7 @@ public enum AuthorizationResponsePayload: Encodable, Sendable {
   
   var apu: String? {
     switch self.encryptionParameters {
-    case .diffieHellman(let apu):
+    case .apu(let apu):
       return apu
     case .none:
       return nil
