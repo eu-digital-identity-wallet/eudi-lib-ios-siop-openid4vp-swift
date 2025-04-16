@@ -1,4 +1,5 @@
 {
+  "originHash" : "419c92a298883af2d5edb632328415ee4d29ae92b978e103734e013f2cf93af2",
   "pins" : [
     {
       "identity" : "blueecc",
@@ -33,7 +34,7 @@
       "location" : "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
         "branch" : "feature/dcql_parameter",
-        "revision" : "2bcc9d76f2f998221248a9526bc1b3f52393b779"
+        "revision" : "76e401aca0b51281cb78a653d1c54b614af88b03"
       }
     },
     {
@@ -136,5 +137,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

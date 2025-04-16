@@ -59,7 +59,7 @@ extension ClientIdScheme {
   /// Initializes a `ClientIdScheme` based on the authorization request data.
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Throws: An error if the client ID scheme is unsupported.
-  init(authorizationRequestData: AuthorisationRequestObject) throws {
+  init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard
       authorizationRequestData.clientIdScheme == "pre-registered",
       let clientIdScheme = ClientIdScheme(rawValue: authorizationRequestData.clientIdScheme ?? "")

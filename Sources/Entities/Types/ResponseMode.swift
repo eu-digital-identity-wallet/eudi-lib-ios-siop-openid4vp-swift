@@ -73,7 +73,7 @@ public enum ResponseMode: Sendable {
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Throws: A `ValidatedAuthorizationError.missingRequiredField` if the required fields are missing,
   ///           or a `ValidatedAuthorizationError.unsupportedResponseMode` if the response mode is unsupported.
-  public init(authorizationRequestData: AuthorisationRequestObject) throws {
+  public init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard let responseMode = authorizationRequestData.responseMode else {
       throw ValidationError.missingRequiredField(".responseMode")
     }

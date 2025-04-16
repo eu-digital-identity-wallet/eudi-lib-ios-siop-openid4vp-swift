@@ -255,7 +255,7 @@ public extension ValidatedSiopOpenId4VPRequest {
   
   // Initialize with an AuthorisationRequestObject object
   init(
-    authorizationRequestData: AuthorisationRequestObject,
+    authorizationRequestData: UnvalidatedRequestObject,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
     let requesrUriMethod: RequestUriMethod = .init(
@@ -734,7 +734,7 @@ private extension ValidatedSiopOpenId4VPRequest {
   static func createVpToken(
     clientId: String,
     nonce: String,
-    authorizationRequestData: AuthorisationRequestObject
+    authorizationRequestData: UnvalidatedRequestObject
   ) throws -> ValidatedSiopOpenId4VPRequest {
     let formats = try? VpFormats(
       jsonString: authorizationRequestData.clientMetaData
@@ -832,7 +832,7 @@ private extension ValidatedSiopOpenId4VPRequest {
     ))
   }
   
-  private static func parseQuerySource(authorizationRequestData: AuthorisationRequestObject) throws -> QuerySource {
+  private static func parseQuerySource(authorizationRequestData: UnvalidatedRequestObject) throws -> QuerySource {
     let hasPd = authorizationRequestData.presentationDefinition != nil
     let hasPdUri = authorizationRequestData.presentationDefinitionUri != nil
     // let hasScope = authorizationRequestObject[Constants.SCOPE].string != nil

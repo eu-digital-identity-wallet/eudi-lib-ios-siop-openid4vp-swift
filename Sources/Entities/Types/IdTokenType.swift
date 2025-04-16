@@ -44,7 +44,7 @@ public enum IdTokenType: String, Codable {
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Throws: A `ValidatedAuthorizationError.invalidIdTokenType` if the id_token_type is missing,
   ///           or a `ValidatedAuthorizationError.unsupportedIdTokenType` if the id_token_type is unsupported.
-  public init(authorizationRequestData: AuthorisationRequestObject) throws {
+  public init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard let idTokenType = authorizationRequestData.idTokenType else {
       throw ValidationError.invalidIdTokenType
     }

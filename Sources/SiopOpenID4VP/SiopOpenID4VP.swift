@@ -54,7 +54,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
    - Throws: An error if it cannot resolve a presentation definition
    */
   public func process(url: URL) async throws -> PresentationDefinition {
-    let authorizationRequestData = AuthorisationRequestObject(from: url)
+    let authorizationRequestData = UnvalidatedRequestObject(from: url)
 
     let authorizationRequest = try await AuthorizationRequest(
       authorizationRequestData: authorizationRequestData,

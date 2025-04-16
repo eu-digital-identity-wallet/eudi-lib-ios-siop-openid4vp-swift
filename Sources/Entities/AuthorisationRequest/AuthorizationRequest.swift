@@ -38,7 +38,7 @@ public extension AuthorizationRequest {
   /// - Parameters:
   ///   - authorizationRequestData: The authorization request data to process.
   init(
-    authorizationRequestData: AuthorisationRequestObject?,
+    authorizationRequestData: UnvalidatedRequestObject?,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
     
@@ -107,7 +107,7 @@ public extension AuthorizationRequest {
   }
 
   private static func validateRequest(
-    _ authorizationRequestData: AuthorisationRequestObject,
+    _ authorizationRequestData: UnvalidatedRequestObject,
     _ walletConfiguration: SiopOpenId4VPConfiguration?
   ) async throws -> ValidatedSiopOpenId4VPRequest? {
     return if let request = authorizationRequestData.request {
@@ -156,7 +156,7 @@ public extension AuthorizationRequest {
   }
   
   private static func errorDetails(
-    _ authorizationRequestData: AuthorisationRequestObject? = nil,
+    _ authorizationRequestData: UnvalidatedRequestObject? = nil,
     _ validated: ValidatedSiopOpenId4VPRequest? = nil,
     _ walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async -> ErrorDispatchDetails? {
@@ -192,7 +192,7 @@ public extension AuthorizationRequest {
   }
 }
 
-internal extension AuthorisationRequestObject {
+internal extension UnvalidatedRequestObject {
   var validResponseMode: ResponseMode {
     return (try? ResponseMode(authorizationRequestData: self)) ?? .none
   }

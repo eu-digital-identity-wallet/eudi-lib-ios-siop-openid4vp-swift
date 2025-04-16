@@ -40,7 +40,7 @@ public enum ResponseType: String, Codable {
   ///
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Throws: A `ValidatedAuthorizationError.unsupportedResponseType` if the response type is unsupported.
-  public init(authorizationRequestData: AuthorisationRequestObject) throws {
+  public init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard let responseType = ResponseType(rawValue: authorizationRequestData.responseType ?? "") else {
       throw ValidationError.unsupportedResponseType(authorizationRequestData.responseType)
     }
