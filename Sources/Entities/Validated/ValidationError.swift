@@ -48,6 +48,10 @@ public enum ValidationError: AuthorizationRequestError, Equatable {
   case emptyValue
   case multipleQuerySources
   case invalidQuerySource
+  case invalidUri
+  case invalidRequestUriMethod
+  case invalidUseOfBothRequestAndRequestUri
+  case missingClientId
   
   public var errorDescription: String? {
     switch self {
@@ -115,6 +119,14 @@ public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".multipleQuerySources"
     case .invalidQuerySource:
       return ".invalidQuerySource"
+    case .invalidUri:
+      return ".invalidUri"
+    case .invalidRequestUriMethod:
+      return ".invalidRequestUriMethod"
+    case .invalidUseOfBothRequestAndRequestUri:
+      return ".invalidUseOfBothRequestAndRequestUri"
+    case .missingClientId:
+      return ".missingClientId"
     }
   }
 }

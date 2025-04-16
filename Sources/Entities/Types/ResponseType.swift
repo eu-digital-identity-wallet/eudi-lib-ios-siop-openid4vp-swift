@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 import SwiftyJSON
 
 public enum ResponseType: String, Codable {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 /// An enumeration representing different types of authorization requests.
 public enum AuthorizationRequest {
