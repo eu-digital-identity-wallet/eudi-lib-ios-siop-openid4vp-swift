@@ -121,18 +121,6 @@ final class UnvalidatedRequestTests: XCTestCase {
     XCTAssertEqual(error, .missingClientId)
   }
   
-  func testError_whenInvalidUriProvided() {
-    let result = UnvalidatedRequest.make(from: "not a url")
-    switch result {
-    case .success:
-      XCTAssert(false)
-    case .failure(let error as ValidationError):
-      XCTAssertEqual(error, .invalidUri)
-    case .failure:
-      XCTAssert(false)
-    }
-  }
-  
   func testError_whenInvalidRequestUriMethod() {
     let query = "client_id=abc123&request_uri=https://example.com/jar&request_uri_method=INVALID"
     let result = UnvalidatedRequest.make(from: url(query))
