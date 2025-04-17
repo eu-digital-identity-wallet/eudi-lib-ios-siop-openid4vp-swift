@@ -157,10 +157,13 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
-        .redirectUri(clientId: URL(string: TestsConstants.testClientId)!)
+        .redirectUri(clientId: URL(string: TestsConstants.testClientId)!),
+        .x509SanDns(trust: { _ in
+          true
+        })
       ],
       vpFormatsSupported: [],
-      jarConfiguration: .noEncryptionOption,
+      jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
     
@@ -175,7 +178,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     overrideDependencies()
     let result = try? await sdk.authorize(
-      url: URL(
+      url: .init(
         string: url
       )!
     )
