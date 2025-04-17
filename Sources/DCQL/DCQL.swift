@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import Foundation
-import SwiftyJSON
+@preconcurrency import SwiftyJSON
 
 public typealias Credentials = [CredentialQuery]
 public typealias CredentialSets = [CredentialSetQuery]
@@ -31,7 +31,7 @@ public enum DCQLError: Error {
   case emptyDocType
 }
 
-public struct CredentialQuery: Decodable, Equatable {
+public struct CredentialQuery: Decodable, Equatable, Sendable {
   enum CodingKeys: String, CodingKey {
     case id
     case format
@@ -101,7 +101,7 @@ public struct CredentialQuery: Decodable, Equatable {
   }
 }
 
-public struct CredentialSetQuery: Decodable, Equatable {
+public struct CredentialSetQuery: Decodable, Equatable, Sendable {
   
   public static let defaultRequiredValue: Bool? = true
   
@@ -134,7 +134,7 @@ public struct CredentialSetQuery: Decodable, Equatable {
   }
 }
 
-public struct ClaimId: Decodable, Hashable {
+public struct ClaimId: Decodable, Hashable, Sendable {
   public let id: String
   
   enum CodingKeys: String, CodingKey {
@@ -177,7 +177,7 @@ internal struct DCQLId {
   }
 }
 
-public struct DCQL: Decodable, Equatable {
+public struct DCQL: Decodable, Equatable, Sendable {
   
   public let credentials: Credentials
   public let credentialSets: CredentialSets?
@@ -246,7 +246,7 @@ public extension CredentialSetQuery {
   }
 }
 
-public struct ClaimsQuery: Decodable, Equatable {
+public struct ClaimsQuery: Decodable, Equatable, Sendable {
   public let id: ClaimId?
   public let path: ClaimPath?
   public let values: [String]?
@@ -291,7 +291,7 @@ public struct ClaimsQuery: Decodable, Equatable {
   }
 }
 
-public struct MsoMdocNamespace: Decodable, CustomStringConvertible, Equatable {
+public struct MsoMdocNamespace: Decodable, CustomStringConvertible, Equatable, Sendable {
   public let namespace: String
   
   public init(_ namespace: String) throws {
@@ -321,7 +321,7 @@ public struct MsoMdocNamespace: Decodable, CustomStringConvertible, Equatable {
   }
 }
 
-public struct MsoMdocClaimName: Decodable, CustomStringConvertible, Equatable {
+public struct MsoMdocClaimName: Decodable, CustomStringConvertible, Equatable, Sendable {
   
   public let claimName: String
   
