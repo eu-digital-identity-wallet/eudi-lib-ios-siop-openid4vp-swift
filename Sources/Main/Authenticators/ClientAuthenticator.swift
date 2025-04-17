@@ -1,0 +1,240 @@
+/*
+ * Copyright (c) 2023 European Commission
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+@preconcurrency import Foundation
+import JOSESwift
+import X509
+
+internal actor ClientAuthenticator {
+ 
+  let config: SiopOpenId4VPConfiguration
+  
+  init(config: SiopOpenId4VPConfiguration) {
+    self.config = config
+  }
+  
+  func authenticate(fetchRequest: FetchedRequest) async throws -> Client {
+    switch fetchRequest {
+    case .plain(let requestObject):
+      guard let clientId = requestObject.clientId else {
+        throw ValidationError.validationError("clientId is missing from plain request")
+      }
+      return try await getClient(clientId: clientId, config: config)
+    case .jwtSecured(let clientId, let jwt):
+      return try await getClient(clientId: clientId, jwt: jwt, config: config)
+    }
+  }
+  
+  func getClient(
+    clientId: String?,
+    jwt: JWTString,
+    config: SiopOpenId4VPConfiguration?
+  ) async throws -> Client {
+    
+    guard let clientId else {
+      throw ValidationError.validationError("clientId is missing")
+    }
+    
+    guard !clientId.isEmpty else {
+      throw ValidationError.validationError("clientId is missing")
+    }
+    
+    guard
+      let verifierId = try? VerifierId.parse(clientId: clientId).get(),
+      let scheme = config?.supportedClientIdSchemes.first(
+        where: { $0.scheme.rawValue == verifierId.scheme.rawValue }
+      ) ?? config?.supportedClientIdSchemes.first
+    else {
+      throw ValidationError.validationError("No supported client Id scheme")
+    }
+    
+    switch scheme {
+    case .preregistered(let clients):
+      guard let client = clients[verifierId.originalClientId] else {
+        throw ValidationError.validationError("preregistered client not found")
+      }
+      return .preRegistered(
+        clientId: clientId,
+        legalName: client.legalName
+      )
+      
+    case .x509SanUri,
+        .x509SanDns:
+      guard let jws = try? JWS(compactSerialization: jwt) else {
+        throw ValidationError.validationError("Unable to process JWT")
+      }
+      
+      guard let chain: [String] = jws.header.x5c else {
+        throw ValidationError.validationError("No certificate in header")
+      }
+      
+      let certificates: [Certificate] = parseCertificates(from: chain)
+      guard let certificate = certificates.first else {
+        throw ValidationError.validationError("No certificate in chain")
+      }
+      
+      return .x509SanUri(
+        clientId: clientId,
+        certificate: certificate
+      )
+      
+    case .did(let keyLookup):
+      return try await didPublicKeyLookup(
+        jws: try JWS(compactSerialization: jwt),
+        clientId: clientId,
+        keyLookup: keyLookup
+      )
+      
+    case .verifierAttestation:
+      return try verifierAttestation(
+        jwt: jwt,
+        supportedScheme: scheme,
+        clientId: clientId
+      )
+    case .redirectUri:
+      guard let url = URL(string: verifierId.originalClientId) else {
+        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
+      }
+      
+      let configUrl = config?
+        .supportedClientIdSchemes
+        .first(where: { $0.scheme == scheme.scheme })?
+        .redirectUri
+      
+      guard url == configUrl else {
+        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
+      }
+      
+      return .redirectUri(
+        clientId: url
+      )
+    }
+  }
+  
+  func getClient(
+    clientId: String,
+    config: SiopOpenId4VPConfiguration?
+  ) async throws -> Client {
+    guard
+      let verifierId = try? VerifierId.parse(clientId: clientId).get(),
+      let scheme = config?.supportedClientIdSchemes.first(
+        where: { $0.scheme.rawValue == verifierId.scheme.rawValue }
+      ) ?? config?.supportedClientIdSchemes.first
+    else {
+      throw ValidationError.validationError("No supported client Id scheme")
+    }
+    
+    switch scheme {
+    case .preregistered(let clients):
+      guard let client = clients[clientId] else {
+        throw ValidationError.validationError("preregistered client nort found")
+      }
+      return .preRegistered(
+        clientId: clientId,
+        legalName: client.legalName
+      )
+    case .redirectUri:
+      guard let url = URL(string: clientId) else {
+        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
+      }
+      
+      let configUrl = config?
+        .supportedClientIdSchemes
+        .first(where: { $0.scheme == scheme.scheme })?
+        .redirectUri
+      
+      guard url == configUrl else {
+        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
+      }
+      
+      return .redirectUri(
+        clientId: url
+      )
+    default:
+      throw ValidationError.validationError("Scheme \(scheme) not supported")
+    }
+  }
+  
+  private func verifierAttestation(
+    jwt: JWTString,
+    supportedScheme: SupportedClientIdScheme,
+    clientId: String
+  ) throws -> Client {
+    guard case let .verifierAttestation(verifier, clockSkew) = supportedScheme else {
+      throw ValidationError.validationError("Scheme should be verifier attestation")
+    }
+    
+    guard let jws = try? JWS(compactSerialization: jwt) else {
+      throw ValidationError.validationError("Unable to process JWT")
+    }
+    
+    let expectedType = JOSEObjectType(rawValue: "verifier-attestation+jwt")
+    guard jws.header.typ == expectedType?.rawValue else {
+      throw ValidationError.validationError("verifier-attestation+jwt not found in JWT header")
+    }
+    
+    _ = try jws.validate(using: verifier)
+    let claims = try jws.verifierAttestationClaims()
+    
+    try TimeChecks(skew: clockSkew)
+      .verify(
+        claimsSet: .init(
+          issuer: claims.iss,
+          subject: claims.sub,
+          audience: [],
+          expirationTime: claims.exp,
+          notBeforeTime: Date(),
+          issueTime: claims.iat,
+          jwtID: nil,
+          claims: [:]
+        )
+      )
+    return .attested(clientId: clientId)
+  }
+  
+  private func didPublicKeyLookup(
+    jws: JWS,
+    clientId: String,
+    keyLookup: DIDPublicKeyLookupAgentType
+  ) async throws -> Client {
+    
+    guard let kid = jws.header.kid else {
+      throw ValidationError.validationError("kid not found in JWT header")
+    }
+    
+    guard
+      let keyUrl = AbsoluteDIDUrl.parse(kid),
+      keyUrl.string.hasPrefix(clientId)
+    else {
+      throw ValidationError.validationError("kid not found in JWT header")
+    }
+    
+    guard let clientIdAsDID = DID.parse(clientId) else {
+      throw ValidationError.validationError("Invalid DID")
+    }
+    
+    guard let publicKey = await keyLookup.resolveKey(from: clientIdAsDID) else {
+      throw ValidationError.validationError("Unable to extract public key from DID")
+    }
+    
+    try jws.verifyJWS(
+      publicKey: publicKey
+    )
+    
+    return .didClient(
+      did: clientIdAsDID
+    )
+  }
+}
