@@ -17,7 +17,7 @@ import Foundation
 
 extension ResolvedRequestData {
   /// A structure representing the data related to the ID token.
-  public struct IdTokenData {
+  public struct IdTokenData: Sendable {
     public let idTokenType: IdTokenType
     public let clientMetaData: ClientMetaData.Validated?
     public let client: Client

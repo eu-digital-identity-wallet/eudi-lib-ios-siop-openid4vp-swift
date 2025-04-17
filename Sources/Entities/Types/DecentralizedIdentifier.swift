@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum DecentralizedIdentifier: Equatable {
+public enum DecentralizedIdentifier: Equatable, Sendable {
   case did(String)
 
   public init(rawValue: String) throws {

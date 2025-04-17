@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum NonceOption {
+public enum NonceOption: Sendable {
   case doNotUse
   case use(byteLength: Int)
   

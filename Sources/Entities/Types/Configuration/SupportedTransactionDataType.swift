@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public struct SupportedTransactionDataType: Codable {
+public struct SupportedTransactionDataType: Codable, Sendable {
   public let type: TransactionDataType
   public let hashAlgorithms: Set<HashAlgorithm>
   

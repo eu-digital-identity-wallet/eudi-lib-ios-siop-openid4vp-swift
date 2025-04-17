@@ -72,7 +72,7 @@ final class TransactionDataTests: XCTestCase {
     let result = TransactionData.parse(
       transactionData.value,
       supportedTypes: [supportedType],
-      presentationDefinition: dummyPresentation
+      presentationQuery: .byPresentationDefinition(dummyPresentation)
     )
     
     switch result {
@@ -109,7 +109,7 @@ final class TransactionDataTests: XCTestCase {
     let result = TransactionData.parse(
       transactionData.value,
       supportedTypes: [unsupportedType],
-      presentationDefinition: dummyPresentation
+      presentationQuery: .byPresentationDefinition(dummyPresentation)
     )
     
     switch result {
@@ -145,7 +145,7 @@ final class TransactionDataTests: XCTestCase {
     let result = TransactionData.parse(
       transactionData.value,
       supportedTypes: [supportedType],
-      presentationDefinition: dummyPresentation
+      presentationQuery: .byPresentationDefinition(dummyPresentation)
     )
     
     switch result {

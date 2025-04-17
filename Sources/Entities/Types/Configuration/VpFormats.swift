@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import Foundation
-import SwiftyJSON
+@preconcurrency import SwiftyJSON
 
-public struct VpFormatsTO: Codable, Equatable {
+public struct VpFormatsTO: Codable, Equatable, Sendable {
   public let vcSdJwt: VcSdJwtTO?
   public let jwtVp: JwtVpTO?
   public let ldpVp: LdpVpTO?
@@ -42,7 +42,7 @@ public struct VpFormatsTO: Codable, Equatable {
   }
 }
 
-public struct VcSdJwtTO: Codable, Equatable {
+public struct VcSdJwtTO: Codable, Equatable, Sendable {
   public let sdJwtAlgorithms: [String]?
   public let kdJwtAlgorithms: [String]?
   
@@ -60,11 +60,11 @@ public struct VcSdJwtTO: Codable, Equatable {
   }
 }
 
-public struct MsoMdocTO: Codable, Equatable {
+public struct MsoMdocTO: Codable, Equatable, Sendable {
   public let algorithms: [String]?
   
   enum CodingKeys: String, CodingKey {
-    case algorithms
+    case algorithms = "alg"
   }
   
   public init(
@@ -74,7 +74,7 @@ public struct MsoMdocTO: Codable, Equatable {
   }
 }
 
-public struct JwtVpTO: Codable, Equatable {
+public struct JwtVpTO: Codable, Equatable, Sendable {
   public let alg: [String]
   
   public init(alg: [String]) {
@@ -82,7 +82,7 @@ public struct JwtVpTO: Codable, Equatable {
   }
 }
 
-public struct LdpVpTO: Codable, Equatable {
+public struct LdpVpTO: Codable, Equatable, Sendable {
   public let proofType: [String]
   
   enum CodingKeys: String, CodingKey {
@@ -94,7 +94,7 @@ public struct LdpVpTO: Codable, Equatable {
   }
 }
 
-public enum VpFormat: Equatable {
+public enum VpFormat: Equatable, Sendable {
   
   case sdJwtVc(
     sdJwtAlgorithms: [JWSAlgorithm],
@@ -157,7 +157,7 @@ public extension VpFormat {
   }
 }
 
-public struct VpFormats: Equatable {
+public struct VpFormats: Equatable, Sendable {
   
   static let vpFormats = "vp_formats"
   public let values: [VpFormat]

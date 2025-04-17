@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum ErrorDispatchPolicy {
+public enum ErrorDispatchPolicy: Sendable {
   
   /// Allow dispatching of errors to all clients, regardless of authentication status.
   case allClients

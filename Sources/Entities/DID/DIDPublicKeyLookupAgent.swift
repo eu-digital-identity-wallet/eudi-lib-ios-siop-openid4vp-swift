@@ -15,6 +15,6 @@
  */
 import Foundation
 
-public protocol DIDPublicKeyLookupAgentType {
+public protocol DIDPublicKeyLookupAgentType: Sendable {
   func resolveKey(from didUrl: DID) async -> SecKey?
 }

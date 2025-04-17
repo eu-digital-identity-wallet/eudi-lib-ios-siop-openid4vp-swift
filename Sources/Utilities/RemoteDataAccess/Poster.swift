@@ -37,7 +37,7 @@ public enum PostError: Error {
   }
 }
 
-public protocol Posting {
+public protocol Posting: Sendable {
 
   var session: Networking { get set }
 

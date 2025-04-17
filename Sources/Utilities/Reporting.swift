@@ -17,16 +17,16 @@ import Foundation
 import os
 
 extension Logger {
-  private static var subsystem = Bundle.main.bundleIdentifier
+  private static let subsystem = Bundle.main.bundleIdentifier
   static let lifecycle = Logger(subsystem: subsystem ?? "sdk", category: "lifecycle")
 }
 
-public protocol Reporting {
+public protocol Reporting: Sendable {
   func debug(_ message: String)
   func info(_ message: String)
 }
 
-class Reporter: Reporting {
+final class Reporter: Reporting {
   private let logger = Logger()
 
   func debug(_ message: String) {
@@ -38,7 +38,7 @@ class Reporter: Reporting {
   }
 }
 
-class MockReporter: Reporting {
+final class MockReporter: Reporting {
   private let logger = Logger()
 
   func debug(_ message: String) {

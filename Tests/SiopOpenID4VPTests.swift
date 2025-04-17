@@ -153,14 +153,14 @@ final class SiopOpenID4VPTests: DiXCTest {
   // MARK: - Authorisation Request Testing
   
   func testAuthorizationRequestDataGivenValidDataInURL() throws {
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validAuthorizeUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
   }
   
   func testAuthorizationRequestDataGivenInvalidInput() throws {
     
     let parser = Parser()
-    let result: Result<AuthorisationRequestObject, ParserError> = parser.decode(
+    let result: Result<UnvalidatedRequestObject, ParserError> = parser.decode(
       path: "input_descriptors_example",
       type: "json"
     )
@@ -235,7 +235,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   func testIdVpTokenValidationResolutionGivenReferenceDataIsValid() async throws {
     
     let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validIdVpTokenByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validIdVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -274,7 +274,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -299,7 +299,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -329,7 +329,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   func testValidationResolutionWithAuthorisationRequestGivenDataIsValid() async throws {
     
     let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -363,7 +363,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testAuthorisationValidationGivenDataIsInvalid() async throws {
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.invalidUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.invalidUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -406,7 +406,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     
     let walletConfiguration = try preRegisteredWalletConfiguration()
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -437,7 +437,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   
   func testRequestObjectGivenValidJWTUri() async throws {
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -474,7 +474,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   func testSDKValidationResolutionGivenDataRequestObjectByValueIsValid() async throws {
     
     let walletConfiguration = try preRegisteredWalletConfiguration()
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.requestObjectUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.requestObjectUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     
@@ -513,7 +513,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     let walletConfiguration = try preRegisteredWalletConfiguration()
     
     /// Supply your own requestUriUrl here
-    let authorizationRequestData = AuthorisationRequestObject(
+    let authorizationRequestData = UnvalidatedRequestObject(
       from: TestsConstants.requestUriUrl
     )
     
@@ -552,7 +552,7 @@ final class SiopOpenID4VPTests: DiXCTest {
   func testSDKValidationResolutionGivenDataRequestObjectByReferenceIsNotFoundURL() async throws {
     
     let walletConfiguration = try preRegisteredWalletConfiguration()
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.requestExpiredUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.requestExpiredUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     

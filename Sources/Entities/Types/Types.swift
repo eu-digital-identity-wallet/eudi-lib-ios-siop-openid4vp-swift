@@ -17,7 +17,7 @@ import Foundation
 
 public typealias OriginalClientId = String
 
-public enum RequestUriMethod: CustomStringConvertible {
+public enum RequestUriMethod: CustomStringConvertible, Sendable {
   case GET, POST
   
   public var description: String {

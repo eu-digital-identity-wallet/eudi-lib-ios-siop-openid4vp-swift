@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
+@preconcurrency import Foundation
 
-public indirect enum JarmOption {
+public indirect enum JarmOption: Sendable {
   case signedResponse(
     responseSigningAlg: JWSAlgorithm,
     signingKeySet: WebKeySet,

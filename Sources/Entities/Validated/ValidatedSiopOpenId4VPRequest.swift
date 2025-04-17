@@ -20,7 +20,7 @@ import X509
 import SwiftyJSON
 
 // Enum defining the types of validated SIOP OpenID4VP requests
-public enum ValidatedSiopOpenId4VPRequest {
+public enum ValidatedSiopOpenId4VPRequest: Sendable {
   case idToken(request: IdTokenRequest)
   case vpToken(request: VpTokenRequest)
   case idAndVpToken(request: IdAndVpTokenRequest)
@@ -143,9 +143,11 @@ public extension ValidatedSiopOpenId4VPRequest {
     let responseType = try ResponseType(authorizationRequestObject: payload)
     
     try await Self.verify(
+      validator: AccessValidator(
+        walletOpenId4VPConfig: walletConfiguration
+      ),
       token: jwt,
-      clientId: clientId,
-      walletConfiguration: walletConfiguration
+      clientId: clientId
     )
     
     let client = try await Self.getClient(
@@ -209,10 +211,12 @@ public extension ValidatedSiopOpenId4VPRequest {
     // Determine the response type from the payload
     let responseType = try ResponseType(authorizationRequestObject: payload)
     
-    try await ValidatedSiopOpenId4VPRequest.verify(
+    try await Self.verify(
+      validator: AccessValidator(
+        walletOpenId4VPConfig: walletConfiguration
+      ),
       token: request,
-      clientId: clientId,
-      walletConfiguration: walletConfiguration
+      clientId: clientId
     )
     
     let client = try await Self.getClient(
@@ -251,7 +255,7 @@ public extension ValidatedSiopOpenId4VPRequest {
   
   // Initialize with an AuthorisationRequestObject object
   init(
-    authorizationRequestData: AuthorisationRequestObject,
+    authorizationRequestData: UnvalidatedRequestObject,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
     let requesrUriMethod: RequestUriMethod = .init(
@@ -645,7 +649,7 @@ public extension ValidatedSiopOpenId4VPRequest {
 }
 
 // Private extension for ValidatedSiopOpenId4VPRequest
-private extension ValidatedSiopOpenId4VPRequest {
+internal extension ValidatedSiopOpenId4VPRequest {
   
   private static func verifierAttestation(
     jwt: JWTString,
@@ -709,8 +713,7 @@ private extension ValidatedSiopOpenId4VPRequest {
       throw ValidationError.validationError("Unable to extract public key from DID")
     }
     
-    try AccessValidator.verifyJWS(
-      jws: jws,
+    try jws.verifyJWS(
       publicKey: publicKey
     )
     
@@ -720,12 +723,10 @@ private extension ValidatedSiopOpenId4VPRequest {
   }
   
   static func verify(
+    validator: AccessValidating,
     token: JWTString,
-    clientId: String?,
-    walletConfiguration: SiopOpenId4VPConfiguration? = nil
+    clientId: String?
   ) async throws {
-    
-    let validator = AccessValidator(walletOpenId4VPConfig: walletConfiguration)
     try? await validator.validate(clientId: clientId, jwt: token)
   }
   
@@ -733,13 +734,18 @@ private extension ValidatedSiopOpenId4VPRequest {
   static func createVpToken(
     clientId: String,
     nonce: String,
-    authorizationRequestData: AuthorisationRequestObject
+    authorizationRequestData: UnvalidatedRequestObject
   ) throws -> ValidatedSiopOpenId4VPRequest {
     let formats = try? VpFormats(
       jsonString: authorizationRequestData.clientMetaData
     )
+    
+    let querySource = try parseQuerySource(
+      authorizationRequestData: authorizationRequestData
+    )
+    
     return .vpToken(request: .init(
-      presentationDefinitionSource: try .init(authorizationRequestData: authorizationRequestData),
+      querySource: querySource,
       clientMetaDataSource: .init(authorizationRequestData: authorizationRequestData),
       clientId: clientId,
       client: .preRegistered(clientId: clientId, legalName: clientId),
@@ -779,8 +785,13 @@ private extension ValidatedSiopOpenId4VPRequest {
     authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
     let formats = try? VpFormats(json: authorizationRequestObject[Constants.CLIENT_METADATA])
+    let querySource = try parseQuerySource(
+      authorizationRequestObject: authorizationRequestObject
+    )
+    
+
     return .vpToken(request: .init(
-      presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
+      querySource: querySource,
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       client: client,
@@ -801,9 +812,14 @@ private extension ValidatedSiopOpenId4VPRequest {
     authorizationRequestObject: JSON
   ) throws -> ValidatedSiopOpenId4VPRequest {
     let formats = try? VpFormats(jsonString: authorizationRequestObject[Constants.CLIENT_METADATA].string)
+    
+    let querySource = try parseQuerySource(
+      authorizationRequestObject: authorizationRequestObject
+    )
+    
     return .idAndVpToken(request: .init(
       idTokenType: try .init(authorizationRequestObject: authorizationRequestObject),
-      presentationDefinitionSource: try .init(authorizationRequestObject: authorizationRequestObject),
+      querySource: querySource,
       clientMetaDataSource: .init(authorizationRequestObject: authorizationRequestObject),
       clientId: clientId,
       client: client,
@@ -814,6 +830,58 @@ private extension ValidatedSiopOpenId4VPRequest {
       vpFormats: try (formats ?? VpFormats.default()),
       transactionData: authorizationRequestObject[Constants.TRANSACTION_DATA].array?.compactMap { $0.string }
     ))
+  }
+  
+  private static func parseQuerySource(authorizationRequestData: UnvalidatedRequestObject) throws -> QuerySource {
+    let hasPd = authorizationRequestData.presentationDefinition != nil
+    let hasPdUri = authorizationRequestData.presentationDefinitionUri != nil
+    // let hasScope = authorizationRequestObject[Constants.SCOPE].string != nil
+    let hasDcqlQuery = authorizationRequestData.dcqlQuery != nil
+    
+    let querySourceCount = [hasPd, hasPdUri, hasDcqlQuery].filter { $0 }.count
+    
+    if querySourceCount > 1 {
+      throw ValidationError.multipleQuerySources
+    }
+    
+    if hasPd || hasPdUri {
+      return .byPresentationDefinitionSource(
+        try .init(authorizationRequestData: authorizationRequestData)
+      )
+    } else if hasDcqlQuery {
+      guard let json = authorizationRequestData.dcqlQuery else {
+        throw ValidationError.invalidQuerySource
+      }
+      return .dcqlQuery(try .init(from: json))
+      
+    } else {
+      throw ValidationError.invalidQuerySource
+    }
+  }
+  
+  private static func parseQuerySource(authorizationRequestObject: JSON) throws -> QuerySource {
+    
+    let object = JSON(authorizationRequestObject.dictionaryValue.filter { $0.value != JSON.null })
+    let hasPd = object[Constants.PRESENTATION_DEFINITION].exists()
+    let hasPdUri = object[Constants.PRESENTATION_DEFINITION_URI].exists()
+    let hasDcqlQuery = object[Constants.DCQL_QUERY].exists()
+    
+    let querySourceCount = [hasPd, hasPdUri, hasDcqlQuery].filter { $0 }.count
+    
+    if querySourceCount > 1 {
+      throw ValidationError.multipleQuerySources
+    }
+    
+    if hasPd || hasPdUri {
+      return .byPresentationDefinitionSource(
+        try .init(authorizationRequestObject: authorizationRequestObject)
+      )
+    } else if hasDcqlQuery {
+      return .dcqlQuery(try .init(from: authorizationRequestObject[Constants.DCQL_QUERY]))
+      
+    } else {
+      throw ValidationError.invalidQuerySource
+    }
   }
   
   /// Extracts the JWT token from a given JSON string or JWT string.
@@ -852,7 +920,6 @@ private enum JWTVerificationError: Error {
   case activeBeforeIssuance
 }
 
-// Date utility functions similar to DateUtils in Kotlin
 private struct DateUtils {
   static func isAfter(_ date1: Date, _ date2: Date, _ skew: TimeInterval) -> Bool {
     return date1.timeIntervalSince(date2) > skew
@@ -864,7 +931,7 @@ private struct DateUtils {
 }
 
 // TimeChecks class implementation in Swift
-private class TimeChecks: JWTClaimsSetVerifier {
+internal class TimeChecks: JWTClaimsSetVerifier {
   private let skew: TimeInterval
   
   init(skew: TimeInterval) {
@@ -893,7 +960,8 @@ private class TimeChecks: JWTClaimsSetVerifier {
   }
 }
 
-private extension SiopOpenId4VPConfiguration {
+internal extension SiopOpenId4VPConfiguration {
+  
   func ensureValid(
     expectedClient: String?,
     expectedWalletNonce: String?,

@@ -15,13 +15,13 @@
  */
 import Foundation
 
-public class DependencyContainer: DIContainer {
+public final class DependencyContainer: DIContainer {
 
   // MARK: - Properties
 
   public static let shared: DIContainer = DependencyContainer()
-  private var dependencyInitializer: [String: () -> Any] = [:]
-  private var dependencyShared: [String: Any] = [:]
+  nonisolated(unsafe) private var dependencyInitializer: [String: () -> Any] = [:]
+  nonisolated(unsafe) private var dependencyShared: [String: Any] = [:]
 
   public func register<DependencyType, DependencyInstance>(
     type: DependencyType.Type,

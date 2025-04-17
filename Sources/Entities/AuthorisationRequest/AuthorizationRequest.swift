@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 /// An enumeration representing different types of authorization requests.
-public enum AuthorizationRequest {
+public enum AuthorizationRequest: Sendable {
   /// A not secured authorization request.
   case notSecured(data: ResolvedRequestData)
 
@@ -38,7 +37,7 @@ public extension AuthorizationRequest {
   /// - Parameters:
   ///   - authorizationRequestData: The authorization request data to process.
   init(
-    authorizationRequestData: AuthorisationRequestObject?,
+    authorizationRequestData: UnvalidatedRequestObject?,
     walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async throws {
     
@@ -107,11 +106,11 @@ public extension AuthorizationRequest {
   }
 
   private static func validateRequest(
-    _ authorizationRequestData: AuthorisationRequestObject,
+    _ authorizationRequestData: UnvalidatedRequestObject,
     _ walletConfiguration: SiopOpenId4VPConfiguration?
   ) async throws -> ValidatedSiopOpenId4VPRequest? {
-    if let request = authorizationRequestData.request {
-      return try await .init(
+    return if let request = authorizationRequestData.request {
+      try await .init(
         request: request,
         requestUriMethod: .init(
           method: authorizationRequestData.requestUriMethod
@@ -119,7 +118,7 @@ public extension AuthorizationRequest {
         walletConfiguration: walletConfiguration
       )
     } else if let requestUri = authorizationRequestData.requestUri {
-      return try await .init(
+      try await .init(
         requestUri: requestUri,
         requestUriMethod: .init(
           method: authorizationRequestData.requestUriMethod
@@ -128,7 +127,7 @@ public extension AuthorizationRequest {
         walletConfiguration: walletConfiguration
       )
     } else {
-      return try await .init(
+      try await .init(
         authorizationRequestData: authorizationRequestData,
         walletConfiguration: walletConfiguration
       )
@@ -141,14 +140,22 @@ public extension AuthorizationRequest {
   ) async throws -> ResolvedRequestData? {
     return try await .init(
       vpConfiguration: walletConfiguration?.vpConfiguration ?? .default(),
-      clientMetaDataResolver: ClientMetaDataResolver(fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)),
-      presentationDefinitionResolver: PresentationDefinitionResolver(fetcher: Fetcher(session: walletConfiguration?.session ?? URLSession.shared)),
+      clientMetaDataResolver: ClientMetaDataResolver(
+        fetcher: Fetcher(
+          session: walletConfiguration?.session ?? URLSession.shared
+        )
+      ),
+      presentationDefinitionResolver: PresentationDefinitionResolver(
+        fetcher: Fetcher(
+          session: walletConfiguration?.session ?? URLSession.shared
+        )
+      ),
       validatedAuthorizationRequest: validated
     )
   }
   
   private static func errorDetails(
-    _ authorizationRequestData: AuthorisationRequestObject? = nil,
+    _ authorizationRequestData: UnvalidatedRequestObject? = nil,
     _ validated: ValidatedSiopOpenId4VPRequest? = nil,
     _ walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async -> ErrorDispatchDetails? {
@@ -160,9 +167,9 @@ public extension AuthorizationRequest {
       )
     }
     
-    if let validated = validated,
+    return if let validated = validated,
        let responseMode = validated.responseMode {
-      return await .init(
+      await .init(
         responseMode: responseMode,
         nonce: validated.nonce,
         state: validated.state,
@@ -171,7 +178,7 @@ public extension AuthorizationRequest {
       )
       
     } else if let authorizationRequestData = authorizationRequestData {
-      return await .init(
+      await .init(
         responseMode: authorizationRequestData.validResponseMode,
         nonce: authorizationRequestData.nonce,
         state: authorizationRequestData.state,
@@ -179,12 +186,12 @@ public extension AuthorizationRequest {
         jarmSpec: try? jarmSpec()
       )
     } else {
-      return nil
+      nil
     }
   }
 }
 
-internal extension AuthorisationRequestObject {
+internal extension UnvalidatedRequestObject {
   var validResponseMode: ResponseMode {
     return (try? ResponseMode(authorizationRequestData: self)) ?? .none
   }

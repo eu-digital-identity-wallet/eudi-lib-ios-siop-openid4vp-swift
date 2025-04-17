@@ -109,13 +109,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       }
       
       // Obtain consent
+      let submission = TestsConstants.testPresentationSubmission
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(presentation!)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(
-          verifiablePresentations: [
-            .generic(presentation!)
-          ]
-        ),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
+        )
       )
       
       // Generate a direct post authorisation response
@@ -230,11 +232,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       }
       
       // Obtain consent
+      let submission = TestsConstants.testPresentationSubmission
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(presentation!)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(presentation!)
-        ]),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
+        )
       )
       
       // Generate a direct post authorisation response
@@ -333,14 +339,18 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       let resolved = request
       
       // Obtain consent
+      let submission: PresentationSubmission = .init(
+        id: "psId",
+        definitionID: "psId",
+        descriptorMap: []
+      )
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(TestsConstants.cbor)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
-        ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
         )
       )
       

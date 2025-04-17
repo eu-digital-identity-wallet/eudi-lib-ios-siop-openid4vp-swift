@@ -16,7 +16,7 @@
 import Foundation
 import Foundation
 
-public struct ErrorDispatchDetails {
+public struct ErrorDispatchDetails: Sendable {
   public let responseMode: ResponseMode
   public let nonce: String?
   public let state: String?

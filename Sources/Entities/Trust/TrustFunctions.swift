@@ -16,7 +16,7 @@
 import Foundation
 import X509
 
-func parseCertificates(from chain: [String]) -> [Certificate] {
+internal func parseCertificates(from chain: [String]) -> [Certificate] {
   chain.compactMap { serializedCertificate in
     guard let serializedData = Data(base64Encoded: serializedCertificate) else {
       return nil

@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum JarmSpec {
+public enum JarmSpec: Sendable {
   case resolution(holderId: String, jarmOption: JarmOption)
 }
 

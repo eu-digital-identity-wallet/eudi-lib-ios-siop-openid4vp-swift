@@ -64,7 +64,7 @@ final class JOSETests: DiXCTest {
       vpFormatsSupported: []
     )
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
+    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
     
     XCTAssertNotNil(authorizationRequestData)
     

@@ -17,7 +17,7 @@ import Foundation
 import PresentationExchange
 import SwiftyJSON
 
-public enum IdTokenType: String, Codable {
+public enum IdTokenType: String, Codable, Sendable {
   case subjectSignedIdToken = "subject_signed_id_token"
   case subjectSigned = "subject_signed"
   case attesterSigned = "attester_signed"
@@ -44,7 +44,7 @@ public enum IdTokenType: String, Codable {
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Throws: A `ValidatedAuthorizationError.invalidIdTokenType` if the id_token_type is missing,
   ///           or a `ValidatedAuthorizationError.unsupportedIdTokenType` if the id_token_type is unsupported.
-  public init(authorizationRequestData: AuthorisationRequestObject) throws {
+  public init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard let idTokenType = authorizationRequestData.idTokenType else {
       throw ValidationError.invalidIdTokenType
     }
