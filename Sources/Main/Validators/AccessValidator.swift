@@ -17,7 +17,7 @@ import Foundation
 import JOSESwift
 import X509
 
-public protocol AccessValidating {
+public protocol AccessValidating: Sendable {
   func validate(clientId: String?, jwt: JWTString) async throws
 }
 
