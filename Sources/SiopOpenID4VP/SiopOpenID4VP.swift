@@ -15,6 +15,7 @@
  */
 import Foundation
 @_exported import PresentationExchange
+import SwiftyJSON
 
 /**
  OpenID for Verifiable Presentations
@@ -35,9 +36,14 @@ public protocol SiopOpenID4VPType {
 public class SiopOpenID4VP: SiopOpenID4VPType {
 
   let walletConfiguration: SiopOpenId4VPConfiguration?
-
-  public init(walletConfiguration: SiopOpenId4VPConfiguration? = nil) {
+  let authorizatinRequestResolver: AuthorizationRequestResolving
+  
+  public init(
+    walletConfiguration: SiopOpenId4VPConfiguration? = nil,
+    authorizatinRequestResolver: AuthorizationRequestResolving = AuthorizationRequestResolver()
+  ) {
     self.walletConfiguration = walletConfiguration
+    self.authorizatinRequestResolver = authorizatinRequestResolver
     registerDependencies()
   }
 
@@ -96,10 +102,28 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
   }
 
   public func authorize(url: URL) async throws -> AuthorizationRequest {
-    try await .init(
+    
+    guard let walletConfiguration = walletConfiguration else {
+      throw ValidationError.missingConfiguration
+    }
+    
+    let unvalidatedRequest = UnvalidatedRequest.make(from: url.absoluteString)
+    switch unvalidatedRequest {
+    case .success(let request):
+      return try await authorizatinRequestResolver.authorize(
+        walletConfiguration: walletConfiguration,
+        unvalidatedRequest: request
+      )
+      
+    case .failure(let error):
+      throw ValidationError.validationError(error.localizedDescription)
+    }
+    /*
+    return try await .init(
       authorizationRequestData: .init(from: url),
       walletConfiguration: walletConfiguration
     )
+     */
   }
 
   /**
