@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import Foundation
-import SwiftyJSON
+@preconcurrency import SwiftyJSON
 
 /*
  *
  * https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-authorization-request
  */
-public struct UnvalidatedRequestObject: Codable {
+public struct UnvalidatedRequestObject: Codable, Sendable {
   public let responseType: String?
   public let responseUri: String?
   public let redirectUri: String?

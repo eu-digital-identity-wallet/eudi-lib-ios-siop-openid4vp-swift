@@ -18,7 +18,7 @@ import PresentationExchange
 
 extension ResolvedRequestData {
   /// A structure representing the data related to ID token and verifiable presentation (VP) token.
-  public struct IdAndVpTokenData {
+  public struct IdAndVpTokenData: Sendable {
     let idTokenType: IdTokenType
     let presentationQuery: PresentationQuery
     let presentationDefinition: PresentationDefinition

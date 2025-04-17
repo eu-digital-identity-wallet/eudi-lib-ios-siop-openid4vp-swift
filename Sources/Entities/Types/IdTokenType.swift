@@ -17,7 +17,7 @@ import Foundation
 import PresentationExchange
 import SwiftyJSON
 
-public enum IdTokenType: String, Codable {
+public enum IdTokenType: String, Codable, Sendable {
   case subjectSignedIdToken = "subject_signed_id_token"
   case subjectSigned = "subject_signed"
   case attesterSigned = "attester_signed"

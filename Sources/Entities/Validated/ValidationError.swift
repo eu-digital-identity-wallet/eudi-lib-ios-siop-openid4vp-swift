@@ -52,6 +52,9 @@ public enum ValidationError: AuthorizationRequestError, Equatable {
   case invalidRequestUriMethod
   case invalidUseOfBothRequestAndRequestUri
   case missingClientId
+  case missingConfiguration
+  case missingResponseType
+  case missingNonce
   
   public var errorDescription: String? {
     switch self {
@@ -127,6 +130,12 @@ public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".invalidUseOfBothRequestAndRequestUri"
     case .missingClientId:
       return ".missingClientId"
+    case .missingConfiguration:
+      return ".missingConfiguration"
+    case .missingResponseType:
+      return ".missingResponseType"
+    case .missingNonce:
+      return ".missingNonce"
     }
   }
 }

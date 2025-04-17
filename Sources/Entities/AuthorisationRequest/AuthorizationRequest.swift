@@ -16,7 +16,7 @@
 import Foundation
 
 /// An enumeration representing different types of authorization requests.
-public enum AuthorizationRequest {
+public enum AuthorizationRequest: Sendable {
   /// A not secured authorization request.
   case notSecured(data: ResolvedRequestData)
 

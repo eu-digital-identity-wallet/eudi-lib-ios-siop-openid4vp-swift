@@ -27,7 +27,7 @@ public enum FormatError: Error, LocalizedError {
   }
 }
 
-public struct Format: Hashable, Codable {
+public struct Format: Hashable, Codable, Sendable {
   
   public let format: String
   

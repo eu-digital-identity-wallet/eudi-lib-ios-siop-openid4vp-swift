@@ -17,7 +17,7 @@ import Foundation
 import PresentationExchange
 
 extension ValidatedSiopOpenId4VPRequest {
-  public struct IdAndVpTokenRequest {
+  public struct IdAndVpTokenRequest: Sendable {
     let idTokenType: IdTokenType
     let querySource: QuerySource
     let clientMetaDataSource: ClientMetaDataSource?

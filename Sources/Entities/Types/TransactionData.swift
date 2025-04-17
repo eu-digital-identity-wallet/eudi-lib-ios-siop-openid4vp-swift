@@ -18,7 +18,7 @@ import SwiftyJSON
 
 // MARK: - TransactionData
 
-public struct TransactionData: Codable {
+public struct TransactionData: Codable, Sendable {
   public let value: String
   
   public init(value: String) {

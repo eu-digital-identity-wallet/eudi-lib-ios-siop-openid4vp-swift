@@ -17,7 +17,7 @@ import Foundation
 import SwiftyJSON
 
 /// Represents an unvalidated authorization request.
-public enum UnvalidatedRequest {
+public enum UnvalidatedRequest: Sendable {
   
   case plain(UnvalidatedRequestObject)
   case jwtSecuredPassByValue(
@@ -36,7 +36,6 @@ public enum UnvalidatedRequest {
   public static func make(from uriStr: String) -> Result<UnvalidatedRequest, Error> {
     Result {
       guard
-        URL.isValid(uriStr),
         let components = URLComponents(string: uriStr)
       else {
         throw ValidationError.invalidUri

@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum QuerySource {
+public enum QuerySource: Sendable {
   case byPresentationDefinitionSource(PresentationDefinitionSource)
   case dcqlQuery(DCQL)
   case byScope(Scope)

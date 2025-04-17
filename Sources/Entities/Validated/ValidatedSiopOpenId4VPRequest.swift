@@ -20,7 +20,7 @@ import X509
 import SwiftyJSON
 
 // Enum defining the types of validated SIOP OpenID4VP requests
-public enum ValidatedSiopOpenId4VPRequest {
+public enum ValidatedSiopOpenId4VPRequest: Sendable {
   case idToken(request: IdTokenRequest)
   case vpToken(request: VpTokenRequest)
   case idAndVpToken(request: IdAndVpTokenRequest)
@@ -649,7 +649,7 @@ public extension ValidatedSiopOpenId4VPRequest {
 }
 
 // Private extension for ValidatedSiopOpenId4VPRequest
-private extension ValidatedSiopOpenId4VPRequest {
+internal extension ValidatedSiopOpenId4VPRequest {
   
   private static func verifierAttestation(
     jwt: JWTString,
@@ -931,7 +931,7 @@ private struct DateUtils {
 }
 
 // TimeChecks class implementation in Swift
-private class TimeChecks: JWTClaimsSetVerifier {
+internal class TimeChecks: JWTClaimsSetVerifier {
   private let skew: TimeInterval
   
   init(skew: TimeInterval) {
@@ -960,7 +960,7 @@ private class TimeChecks: JWTClaimsSetVerifier {
   }
 }
 
-private extension SiopOpenId4VPConfiguration {
+internal extension SiopOpenId4VPConfiguration {
   
   func ensureValid(
     expectedClient: String?,

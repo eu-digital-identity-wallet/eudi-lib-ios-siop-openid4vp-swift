@@ -17,7 +17,7 @@ import Foundation
 import PresentationExchange
 
 extension ResolvedRequestData {
-  public struct VpTokenData {
+  public struct VpTokenData: Sendable {
     public let presentationQuery: PresentationQuery
     public let clientMetaData: ClientMetaData.Validated?
     public let client: Client

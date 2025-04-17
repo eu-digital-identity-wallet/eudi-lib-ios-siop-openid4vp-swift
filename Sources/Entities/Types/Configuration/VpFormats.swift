@@ -64,7 +64,7 @@ public struct MsoMdocTO: Codable, Equatable, Sendable {
   public let algorithms: [String]?
   
   enum CodingKeys: String, CodingKey {
-    case algorithms
+    case algorithms = "alg"
   }
   
   public init(

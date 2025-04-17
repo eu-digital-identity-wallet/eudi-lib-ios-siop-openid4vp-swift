@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum ResolvedRequestData {
+public enum ResolvedRequestData: Sendable {
   case idToken(request: IdTokenData)
   case vpToken(request: VpTokenData)
   case idAndVpToken(request: IdAndVpTokenData)
@@ -163,6 +163,139 @@ public extension ResolvedRequestData {
       let validator = ClientMetaDataValidator()
       let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData)
       
+      let common = VpFormats.common(
+        request.vpFormats,
+        vpConfiguration.vpFormats
+      ) ?? request.vpFormats
+      
+      switch request.querySource {
+      case .byPresentationDefinitionSource(let source):
+        guard
+          let presentationDefinition = try? await presentationDefinitionResolver.resolve(source: source).get()
+        else {
+          throw ResolvedAuthorisationError.invalidPresentationDefinitionData
+        }
+        
+        let presentationQuery: PresentationQuery = .byPresentationDefinition(presentationDefinition)
+        
+        self = .idAndVpToken(request: .init(
+          idTokenType: request.idTokenType,
+          presentationQuery: presentationQuery,
+          presentationDefinition: presentationDefinition,
+          clientMetaData: validatedClientMetaData,
+          client: request.client,
+          nonce: request.nonce,
+          responseMode: request.responseMode,
+          state: request.state,
+          scope: request.scope,
+          vpFormats: common,
+          transactionData: try Self.parseTransactionData(
+            transactionData: request.transactionData,
+            vpConfiguration: vpConfiguration,
+            presentationQuery: presentationQuery
+          )
+        ))
+      case .dcqlQuery(let dcql):
+        let presentationQuery: PresentationQuery = .byDigitalCredentialsQuery(dcql)
+        
+        self = .vpToken(
+          request: .init(
+            presentationQuery: presentationQuery,
+            clientMetaData: validatedClientMetaData,
+            client: request.client,
+            nonce: request.nonce,
+            responseMode: request.responseMode,
+            state: request.state,
+            vpFormats: common,
+            transactionData: try Self.parseTransactionData(
+              transactionData: request.transactionData,
+              vpConfiguration: vpConfiguration,
+              presentationQuery: presentationQuery
+            )
+          )
+        )
+      default: throw ValidationError.validationError("Only presentation definition supported for now")
+      }
+    }
+  }
+  
+  /// Initializes a `ResolvedRequestData` instance with the provided parameters.
+  ///
+  /// - Parameters:
+  ///   - clientMetaDataResolver: The resolver for client metadata.
+  ///   - presentationDefinitionResolver: The resolver for presentation definition.
+  ///   - validatedAuthorizationRequest: The validated SiopOpenId4VPRequest.
+  init(
+    vpConfiguration: VPConfiguration,
+    validatedClientMetaData: ClientMetaData.Validated,
+    presentationDefinitionResolver: PresentationDefinitionResolver,
+    validatedAuthorizationRequest: ValidatedSiopOpenId4VPRequest
+  ) async throws {
+    switch validatedAuthorizationRequest {
+    case .idToken(let request):
+      self = .idToken(request: .init(
+        idTokenType: request.idTokenType,
+        clientMetaData: validatedClientMetaData,
+        client: request.client,
+        nonce: request.nonce,
+        responseMode: request.responseMode,
+        state: request.state,
+        scope: request.scope
+      ))
+    case .vpToken(let request):
+      let common = VpFormats.common(
+        request.vpFormats,
+        vpConfiguration.vpFormats
+      ) ?? request.vpFormats
+      
+      switch request.querySource {
+      case .byPresentationDefinitionSource(let source):
+        guard
+          let presentationDefinition = try? await presentationDefinitionResolver.resolve(source: source).get()
+        else {
+          throw ResolvedAuthorisationError.invalidPresentationDefinitionData
+        }
+        
+        let presentationQuery: PresentationQuery = .byPresentationDefinition(presentationDefinition)
+        
+        self = .vpToken(
+          request: .init(
+            presentationQuery: presentationQuery,
+            clientMetaData: validatedClientMetaData,
+            client: request.client,
+            nonce: request.nonce,
+            responseMode: request.responseMode,
+            state: request.state,
+            vpFormats: common,
+            transactionData: try Self.parseTransactionData(
+              transactionData: request.transactionData,
+              vpConfiguration: vpConfiguration,
+              presentationQuery: presentationQuery
+            )
+          )
+        )
+      case .dcqlQuery(let dcql):
+        let presentationQuery: PresentationQuery = .byDigitalCredentialsQuery(dcql)
+        
+        self = .vpToken(
+          request: .init(
+            presentationQuery: presentationQuery,
+            clientMetaData: validatedClientMetaData,
+            client: request.client,
+            nonce: request.nonce,
+            responseMode: request.responseMode,
+            state: request.state,
+            vpFormats: common,
+            transactionData: try Self.parseTransactionData(
+              transactionData: request.transactionData,
+              vpConfiguration: vpConfiguration,
+              presentationQuery: presentationQuery
+            )
+          )
+        )
+      default: throw ValidationError.validationError("Only presentation definition supported for now")
+      }
+    case .idAndVpToken(request: let request):
       let common = VpFormats.common(
         request.vpFormats,
         vpConfiguration.vpFormats
