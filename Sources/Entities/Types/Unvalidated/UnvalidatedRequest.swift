@@ -122,12 +122,13 @@ internal struct QueryHelper {
       presentationDefinition: json(Constants.PRESENTATION_DEFINITION)?.rawString(options: []),
       presentationDefinitionUri: string(Constants.PRESENTATION_DEFINITION_URI),
       dcqlQuery: json(Constants.DCQL_QUERY),
-      clientMetaData: json("client_metadata")?.string,
+      clientMetaData: json("client_metadata")?.dictionaryObject?.toJSONString(),
       clientId: string("client_id"),
       nonce: string("nonce"),
       scope: string("scope"),
       responseMode: string("response_mode"),
       state: string("state"),
+      idTokenType: string("id_token_type"),
       transactionData: jsonArray(Constants.TRANSACTION_DATA)
     )
   }
