@@ -139,7 +139,7 @@ internal actor ClientAuthenticator {
     switch scheme {
     case .preregistered(let clients):
       guard let client = clients[clientId] else {
-        throw ValidationError.validationError("preregistered client nort found")
+        throw ValidationError.validationError("preregistered client not found")
       }
       return .preRegistered(
         clientId: clientId,

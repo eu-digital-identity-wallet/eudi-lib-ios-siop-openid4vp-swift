@@ -131,6 +131,8 @@ public struct Fetcher<Element: Codable & Sendable>: Fetching {
 
         return .failure(.decodingError(error))
       }
+    } catch {
+      throw FetchError.networkError(error)
     }
   }
 }

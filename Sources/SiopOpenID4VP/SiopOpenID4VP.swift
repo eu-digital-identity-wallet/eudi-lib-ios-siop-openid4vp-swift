@@ -25,7 +25,6 @@ import SwiftyJSON
  
  */
 public protocol SiopOpenID4VPType {
-  func process(url: URL) async throws -> PresentationDefinition
   func authorize(url: URL) async throws -> AuthorizationRequest
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome
@@ -47,60 +46,6 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
     registerDependencies()
   }
 
-  /**
-   Processes an authorisation URL.
-   
-   - Reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-authorization-request
-
-   - Parameters:
-      - url: A valid URL
-
-   - Returns: A PresentationDefinition object
-   
-   - Throws: An error if it cannot resolve a presentation definition
-   */
-  public func process(url: URL) async throws -> PresentationDefinition {
-    let authorizationRequestData = UnvalidatedRequestObject(from: url)
-
-    let authorizationRequest = try await AuthorizationRequest(
-      authorizationRequestData: authorizationRequestData,
-      walletConfiguration: walletConfiguration
-    )
-
-    switch authorizationRequest {
-    case .jwt(request: let data):
-      switch data {
-      case .idToken:
-        throw ValidationError.unsupportedResponseType(".idToken")
-      case .vpToken(let request):
-        switch request.presentationQuery {
-        case .byPresentationDefinition(let presentationDefinition):
-          return presentationDefinition
-        case .byDigitalCredentialsQuery(_):
-          throw ValidationError.validationError("Insupported presentation query")
-        }
-      case .idAndVpToken(let request):
-        return request.presentationDefinition
-      }
-    case .notSecured(let data):
-      switch data {
-      case .idToken:
-        throw ValidationError.unsupportedResponseType(".idToken")
-      case .vpToken(let request):
-        switch request.presentationQuery {
-        case .byPresentationDefinition(let presentationDefinition):
-          return presentationDefinition
-        case .byDigitalCredentialsQuery(_):
-          throw ValidationError.validationError("Insupported presentation query")
-        }
-      case .idAndVpToken(let request):
-        return request.presentationDefinition
-      }
-    case .invalidResolution:
-      throw ValidationError.validationError("Invalid resolution")
-    }
-  }
-
   public func authorize(url: URL) async throws -> AuthorizationRequest {
     
     guard let walletConfiguration = walletConfiguration else {
@@ -118,12 +63,6 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
     case .failure(let error):
       throw ValidationError.validationError(error.localizedDescription)
     }
-    /*
-    return try await .init(
-      authorizationRequestData: .init(from: url),
-      walletConfiguration: walletConfiguration
-    )
-     */
   }
 
   /**
