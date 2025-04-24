@@ -17,6 +17,10 @@ import Foundation
 import CryptoKit
 
 public struct Constants {
+  
+  public static let WALLET_NONCE_FORM_PARAM = "wallet_nonce"
+  public static let WALLET_METADATA_FORM_PARAM = "wallet_metadata"
+  
   public static let CLIENT_ID = "client_id"
   public static let NONCE = "nonce"
   public static let SCOPE = "scope"
