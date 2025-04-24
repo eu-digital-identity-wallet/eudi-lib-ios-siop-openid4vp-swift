@@ -28,131 +28,21 @@ public enum AuthorizationRequest: Sendable {
     error: AuthorizationRequestError,
     dispatchDetails: ErrorDispatchDetails?
   )
+  
+  public var resolved: ResolvedRequestData? {
+    return switch self {
+    case .notSecured(let request):
+      request
+    case .jwt(let request):
+      request
+    case .invalidResolution:
+      nil
+    }
+  }
 }
 
 /// An extension providing an initializer for the `AuthorizationRequest` enumeration.
 public extension AuthorizationRequest {
-  
-  /// Initializes an `AuthorizationRequest` using the provided authorization request data.
-  /// - Parameters:
-  ///   - authorizationRequestData: The authorization request data to process.
-  init(
-    authorizationRequestData: UnvalidatedRequestObject?,
-    walletConfiguration: SiopOpenId4VPConfiguration? = nil
-  ) async throws {
-    
-    var validated: ValidatedSiopOpenId4VPRequest? = nil
-    var resolved: ResolvedRequestData? = nil
-    
-    guard let authorizationRequestData = authorizationRequestData else {
-      let details: ErrorDispatchDetails? = switch walletConfiguration?.errorDispatchPolicy {
-      case .none:
-        nil
-      case .allClients:
-        await Self.errorDetails()
-      case .onlyAuthenticatedClients:
-        nil
-      }
-      self = .invalidResolution(
-        error: ValidationError.noAuthorizationData,
-        dispatchDetails: details
-      )
-      return
-    }
-    
-    guard !authorizationRequestData.hasConflicts else {
-      self = await .invalidResolution(
-        error: ValidationError.conflictingData,
-        dispatchDetails: Self.errorDetails(authorizationRequestData)
-      )
-      return
-    }
-    
-    do {
-      validated = try await Self.validateRequest(authorizationRequestData, walletConfiguration)
-      
-      guard let validated = validated else {
-        throw ValidationError.validationError("Validated data are nil")
-      }
-      
-      resolved = try await Self.resolveRequest(validated, walletConfiguration)
-      guard let resolved = resolved else {
-        throw ValidationError.validationError("Resolved data are nil")
-      }
-      
-      self = authorizationRequestData.requestUri != nil ? .jwt(request: resolved) : .notSecured(data: resolved)
-      
-    } catch let error as AuthorizationRequestError {
-      self = await .invalidResolution(
-        error: error,
-        dispatchDetails: Self.errorDetails(
-          authorizationRequestData,
-          validated,
-          walletConfiguration
-        )
-      )
-    } catch {
-      self = await .invalidResolution(
-        error: ValidationError.validationError(
-          error.localizedDescription
-        ),
-        dispatchDetails: Self.errorDetails(
-          authorizationRequestData,
-          validated,
-          walletConfiguration
-        )
-      )
-    }
-  }
-
-  private static func validateRequest(
-    _ authorizationRequestData: UnvalidatedRequestObject,
-    _ walletConfiguration: SiopOpenId4VPConfiguration?
-  ) async throws -> ValidatedSiopOpenId4VPRequest? {
-    return if let request = authorizationRequestData.request {
-      try await .init(
-        request: request,
-        requestUriMethod: .init(
-          method: authorizationRequestData.requestUriMethod
-        ),
-        walletConfiguration: walletConfiguration
-      )
-    } else if let requestUri = authorizationRequestData.requestUri {
-      try await .init(
-        requestUri: requestUri,
-        requestUriMethod: .init(
-          method: authorizationRequestData.requestUriMethod
-        ),
-        clientId: authorizationRequestData.clientId,
-        walletConfiguration: walletConfiguration
-      )
-    } else {
-      try await .init(
-        authorizationRequestData: authorizationRequestData,
-        walletConfiguration: walletConfiguration
-      )
-    }
-  }
-
-  private static func resolveRequest(
-    _ validated: ValidatedSiopOpenId4VPRequest,
-    _ walletConfiguration: SiopOpenId4VPConfiguration?
-  ) async throws -> ResolvedRequestData? {
-    return try await .init(
-      vpConfiguration: walletConfiguration?.vpConfiguration ?? .default(),
-      clientMetaDataResolver: ClientMetaDataResolver(
-        fetcher: Fetcher(
-          session: walletConfiguration?.session ?? URLSession.shared
-        )
-      ),
-      presentationDefinitionResolver: PresentationDefinitionResolver(
-        fetcher: Fetcher(
-          session: walletConfiguration?.session ?? URLSession.shared
-        )
-      ),
-      validatedAuthorizationRequest: validated
-    )
-  }
   
   private static func errorDetails(
     _ authorizationRequestData: UnvalidatedRequestObject? = nil,
