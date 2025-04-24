@@ -51,11 +51,14 @@ internal struct JWTDecoder {
       dcqlQuery = raw
     }
     
+    let pd = json["presentation_definition"].dictionaryObject?.toJSONString() ?? json["presentation_definition"].string
+    let transactionData = json["transaction_data"].arrayObject as? [String]
+
     return UnvalidatedRequestObject(
       responseType: json["response_type"].string,
       responseUri: json["response_uri"].string,
       redirectUri: json["redirect_uri"].string,
-      presentationDefinition: json["presentation_definition"].string,
+      presentationDefinition: pd,
       presentationDefinitionUri: json["presentation_definition_uri"].string,
       dcqlQuery: dcqlQuery,
       request: json["request"].string,
@@ -71,11 +74,10 @@ internal struct JWTDecoder {
       state: json["state"].string,
       idTokenType: json["id_token_type"].string,
       supportedAlgorithm: json["supported_algorithm"].string,
-      transactionData: json["transaction_data"].arrayObject as? [String]
+      transactionData: transactionData
     )
   }
 }
-
 
 internal actor RequestAuthenticator {
   
