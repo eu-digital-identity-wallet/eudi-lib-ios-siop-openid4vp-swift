@@ -32,7 +32,9 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
   ) async throws -> AuthorizationRequest {
     
     let clientMetaDataValidator: ClientMetaDataValidator = .init()
-    let clientAuthenticator: ClientAuthenticator = .init(config: walletConfiguration)
+    let clientAuthenticator: ClientAuthenticator = .init(
+      config: walletConfiguration
+    )
     let requestAuthenticator: RequestAuthenticator = .init(
       config: walletConfiguration,
       clientAuthenticator: clientAuthenticator
@@ -99,7 +101,9 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     config: SiopOpenId4VPConfiguration,
     unvalidatedRequest: UnvalidatedRequest
   ) async throws -> FetchedRequest {
-    try await RequestFetcher(config: config).fetchRequest(request: unvalidatedRequest)
+    try await RequestFetcher(
+      config: config
+    ).fetchRequest(request: unvalidatedRequest)
   }
   
   private func authenticateRequest(
@@ -108,7 +112,9 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     config: SiopOpenId4VPConfiguration,
     fetchedRequest: FetchedRequest
   ) async throws -> AuthenticatedRequest {
-    return try await requestAuthenticator.authenticate(fetchRequest: fetchedRequest)
+    return try await requestAuthenticator.authenticate(
+      fetchRequest: fetchedRequest
+    )
   }
   
   private func validateClientMetaData(
@@ -118,7 +124,8 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     guard let clientMetaData else {
       throw ValidationError.invalidClientMetadata
     }
-    return try await validator.validate(clientMetaData: .init(metaDataString: clientMetaData))
+    let metaData: ClientMetaData = try .init(metaDataString: clientMetaData)
+    return try await validator.validate(clientMetaData: metaData)
   }
   
   private func createValidatedAuthorizationRequest(
