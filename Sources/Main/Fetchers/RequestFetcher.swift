@@ -19,9 +19,6 @@ import SwiftyJSON
 
 internal actor RequestFetcher {
   
-  static let WALLET_NONCE_FORM_PARAM = "wallet_nonce"
-  static let WALLET_METADATA_FORM_PARAM = "wallet_metadata"
-  
   let config: SiopOpenId4VPConfiguration
   
   init(config: SiopOpenId4VPConfiguration) {
@@ -36,7 +33,11 @@ internal actor RequestFetcher {
     case .jwtSecuredPassByValue(let clientId, let jwt):
       return .jwtSecured(clientId: clientId, jwt: jwt)
     case .jwtSecuredPassByReference(let clientId, let jwtURI, let requestURIMethod):
-      let (jwt, nonce) = try await fetchJwt(clientId: clientId, jwtURI: jwtURI, requestURIMethod: requestURIMethod)
+      let jwt = try await fetchJwt(
+        clientId: clientId,
+        jwtURI: jwtURI,
+        requestURIMethod: requestURIMethod
+      )
       return .jwtSecured(clientId: clientId, jwt: jwt)
     }
   }
@@ -45,14 +46,14 @@ internal actor RequestFetcher {
     clientId: String,
     jwtURI: URL,
     requestURIMethod: RequestUriMethod?
-  ) async throws -> (jwt: String, walletNonce: String?) {
+  ) async throws -> String {
     let method = requestURIMethod ?? .GET
     return try await getJWT(
       requestUriMethod: method,
       config: config,
       requestUrl: jwtURI,
       clientId: clientId
-    )
+    ).jwt
   }
   
   private func getJWT(
@@ -86,7 +87,8 @@ internal actor RequestFetcher {
       fetcher: Fetcher(
         session: config?.session ?? URLSession.shared
       ),
-      requestUrl: requestUrl)
+      requestUrl: requestUrl
+    )
   }
   
   fileprivate struct ResultType: Codable {}
@@ -159,12 +161,12 @@ internal actor RequestFetcher {
     // Building a combined JSON object
     var combined: [String: Any] = [:]
     if let walletMetaData = walletMetaData {
-      combined[Self.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject?.toJSONString()
+      combined[Constants.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject?.toJSONString()
     }
     
     // Convert nonce to JSON and add to combined JSON
     if let nonce = nonce {
-      combined[Self.WALLET_NONCE_FORM_PARAM] = nonce
+      combined[Constants.WALLET_NONCE_FORM_PARAM] = nonce
     }
     
     let post = VerifierFormPost(
@@ -262,6 +264,72 @@ internal actor RequestFetcher {
       }
     } else {
       return string
+    }
+  }
+}
+
+internal extension SiopOpenId4VPConfiguration {
+  
+  func ensureValid(
+    expectedClient: String?,
+    expectedWalletNonce: String?,
+    jwt: JWTString
+  ) throws {
+    
+    let jws = try JWS(compactSerialization: jwt)
+    
+    guard let expectedClient = expectedClient else {
+      throw ValidationError.validationError("expectedClient should not be nil")
+    }
+    
+    guard let jwsClientID = getValueForKey(
+      from: jwt,
+      key: "client_id"
+    ) as? String else {
+      throw ValidationError.validationError("client_id should not be nil")
+    }
+    
+    let id = try? VerifierId.parse(clientId: jwsClientID).get()
+    let expectedId = try? VerifierId.parse(clientId: expectedClient).get()
+    guard id?.originalClientId == expectedId?.originalClientId else {
+      throw ValidationError.validationError("client_id's do not match")
+    }
+    
+    if expectedWalletNonce != nil {
+      guard let jwsNonce = getValueForKey(
+        from: jwt,
+        key: Constants.WALLET_NONCE_FORM_PARAM
+      ) as? String else {
+        throw ValidationError.validationError("nonce should not be nil")
+      }
+      
+      guard jwsNonce == expectedWalletNonce else {
+        throw ValidationError.validationError("nonce's do not match")
+      }
+    }
+    
+    guard let algorithm = jws.header.algorithm else {
+      throw ValidationError.validationError("algorithm should not be nil")
+    }
+    
+    guard jarConfiguration.supportedAlgorithms.contains(where: { $0.name == algorithm.rawValue }) else {
+      throw ValidationError.validationError("nonce's do not match")
+    }
+  }
+  
+  func getValueForKey(from jwtString: String, key: String) -> Any? {
+    do {
+      let jwt = try JWS(compactSerialization: jwtString)
+      let payloadData = jwt.payload.data()
+      
+      let jsonObject = try JSONSerialization.jsonObject(with: payloadData, options: [])
+      guard let payloadDict = jsonObject as? [String: Any] else {
+        return nil
+      }
+      return payloadDict[key]
+      
+    } catch {
+      return nil
     }
   }
 }
