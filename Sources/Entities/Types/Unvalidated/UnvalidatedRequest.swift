@@ -115,14 +115,16 @@ internal struct QueryHelper {
   }
   
   func parseUnsecured() throws -> UnvalidatedRequestObject {
+    let clientMetaData = json("client_metadata")?.dictionaryObject?.toJSONString() ?? json("client_metadata")?.string
+    let pd = json(Constants.PRESENTATION_DEFINITION)?.rawString(options: []) ?? json(Constants.PRESENTATION_DEFINITION)?.dictionaryObject?.toJSONString() ?? json(Constants.PRESENTATION_DEFINITION)?.string
     return .init(
       responseType: string("response_type"),
       responseUri: string(Constants.RESPONSE_URI),
       redirectUri: string("redirect_uri"),
-      presentationDefinition: json(Constants.PRESENTATION_DEFINITION)?.rawString(options: []),
+      presentationDefinition: pd,
       presentationDefinitionUri: string(Constants.PRESENTATION_DEFINITION_URI),
       dcqlQuery: json(Constants.DCQL_QUERY),
-      clientMetaData: json("client_metadata")?.dictionaryObject?.toJSONString(),
+      clientMetaData: clientMetaData,
       clientId: string("client_id"),
       nonce: string("nonce"),
       scope: string("scope"),
