@@ -29,15 +29,21 @@ public extension PresentationDefinitionSource {
       self = .fetchByReference(url: uri)
     } else if let presentationDefinitionString = authorizationRequestObject[Constants.PRESENTATION_DEFINITION].string {
       
-      guard let jsonData = presentationDefinitionString.data(using: .utf8) else {
-        throw PresentationError.invalidPresentationDefinition
-      }
+      let parser = Parser()
+      let result: Result<Either<PresentationDefinition, PresentationDefinitionContainer>, ParserError> = parser.decode(
+        json: presentationDefinitionString
+      )
       
-      if let container = try? JSONDecoder().decode(PresentationDefinitionContainer.self, from: jsonData) {
-        self = .passByValue(presentationDefinition: container.definition)
-      } else {
-        let definition = try JSONDecoder().decode(PresentationDefinition.self, from: jsonData)
-        self = .passByValue(presentationDefinition: definition)
+      switch result {
+      case .success(let presentationDefinition):
+        switch presentationDefinition {
+        case .left(let left):
+          self = .passByValue(presentationDefinition: left)
+        case .right(let right):
+          self = .passByValue(presentationDefinition: right.definition)
+        }
+      case .failure:
+        throw PresentationError.invalidPresentationDefinition
       }
       
     } else if let scope = authorizationRequestObject[Constants.SCOPE].string,
@@ -59,15 +65,22 @@ public extension PresentationDefinitionSource {
       }
 
       let parser = Parser()
-      let result: Result<PresentationDefinitionContainer, ParserError> = parser.decode(
+      let result: Result<Either<PresentationDefinition, PresentationDefinitionContainer>, ParserError> = parser.decode(
         json: presentationDefinitionString
       )
-      guard
-        let presentationDefinition = try? result.get().definition
-      else {
+      
+      switch result {
+      case .success(let presentationDefinition):
+        switch presentationDefinition {
+        case .left(let left):
+          self = .passByValue(presentationDefinition: left)
+        case .right(let right):
+          self = .passByValue(presentationDefinition: right.definition)
+        }
+      case .failure:
         throw PresentationError.invalidPresentationDefinition
       }
-      self = .passByValue(presentationDefinition: presentationDefinition)
+      
     } else if let presentationDefinitionUri = authorizationRequestData.presentationDefinitionUri,
               let uri = URL(string: presentationDefinitionUri) {
       self = .fetchByReference(url: uri)
