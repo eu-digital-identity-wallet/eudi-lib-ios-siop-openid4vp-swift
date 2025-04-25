@@ -25,7 +25,7 @@ import SwiftyJSON
  
  */
 public protocol SiopOpenID4VPType {
-  func authorize(url: URL) async throws -> AuthorizationRequest
+  func authorize(url: URL) async -> AuthorizationRequest
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome
   func submit()
@@ -46,22 +46,30 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
     registerDependencies()
   }
 
-  public func authorize(url: URL) async throws -> AuthorizationRequest {
+  public func authorize(url: URL) async -> AuthorizationRequest {
     
     guard let walletConfiguration = walletConfiguration else {
-      throw ValidationError.missingConfiguration
+      return .invalidResolution(
+        error: ValidationError.nonDispatchable(
+          ValidationError.missingConfiguration
+        ),
+        dispatchDetails: nil
+      )
     }
     
     let unvalidatedRequest = UnvalidatedRequest.make(from: url.absoluteString)
     switch unvalidatedRequest {
     case .success(let request):
-      return try await authorizatinRequestResolver.authorize(
+      return await authorizatinRequestResolver.resolve(
         walletConfiguration: walletConfiguration,
         unvalidatedRequest: request
       )
       
     case .failure(let error):
-      throw ValidationError.validationError(error.localizedDescription)
+      return .invalidResolution(
+        error: ValidationError.validationError(error.localizedDescription),
+        dispatchDetails: nil
+      )
     }
   }
 
