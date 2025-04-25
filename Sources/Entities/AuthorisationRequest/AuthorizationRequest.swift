@@ -41,46 +41,6 @@ public enum AuthorizationRequest: Sendable {
   }
 }
 
-/// An extension providing an initializer for the `AuthorizationRequest` enumeration.
-public extension AuthorizationRequest {
-  
-  private static func errorDetails(
-    _ authorizationRequestData: UnvalidatedRequestObject? = nil,
-    _ validated: ValidatedRequestData? = nil,
-    _ walletConfiguration: SiopOpenId4VPConfiguration? = nil
-  ) async -> ErrorDispatchDetails? {
-    
-    func jarmSpec() async throws -> JarmSpec {
-      try await JarmSpec(
-        clientMetaData: validated?.clientMetaData(),
-        walletOpenId4VPConfig: walletConfiguration
-      )
-    }
-    
-    return if let validated = validated,
-       let responseMode = validated.responseMode {
-      await .init(
-        responseMode: responseMode,
-        nonce: validated.nonce,
-        state: validated.state,
-        clientId: validated.clientId,
-        jarmSpec: try? jarmSpec()
-      )
-      
-    } else if let authorizationRequestData = authorizationRequestData {
-      await .init(
-        responseMode: authorizationRequestData.validResponseMode,
-        nonce: authorizationRequestData.nonce,
-        state: authorizationRequestData.state,
-        clientId: validated?.clientId,
-        jarmSpec: try? jarmSpec()
-      )
-    } else {
-      nil
-    }
-  }
-}
-
 internal extension UnvalidatedRequestObject {
   var validResponseMode: ResponseMode {
     return (try? ResponseMode(authorizationRequestData: self)) ?? .none

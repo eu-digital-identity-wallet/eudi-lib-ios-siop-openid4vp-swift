@@ -75,10 +75,10 @@ requests mentioned aforementioned) and in addition gather from Verifier addition
 reference (such as `presentation_definition_uri`, etc)
 
 The object that captures the aforementioned functionality is 
-[ResolvedSiopOpenId4VPRequestData](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/Entities/Resolved/ResolvedRequestData.swift)
+[ResolvedRequestData](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/Entities/Resolved/ResolvedRequestData.swift)
 
 
-async/await version:
+`async/await` version:
 
 ```swift
 import SiopOpenID4VP
@@ -91,23 +91,6 @@ let result = try await sdk.authorization(url: authorizationRequestUri)
 switch result {
     ...
 }
-```
-
-Combine version:
-
-```swift
-import SiopOpenID4VP
-
-let authorizationRequestUri : URL = ...
-
-let sdk = SiopOpenID4VP(walletConfiguration:...)
-sdk.authorizationPublisher(for: authorizationRequestUri)
-    .sink { completion in
-    ...
-    } receiveValue: { authorizationRequest in
-    ...
-    }
-    .store(...)
 ```
 
 ### Holder's consensus, Handling of a valid authorization request
@@ -143,7 +126,7 @@ let response = try AuthorizationResponse(
 The final step, of processing an authorization request, is to dispatch to the verifier the authorization response.
 Depending on the `response_mode` that the verifier included in his authorization request, this is done either
 * via a direct post (when `response_mode` is `direct_post` or `direct_post.jwt`), or
-* by forming an appropriate `redirect_uri` (when response mode is `fragment` or `fragment.jwt`)
+* by forming an appropriate `redirect_uri` (when response mode is `fragment` or `fragment.jwt`) _not supported yet_
 
 Library tackles this dispatching via the Dispatcher class.
 
@@ -223,6 +206,17 @@ According to OpenId4VP, verifier may pass the `presentation_definition` either
 * [using scope](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-using-scope-parameter-to-re)
 
 Library supports all these options
+
+## DCQL
+
+The Verifier articulated requirements of the Verifiable Credential(s) that are requested, are provided using
+the `dcql_query` parameter that contains a [DCQL Query](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-6-2) JSON object.
+
+According to OpenId4VP, verifier may pass the `dcql_query` either
+
+* [by value](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-5.1-2.6)
+* [using scope](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-5.6)
+
 
 ## Client metadata in Authorization Request
 According to [OpenId4VP](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-authorization-request) verifier may pass his metadata (client metadata) either

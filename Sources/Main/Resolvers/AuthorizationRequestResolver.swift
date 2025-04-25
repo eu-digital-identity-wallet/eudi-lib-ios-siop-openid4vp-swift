@@ -63,9 +63,15 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         fetchedRequest: fetchedRequest
       )
     } catch {
+      let dispatchDetails: ErrorDispatchDetails? = switch walletConfiguration.errorDispatchPolicy {
+      case .allClients:
+        optionalDispatchDetails(fetchedRequest: fetchedRequest)
+      case .onlyAuthenticatedClients:
+        nil
+      }
       return .invalidResolution(
         error: ValidationError.validationError(error.localizedDescription),
-        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+        dispatchDetails: dispatchDetails
       )
     }
     
