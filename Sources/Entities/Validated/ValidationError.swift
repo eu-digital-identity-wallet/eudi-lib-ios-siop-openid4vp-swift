@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum ValidationError: AuthorizationRequestError, Equatable {
+indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case validationError(String)
   case unsupportedClientIdScheme(String?)
   case unsupportedResponseType(String?)
@@ -55,6 +55,7 @@ public enum ValidationError: AuthorizationRequestError, Equatable {
   case missingConfiguration
   case missingResponseType
   case missingNonce
+  case nonDispatchable(ValidationError)
   
   public var errorDescription: String? {
     switch self {
@@ -136,6 +137,8 @@ public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".missingResponseType"
     case .missingNonce:
       return ".missingNonce"
+    case .nonDispatchable(let error):
+      return ".nonDispatchable \(error.localizedDescription)"
     }
   }
 }
