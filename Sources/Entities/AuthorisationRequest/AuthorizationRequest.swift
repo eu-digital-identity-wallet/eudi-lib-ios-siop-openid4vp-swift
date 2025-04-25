@@ -46,7 +46,7 @@ public extension AuthorizationRequest {
   
   private static func errorDetails(
     _ authorizationRequestData: UnvalidatedRequestObject? = nil,
-    _ validated: ValidatedSiopOpenId4VPRequest? = nil,
+    _ validated: ValidatedRequestData? = nil,
     _ walletConfiguration: SiopOpenId4VPConfiguration? = nil
   ) async -> ErrorDispatchDetails? {
     

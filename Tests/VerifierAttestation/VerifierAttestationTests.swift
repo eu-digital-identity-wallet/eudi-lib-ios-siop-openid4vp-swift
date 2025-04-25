@@ -19,6 +19,24 @@ import JOSESwift
 
 @testable import SiopOpenID4VP
 
+private let config: SiopOpenId4VPConfiguration = .init(
+  subjectSyntaxTypesSupported: [
+    .decentralizedIdentifier,
+    .jwkThumbprint
+  ],
+  preferredSubjectSyntaxType: .jwkThumbprint,
+  decentralizedIdentifier: try! .init(
+    rawValue: "did:example:123"
+  ),
+  signingKey: try! KeyController.generateRSAPrivateKey(),
+  signingKeySet: .init(keys: []),
+  supportedClientIdSchemes: [
+    .x509SanDns(trust: { _ in true })
+  ],
+  vpFormatsSupported: [],
+  jarConfiguration: .noEncryptionOption,
+  vpConfiguration: VPConfiguration.default()
+)
 final class VerifierAttestaionTestsTests: XCTestCase {
   
   override func setUpWithError() throws {
@@ -44,7 +62,13 @@ final class VerifierAttestaionTestsTests: XCTestCase {
       verifier: verifier
     )
     
-    let client = try await ValidatedSiopOpenId4VPRequest.getClient(
+    
+    let authenticator = RequestAuthenticator(
+      config: config,
+      clientAuthenticator: .init(config: config)
+    )
+    
+    let client = try await authenticator.clientAuthenticator.getClient(
       clientId: clientId,
       jwt: jwt.compactSerializedString,
       config: config
@@ -57,7 +81,7 @@ final class VerifierAttestaionTestsTests: XCTestCase {
       XCTAssert(false)
     }
   }
-  
+
   func testVerifierAttestationInvalidIssuer() async throws {
     
     let clientId = "client-id"
@@ -80,8 +104,13 @@ final class VerifierAttestaionTestsTests: XCTestCase {
     )
     
     do {
+      let authenticator = RequestAuthenticator(
+        config: config,
+        clientAuthenticator: .init(config: config)
+      )
+      
       // Attempt to call the async function
-      _ = try await ValidatedSiopOpenId4VPRequest.getClient(
+      _ = try await authenticator.clientAuthenticator.getClient(
         clientId: clientId,
         jwt: jwt.compactSerializedString,
         config: config

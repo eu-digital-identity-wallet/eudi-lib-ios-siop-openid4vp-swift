@@ -15,7 +15,7 @@
  */
 import Foundation
 
-extension ValidatedSiopOpenId4VPRequest {
+extension ValidatedRequestData {
   public struct IdTokenRequest: Sendable {
     let idTokenType: IdTokenType
     let clientMetaDataSource: ClientMetaDataSource?

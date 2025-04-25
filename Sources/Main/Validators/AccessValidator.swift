@@ -200,9 +200,8 @@ public actor AccessValidator: AccessValidating {
       else {
         throw ValidationError.validationError("Could not resolve key from JWK source")
       }
-      
-      let publicKey = try RSAPublicKey(data: key.toDictionary().toThrowingJSONData())
-      let secKey = try publicKey.converted(to: SecKey.self)
+
+      let secKey = self.key(for: key, and: algorithm)
       if let verifier = Verifier(
         signatureAlgorithm: algorithm,
         key: secKey
@@ -218,6 +217,17 @@ public actor AccessValidator: AccessValidating {
 
     case .failure:
       throw ValidationError.validationError("Could not resolve key from JWK source")
+    }
+  }
+  
+  private func key(for key: WebKeySet.Key, and algorithm: SignatureAlgorithm) -> SecKey? {
+    switch algorithm {
+    case .RS256, .RS384, .RS512:
+      try? RSAPublicKey(data: key.toDictionary().toThrowingJSONData()).converted(to: SecKey.self)
+    case .ES256, .ES384, .ES512:
+      try? ECPublicKey(data: key.toDictionary().toThrowingJSONData()).converted(to: SecKey.self)
+    case .HS256, .HS384, .HS512: nil
+    case .PS256, .PS384, .PS512: nil
     }
   }
 }

@@ -51,9 +51,9 @@ public actor WebKeyResolver: WebKeyResolverType {
   ) async -> Result<WebKeySet?, ResolvingError> {
     guard let source = source else { return .success(nil) }
     switch source {
-    case .passByValue(webKeys: let webKeys):
+    case .passByValue(let webKeys):
       return .success(webKeys)
-    case .fetchByReference(url: let url):
+    case .fetchByReference(let url):
       let result = await fetcher.fetch(url: url)
       let webKeys = try? result.get()
       if let webKeys {

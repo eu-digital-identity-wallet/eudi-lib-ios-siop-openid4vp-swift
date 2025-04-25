@@ -125,7 +125,7 @@ internal actor RequestAuthenticator {
     nonce: String,
     requestObject: UnvalidatedRequestObject,
     clientMetaData: ClientMetaData.Validated
-  ) throws -> ValidatedSiopOpenId4VPRequest {
+  ) throws -> ValidatedRequestData {
     let formats: VpFormats = clientMetaData.vpFormats
     let querySource = try parseQuerySource(
       requestObject: requestObject
@@ -151,7 +151,7 @@ internal actor RequestAuthenticator {
     client: Client,
     nonce: String,
     requestObject: UnvalidatedRequestObject
-  ) throws -> ValidatedSiopOpenId4VPRequest {
+  ) throws -> ValidatedRequestData {
     .idToken(request: .init(
       idTokenType: try .init(authorizationRequestData: requestObject),
       clientMetaDataSource: nil,
@@ -171,7 +171,7 @@ internal actor RequestAuthenticator {
     nonce: String,
     requestObject: UnvalidatedRequestObject,
     clientMetaData: ClientMetaData.Validated
-  ) throws -> ValidatedSiopOpenId4VPRequest {
+  ) throws -> ValidatedRequestData {
     let formats: VpFormats = clientMetaData.vpFormats
     let querySource = try parseQuerySource(
       requestObject: requestObject

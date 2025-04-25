@@ -76,7 +76,7 @@ public extension ResolvedRequestData {
     vpConfiguration: VPConfiguration,
     validatedClientMetaData: ClientMetaData.Validated,
     presentationDefinitionResolver: PresentationDefinitionResolver,
-    validatedAuthorizationRequest: ValidatedSiopOpenId4VPRequest
+    validatedAuthorizationRequest: ValidatedRequestData
   ) async throws {
     switch validatedAuthorizationRequest {
     case .idToken(let request):

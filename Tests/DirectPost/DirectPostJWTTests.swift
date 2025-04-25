@@ -73,7 +73,7 @@ final class DirectPostJWTTests: DiXCTest {
     overrideDependencies()
     let result = try? await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+        string: url
       )!
     )
     
@@ -286,7 +286,7 @@ final class DirectPostJWTTests: DiXCTest {
     overrideDependencies()
     let result = try? await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)"
+        string: url
       )!
     )
     
@@ -835,7 +835,7 @@ final class DirectPostJWTTests: DiXCTest {
     overrideDependencies()
     let result = try? await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(TestsConstants.testClientId)&request_uri=\(url)"
+        string: url
       )!
     )
     
@@ -1337,7 +1337,7 @@ final class DirectPostJWTTests: DiXCTest {
     overrideDependencies()
     let result = try? await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?request_uri=\(url!)"
+        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url!)"
       )!
     )
     
@@ -1666,7 +1666,7 @@ final class DirectPostJWTTests: DiXCTest {
     overrideDependencies()
     let result = try? await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+        string: url
       )!
     )
     

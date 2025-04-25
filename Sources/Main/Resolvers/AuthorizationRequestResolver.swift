@@ -135,7 +135,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     authorizedRequest: AuthenticatedRequest,
     nonce: String,
     clientMetaData: ClientMetaData.Validated
-  ) async throws -> ValidatedSiopOpenId4VPRequest {
+  ) async throws -> ValidatedRequestData {
     let clientId = authorizedRequest.client.id.originalClientId
     
     switch responseType {
@@ -170,7 +170,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
   private func resolveRequest(
     config: SiopOpenId4VPConfiguration,
     validatedClientMetaData: ClientMetaData.Validated,
-    validatedAuthorizationRequest: ValidatedSiopOpenId4VPRequest
+    validatedAuthorizationRequest: ValidatedRequestData
   ) async throws -> ResolvedRequestData {
     try await .init(
       vpConfiguration: config.vpConfiguration,
