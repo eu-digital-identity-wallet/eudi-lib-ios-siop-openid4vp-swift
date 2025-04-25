@@ -23,7 +23,7 @@ public enum ResponseMode: Sendable {
   case query(responseURI: URL)
   case fragment(responseURI: URL)
   case none
-
+  
   /// Initializes a `ResponseMode` instance with the given authorization request object.
   ///
   /// - Parameter authorizationRequestObject: The authorization request object.
@@ -33,7 +33,7 @@ public enum ResponseMode: Sendable {
     guard let responseMode = authorizationRequestObject["response_mode"].string else {
       throw ValidationError.missingRequiredField(".responseMode")
     }
-
+    
     switch responseMode {
     case "direct_post":
       if let responseUri = authorizationRequestObject["response_uri"].string,
@@ -45,7 +45,7 @@ public enum ResponseMode: Sendable {
     case "direct_post.jwt":
       if let responseUri = authorizationRequestObject["response_uri"].string,
          let uri = URL(string: responseUri) {
-         self = .directPostJWT(responseURI: uri)
+        self = .directPostJWT(responseURI: uri)
       } else {
         throw ValidationError.missingRequiredField(".responseUri")
       }
@@ -67,7 +67,7 @@ public enum ResponseMode: Sendable {
       throw ValidationError.unsupportedResponseMode(responseMode)
     }
   }
-
+  
   /// Initializes a `ResponseMode` instance with the given authorization request data.
   ///
   /// - Parameter authorizationRequestData: The authorization request data.
@@ -77,7 +77,7 @@ public enum ResponseMode: Sendable {
     guard let responseMode = authorizationRequestData.responseMode else {
       throw ValidationError.missingRequiredField(".responseMode")
     }
-
+    
     switch responseMode {
     case "direct_post":
       if let responseUri = authorizationRequestData.responseUri,
@@ -89,7 +89,7 @@ public enum ResponseMode: Sendable {
     case "direct_post.jwt":
       if let responseUri = authorizationRequestData.responseUri,
          let uri = URL(string: responseUri) {
-         self = .directPostJWT(responseURI: uri)
+        self = .directPostJWT(responseURI: uri)
       } else {
         throw ValidationError.missingRequiredField(".responseUri")
       }
@@ -126,6 +126,34 @@ internal extension ResponseMode {
       return false
     case .none:
       return false
+    }
+  }
+}
+
+internal extension UnvalidatedRequestObject {
+  var validatedResponseMode: ResponseMode? {
+    
+    func responseUriURL() -> URL? {
+      guard let responseUri = self.responseUri else { return nil }
+      return URL(string: responseUri)
+    }
+    
+    func redirectUriURL() -> URL? {
+      guard let redirectUri = self.redirectUri else { return nil }
+      return URL(string: redirectUri)
+    }
+    
+    switch self.responseMode {
+    case "direct_post":
+      return responseUriURL().map { .directPost(responseURI: $0) }
+    case "direct_post.jwt":
+      return responseUriURL().map { .directPostJWT(responseURI: $0) }
+    case "query":
+      return redirectUriURL().map { .query(responseURI: $0) }
+    case nil, "fragment":
+      return redirectUriURL().map { .fragment(responseURI: $0) }
+    default:
+      return nil
     }
   }
 }
