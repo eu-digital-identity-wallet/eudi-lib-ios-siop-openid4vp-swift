@@ -201,7 +201,10 @@ public actor AccessValidator: AccessValidating {
         throw ValidationError.validationError("Could not resolve key from JWK source")
       }
 
-      let secKey = self.key(for: key, and: algorithm)
+      guard let secKey = self.key(for: key, and: algorithm) else {
+        throw ValidationError.validationError("Unable to convert key to SecKey")
+      }
+      
       if let verifier = Verifier(
         signatureAlgorithm: algorithm,
         key: secKey
