@@ -69,7 +69,7 @@ final class JOSETests: DiXCTest {
     )
     
     let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.authorize(
+    let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
       unvalidatedRequest: unvalidatedRequest.get()
     )

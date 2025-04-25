@@ -234,7 +234,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       )
       
       let resolver = AuthorizationRequestResolver()
-      let request = try await resolver.authorize(
+      let request = try await resolver.resolve(
         walletConfiguration: walletConfiguration,
         unvalidatedRequest: unvalidatedRequest.get()
       )
@@ -263,7 +263,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     )
     
     let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.authorize(
+    let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
       unvalidatedRequest: unvalidatedRequest.get()
     )
@@ -286,7 +286,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     )
     
     let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.authorize(
+    let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
       unvalidatedRequest: unvalidatedRequest.get()
     )
@@ -304,7 +304,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     )
     
     let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.authorize(
+    let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
       unvalidatedRequest: unvalidatedRequest.get()
     )
@@ -324,23 +324,19 @@ final class SiopOpenID4VPTests: DiXCTest {
       from: TestsConstants.invalidUrl.absoluteString
     )
     
-    do {
-      let resolver = AuthorizationRequestResolver()
-      let request = try await resolver.authorize(
-        walletConfiguration: walletConfiguration,
-        unvalidatedRequest: unvalidatedRequest.get()
-      )
-      
-      let resolved = request.resolved
-      
-      XCTAssertNotNil(resolved)
-    } catch {
-      switch error {
-      case ValidationError.validationError("clientId is missing from plain request"):
-        XCTAssert(true)
-      default:
-        XCTAssert(false)
-      }
+    let resolver = AuthorizationRequestResolver()
+    let request = try await resolver.resolve(
+      walletConfiguration: walletConfiguration,
+      unvalidatedRequest: unvalidatedRequest.get()
+    )
+    
+    switch request {
+    case .notSecured:
+      XCTAssert(false)
+    case .jwt:
+      XCTAssert(false)
+    case .invalidResolution:
+      XCTAssert(true)
     }
   }
 
@@ -353,7 +349,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     )
     
     let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.authorize(
+    let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
       unvalidatedRequest: unvalidatedRequest.get()
     )
@@ -377,7 +373,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     )
     
     let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.authorize(
+    let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
       unvalidatedRequest: unvalidatedRequest.get()
     )
@@ -402,7 +398,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     )
     
     let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.authorize(
+    let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
       unvalidatedRequest: unvalidatedRequest.get()
     )
@@ -422,7 +418,7 @@ final class SiopOpenID4VPTests: DiXCTest {
     let resolver = AuthorizationRequestResolver()
     
     do {
-      _ = try await resolver.authorize(
+      _ = try await resolver.resolve(
         walletConfiguration: walletConfiguration,
         unvalidatedRequest: unvalidatedRequest.get()
       )
