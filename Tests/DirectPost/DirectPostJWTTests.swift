@@ -1497,7 +1497,7 @@ final class DirectPostJWTTests: DiXCTest {
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+        string:url
       )!
     )
     
