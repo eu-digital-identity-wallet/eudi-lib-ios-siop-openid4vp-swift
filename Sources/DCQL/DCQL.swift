@@ -90,7 +90,7 @@ public struct CredentialQuery: Decodable, Equatable, Sendable {
     if let jsonData = try? JSONEncoder().encode(msoMdocMeta) {
       json = JSON(jsonData)
     }
-
+    
     return CredentialQuery(
       id: id,
       format: try Format.MsoMdoc(),
@@ -259,6 +259,46 @@ public struct ClaimsQuery: Decodable, Equatable, Sendable {
     case values
     case namespace = "namespace"
     case claimName = "claim_name"
+  }
+  
+  public init(
+    id: ClaimId?,
+    path: ClaimPath?,
+    values: [String]?,
+    namespace: MsoMdocNamespace?,
+    claimName: MsoMdocClaimName?
+  ) {
+    self.id = id
+    self.path = path
+    self.values = values
+    self.namespace = namespace
+    self.claimName = claimName
+  }
+  
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    
+    self.id = try container.decodeIfPresent(ClaimId.self, forKey: .id)
+    self.path = try container.decodeIfPresent(ClaimPath.self, forKey: .path)
+    self.values = try container.decodeIfPresent([String].self, forKey: .values)
+    self.namespace = try container.decodeIfPresent(MsoMdocNamespace.self, forKey: .namespace)
+    self.claimName = try container.decodeIfPresent(MsoMdocClaimName.self, forKey: .claimName)
+    
+    if namespace == nil && claimName != nil {
+      throw DecodingError.dataCorruptedError(
+        forKey: .path,
+        in: container,
+        debugDescription: "Namespace must be present when claim name is present"
+      )
+    }
+    
+    if namespace != nil && claimName == nil {
+      throw DecodingError.dataCorruptedError(
+        forKey: .path,
+        in: container,
+        debugDescription: "Claim name must be present when namespace is present"
+      )
+    }
   }
   
   public static func sdJwtVc(
