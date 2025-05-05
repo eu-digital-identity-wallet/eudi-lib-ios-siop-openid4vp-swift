@@ -325,6 +325,7 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
       )
     }
   }
+  
   public static func sdJwtVc(
     id: ClaimId? = nil,
     path: ClaimPath,
