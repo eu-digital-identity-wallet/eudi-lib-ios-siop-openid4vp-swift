@@ -57,7 +57,6 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     let authorizedRequest: AuthenticatedRequest
     do {
       authorizedRequest = try await authenticateRequest(
-        clientAuthenticator: clientAuthenticator,
         requestAuthenticator: requestAuthenticator,
         config: walletConfiguration,
         fetchedRequest: fetchedRequest
@@ -170,7 +169,6 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
   }
   
   private func authenticateRequest(
-    clientAuthenticator: ClientAuthenticator,
     requestAuthenticator: RequestAuthenticator,
     config: SiopOpenId4VPConfiguration,
     fetchedRequest: FetchedRequest

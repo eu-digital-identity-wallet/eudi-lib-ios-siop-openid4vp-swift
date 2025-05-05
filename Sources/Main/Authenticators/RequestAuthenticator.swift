@@ -90,7 +90,9 @@ internal actor RequestAuthenticator {
   }
   
   func authenticate(fetchRequest: FetchedRequest) async throws -> AuthenticatedRequest {
-    let client = try await clientAuthenticator.authenticate(fetchRequest: fetchRequest)
+    let client = try await clientAuthenticator.authenticate(
+      fetchRequest: fetchRequest
+    )
     switch fetchRequest {
     case .plain(let requestObject):
       return .init(client: client, requestObject: requestObject)

@@ -31,9 +31,16 @@ internal actor ClientAuthenticator {
       guard let clientId = requestObject.clientId else {
         throw ValidationError.validationError("clientId is missing from plain request")
       }
-      return try await getClient(clientId: clientId, config: config)
+      return try await getClient(
+        clientId: clientId,
+        config: config
+      )
     case .jwtSecured(let clientId, let jwt):
-      return try await getClient(clientId: clientId, jwt: jwt, config: config)
+      return try await getClient(
+        clientId: clientId,
+        jwt: jwt,
+        config: config
+      )
     }
   }
   
