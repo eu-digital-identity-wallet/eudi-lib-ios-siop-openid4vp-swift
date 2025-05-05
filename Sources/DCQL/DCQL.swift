@@ -31,7 +31,7 @@ public enum DCQLError: Error {
   case emptyDocType
 }
 
-public struct CredentialQuery: Decodable, Equatable, Sendable {
+public struct CredentialQuery: Codable, Equatable, Sendable {
   enum CodingKeys: String, CodingKey {
     case id
     case format
@@ -101,7 +101,7 @@ public struct CredentialQuery: Decodable, Equatable, Sendable {
   }
 }
 
-public struct CredentialSetQuery: Decodable, Equatable, Sendable {
+public struct CredentialSetQuery: Codable, Equatable, Sendable {
   
   public static let defaultRequiredValue: Bool? = true
   
@@ -134,7 +134,7 @@ public struct CredentialSetQuery: Decodable, Equatable, Sendable {
   }
 }
 
-public struct ClaimId: Decodable, Hashable, Sendable {
+public struct ClaimId: Codable, Hashable, Sendable {
   public let id: String
   
   enum CodingKeys: String, CodingKey {
@@ -177,7 +177,7 @@ internal struct DCQLId {
   }
 }
 
-public struct DCQL: Decodable, Equatable, Sendable {
+public struct DCQL: Codable, Equatable, Sendable {
   
   public let credentials: Credentials
   public let credentialSets: CredentialSets?
@@ -246,7 +246,7 @@ public extension CredentialSetQuery {
   }
 }
 
-public struct ClaimsQuery: Decodable, Equatable, Sendable {
+public struct ClaimsQuery: Codable, Equatable, Sendable {
   public let id: ClaimId?
   public let path: ClaimPath?
   public let values: [String]?
@@ -301,6 +301,30 @@ public struct ClaimsQuery: Decodable, Equatable, Sendable {
     }
   }
   
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    
+    try container.encodeIfPresent(id, forKey: .id)
+    try container.encodeIfPresent(values, forKey: .values)
+    
+    // Enforce consistency: either both namespace and claimName must be present or both absent
+    switch (namespace, claimName) {
+    case (.some(let ns), .some(let name)):
+      try container.encode(ns, forKey: .namespace)
+      try container.encode(name, forKey: .claimName)
+    case (nil, nil):
+      // Nothing to encode here
+      break
+    default:
+      throw EncodingError.invalidValue(
+        self,
+        EncodingError.Context(
+          codingPath: container.codingPath,
+          debugDescription: "Namespace and claim name must either both be present or both be nil."
+        )
+      )
+    }
+  }
   public static func sdJwtVc(
     id: ClaimId? = nil,
     path: ClaimPath,
@@ -331,7 +355,7 @@ public struct ClaimsQuery: Decodable, Equatable, Sendable {
   }
 }
 
-public struct MsoMdocNamespace: Decodable, CustomStringConvertible, Equatable, Sendable {
+public struct MsoMdocNamespace: Codable, CustomStringConvertible, Equatable, Sendable {
   public let namespace: String
   
   public init(_ namespace: String) throws {
@@ -361,7 +385,7 @@ public struct MsoMdocNamespace: Decodable, CustomStringConvertible, Equatable, S
   }
 }
 
-public struct MsoMdocClaimName: Decodable, CustomStringConvertible, Equatable, Sendable {
+public struct MsoMdocClaimName: Codable, CustomStringConvertible, Equatable, Sendable {
   
   public let claimName: String
   
