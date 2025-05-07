@@ -75,17 +75,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(
+    let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
       )!
     )
-    
-    guard let result = result else {
-      XCTExpectFailure("this tests depends on a local verifier running")
-      XCTAssert(false)
-      return
-    }
     
     switch result {
     case .jwt(request: let request):
@@ -109,13 +103,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       }
       
       // Obtain consent
+      let submission = TestsConstants.testPresentationSubmission
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(presentation!)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(
-          verifiablePresentations: [
-            .generic(presentation!)
-          ]
-        ),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
+        )
       )
       
       // Generate a direct post authorisation response
@@ -196,17 +192,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(
+    let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
       )!
     )
-    
-    guard let result = result else {
-      XCTExpectFailure("this tests depends on a local verifier running")
-      XCTAssert(false)
-      return
-    }
     
     switch result {
     case .jwt(request: let request):
@@ -230,11 +220,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       }
       
       // Obtain consent
+      let submission = TestsConstants.testPresentationSubmission
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(presentation!)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(presentation!)
-        ]),
-        presentationSubmission: TestsConstants.testPresentationSubmission
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
+        )
       )
       
       // Generate a direct post authorisation response
@@ -316,31 +310,29 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
  
     overrideDependencies()
-    let result = try? await sdk.authorize(
+    let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
       )!
     )
-    
-    guard let result = result else {
-      XCTExpectFailure("this tests depends on a local verifier running")
-      XCTAssert(false)
-      return
-    }
     
     switch result {
     case .jwt(request: let request):
       let resolved = request
       
       // Obtain consent
+      let submission: PresentationSubmission = .init(
+        id: "psId",
+        definitionID: "psId",
+        descriptorMap: []
+      )
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(TestsConstants.cbor)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(verifiablePresentations: [
-          .generic(TestsConstants.cbor)
-        ]),
-        presentationSubmission: .init(
-          id: "psId",
-          definitionID: "psId",
-          descriptorMap: []
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
         )
       )
       

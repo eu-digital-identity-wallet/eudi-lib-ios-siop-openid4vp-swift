@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public protocol DIContainer {
+public protocol DIContainer: Sendable {
   func register<DependencyType, DependencyInstance>(
     type: DependencyType.Type,
     dependency: @escaping () -> DependencyInstance

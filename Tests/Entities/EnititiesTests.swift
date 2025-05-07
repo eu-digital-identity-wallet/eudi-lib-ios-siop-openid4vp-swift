@@ -40,6 +40,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     
     let tokenData = ResolvedRequestData.IdAndVpTokenData(
       idTokenType: idTokenType,
+      presentationQuery: .byPresentationDefinition(presentationDefinition),
       presentationDefinition: presentationDefinition,
       clientMetaData: clientMetaData,
       client: .preRegistered(clientId: clientId, legalName: clientId),
@@ -401,5 +402,214 @@ class WalletMetaDataTests: XCTestCase {
     XCTAssertEqual(json["client_id_schemes_supported"].arrayValue.map { $0.stringValue }, ["pre-registered"])
     XCTAssertEqual(json["response_types_supported"].arrayValue.map { $0.stringValue }, ["vp_token", "id_token"])
     XCTAssertEqual(json["response_modes_supported"].arrayValue.map { $0.stringValue }, ["direct_post", "direct_post.jwt"])
+  }
+}
+
+final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
+    
+  func testInit() {
+    let data = UnvalidatedRequestObject(
+        responseType: "code",
+        responseUri: "https://example.com/response",
+        redirectUri: "https://example.com/redirect",
+        presentationDefinition: "presentationDefinition",
+        presentationDefinitionUri: "https://example.com/definition",
+        request: "request",
+        requestUri: "https://example.com/request",
+        clientMetaData: "clientMetaData",
+        clientId: "clientId",
+        clientMetadataUri: "https://example.com/metadata",
+        clientIdScheme: "clientScheme",
+        nonce: "nonce",
+        scope: "scope",
+        responseMode: "responseMode",
+        state: "state",
+        idTokenType: "idTokenType"
+    )
+    
+    XCTAssertEqual(data.responseType, "code")
+    XCTAssertEqual(data.responseUri, "https://example.com/response")
+    XCTAssertEqual(data.redirectUri, "https://example.com/redirect")
+    XCTAssertEqual(data.presentationDefinition, "presentationDefinition")
+    XCTAssertEqual(data.presentationDefinitionUri, "https://example.com/definition")
+    XCTAssertEqual(data.request, "request")
+    XCTAssertEqual(data.requestUri, "https://example.com/request")
+    XCTAssertEqual(data.clientMetaData, "clientMetaData")
+    XCTAssertEqual(data.clientId, "clientId")
+    XCTAssertEqual(data.clientMetadataUri, "https://example.com/metadata")
+    XCTAssertEqual(data.clientIdScheme, "clientScheme")
+    XCTAssertEqual(data.nonce, "nonce")
+    XCTAssertEqual(data.scope, "scope")
+    XCTAssertEqual(data.responseMode, "responseMode")
+    XCTAssertEqual(data.state, "state")
+    XCTAssertEqual(data.idTokenType, "idTokenType")
+  }
+  
+  func testInitFromDecoder() throws {
+    let json = """
+    {
+        "response_type": "code",
+        "response_uri": "https://example.com/response",
+        "redirect_uri": "https://example.com/redirect",
+        "presentation_definition": "presentationDefinition",
+        "presentation_definition_uri": "https://example.com/definition",
+        "request": "request",
+        "request_uri": "https://example.com/request",
+        "client_metadata": "clientMetaData",
+        "client_id": "clientId",
+        "client_metadata_uri": "https://example.com/metadata",
+        "client_id_scheme": "clientScheme",
+        "nonce": "nonce",
+        "scope": "scope",
+        "response_mode": "responseMode",
+        "state": "state",
+        "id_token_type": "idTokenType"
+    }
+    """
+    
+    let jsonData = json.data(using: .utf8)!
+    let decoder = JSONDecoder()
+    
+    let data = try decoder.decode(UnvalidatedRequestObject.self, from: jsonData)
+    
+    XCTAssertEqual(data.responseType, "code")
+    XCTAssertEqual(data.responseUri, "https://example.com/response")
+    XCTAssertEqual(data.redirectUri, "https://example.com/redirect")
+    XCTAssertEqual(data.presentationDefinition, "presentationDefinition")
+    XCTAssertEqual(data.presentationDefinitionUri, "https://example.com/definition")
+    XCTAssertEqual(data.request, "request")
+    XCTAssertEqual(data.requestUri, "https://example.com/request")
+    XCTAssertEqual(data.clientMetaData, "clientMetaData")
+    XCTAssertEqual(data.clientId, "clientId")
+    XCTAssertEqual(data.clientMetadataUri, "https://example.com/metadata")
+    XCTAssertEqual(data.clientIdScheme, "clientScheme")
+    XCTAssertEqual(data.nonce, "nonce")
+    XCTAssertEqual(data.scope, "scope")
+    XCTAssertEqual(data.responseMode, "responseMode")
+    XCTAssertEqual(data.state, "state")
+    XCTAssertEqual(data.idTokenType, "idTokenType")
+  }
+  
+  func testInitFromURL() {
+    let url = URL(string: "https://example.com?response_type=code&response_uri=https%3A%2F%2Fexample.com%2Fresponse&redirect_uri=https%3A%2F%2Fexample.com%2Fredirect&presentation_definition=presentationDefinition&presentation_definition_uri=https%3A%2F%2Fexample.com%2Fdefinition&request=request&request_uri=https%3A%2F%2Fexample.com%2Frequest&client_metadata=clientMetaData&client_id=clientId&client_metadata_uri=https%3A%2F%2Fexample.com%2Fmetadata&client_id_scheme=clientScheme&nonce=nonce&scope=scope&response_mode=responseMode&state=state&id_token_type=idTokenType")!
+    
+    let data = UnvalidatedRequestObject(from: url)
+    
+    XCTAssertEqual(data?.responseType, "code")
+    XCTAssertEqual(data?.responseUri, "https://example.com/response")
+    XCTAssertEqual(data?.redirectUri, "https://example.com/redirect")
+    XCTAssertEqual(data?.presentationDefinition, "presentationDefinition")
+    XCTAssertEqual(data?.presentationDefinitionUri, "https://example.com/definition")
+    XCTAssertEqual(data?.request, "request")
+    XCTAssertEqual(data?.requestUri, "https://example.com/request")
+    XCTAssertEqual(data?.clientMetaData, "clientMetaData")
+    XCTAssertEqual(data?.clientId, "clientId")
+    XCTAssertEqual(data?.clientMetadataUri, "https://example.com/metadata")
+    XCTAssertEqual(data?.clientIdScheme, "clientScheme")
+    XCTAssertEqual(data?.nonce, "nonce")
+    XCTAssertEqual(data?.scope, "scope")
+    XCTAssertEqual(data?.responseMode, "responseMode")
+    XCTAssertEqual(data?.state, "state")
+    XCTAssertEqual(data?.idTokenType, "idTokenType")
+  }
+  
+  func testInitFromAuthorizationRequestDataWithPresentationDefinitionUri() throws {
+    let authorizationRequestData = UnvalidatedRequestObject(presentationDefinitionUri: "https://example.com/presentation-definition")
+    
+    let source = try PresentationDefinitionSource(authorizationRequestData: authorizationRequestData)
+    
+    guard case .fetchByReference(let url) = source else {
+      XCTFail("Expected .fetchByReference case")
+      return
+    }
+    
+    XCTAssertEqual(url.absoluteString, "https://example.com/presentation-definition")
+  }
+  
+  func testInitFromAuthorizationRequestDataWithScope() throws {
+    let authorizationRequestData = UnvalidatedRequestObject(scope: "openid email profile")
+    
+    let source = try PresentationDefinitionSource(authorizationRequestData: authorizationRequestData)
+    
+    guard case .implied(let scope) = source else {
+      XCTFail("Expected .implied case")
+      return
+    }
+    
+    XCTAssertEqual(scope, ["openid", "email", "profile"])
+  }
+  
+  func testInitFromAuthorizationRequestDataWithInvalidPresentationDefinition() {
+    let authorizationRequestData = UnvalidatedRequestObject()
+    
+    XCTAssertThrowsError(try PresentationDefinitionSource(authorizationRequestData: authorizationRequestData)) { error in
+      XCTAssertEqual(error as? PresentationError, PresentationError.invalidPresentationDefinition)
+    }
+  }
+  
+  func testAuthorizationRequestDataGivenValidInput() throws {
+    
+    let parser = Parser()
+    let authorizationResult: Result<UnvalidatedRequestObject, ParserError> = parser.decode(
+      path: "valid_authorizaton_data_example",
+      type: "json"
+    )
+    
+    let authorization = try? authorizationResult.get()
+    guard
+      let authorization = authorization
+    else {
+      XCTAssert(false)
+      return
+    }
+    
+    let definitionContainerResult: Result<PresentationDefinitionContainer, ParserError> = parser.decode(json: authorization.presentationDefinition!)
+    let definitionContainer = try? definitionContainerResult.get()
+    guard
+      let definitionContainer = definitionContainer
+    else {
+      XCTAssert(false)
+      return
+    }
+    
+    XCTAssert(definitionContainer.definition.inputDescriptors.count == 1)
+  }
+  
+  func testInitFromAuthorizationRequestObjectWithPresentationDefinitionUri() throws {
+    let authorizationRequestObject: JSON = [
+        "presentation_definition_uri": "https://example.com/presentation-definition"
+    ]
+    
+    let source = try PresentationDefinitionSource(authorizationRequestObject: authorizationRequestObject)
+    
+    guard case .fetchByReference(let url) = source else {
+        XCTFail("Expected .fetchByReference case")
+        return
+    }
+    
+    XCTAssertEqual(url.absoluteString, "https://example.com/presentation-definition")
+  }
+  
+  func testInitFromAuthorizationRequestObjectWithScope() throws {
+    let authorizationRequestObject: JSON = [
+        "scope": "openid email profile"
+    ]
+    
+    let source = try PresentationDefinitionSource(authorizationRequestObject: authorizationRequestObject)
+    
+    guard case .implied(let scope) = source else {
+      XCTFail("Expected .implied case")
+      return
+    }
+    
+    XCTAssertEqual(scope, ["openid", "email", "profile"])
+  }
+  
+  func testInitFromAuthorizationRequestObjectWithInvalidPresentationDefinition() {
+    let authorizationRequestObject: JSON = [:]
+    
+    XCTAssertThrowsError(try PresentationDefinitionSource(authorizationRequestObject: authorizationRequestObject)) { error in
+      XCTAssertEqual(error as? PresentationError, PresentationError.invalidPresentationDefinition)
+    }
   }
 }

@@ -16,10 +16,10 @@
 import Foundation
 import PresentationExchange
 
-extension ValidatedSiopOpenId4VPRequest {
-  public struct IdAndVpTokenRequest {
+extension ValidatedRequestData {
+  public struct IdAndVpTokenRequest: Sendable {
     let idTokenType: IdTokenType
-    let presentationDefinitionSource: PresentationDefinitionSource
+    let querySource: QuerySource
     let clientMetaDataSource: ClientMetaDataSource?
     let clientId: String
     let client: Client
@@ -32,7 +32,7 @@ extension ValidatedSiopOpenId4VPRequest {
     
     public init(
       idTokenType: IdTokenType,
-      presentationDefinitionSource: PresentationDefinitionSource,
+      querySource: QuerySource,
       clientMetaDataSource: ClientMetaDataSource?,
       clientId: String,
       client: Client,
@@ -44,7 +44,7 @@ extension ValidatedSiopOpenId4VPRequest {
       transactionData: [String]?
     ) {
       self.idTokenType = idTokenType
-      self.presentationDefinitionSource = presentationDefinitionSource
+      self.querySource = querySource
       self.clientMetaDataSource = clientMetaDataSource
       self.clientId = clientId
       self.client = client

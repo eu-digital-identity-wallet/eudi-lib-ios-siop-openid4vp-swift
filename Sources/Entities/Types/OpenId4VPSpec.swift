@@ -26,5 +26,27 @@ public struct OpenId4VPSpec {
   public static let TRANSACTION_DATA_TYPE = "type"
   public static let TRANSACTION_DATA_CREDENTIAL_IDS = "credential_ids"
   public static let TRANSACTION_DATA_HASH_ALGORITHMS = "transaction_data_hashes_alg"
+  
+  public static let FORMAT_MSO_MDOC: String = "mso_mdoc"
+  public static let FORMAT_SD_JWT_VC: String = "dc+sd-jwt"
+  public static let FORMAT_W3C_SIGNED_JWT: String = "jwt_vc_json"
+  
+  public static let DCQL_CREDENTIALS: String = "credentials"
+  public static let DCQL_CREDENTIAL_SETS: String = "credential_sets"
+
+  public static let DCQL_ID: String = "id"
+  public static let DCQL_FORMAT: String = "format"
+  public static let DCQL_META: String = "meta"
+  public static let DCQL_CLAIMS: String = "claims"
+  public static let DCQL_CLAIM_SETS: String = "claim_sets"
+  public static let DCQL_OPTIONS: String = "options"
+  public static let DCQL_REQUIRED: String = "required"
+  public static let DCQL_PURPOSE: String = "purpose"
+  public static let DCQL_PATH: String = "path"
+  public static let DCQL_VALUES: String = "values"
+  public static let DCQL_SD_JWT_VC_VCT_VALUES: String = "vct_values"
+  public static let DCQL_MSO_MDOC_DOCTYPE_VALUE: String = "doctype_value"
+  public static let DCQL_MSO_MDOC_NAMESPACE: String = "namespace"
+  public static let DCQL_MSO_MDOC_CLAIM_NAME: String = "claim_name"
 }
 

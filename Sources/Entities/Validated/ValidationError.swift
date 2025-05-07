@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum ValidationError: AuthorizationRequestError, Equatable {
+indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case validationError(String)
   case unsupportedClientIdScheme(String?)
   case unsupportedResponseType(String?)
@@ -45,7 +45,18 @@ public enum ValidationError: AuthorizationRequestError, Equatable {
   case invalidWalletConfiguration
   case unsupportedAlgorithm(String?)
   case invalidSigningKey
-
+  case emptyValue
+  case multipleQuerySources
+  case invalidQuerySource
+  case invalidUri
+  case invalidRequestUriMethod
+  case invalidUseOfBothRequestAndRequestUri
+  case missingClientId
+  case missingConfiguration
+  case missingResponseType
+  case missingNonce
+  case nonDispatchable(ValidationError)
+  
   public var errorDescription: String? {
     switch self {
     case .validationError(let message):
@@ -106,6 +117,28 @@ public enum ValidationError: AuthorizationRequestError, Equatable {
       return "unsupportedAlgorithm \(algorithm ?? "-")"
     case .invalidSigningKey:
       return ".invalidSigningKey"
+    case .emptyValue:
+      return ".emptyValue"
+    case .multipleQuerySources:
+      return ".multipleQuerySources"
+    case .invalidQuerySource:
+      return ".invalidQuerySource"
+    case .invalidUri:
+      return ".invalidUri"
+    case .invalidRequestUriMethod:
+      return ".invalidRequestUriMethod"
+    case .invalidUseOfBothRequestAndRequestUri:
+      return ".invalidUseOfBothRequestAndRequestUri"
+    case .missingClientId:
+      return ".missingClientId"
+    case .missingConfiguration:
+      return ".missingConfiguration"
+    case .missingResponseType:
+      return ".missingResponseType"
+    case .missingNonce:
+      return ".missingNonce"
+    case .nonDispatchable(let error):
+      return ".nonDispatchable \(error.localizedDescription)"
     }
   }
 }

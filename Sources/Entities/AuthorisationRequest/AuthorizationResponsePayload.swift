@@ -16,34 +16,34 @@
 import Foundation
 
 /// An enumeration representing different types of authorization response payloads.
-public enum AuthorizationResponsePayload: Encodable {
+public enum AuthorizationResponsePayload: Encodable, Sendable {
   
   /// An SIOP authentication response payload.
   case siopAuthenticationResponse(
     idToken: JWTString,
     state: String,
     nonce: String,
-    clientId: VerifierId
+    clientId: VerifierId,
+    encryptionParameters: EncryptionParameters?
   )
 
   /// An OpenID Connect 4 Verifiable Presentation authorization response payload.
   case openId4VPAuthorizationResponse(
-    vpToken: VpToken,
-    verifiableCredential: [JWTString],
-    presentationSubmission: PresentationSubmission,
+    vpContent: VpContent,
     state: String,
     nonce: String,
-    clientId: VerifierId
+    clientId: VerifierId,
+    encryptionParameters: EncryptionParameters?
   )
 
   /// An SIOP OpenID Connect 4 Verifiable Presentation authentication response payload.
   case siopOpenId4VPAuthenticationResponse(
     idToken: JWTString,
-    verifiableCredential: [JWTString],
-    presentationSubmission: PresentationSubmission,
+    vpContent: VpContent,
     state: String,
     nonce: String,
-    clientId: VerifierId
+    clientId: VerifierId,
+    encryptionParameters: EncryptionParameters?
   )
 
   /// A failure response payload.
@@ -76,21 +76,34 @@ public enum AuthorizationResponsePayload: Encodable {
     case presentationSubmission = "presentation_submission"
   }
   
-  var vpTokenApu: String? {
+  var encryptionParameters: EncryptionParameters? {
     switch self {
-    case .openId4VPAuthorizationResponse(let vpToken, _, _, _, _, _):
-      vpToken.apu
-    default: nil
+    case .siopAuthenticationResponse(_, _, _, _, let encryptionParameters):
+      return encryptionParameters
+    case .openId4VPAuthorizationResponse(_, _, _, _, let encryptionParameters):
+      return encryptionParameters
+    case .siopOpenId4VPAuthenticationResponse(_, _, _, _, _, let encryptionParameters):
+      return encryptionParameters
+    default: return nil
+    }
+  }
+  
+  var apu: String? {
+    switch self.encryptionParameters {
+    case .apu(let apu):
+      return apu
+    case .none:
+      return nil
     }
   }
   
   var nonce: String {
     switch self {
-    case .siopAuthenticationResponse(_, _, let nonce, _):
+    case .siopAuthenticationResponse(_, _, let nonce, _, _):
       nonce
-    case .openId4VPAuthorizationResponse(_, _, _, _, let nonce, _):
+    case .openId4VPAuthorizationResponse(_, _, let nonce, _, _):
       nonce
-    case .siopOpenId4VPAuthenticationResponse(_, _, _, _, let nonce, _):
+    case .siopOpenId4VPAuthenticationResponse(_, _, _, let nonce, _, _):
       nonce
     default:
       ""
@@ -102,20 +115,28 @@ public enum AuthorizationResponsePayload: Encodable {
      var container = encoder.container(keyedBy: CodingKeys.self)
 
      switch self {
-     case .siopAuthenticationResponse(let idToken, let state, _, _):
+     case .siopAuthenticationResponse(let idToken, let state, _, _, _):
        try container.encode(state, forKey: .state)
        try container.encode(idToken, forKey: .idToken)
      case .openId4VPAuthorizationResponse(
-      let vpToken,
-      _,
-      let presentationSubmission,
+      let vpContent,
       let state,
+      _,
       _,
       _
      ):
-       try container.encode(presentationSubmission, forKey: .presentationSubmission)
-       try container.encode(vpToken, forKey: .vpToken)
-       try container.encode(state, forKey: .state)
+       switch vpContent {
+       case .presentationExchange(
+        let verifiablePresentations,
+        let presentationSubmission
+       ):
+         try container.encode(presentationSubmission, forKey: .presentationSubmission)
+         try container.encode(VpToken(verifiablePresentations: verifiablePresentations), forKey: .vpToken)
+         try container.encode(state, forKey: .state)
+       case .dcql(let verifiablePresentations):
+         try container.encode(state, forKey: .state)
+         try container.encode(VpContent .encodeDCQLQuery(verifiablePresentations),forKey: .vpToken)
+       }
      case .noConsensusResponseData(let state, let message):
        try container.encode(state, forKey: .state)
        try container.encode(message, forKey: .error)

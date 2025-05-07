@@ -43,9 +43,9 @@ public enum FetchError: LocalizedError {
   }
 }
 
-public protocol Fetching {
+public protocol Fetching: Sendable {
   var session: Networking { get set }
-  associatedtype Element: Codable
+  associatedtype Element: Codable, Sendable
 
   /**
     Fetches data from the provided URL.
@@ -58,7 +58,7 @@ public protocol Fetching {
   func fetch(url: URL) async -> Result<Element, FetchError>
 }
 
-public struct Fetcher<Element: Codable>: Fetching {
+public struct Fetcher<Element: Codable & Sendable>: Fetching {
   
   @Injected var reporter: Reporting
   public var session: Networking
@@ -131,6 +131,8 @@ public struct Fetcher<Element: Codable>: Fetching {
 
         return .failure(.decodingError(error))
       }
+    } catch {
+      throw FetchError.networkError(error)
     }
   }
 }

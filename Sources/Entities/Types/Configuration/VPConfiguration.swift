@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public struct VPConfiguration {
+public struct VPConfiguration: Sendable {
   public let presentationDefinitionUriSupported: Bool = true
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
   public let vpFormats: VpFormats

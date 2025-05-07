@@ -16,8 +16,8 @@
 import Foundation
 import Foundation
 
-public struct ErrorDispatchDetails {
-  public let responseMode: ResponseMode
+public struct ErrorDispatchDetails: Sendable {
+  public let responseMode: ResponseMode?
   public let nonce: String?
   public let state: String?
   public let clientId: VerifierId?
@@ -25,7 +25,7 @@ public struct ErrorDispatchDetails {
   
   // Default initializer
   public init(
-    responseMode: ResponseMode,
+    responseMode: ResponseMode?,
     nonce: String? = nil,
     state: String? = nil,
     clientId: VerifierId?,

@@ -18,8 +18,7 @@ import SwiftyJSON
 
 // MARK: - TransactionData
 
-/// A Swift translation of the TransactionData Kotlin data class.
-public struct TransactionData: Codable {
+public struct TransactionData: Codable, Sendable {
   public let value: String
   
   public init(value: String) {
@@ -54,12 +53,19 @@ public struct TransactionData: Codable {
   public static func parse(
     _ s: String,
     supportedTypes: [SupportedTransactionDataType],
-    presentationDefinition: PresentationDefinition
+    presentationQuery: PresentationQuery
   ) -> Result<TransactionData, Error> {
     Result {
+      let ids: [String] = switch presentationQuery {
+      case .byPresentationDefinition(let presentationDefinition):
+        presentationDefinition.inputDescriptors.map { $0.id }
+      case .byDigitalCredentialsQuery(let dcql):
+        dcql.credentials.map { $0.id.value }
+      }
+      
       let transactionData = TransactionData(value: s)
       try transactionData.isSupported(supportedTypes)
-      try transactionData.hasCorrectIds(presentationDefinition.inputDescriptors.map { $0.id })
+      try transactionData.hasCorrectIds(ids)
       return transactionData
     }
   }

@@ -18,8 +18,9 @@ import PresentationExchange
 
 extension ResolvedRequestData {
   /// A structure representing the data related to ID token and verifiable presentation (VP) token.
-  public struct IdAndVpTokenData {
+  public struct IdAndVpTokenData: Sendable {
     let idTokenType: IdTokenType
+    let presentationQuery: PresentationQuery
     let presentationDefinition: PresentationDefinition
     let clientMetaData: ClientMetaData.Validated?
     let client: Client
@@ -41,6 +42,7 @@ extension ResolvedRequestData {
     ///   - scope: The scope.
     public init(
       idTokenType: IdTokenType,
+      presentationQuery: PresentationQuery,
       presentationDefinition: PresentationDefinition,
       clientMetaData: ClientMetaData.Validated?,
       client: Client,
@@ -52,6 +54,7 @@ extension ResolvedRequestData {
       transactionData: [TransactionData]? = nil
     ) {
       self.idTokenType = idTokenType
+      self.presentationQuery = presentationQuery
       self.presentationDefinition = presentationDefinition
       self.clientMetaData = clientMetaData
       self.client = client

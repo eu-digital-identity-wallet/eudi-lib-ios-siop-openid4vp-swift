@@ -17,7 +17,11 @@ import Foundation
 import JOSESwift
 import X509
 
-public actor AccessValidator {
+public protocol AccessValidating: Sendable {
+  func validate(clientId: String?, jwt: JWTString) async throws
+}
+
+public actor AccessValidator: AccessValidating {
   
   public let walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
   private let resolver = WebKeyResolver()
@@ -196,9 +200,11 @@ public actor AccessValidator {
       else {
         throw ValidationError.validationError("Could not resolve key from JWK source")
       }
+
+      guard let secKey = self.key(for: key, and: algorithm) else {
+        throw ValidationError.validationError("Unable to convert key to SecKey")
+      }
       
-      let publicKey = try RSAPublicKey(data: key.toDictionary().toThrowingJSONData())
-      let secKey = try publicKey.converted(to: SecKey.self)
       if let verifier = Verifier(
         signatureAlgorithm: algorithm,
         key: secKey
@@ -216,33 +222,15 @@ public actor AccessValidator {
       throw ValidationError.validationError("Could not resolve key from JWK source")
     }
   }
-}
-
-public extension AccessValidator {
-
-  static func verifyJWS(jws: JWS, publicKey: SecKey) throws {
-
-    let keyAttributes = SecKeyCopyAttributes(publicKey) as? [CFString: Any]
-    let keyType = keyAttributes?[kSecAttrKeyType as CFString] as? String
-
-    if keyType == (kSecAttrKeyTypeRSA as String) {
-      if let verifier = Verifier(
-        signatureAlgorithm: .RS256,
-        key: publicKey
-      ) {
-        _ = try jws.validate(using: verifier)
-        return
-      }
-    } else if keyType == (kSecAttrKeyTypeEC as String) {
-      if let verifier = Verifier(
-        signatureAlgorithm: .ES256,
-        key: publicKey
-      ) {
-        _ = try jws.validate(using: verifier)
-        return
-      }
+  
+  private func key(for key: WebKeySet.Key, and algorithm: SignatureAlgorithm) -> SecKey? {
+    switch algorithm {
+    case .RS256, .RS384, .RS512:
+      try? RSAPublicKey(data: key.toDictionary().toThrowingJSONData()).converted(to: SecKey.self)
+    case .ES256, .ES384, .ES512:
+      try? ECPublicKey(data: key.toDictionary().toThrowingJSONData()).converted(to: SecKey.self)
+    case .HS256, .HS384, .HS512: nil
+    case .PS256, .PS384, .PS512: nil
     }
-
-    throw ValidationError.validationError("Unable to verif JWS")
   }
 }

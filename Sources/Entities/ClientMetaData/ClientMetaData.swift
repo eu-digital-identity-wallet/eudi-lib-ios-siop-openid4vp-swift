@@ -18,7 +18,7 @@ import SwiftyJSON
 
 /// By OpenID Connect Dynamic Client Registration specification
 /// A structure representing client metadata.
-public struct ClientMetaData: Codable, Equatable {
+public struct ClientMetaData: Codable, Equatable, Sendable {
   
   static let vpFormats = "vp_formats"
   
@@ -135,23 +135,23 @@ public struct ClientMetaData: Codable, Equatable {
     let jwks = metaData["jwks"] as? [String: Any]
     self.jwks = jwks?.toJSONString()
     
-    self.idTokenSignedResponseAlg = try metaData.getValue(
+    self.idTokenSignedResponseAlg = try? metaData.getValue(
       for: "id_token_signed_response_alg",
       error: ValidationError.invalidClientMetadata
     )
-    self.idTokenEncryptedResponseAlg = try metaData.getValue(
+    self.idTokenEncryptedResponseAlg = try? metaData.getValue(
       for: "id_token_encrypted_response_alg",
       error: ValidationError.invalidClientMetadata
     )
-    self.idTokenEncryptedResponseEnc = try metaData.getValue(
+    self.idTokenEncryptedResponseEnc = try? metaData.getValue(
       for: "id_token_encrypted_response_enc",
       error: ValidationError.invalidClientMetadata
     )
     
-    self.subjectSyntaxTypesSupported = try metaData.getValue(
+    self.subjectSyntaxTypesSupported = (try? metaData.getValue(
       for: "subject_syntax_types_supported",
       error: ValidationError.invalidClientMetadata
-    )
+    )) ?? []
     
     self.authorizationSignedResponseAlg = try? metaData.getValue(
       for: "authorization_signed_response_alg",
@@ -179,7 +179,7 @@ public struct ClientMetaData: Codable, Equatable {
 
 public extension ClientMetaData {
   
-  struct Validated: Equatable {
+  struct Validated: Equatable, Sendable {
     public let jwkSet: WebKeySet?
     public let idTokenJWSAlg: JWSAlgorithm?
     public let idTokenJWEAlg: JWEAlgorithm?

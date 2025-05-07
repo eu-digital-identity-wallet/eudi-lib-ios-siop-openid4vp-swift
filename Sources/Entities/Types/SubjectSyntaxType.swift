@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public enum SubjectSyntaxType: Equatable {
+public enum SubjectSyntaxType: Equatable, Sendable {
   case jwkThumbprint
   case decentralizedIdentifier
 }

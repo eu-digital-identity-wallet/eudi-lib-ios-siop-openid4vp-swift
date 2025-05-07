@@ -1,4 +1,4 @@
-// swift-tools-version: 5.8
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -18,7 +18,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMajor(from: "0.3.0")
+      .upToNextMajor(from: "0.4.0")
     ),
     .package(
       url: "https://github.com/apple/swift-certificates.git",
@@ -27,7 +27,8 @@ let package = Package(
     .package(
       url: "https://github.com/apple/swift-asn1.git",
       .upToNextMajor(from: "1.0.0")
-    ),.package(
+    ),
+    .package(
       url: "https://github.com/niscy-eudiw/BlueECC.git",
       .upToNextMajor(from: "1.2.4")
     ),

@@ -158,17 +158,11 @@ final class DirectPostTests: DiXCTest {
     let url = "#06"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(
+    let result = await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+        string: url
       )!
     )
-    
-    guard let result = result else {
-      XCTExpectFailure("this tests depends on a local verifier running")
-      XCTAssert(false)
-      return
-    }
     
     switch result {
     case .jwt(request: let request):
@@ -180,13 +174,15 @@ final class DirectPostTests: DiXCTest {
       XCTAssertNotNil(presentationDefinition)
       
       // Obtain consent
+      let submission = TestsConstants.presentationSubmission(presentationDefinition!)
+      let verifiablePresentations: [VerifiablePresentation] = [
+        .generic(TestsConstants.cbor)
+      ]
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(
-          apu: TestsConstants.generateMdocGeneratedNonce(),
-          verifiablePresentations: [
-            .msoMdoc(TestsConstants.cbor)
-          ]),
-        presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
+        vpContent: .presentationExchange(
+          verifiablePresentations: verifiablePresentations,
+          presentationSubmission: submission
+        )
       )
       
       // Generate a direct post authorisation response
@@ -266,17 +262,11 @@ final class DirectPostTests: DiXCTest {
     let url = "#11"
     
     overrideDependencies()
-    let result = try? await sdk.authorize(
+    let result = await sdk.authorize(
       url: URL(
-        string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url)"
+        string: url
       )!
     )
-    
-    guard let result = result else {
-      XCTExpectFailure("this tests depends on a local verifier running")
-      XCTAssert(false)
-      return
-    }
     
     switch result {
     case .jwt(request: let request):
@@ -289,12 +279,12 @@ final class DirectPostTests: DiXCTest {
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
-        vpToken: .init(
-          apu: TestsConstants.generateMdocGeneratedNonce(),
+        vpContent: .presentationExchange(
           verifiablePresentations: [
-            .msoMdoc(TestsConstants.cbor)
-          ]),
-        presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
+            .generic(TestsConstants.cbor)
+          ],
+          presentationSubmission: TestsConstants.presentationSubmission(presentationDefinition!)
+        )
       )
       
       // Generate a direct post authorisation response

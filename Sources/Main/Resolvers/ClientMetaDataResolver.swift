@@ -17,10 +17,10 @@ import Foundation
 
 public protocol ClientMetaDataResolverType {
   /// The input type for resolving client metadata.
-  associatedtype InputType
+  associatedtype InputType: Sendable
 
   /// The output type for resolved client metadata. Must be Codable and Equatable.
-  associatedtype OutputType: Codable
+  associatedtype OutputType: Codable, Sendable
 
   /// The error type for resolving client metadata. Must conform to the Error protocol.
   associatedtype ErrorType: Error

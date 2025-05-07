@@ -18,7 +18,7 @@ import PresentationExchange
 import SwiftyJSON
 
 /// An enumeration representing different data sources for client metadata.
-public enum ClientMetaDataSource {
+public enum ClientMetaDataSource: Sendable {
   case passByValue(metaData: ClientMetaData)
 }
 
@@ -27,7 +27,7 @@ extension ClientMetaDataSource {
   /// Initializes a `ClientMetaDataSource` based on the authorization request data.
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Returns: A `ClientMetaDataSource` instance if the data can be used as a data source, or `nil` if not.
-  init?(authorizationRequestData: AuthorisationRequestObject) {
+  init?(authorizationRequestData: UnvalidatedRequestObject) {
     if let metaData = authorizationRequestData.clientMetaData,
        let clientMetaData = try? ClientMetaData(metaDataString: metaData) {
       self = .passByValue(metaData: clientMetaData)

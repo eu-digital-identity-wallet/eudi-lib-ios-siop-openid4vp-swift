@@ -22,7 +22,7 @@ import SwiftyJSON
  */
 
 /// An enumeration representing different client ID schemes.
-public enum ClientIdScheme: String, Codable {
+public enum ClientIdScheme: String, Codable, Sendable {
   case preRegistered = "pre-registered"
   case redirectUri = "redirect_uri"
   case https = "https"
@@ -59,7 +59,7 @@ extension ClientIdScheme {
   /// Initializes a `ClientIdScheme` based on the authorization request data.
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Throws: An error if the client ID scheme is unsupported.
-  init(authorizationRequestData: AuthorisationRequestObject) throws {
+  init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard
       authorizationRequestData.clientIdScheme == "pre-registered",
       let clientIdScheme = ClientIdScheme(rawValue: authorizationRequestData.clientIdScheme ?? "")

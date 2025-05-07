@@ -64,35 +64,29 @@ final class JOSETests: DiXCTest {
       vpFormatsSupported: []
     )
     
-    let authorizationRequestData = AuthorisationRequestObject(from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl)
-    
-    XCTAssertNotNil(authorizationRequestData)
-    
-    let validatedAuthorizationRequestData = try? await ValidatedSiopOpenId4VPRequest(
-      authorizationRequestData: authorizationRequestData!,
-      walletConfiguration: walletConfiguration
+    let unvalidatedRequest = UnvalidatedRequest.make(
+      from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl.absoluteString
     )
     
-    XCTAssertNotNil(validatedAuthorizationRequestData)
-    
-    let resolvedSiopOpenId4VPRequestData = try? await ResolvedRequestData(
-      vpConfiguration: VPConfiguration.default(),
-      clientMetaDataResolver: ClientMetaDataResolver(),
-      presentationDefinitionResolver: PresentationDefinitionResolver(),
-      validatedAuthorizationRequest: validatedAuthorizationRequestData!
-    )
-    
-    XCTAssertNotNil(resolvedSiopOpenId4VPRequestData)
-    
-    let jws = try jose.build(
-      request: resolvedSiopOpenId4VPRequestData!,
-      holderInfo: holderInfo,
+    let resolver = AuthorizationRequestResolver()
+    let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
-      rsaJWK: rsaJWK,
-      signingKey: privateKey!,
-      kid: kid
+      unvalidatedRequest: unvalidatedRequest.get()
     )
     
-    XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
+    switch request {
+    case .notSecured(let data):
+      let jws = try jose.build(
+        request: data,
+        holderInfo: holderInfo,
+        walletConfiguration: walletConfiguration,
+        rsaJWK: rsaJWK,
+        signingKey: privateKey!,
+        kid: kid
+      )
+      XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
+    default:
+      XCTAssert(false)
+    }
   }
 }

@@ -15,6 +15,7 @@
  */
 import Foundation
 @_exported import PresentationExchange
+import SwiftyJSON
 
 /**
  OpenID for Verifiable Presentations
@@ -24,8 +25,7 @@ import Foundation
  
  */
 public protocol SiopOpenID4VPType {
-  func process(url: URL) async throws -> PresentationDefinition
-  func authorize(url: URL) async throws -> AuthorizationRequest
+  func authorize(url: URL) async -> AuthorizationRequest
   func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome
   func submit()
@@ -35,61 +35,42 @@ public protocol SiopOpenID4VPType {
 public class SiopOpenID4VP: SiopOpenID4VPType {
 
   let walletConfiguration: SiopOpenId4VPConfiguration?
-
-  public init(walletConfiguration: SiopOpenId4VPConfiguration? = nil) {
+  let authorizatinRequestResolver: AuthorizationRequestResolving
+  
+  public init(
+    walletConfiguration: SiopOpenId4VPConfiguration? = nil,
+    authorizatinRequestResolver: AuthorizationRequestResolving = AuthorizationRequestResolver()
+  ) {
     self.walletConfiguration = walletConfiguration
+    self.authorizatinRequestResolver = authorizatinRequestResolver
     registerDependencies()
   }
 
-  /**
-   Processes an authorisation URL.
-   
-   - Reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-authorization-request
-
-   - Parameters:
-      - url: A valid URL
-
-   - Returns: A PresentationDefinition object
-   
-   - Throws: An error if it cannot resolve a presentation definition
-   */
-  public func process(url: URL) async throws -> PresentationDefinition {
-    let authorizationRequestData = AuthorisationRequestObject(from: url)
-
-    let authorizationRequest = try await AuthorizationRequest(
-      authorizationRequestData: authorizationRequestData,
-      walletConfiguration: walletConfiguration
-    )
-
-    switch authorizationRequest {
-    case .jwt(request: let data):
-      switch data {
-      case .idToken:
-        throw ValidationError.unsupportedResponseType(".idToken")
-      case .vpToken(let request):
-        return request.presentationDefinition
-      case .idAndVpToken(let request):
-        return request.presentationDefinition
-      }
-    case .notSecured(let data):
-      switch data {
-      case .idToken:
-        throw ValidationError.unsupportedResponseType(".idToken")
-      case .vpToken(let request):
-        return request.presentationDefinition
-      case .idAndVpToken(let request):
-        return request.presentationDefinition
-      }
-    case .invalidResolution:
-      throw ValidationError.validationError("Invalid resolution")
+  public func authorize(url: URL) async -> AuthorizationRequest {
+    
+    guard let walletConfiguration = walletConfiguration else {
+      return .invalidResolution(
+        error: ValidationError.nonDispatchable(
+          ValidationError.missingConfiguration
+        ),
+        dispatchDetails: nil
+      )
     }
-  }
-
-  public func authorize(url: URL) async throws -> AuthorizationRequest {
-    try await .init(
-      authorizationRequestData: .init(from: url),
-      walletConfiguration: walletConfiguration
-    )
+    
+    let unvalidatedRequest = UnvalidatedRequest.make(from: url.absoluteString)
+    switch unvalidatedRequest {
+    case .success(let request):
+      return await authorizatinRequestResolver.resolve(
+        walletConfiguration: walletConfiguration,
+        unvalidatedRequest: request
+      )
+      
+    case .failure(let error):
+      return .invalidResolution(
+        error: ValidationError.validationError(error.localizedDescription),
+        dispatchDetails: nil
+      )
+    }
   }
 
   /**

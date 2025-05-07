@@ -15,7 +15,7 @@
  */
 import Foundation
 
-public struct PostOptions {
+public struct PostOptions: Sendable {
   public let includeWalletMetadata: Bool
   public let useWalletNonce: NonceOption
   public let jarEncryption: EncryptionRequirement
@@ -37,7 +37,7 @@ public struct PostOptions {
   }
 }
 
-public enum SupportedRequestUriMethod {
+public enum SupportedRequestUriMethod: Sendable {
   case get
   case post(
     postOptions: PostOptions

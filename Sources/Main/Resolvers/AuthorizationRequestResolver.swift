@@ -1,0 +1,343 @@
+/*
+ * Copyright (c) 2023 European Commission
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import Foundation
+import JOSESwift
+
+public protocol AuthorizationRequestResolving: Sendable {
+  func resolve(
+    walletConfiguration: SiopOpenId4VPConfiguration,
+    unvalidatedRequest: UnvalidatedRequest
+  ) async -> AuthorizationRequest
+}
+
+public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
+  
+  public init() {}
+  
+  public func resolve(
+    walletConfiguration: SiopOpenId4VPConfiguration,
+    unvalidatedRequest: UnvalidatedRequest
+  ) async -> AuthorizationRequest {
+    
+    let clientMetaDataValidator: ClientMetaDataValidator = .init()
+    let clientAuthenticator: ClientAuthenticator = .init(
+      config: walletConfiguration
+    )
+    let requestAuthenticator: RequestAuthenticator = .init(
+      config: walletConfiguration,
+      clientAuthenticator: clientAuthenticator
+    )
+    
+    let fetchedRequest: FetchedRequest
+    do {
+      fetchedRequest = try await fetchRequest(
+        config: walletConfiguration,
+        unvalidatedRequest: unvalidatedRequest
+      )
+    } catch {
+      return .invalidResolution(
+        error: ValidationError.validationError(error.localizedDescription),
+        dispatchDetails: nil
+      )
+    }
+    
+    let authorizedRequest: AuthenticatedRequest
+    do {
+      authorizedRequest = try await authenticateRequest(
+        requestAuthenticator: requestAuthenticator,
+        config: walletConfiguration,
+        fetchedRequest: fetchedRequest
+      )
+    } catch {
+      let dispatchDetails: ErrorDispatchDetails? = switch walletConfiguration.errorDispatchPolicy {
+      case .allClients:
+        optionalDispatchDetails(fetchedRequest: fetchedRequest)
+      case .onlyAuthenticatedClients:
+        nil
+      }
+      return .invalidResolution(
+        error: ValidationError.validationError(error.localizedDescription),
+        dispatchDetails: dispatchDetails
+      )
+    }
+    
+    guard let clientMetaData = authorizedRequest.requestObject.clientMetaData else {
+      return .invalidResolution(
+        error: ValidationError.invalidClientMetadata,
+        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+      )
+    }
+    
+    let validatedClientMetaData: ClientMetaData.Validated?
+    do {
+      validatedClientMetaData = try await validateClientMetaData(
+        validator: clientMetaDataValidator,
+        clientMetaData: clientMetaData
+      )
+    } catch {
+      return .invalidResolution(
+        error: ValidationError.invalidClientMetadata,
+        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+      )
+    }
+    
+    guard let validatedClientMetaData = validatedClientMetaData else {
+      return .invalidResolution(
+        error: ValidationError.invalidClientMetadata,
+        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+      )
+    }
+    
+    guard
+      let unvalidatedResponseType = authorizedRequest.requestObject.responseType,
+      let responseType = ResponseType(rawValue: unvalidatedResponseType)
+    else {
+      return .invalidResolution(
+        error: ValidationError.missingResponseType,
+        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+      )
+    }
+    
+    guard let nonce = authorizedRequest.requestObject.nonce else {
+      return .invalidResolution(
+        error: ValidationError.missingNonce,
+        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+      )
+    }
+    
+    let validated: ValidatedRequestData
+    do {
+      validated = try await createValidatedAuthorizationRequest(
+        responseType: responseType,
+        config: walletConfiguration,
+        requestAuthenticator: requestAuthenticator,
+        authorizedRequest: authorizedRequest,
+        nonce: nonce,
+        clientMetaData: validatedClientMetaData
+      )
+    } catch {
+      return .invalidResolution(
+        error: ValidationError.validationError(error.localizedDescription),
+        dispatchDetails: optionalDispatchDetails(requestObject: authorizedRequest.requestObject)
+      )
+    }
+    
+    let resolved: ResolvedRequestData
+    do {
+      resolved = try await resolveRequest(
+        config: walletConfiguration,
+        validatedClientMetaData: validatedClientMetaData,
+        validatedAuthorizationRequest: validated
+      )
+    } catch {
+      return .invalidResolution(
+        error: ValidationError.validationError(error.localizedDescription),
+        dispatchDetails: optionalDispatchDetails(
+          validatedRequestObject: validated,
+          clientMetaData: validatedClientMetaData,
+          config: walletConfiguration
+        )
+      )
+    }
+    
+    return buildFinalRequest(
+      fetchedRequest: fetchedRequest,
+      resolved: resolved
+    )
+  }
+  
+  private func fetchRequest(
+    config: SiopOpenId4VPConfiguration,
+    unvalidatedRequest: UnvalidatedRequest
+  ) async throws -> FetchedRequest {
+    try await RequestFetcher(
+      config: config
+    ).fetchRequest(request: unvalidatedRequest)
+  }
+  
+  private func authenticateRequest(
+    requestAuthenticator: RequestAuthenticator,
+    config: SiopOpenId4VPConfiguration,
+    fetchedRequest: FetchedRequest
+  ) async throws -> AuthenticatedRequest {
+    return try await requestAuthenticator.authenticate(
+      fetchRequest: fetchedRequest
+    )
+  }
+  
+  private func validateClientMetaData(
+    validator: ClientMetaDataValidator,
+    clientMetaData: String?
+  ) async throws -> ClientMetaData.Validated? {
+    guard let clientMetaData else {
+      throw ValidationError.invalidClientMetadata
+    }
+    let metaData: ClientMetaData = try .init(metaDataString: clientMetaData)
+    return try await validator.validate(clientMetaData: metaData)
+  }
+  
+  private func createValidatedAuthorizationRequest(
+    responseType: ResponseType,
+    config: SiopOpenId4VPConfiguration,
+    requestAuthenticator: RequestAuthenticator,
+    authorizedRequest: AuthenticatedRequest,
+    nonce: String,
+    clientMetaData: ClientMetaData.Validated
+  ) async throws -> ValidatedRequestData {
+    let clientId = authorizedRequest.client.id.originalClientId
+    
+    switch responseType {
+    case .vpToken:
+      return try await requestAuthenticator.createVpToken(
+        clientId: clientId,
+        client: authorizedRequest.client,
+        nonce: nonce,
+        requestObject: authorizedRequest.requestObject,
+        clientMetaData: clientMetaData
+      )
+    case .idToken:
+      return try await requestAuthenticator.createIdToken(
+        clientId: clientId,
+        client: authorizedRequest.client,
+        nonce: nonce,
+        requestObject: authorizedRequest.requestObject
+      )
+    case .vpAndIdToken:
+      return try await requestAuthenticator.createIdVpToken(
+        clientId: clientId,
+        client: authorizedRequest.client,
+        nonce: nonce,
+        requestObject: authorizedRequest.requestObject,
+        clientMetaData: clientMetaData
+      )
+    default:
+      throw ValidationError.unsupportedResponseType(responseType.rawValue)
+    }
+  }
+  
+  private func resolveRequest(
+    config: SiopOpenId4VPConfiguration,
+    validatedClientMetaData: ClientMetaData.Validated,
+    validatedAuthorizationRequest: ValidatedRequestData
+  ) async throws -> ResolvedRequestData {
+    try await .init(
+      vpConfiguration: config.vpConfiguration,
+      validatedClientMetaData: validatedClientMetaData,
+      presentationDefinitionResolver: PresentationDefinitionResolver(
+        fetcher: Fetcher(session: config.session)
+      ),
+      validatedAuthorizationRequest: validatedAuthorizationRequest
+    )
+  }
+  
+  private func buildFinalRequest(
+    fetchedRequest: FetchedRequest,
+    resolved: ResolvedRequestData
+  ) -> AuthorizationRequest {
+    switch fetchedRequest {
+    case .plain:
+      return .notSecured(data: resolved)
+    case .jwtSecured:
+      return .jwt(request: resolved)
+    }
+  }
+}
+
+internal extension AuthorizationRequestResolver {
+  
+  /**
+   * Creates an invalid resolution for errors that manifested while trying to authenticate a Client.
+   */
+  func optionalDispatchDetails(
+    fetchedRequest: FetchedRequest
+  ) -> ErrorDispatchDetails? {
+    switch fetchedRequest {
+    case .plain(let requestObject):
+      return optionalDispatchDetails(requestObject: requestObject)
+    case .jwtSecured(let clientId, let jwt):
+      guard
+        let jws = try? JWS(compactSerialization: jwt),
+        let mode = jws.claimValue(forKey: "response_mode") as? String,
+        let responseUri = jws.claimValue(forKey: "response_uri") as? String,
+        let url = URL(string: responseUri)
+      else {
+        return nil
+      }
+      
+      guard let responseMode: ResponseMode = switch mode {
+      case "direct_post":
+        ResponseMode.directPost(responseURI: url)
+      case "direct_post.jwt":
+        ResponseMode.directPostJWT(responseURI: url)
+      default:
+        nil
+      } else {
+        return nil
+      }
+      
+      return ErrorDispatchDetails(
+        responseMode: responseMode,
+        nonce: jws.claimValue(forKey: "nonce") as? String,
+        state: jws.claimValue(forKey: "state") as? String,
+        clientId: try? VerifierId.parse(clientId: clientId).get(),
+        jarmSpec: nil
+      )
+    }
+  }
+  
+  func optionalDispatchDetails(requestObject: UnvalidatedRequestObject) -> ErrorDispatchDetails? {
+    guard let responseMode = requestObject.validatedResponseMode else {
+      return nil
+    }
+    
+    return if !responseMode.isJarm() {
+      ErrorDispatchDetails(
+        responseMode: responseMode,
+        nonce: requestObject.nonce,
+        state: requestObject.state,
+        clientId: requestObject.clientId.flatMap { id in
+          let verifierId = VerifierId.parse(clientId: id)
+          switch verifierId {
+          case .success(let verifierId):
+            return verifierId
+          case .failure:
+            return nil
+          }
+        },
+        jarmSpec: nil
+      )
+    } else {
+      nil
+    }
+  }
+  
+  func optionalDispatchDetails(
+    validatedRequestObject: ValidatedRequestData,
+    clientMetaData: ClientMetaData.Validated?,
+    config: SiopOpenId4VPConfiguration
+  ) -> ErrorDispatchDetails? {
+    .init(
+      responseMode: validatedRequestObject.responseMode,
+      nonce: validatedRequestObject.nonce,
+      state: validatedRequestObject.state,
+      clientId: validatedRequestObject.clientId,
+      jarmSpec: try? JarmSpec(
+        clientMetaData: clientMetaData,
+        walletOpenId4VPConfig: config
+      )
+    )
+  }
+}

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 import Foundation
-import JOSESwift
+@preconcurrency import JOSESwift
 
-public struct EncryptionRequirementSpecification: Equatable {
+public struct EncryptionRequirementSpecification: Equatable, Sendable {
   public let supportedEncryptionAlgorithm: KeyManagementAlgorithm
   public let supportedEncryptionMethod: ContentEncryptionAlgorithm
   public let ephemeralEncryptionKeyCurve: ECCurveType
@@ -44,7 +44,7 @@ public struct EncryptionRequirementSpecification: Equatable {
   }
 }
 
-public enum EncryptionRequirement: Equatable {
+public enum EncryptionRequirement: Equatable, Sendable {
   /**
     * Encryption is not required.
     */
