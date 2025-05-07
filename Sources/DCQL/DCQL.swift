@@ -306,15 +306,14 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
     
     try container.encodeIfPresent(id, forKey: .id)
     try container.encodeIfPresent(values, forKey: .values)
+    try container.encodeIfPresent(path, forKey: .path)
     
     // Enforce consistency: either both namespace and claimName must be present or both absent
     switch (namespace, claimName) {
     case (.some(let ns), .some(let name)):
       try container.encode(ns, forKey: .namespace)
       try container.encode(name, forKey: .claimName)
-    case (nil, nil):
-      // Nothing to encode here
-      break
+    case (nil, nil): break
     default:
       throw EncodingError.invalidValue(
         self,

@@ -182,3 +182,22 @@ extension ClaimPath: Decodable {
     self.init(elements)
   }
 }
+
+extension ClaimPath: Encodable {
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.singleValueContainer()
+    
+    let jsonArray: [JSON] = value.map { element in
+      switch element {
+      case .arrayElement(let index):
+        return JSON(index)
+      case .allArrayElements:
+        return JSON.null
+      case .claim(let name):
+        return JSON(name)
+      }
+    }
+
+    try container.encode(jsonArray)
+  }
+}
