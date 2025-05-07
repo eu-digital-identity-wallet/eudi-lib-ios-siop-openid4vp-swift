@@ -17,8 +17,8 @@ let package = Package(
       from: "3.0.0"
     ),
     .package(
-      url: "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
-      .branch("feature/dcql_parameter")
+      url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
+      .upToNextMajor(from: "0.4.0")
     ),
     .package(
       url: "https://github.com/apple/swift-certificates.git",
@@ -27,7 +27,8 @@ let package = Package(
     .package(
       url: "https://github.com/apple/swift-asn1.git",
       .upToNextMajor(from: "1.0.0")
-    ),.package(
+    ),
+    .package(
       url: "https://github.com/niscy-eudiw/BlueECC.git",
       .upToNextMajor(from: "1.2.4")
     ),

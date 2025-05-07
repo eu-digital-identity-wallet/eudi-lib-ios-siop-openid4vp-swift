@@ -1,5 +1,5 @@
 {
-  "originHash" : "419c92a298883af2d5edb632328415ee4d29ae92b978e103734e013f2cf93af2",
+  "originHash" : "2d48dfbca040f4f3ce13bc7d44fb76d38ec3369829bd068656ed139af6fedda6",
   "pins" : [
     {
       "identity" : "blueecc",
@@ -31,10 +31,10 @@
     {
       "identity" : "eudi-lib-ios-presentation-exchange-swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift.git",
+      "location" : "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
       "state" : {
-        "branch" : "feature/dcql_parameter",
-        "revision" : "75d3300bf217f1f5bd23efbf39420f17cc264f74"
+        "revision" : "3c0e80bc212bf3f68de2781b38565235dca83b23",
+        "version" : "0.4.0"
       }
     },
     {
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/KittyMac/Sextant.git",
       "state" : {
-        "revision" : "91729059122eaafe42aa47207e1873c8bb9a844d",
-        "version" : "0.4.34"
+        "revision" : "74b947a80df5c8c776262546832e370afe2341f6",
+        "version" : "0.4.35"
       }
     },
     {
