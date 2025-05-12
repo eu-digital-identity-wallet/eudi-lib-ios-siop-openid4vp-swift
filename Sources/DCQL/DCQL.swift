@@ -324,7 +324,7 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
   ) throws -> ClaimsQuery {
     try ClaimsQuery(
       id: id,
-      path: ClaimPath.claim(namespace).claim(claimName),
+      path: .claim(namespace).claim(claimName),
       values: values,
       intentToRetain: intentToRetain
     ).ensureMsoMdoc()
