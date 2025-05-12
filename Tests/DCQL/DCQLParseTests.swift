@@ -109,8 +109,8 @@ final class DCQLParseTests: XCTestCase {
           },
           "claims": [
             {
-              "namespace": "eu.europa.ec.eudi.pid.1",
-              "claim_name": "family_name"
+              "id": "family_name",
+              "path": ["eu.europa.ec.eudi.pid.1", "family_name"]
             }
           ]
         }
@@ -261,12 +261,12 @@ final class DCQLParseTests: XCTestCase {
           },
           "claims": [
             {
-              "namespace": "org.iso.7367.1",
-              "claim_name": "vehicle_holder"
+              "id": "vehicle_holder",
+              "path": ["org.iso.7367.1.mVRC", "vehicle_holder"]
             },
             {
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "first_name"
+              "id": "first_name",
+              "path": ["org.iso.7367.1.mVRC", "first_name"]
             }
           ]
         }
@@ -286,12 +286,12 @@ final class DCQLParseTests: XCTestCase {
           ),
           claims: [
             .mdoc(
-              namespace: .init("org.iso.7367.1"),
-              claimName: .init(claimName: "vehicle_holder")
+              namespace: "org.iso.7367.1",
+              claimName: "vehicle_holder"
             ),
             .mdoc(
-              namespace: .init("org.iso.18013.5.1"),
-              claimName: .init(claimName: "first_name")
+              namespace: "org.iso.18013.5.1",
+              claimName: "first_name"
             )
           ]
         )
@@ -314,11 +314,10 @@ final class DCQLParseTests: XCTestCase {
           },
           "claims": [
             {
-              "claim_name": "vehicle_holder"
+              "path": ["vehicle_holder"]
             },
             {
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "first_name"
+              "path": ["org.iso.18013.5.1", "first_name"]
             }
           ]
         }
@@ -332,7 +331,7 @@ final class DCQLParseTests: XCTestCase {
       let _ = try DCQL(from: json)
       XCTAssert(false)
     } catch {
-      XCTAssert(error is DecodingError, "Namespace must be present when claim name is present")
+      XCTAssert(error is DCQLError, "Claim paths for mso mdoc based must have exactly two elements")
     }
   }
   
@@ -349,7 +348,7 @@ final class DCQLParseTests: XCTestCase {
           },
           "claims": [
             {
-              "namespace": "org.iso.18013.5.1"
+              "path": ["org.iso.18013.5.1"]
             }
           ]
         }
@@ -363,7 +362,39 @@ final class DCQLParseTests: XCTestCase {
       let _ = try DCQL(from: json)
       XCTAssert(false)
     } catch {
-      XCTAssert(error is DecodingError, "Claim name must be present when namespace is present")
+      XCTAssert(error is DCQLError, "Claim paths for mso mdoc based must have exactly two elements")
+    }
+  }
+  
+  func testWhenIntentToRetainIsUsedWithNonMsoMdocFormatsAnExceptionIsThrown() throws {
+    
+    let jsonString = """
+    {
+      "credentials": [
+        {
+          "id": "my_credential",
+          "format": "dc+sd-jwt",
+          "meta": {
+            "vct_values": [ "https://credentials.example.com/identity_credential" ]
+          },
+          "claims": [
+            {
+              "path": ["first_name"],
+              "intent_to_retain": true
+            }
+          ]
+        }
+      ]
+    }
+    """
+    let data = jsonString.data(using: .utf8)!
+    let json = try! JSON(data: data)
+    
+    do {
+      let _ = try DCQL(from: json)
+      XCTAssert(false)
+    } catch {
+      XCTAssert(error is DCQLError, "intent_to_retain can be used only with msp mdoc based formats")
     }
   }
   
@@ -379,12 +410,12 @@ final class DCQLParseTests: XCTestCase {
           },
           "claims": [
             {
-              "namespace": "org.iso.7367.1",
-              "claim_name": "vehicle_holder"
+              "path": ["org.iso.7367.1", "vehicle_holder"],
+              "intent_to_retain": true
             },
             {
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "first_name"
+              "path": ["org.iso.18013.5.1", "first_name"],
+              "intent_to_retain": false
             }
           ]
         }
@@ -407,12 +438,14 @@ final class DCQLParseTests: XCTestCase {
           ),
           claims: [
             .mdoc(
-              namespace: .init("org.iso.7367.1"),
-              claimName: .init(claimName: "vehicle_holder")
+              namespace: "org.iso.7367.1",
+              claimName: "vehicle_holder",
+              intentToRetain: true
             ),
             .mdoc(
-              namespace: .init("org.iso.18013.5.1"),
-              claimName: .init(claimName: "first_name")
+              namespace: "org.iso.18013.5.1",
+              claimName: "first_name",
+              intentToRetain: false
             )
           ]
         ),
@@ -445,12 +478,11 @@ final class DCQLParseTests: XCTestCase {
           },
           "claims": [
             {
-              "namespace": "org.iso.7367.1",
-              "claim_name": "vehicle_holder"
+              "path": ["org.iso.7367.1", "vehicle_holder"],
+              "intent_to_retain": true
             },
             {
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "first_name"
+              "path": ["org.iso.18013.5.1", "first_name"] 
             }
           ]
         }
@@ -464,7 +496,7 @@ final class DCQLParseTests: XCTestCase {
     
     let secondary = try! DCQL(
       credentials: [
-        CredentialQuery.sdJwtVc(
+        .sdJwtVc(
           id: .init(value: "pid"),
           sdJwtVcMeta: .init(vctValues: ["https://credentials.example.com/identity_credential"]),
           claims: [
@@ -479,17 +511,18 @@ final class DCQLParseTests: XCTestCase {
             )
           ]
         ),
-        CredentialQuery.mdoc(
+        .mdoc(
           id: .init(value: "mdl"),
           msoMdocMeta: .init(doctypeValue: .init(value: "org.iso.7367.1.mVRC")),
           claims: [
             ClaimsQuery.mdoc(
-              namespace: .init("org.iso.7367.1"),
-              claimName: .init(claimName: "vehicle_holder")
+              namespace: "org.iso.7367.1",
+              claimName: "vehicle_holder",
+              intentToRetain: true
             ),
             ClaimsQuery.mdoc(
-              namespace: .init("org.iso.18013.5.1"),
-              claimName: .init(claimName: "first_name")
+              namespace: "org.iso.18013.5.1",
+              claimName: "first_name"
             )
           ]
         )
@@ -675,18 +708,17 @@ final class DCQLParseTests: XCTestCase {
           "claims": [
             {
               "id": "given_name",
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "given_name"
+              "path": ["org.iso.18013.5.1", "given_name"]
             },
             {
               "id": "family_name",
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "family_name"
+              "path": ["org.iso.18013.5.1", "family_name"],
+              "intent_to_retain": true
             },
             {
               "id": "portrait",
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "portrait"
+              "path": ["org.iso.18013.5.1", "portrait"],
+              "intent_to_retain": false
             }
           ]
         },
@@ -699,13 +731,11 @@ final class DCQLParseTests: XCTestCase {
           "claims": [
             {
               "id": "resident_address",
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "resident_address"
+              "path": ["org.iso.18013.5.1", "resident_address"]
             },
             {
               "id": "resident_country",
-              "namespace": "org.iso.18013.5.1",
-              "claim_name": "resident_country"
+              "path": ["org.iso.18013.5.1", "resident_country"]
             }
           ]
         },
@@ -718,18 +748,17 @@ final class DCQLParseTests: XCTestCase {
           "claims": [
             {
               "id": "given_name",
-              "namespace": "org.iso.23220.1",
-              "claim_name": "given_name"
+              "path": ["org.iso.23220.1", "given_name"]
             },
             {
               "id": "family_name",
-              "namespace": "org.iso.23220.1",
-              "claim_name": "family_name"
+              "path": ["org.iso.23220.1", "family_name"],
+              "intent_to_retain": true
             },
             {
               "id": "portrait",
-              "namespace": "org.iso.23220.1",
-              "claim_name": "portrait"
+              "path": ["org.iso.23220.1", "portrait"],
+              "intent_to_retain": false
             }
           ]
         },
@@ -742,13 +771,11 @@ final class DCQLParseTests: XCTestCase {
           "claims": [
             {
               "id": "resident_address",
-              "namespace": "org.iso.23220.1",
-              "claim_name": "resident_address"
+              "path": ["org.iso.23220.1", "resident_address"]
             },
             {
               "id": "resident_country",
-              "namespace": "org.iso.23220.1",
-              "claim_name": "resident_country"
+              "path": ["org.iso.23220.1", "resident_country"]
             }
           ]
         }
@@ -789,18 +816,20 @@ final class DCQLParseTests: XCTestCase {
           claims: [
             .mdoc(
               id: .init("given_name"),
-              namespace: .init("org.iso.18013.5.1"),
-              claimName: .init(claimName: "given_name")
+              namespace: "org.iso.18013.5.1",
+              claimName: "given_name"
             ),
             .mdoc(
               id: .init("family_name"),
-              namespace: .init("org.iso.18013.5.1"),
-              claimName: .init(claimName: "family_name")
+              namespace: "org.iso.18013.5.1",
+              claimName: "family_name",
+              intentToRetain: true
             ),
             .mdoc(
               id: .init("portrait"),
-              namespace: .init("org.iso.18013.5.1"),
-              claimName: .init(claimName: "portrait")
+              namespace: "org.iso.18013.5.1",
+              claimName: "portrait",
+              intentToRetain: false
             ),
           ]
         ),
@@ -814,13 +843,13 @@ final class DCQLParseTests: XCTestCase {
           claims: [
             .mdoc(
               id: .init("resident_address"),
-              namespace: .init("org.iso.18013.5.1"),
-              claimName: .init(claimName: "resident_address")
+              namespace: "org.iso.18013.5.1",
+              claimName: "resident_address"
             ),
             .mdoc(
               id: .init("resident_country"),
-              namespace: .init("org.iso.18013.5.1"),
-              claimName: .init(claimName: "resident_country")
+              namespace: "org.iso.18013.5.1",
+              claimName: "resident_country"
             )
           ]
         ),
@@ -834,18 +863,20 @@ final class DCQLParseTests: XCTestCase {
           claims: [
             .mdoc(
               id: .init("given_name"),
-              namespace: .init("org.iso.23220.1"),
-              claimName: .init(claimName: "given_name")
+              namespace: "org.iso.23220.1",
+              claimName: "given_name"
             ),
             .mdoc(
               id: .init("family_name"),
-              namespace: .init("org.iso.23220.1"),
-              claimName: .init(claimName: "family_name")
+              namespace: "org.iso.23220.1",
+              claimName: "family_name",
+              intentToRetain: true
             ),
             .mdoc(
               id: .init("portrait"),
-              namespace: .init("org.iso.23220.1"),
-              claimName: .init(claimName: "portrait")
+              namespace: "org.iso.23220.1",
+              claimName: "portrait",
+              intentToRetain: false
             ),
           ]
         ),
@@ -859,13 +890,13 @@ final class DCQLParseTests: XCTestCase {
           claims: [
             .mdoc(
               id: .init("resident_address"),
-              namespace: .init("org.iso.23220.1"),
-              claimName: .init(claimName: "resident_address")
+              namespace: "org.iso.23220.1",
+              claimName: "resident_address"
             ),
             .mdoc(
               id: .init("resident_country"),
-              namespace: .init("org.iso.23220.1"),
-              claimName: .init(claimName: "resident_country")
+              namespace: "org.iso.23220.1",
+              claimName: "resident_country"
             )
           ]
         )
