@@ -29,6 +29,7 @@ public enum DCQLError: Error {
   case emptyNamespace
   case emptyClaimName
   case emptyDocType
+  case error(String)
 }
 
 public struct CredentialQuery: Codable, Equatable, Sendable {
@@ -166,8 +167,8 @@ internal struct DCQLId {
       throw ValidationError.emptyValue
     }
     
-    let regex = "^[a-zA-Z0-9_-]+$" // Alphanumeric, underscore, hyphen
-    let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
+    let regex = "^[a-zA-Z0-9_-]+$"
+    let predicate: NSPredicate = .init(format: "SELF MATCHES %@", regex)
     
     guard predicate.evaluate(with: value) else {
       throw ValidationError.invalidFormat
@@ -195,6 +196,9 @@ public struct DCQL: Codable, Equatable, Sendable {
     if let credentialSets = credentialSets {
       try credentialSets.ensureValid(knownIds: uniqueIds)
     }
+    
+    try credentials.ensureFormatsValid()
+    
     self.credentials = credentials
     self.credentialSets = credentialSets
   }
@@ -225,6 +229,16 @@ public extension Credentials {
     guard uniqueIds.count == count else { throw DCQLError.duplicateQueryId }
     return uniqueIds
   }
+  
+  func ensureFormatsValid() throws {
+    try self.forEach { credentialQuery in
+      let credentialQueryFormat = credentialQuery.format
+      switch credentialQueryFormat.format {
+      case OpenId4VPSpec.FORMAT_MSO_MDOC: try credentialQuery.claims?.forEach { try _ = $0.ensureMsoMdoc() }
+      default: try credentialQuery.claims?.forEach { try _ = $0.ensureNotMsoMdoc() }
+      }
+    }
+  }
 }
 
 public extension CredentialSets {
@@ -248,57 +262,36 @@ public extension CredentialSetQuery {
 
 public struct ClaimsQuery: Codable, Equatable, Sendable {
   public let id: ClaimId?
-  public let path: ClaimPath?
+  public let path: ClaimPath
   public let values: [String]?
-  public let namespace: MsoMdocNamespace?
-  public let claimName: MsoMdocClaimName?
+  public let intentToRetain: Bool?
   
   enum CodingKeys: String, CodingKey {
     case id
     case path
     case values
-    case namespace = "namespace"
-    case claimName = "claim_name"
+    case intentToRetain = "intent_to_retain"
   }
   
   public init(
     id: ClaimId?,
-    path: ClaimPath?,
+    path: ClaimPath,
     values: [String]?,
-    namespace: MsoMdocNamespace?,
-    claimName: MsoMdocClaimName?
+    intentToRetain: Bool? = nil
   ) {
     self.id = id
     self.path = path
     self.values = values
-    self.namespace = namespace
-    self.claimName = claimName
+    self.intentToRetain = intentToRetain
   }
   
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     
     self.id = try container.decodeIfPresent(ClaimId.self, forKey: .id)
-    self.path = try container.decodeIfPresent(ClaimPath.self, forKey: .path)
+    self.path = try container.decode(ClaimPath.self, forKey: .path)
     self.values = try container.decodeIfPresent([String].self, forKey: .values)
-    self.namespace = try container.decodeIfPresent(MsoMdocNamespace.self, forKey: .namespace)
-    self.claimName = try container.decodeIfPresent(MsoMdocClaimName.self, forKey: .claimName)
-    
-    if namespace == nil && claimName != nil {
-      throw DecodingError.dataCorruptedError(
-        forKey: .path,
-        in: container,
-        debugDescription: "Namespace must be present when claim name is present"
-      )
-    }
-    
-    if namespace != nil && claimName == nil {
-      throw DecodingError.dataCorruptedError(
-        forKey: .path,
-        in: container,
-        debugDescription: "Claim name must be present when namespace is present"
-      )
-    }
+    self.intentToRetain = try container.decodeIfPresent(Bool.self, forKey: .intentToRetain)
   }
   
   public func encode(to encoder: Encoder) throws {
@@ -307,112 +300,83 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
     try container.encodeIfPresent(id, forKey: .id)
     try container.encodeIfPresent(values, forKey: .values)
     try container.encodeIfPresent(path, forKey: .path)
-    
-    // Enforce consistency: either both namespace and claimName must be present or both absent
-    switch (namespace, claimName) {
-    case (.some(let ns), .some(let name)):
-      try container.encode(ns, forKey: .namespace)
-      try container.encode(name, forKey: .claimName)
-    case (nil, nil): break
-    default:
-      throw EncodingError.invalidValue(
-        self,
-        EncodingError.Context(
-          codingPath: container.codingPath,
-          debugDescription: "Namespace and claim name must either both be present or both be nil."
-        )
-      )
-    }
+    try container.encodeIfPresent(intentToRetain, forKey: .intentToRetain)
   }
   
   public static func sdJwtVc(
     id: ClaimId? = nil,
     path: ClaimPath,
     values: [String]? = nil
-  ) -> ClaimsQuery {
-    ClaimsQuery(
+  ) throws -> ClaimsQuery {
+    try ClaimsQuery(
       id: id,
       path: path,
-      values: values,
-      namespace: nil,
-      claimName: nil
-    )
+      values: values
+    ).ensureNotMsoMdoc()
   }
   
   public static func mdoc(
     id: ClaimId? = nil,
     values: [String]? = nil,
-    namespace: MsoMdocNamespace,
-    claimName: MsoMdocClaimName
-  ) -> ClaimsQuery {
-    ClaimsQuery(
+    namespace: String,
+    claimName: String,
+    intentToRetain: Bool? = nil
+  ) throws -> ClaimsQuery {
+    try ClaimsQuery(
       id: id,
-      path: nil,
+      path: .claim(namespace).claim(claimName),
       values: values,
-      namespace: namespace,
-      claimName: claimName
-    )
+      intentToRetain: intentToRetain
+    ).ensureMsoMdoc()
+  }
+  
+  public static func mdoc(
+    id: ClaimId? = nil,
+    values: [String]? = nil,
+    path: ClaimPath,
+    intentToRetain: Bool? = nil
+  ) throws -> ClaimsQuery {
+    try ClaimsQuery(
+      id: id,
+      path: path,
+      values: values,
+      intentToRetain: intentToRetain
+    ).ensureMsoMdoc()
   }
 }
 
-public struct MsoMdocNamespace: Codable, CustomStringConvertible, Equatable, Sendable {
-  public let namespace: String
+extension ClaimsQuery {
   
-  public init(_ namespace: String) throws {
-    guard !namespace.isEmpty else {
-      throw DCQLError.emptyNamespace
+  func ensureMsoMdoc() throws -> ClaimsQuery {
+    if path.value.count != 2 {
+      throw DCQLError.error(
+        "Claim paths for mso mdoc based must have exactly two elements"
+      )
     }
-    self.namespace = namespace
-  }
-  
-  enum CodingKeys: String, CodingKey {
-    case namespace = "namespace"
-  }
-  
-  public var description: String {
-    return namespace
-  }
-  
-  public init(from decoder: Decoder) throws {
-    let container = try decoder.singleValueContainer()
-    let namespace = try container.decode(String.self)
-    
-    if namespace.isEmpty {
-      throw DCQLError.emptyNamespace
+        
+    let claimsSatisfy = path.value.allSatisfy { element in
+      switch element {
+      case .claim:
+        return true
+      default:
+        return false
+      }
     }
-    
-    self.namespace = namespace
-  }
-}
-
-public struct MsoMdocClaimName: Codable, CustomStringConvertible, Equatable, Sendable {
-  
-  public let claimName: String
-  
-  public init(claimName: String) throws {
-    guard !claimName.isEmpty else {
-      throw DCQLError.emptyClaimName
+    if !claimsSatisfy {
+      throw DCQLError.error(
+        "ClaimPaths for MSO MDoc based formats must contain only Claim ClaimPathElements"
+      )
     }
-    self.claimName = claimName
+    return self
   }
   
-  public var description: String {
-    return claimName
-  }
-  
-  enum CodingKeys: String, CodingKey {
-    case claimName = "claim_name"
-  }
-  
-  public init(from decoder: Decoder) throws {
-    let container = try decoder.singleValueContainer()
-    let decodedValue = try container.decode(String.self)
-    
-    guard !decodedValue.isEmpty else {
-      throw DCQLError.emptyClaimName
+  func ensureNotMsoMdoc() throws -> ClaimsQuery {
+    if intentToRetain != nil {
+      throw DCQLError.error(
+        "\(OpenId4VPSpec.DCQL_MSO_MDOC_INTENT_TO_RETAIN) can be used only with msp mdoc based formats"
+      )
     }
-    
-    self.claimName = decodedValue
+    return self
   }
 }
 
@@ -455,16 +419,5 @@ public struct MsoMdocDocType: CustomStringConvertible {
   
   public var description: String {
     return value
-  }
-}
-
-public struct MsoMdocClaimsQueryExtension: Decodable {
-  
-  public let namespace: MsoMdocNamespace?
-  public let claimName: MsoMdocClaimName?
-  
-  enum CodingKeys: String, CodingKey {
-    case namespace
-    case claimName = "claim_name"
   }
 }
