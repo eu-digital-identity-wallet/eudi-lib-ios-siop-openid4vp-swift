@@ -197,4 +197,20 @@ final class X509CertificateTests: XCTestCase {
       XCTFail("Expected .validCertificate, got \(verified)")
     }
   }
+  
+  func testVerifyVerifierCerticateChainWithX509Verifier() async throws {
+    
+    let chainVerifier = X509CertificateChainVerifier()
+    let verified = try! await chainVerifier.verifyChain(
+      rootBase64Certificates: TestsConstants.loadRootCertificates(),
+      intermediateBase64Certificates: [],
+      leafBase64Certificate: TestsConstants.verifierCertificate
+    )
+    
+    if case .success = verified {
+      XCTAssertTrue(true)
+    } else {
+      XCTFail("Expected .validCertificate, got \(verified)")
+    }
+  }
 }

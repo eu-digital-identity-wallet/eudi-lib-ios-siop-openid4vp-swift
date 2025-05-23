@@ -1458,10 +1458,17 @@ final class DirectPostJWTTests: DiXCTest {
         "alg": "RS256"
       ])
     
-    let chainVerifier = { certificates in
+    let chainVerifier: CertificateTrust = { certificates in
+      
+      guard let leaf = certificates.first else {
+        return false
+      }
+      
       let chainVerifier = X509CertificateChainVerifier()
-      let verified = try? chainVerifier.verifyCertificateChain(
-        base64Certificates: certificates
+      let verified = try? await chainVerifier.verifyChain(
+        rootBase64Certificates: TestsConstants.loadRootCertificates(),
+        intermediateBase64Certificates: Array(certificates.dropFirst()),
+        leafBase64Certificate: leaf
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
