@@ -113,7 +113,7 @@ public actor AccessValidator: AccessValidating {
     switch supportedClientIdScheme {
     case .x509SanDns(let trust),
          .x509SanUri(let trust):
-      let trust = trust(chain)
+      let trust = await trust(chain)
       if !trust {
         throw ValidationError.validationError("Could not trust certificate chain")
       }
