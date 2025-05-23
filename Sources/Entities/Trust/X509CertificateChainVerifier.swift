@@ -215,11 +215,12 @@ public extension X509CertificateChainVerifier {
     
     let roots = CertificateStore(rootX509Certs)
     var verifier = Verifier(
-      rootCertificates: roots) {
+      rootCertificates: roots
+    ) {
         AnyPolicy {
           RFC5280Policy(validationTime: date)
         }
-      }
+    }
     
     let result = await verifier.validate(
       leafCertificate: leafCert,
