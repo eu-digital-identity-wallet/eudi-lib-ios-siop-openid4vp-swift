@@ -180,4 +180,21 @@ final class X509CertificateTests: XCTestCase {
       XCTAssert(false, "Unable to verify certificate chain")
     }
   }
+  
+  func testVerifyCerticateChainWithX509Verifier() async throws {
+    
+    let chainVerifier = X509CertificateChainVerifier()
+    let certs = TestsConstants.x509CertificateChain
+    let verified = try! await chainVerifier.verifyChain(
+      rootBase64Certificates: [certs.last!],
+      intermediateBase64Certificates: [certs[1]],
+      leafBase64Certificate: certs.first!
+    )
+    
+    if case .success = verified {
+      XCTAssertTrue(true)
+    } else {
+      XCTFail("Expected .validCertificate, got \(verified)")
+    }
+  }
 }

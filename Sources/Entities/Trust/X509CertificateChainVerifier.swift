@@ -29,6 +29,7 @@ enum CertificateValidationError: Error {
   case signatureValidationFailed
   case certificateExpired
   case untrustedRoot
+  case invalidChain([VerificationResult.PolicyFailure])
 }
 
 public enum DataConversionError: Error {
@@ -184,57 +185,54 @@ private extension X509CertificateChainVerifier {
 
 public extension X509CertificateChainVerifier {
   
-  /// Validates that each certificate is signed by the next in the chain and that the leaf is valid at the current time
-  func validateChainSwiftCertificates(base64Certificates: [Base64Certificate]) throws -> Bool {
+  /// Converts a `SecCertificate` to `X509.Certificate`
+  private func convertToX509Certificate(_ secCert: SecCertificate) throws -> Certificate {
+    let derData = SecCertificateCopyData(secCert) as Data
+    return try Certificate(derEncoded: [UInt8](derData))
+  }
+  
+  func verifyChain(
+    rootBase64Certificates: [Base64Certificate],
+    intermediateBase64Certificates: [Base64Certificate],
+    leafBase64Certificate: Base64Certificate,
+    date: Date = Date()
+  ) async throws -> ChainTrustResult {
     
-    /// Converts a `SecCertificate` to `X509.Certificate`
-    func convertToX509Certificate(_ secCert: SecCertificate) throws -> Certificate {
-      let derData = SecCertificateCopyData(secCert) as Data
-      return try Certificate(derEncoded: [UInt8](derData))
+    func decodeBase64Certificates(_ base64s: [Base64Certificate]) throws -> [Certificate] {
+      return try convertStringsToData(base64Strings: base64s)
+        .compactMap { SecCertificateCreateWithData(nil, $0 as CFData) }
+        .compactMap { SecCertificateContainer(certificate: $0).certificate }
+        .map { try convertToX509Certificate($0) }
     }
     
-    let certificates = try convertStringsToData(
-      base64Strings: base64Certificates
-    ).compactMap {
-      SecCertificateCreateWithData(nil, $0 as CFData)
-    }.compactMap {
-      SecCertificateContainer(certificate: $0)
-    }
+    let rootX509Certs = try decodeBase64Certificates(rootBase64Certificates)
+    let intermediateX509Certs = try decodeBase64Certificates(intermediateBase64Certificates)
+    let leafX509Certs = try decodeBase64Certificates([leafBase64Certificate])
     
-    if certificates.isEmpty {
-      return false
-    }
-    
-    let x509Certs: [Certificate] = try certificates.compactMap {
-      guard let cert = $0.certificate else { return nil }
-      return try convertToX509Certificate(cert)
-    }
-    
-    guard x509Certs.count >= 2 else {
+    guard let leafCert = leafX509Certs.first else {
       throw CertificateValidationError.insufficientCertificates
     }
     
-    // Leaf is first, root is last
-    let leaf = x509Certs.first!
-    
-    // Check validity period for leaf
-    let now = Date()
-    guard leaf.notValidBefore <= now,
-          leaf.notValidAfter >= now
-    else {
-      throw CertificateValidationError.certificateExpired
-    }
-    
-    // Check each cert is signed by the next one (issuer signs subject)
-    for (current, issuer) in zip(x509Certs, x509Certs.dropFirst()) {
-      guard issuer.publicKey.isValidSignature(
-        current.signature,
-        for: current
-      ) else {
-        throw CertificateValidationError.signatureValidationFailed
+    let roots = CertificateStore(rootX509Certs)
+    var verifier = Verifier(
+      rootCertificates: roots) {
+        AnyPolicy {
+          RFC5280Policy(validationTime: date)
+        }
       }
+    
+    let result = await verifier.validate(
+      leafCertificate: leafCert,
+      intermediates: .init(intermediateX509Certs)
+    ) { diagnostic in
+      print(diagnostic.multilineDescription)
     }
     
-    return true
+    switch result {
+    case .validCertificate:
+      return .success
+    case .couldNotValidate(let policyFailures):
+      throw CertificateValidationError.invalidChain(policyFailures)
+    }
   }
 }
