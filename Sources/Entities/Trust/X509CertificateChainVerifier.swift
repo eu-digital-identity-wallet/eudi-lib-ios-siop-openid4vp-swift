@@ -219,12 +219,14 @@ public extension X509CertificateChainVerifier {
     ) {
         AnyPolicy {
           RFC5280Policy(validationTime: date)
-        }
+      }
     }
     
     let result = await verifier.validate(
       leafCertificate: leafCert,
-      intermediates: .init(intermediateX509Certs)
+      intermediates: .init(
+        intermediateX509Certs
+      )
     ) { diagnostic in
       print(diagnostic.multilineDescription)
     }
