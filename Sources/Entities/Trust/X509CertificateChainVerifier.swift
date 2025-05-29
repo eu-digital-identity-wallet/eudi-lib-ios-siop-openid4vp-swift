@@ -198,7 +198,9 @@ public extension X509CertificateChainVerifier {
     date: Date = Date()
   ) async throws -> ChainTrustResult {
     
-    func decodeBase64Certificates(_ base64s: [Base64Certificate]) throws -> [Certificate] {
+    func decodeBase64Certificates(
+      _ base64s: [Base64Certificate]
+    ) throws -> [Certificate] {
       return try convertStringsToData(base64Strings: base64s)
         .compactMap { SecCertificateCreateWithData(nil, $0 as CFData) }
         .compactMap { SecCertificateContainer(certificate: $0).certificate }
@@ -235,7 +237,9 @@ public extension X509CertificateChainVerifier {
     case .validCertificate:
       return .success
     case .couldNotValidate(let policyFailures):
-      throw CertificateValidationError.invalidChain(policyFailures)
+      throw CertificateValidationError.invalidChain(
+        policyFailures
+      )
     }
   }
 }
