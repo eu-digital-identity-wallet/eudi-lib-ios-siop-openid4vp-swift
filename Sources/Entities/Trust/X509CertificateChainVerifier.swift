@@ -193,7 +193,7 @@ public extension X509CertificateChainVerifier {
   
   func verifyChain(
     rootBase64Certificates: [Base64Certificate],
-    intermediateBase64Certificates: [Base64Certificate],
+    intermediateBase64Certificates: [Base64Certificate] = [],
     leafBase64Certificate: Base64Certificate,
     date: Date = Date()
   ) async throws -> ChainTrustResult {
