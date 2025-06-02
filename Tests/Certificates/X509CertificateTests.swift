@@ -113,11 +113,11 @@ final class X509CertificateTests: XCTestCase {
       let verified = try chainVerifier.verifyCertificateChain(
         base64Certificates: [
           TestsConstants.x5cRootCertificateBase64,
-          TestsConstants.x5cLeafCertificateBase64,
-          TestsConstants.x5cInterCertificateBase64
+          TestsConstants.x5cInterCertificateBase64,
+          TestsConstants.x5cLeafCertificateBase64
         ]
       )
-      
+
       XCTAssert(chainVerifier.isChainTrustResultSuccesful(verified))
       
     } catch {
@@ -178,6 +178,40 @@ final class X509CertificateTests: XCTestCase {
       
     } catch {
       XCTAssert(false, "Unable to verify certificate chain")
+    }
+  }
+  
+  func testVerifyCerticateChainWithX509Verifier() async throws {
+    
+    let chainVerifier = X509CertificateChainVerifier()
+    let certs = TestsConstants.x509CertificateChain
+    let verified = try! await chainVerifier.verifyChain(
+      rootBase64Certificates: [certs.last!],
+      intermediateBase64Certificates: [certs[1]],
+      leafBase64Certificate: certs.first!,
+      showDiagnostics: true
+    )
+    
+    if case .success = verified {
+      XCTAssertTrue(true)
+    } else {
+      XCTFail("Expected .validCertificate, got \(verified)")
+    }
+  }
+  
+  func testVerifyVerifierCerticateChainWithX509Verifier() async throws {
+    
+    let chainVerifier = X509CertificateChainVerifier()
+    let verified = try! await chainVerifier.verifyChain(
+      rootBase64Certificates: TestsConstants.loadRootCertificates(),
+      leafBase64Certificate: TestsConstants.verifierCertificate,
+      showDiagnostics: true
+    )
+    
+    if case .success = verified {
+      XCTAssertTrue(true)
+    } else {
+      XCTFail("Expected .validCertificate, got \(verified)")
     }
   }
 }

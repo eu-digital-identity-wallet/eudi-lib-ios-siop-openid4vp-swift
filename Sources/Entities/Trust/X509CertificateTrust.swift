@@ -17,7 +17,7 @@ import Foundation
 
 public typealias Base64Certificate = String
 
-public typealias CertificateTrust = ([Base64Certificate]) -> Bool
+public typealias CertificateTrust = ([Base64Certificate]) async -> Bool
 
 public protocol X509CertificateTrustType {
   func isTrusted(chain: [Base64Certificate]) -> Bool
