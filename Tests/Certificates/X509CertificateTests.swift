@@ -188,7 +188,8 @@ final class X509CertificateTests: XCTestCase {
     let verified = try! await chainVerifier.verifyChain(
       rootBase64Certificates: [certs.last!],
       intermediateBase64Certificates: [certs[1]],
-      leafBase64Certificate: certs.first!
+      leafBase64Certificate: certs.first!,
+      showDiagnostics: true
     )
     
     if case .success = verified {
@@ -203,7 +204,8 @@ final class X509CertificateTests: XCTestCase {
     let chainVerifier = X509CertificateChainVerifier()
     let verified = try! await chainVerifier.verifyChain(
       rootBase64Certificates: TestsConstants.loadRootCertificates(),
-      leafBase64Certificate: TestsConstants.verifierCertificate
+      leafBase64Certificate: TestsConstants.verifierCertificate,
+      showDiagnostics: true
     )
     
     if case .success = verified {

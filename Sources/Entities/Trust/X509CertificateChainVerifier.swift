@@ -195,7 +195,8 @@ public extension X509CertificateChainVerifier {
     rootBase64Certificates: [Base64Certificate],
     intermediateBase64Certificates: [Base64Certificate] = [],
     leafBase64Certificate: Base64Certificate,
-    date: Date = Date()
+    date: Date = Date(),
+    showDiagnostics: Bool = false
   ) async throws -> ChainTrustResult {
     
     func decodeBase64Certificates(
@@ -230,7 +231,9 @@ public extension X509CertificateChainVerifier {
         intermediateX509Certs
       )
     ) { diagnostic in
-      print(diagnostic.multilineDescription)
+      if showDiagnostics {
+        print(diagnostic.multilineDescription)
+      }
     }
     
     switch result {
