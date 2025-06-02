@@ -220,8 +220,10 @@ public extension X509CertificateChainVerifier {
     var verifier = Verifier(
       rootCertificates: roots
     ) {
-        AnyPolicy {
-          RFC5280Policy(validationTime: date)
+      AnyPolicy {
+        RFC5280Policy(
+          validationTime: date
+        )
       }
     }
     
