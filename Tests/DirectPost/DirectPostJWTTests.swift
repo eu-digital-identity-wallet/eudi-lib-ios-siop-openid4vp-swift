@@ -1101,7 +1101,9 @@ final class DirectPostJWTTests: DiXCTest {
       case .accepted:
         XCTAssert(true)
       default:
+        XCTExpectFailure("this tests depends on a local verifier running")
         XCTAssert(false)
+        return
       }
       
       let pollingResult = try await TestsHelpers.pollVerifier(
