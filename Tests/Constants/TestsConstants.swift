@@ -85,6 +85,10 @@ struct TestsConstants {
   
   public static let testResponseMode: ResponseMode = .directPost(responseURI: URL(string: "https://respond.here")!)
   
+  public static let header = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+  public static let payload = "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0"
+  public static let signature = "tyh-VfuzIxCyGYDlkBA7DfyjrqmSHu6pQ2hoZuFqUSLPNY2N0mpHb3nk5K17HWP_3cYHBw7AhHale5wky6-sVA"
+  
   static func generateRandomJWT() -> String {
     // Define the header
     let header = #"{"alg":"HS256","typ":"JWT"}"#

@@ -222,6 +222,31 @@ final class SiopOpenID4VPTests: DiXCTest {
     XCTAssert(false)
   }
   
+  func testAuthorize_WhenWalletConfigurationIsNil_ReturnsInvalidResolutionWithMissingConfig() async {
+    let siop = SiopOpenID4VP(walletConfiguration: nil)
+    let url = URL(string: "https://example.com/valid-request")!
+    let result = await siop.authorize(url: url)
+    
+    switch result {
+    case .invalidResolution(let error, let dispatchDetails):
+      
+      if case ValidationError.nonDispatchable(let innerError) = error {
+        if case ValidationError.missingConfiguration = innerError {
+          XCTAssertTrue(true)
+        } else {
+          XCTFail("Expected inner error to be missingConfiguration")
+        }
+      } else {
+        XCTFail("Expected error to be nonDispatchable")
+      }
+      
+      XCTAssertNil(dispatchDetails, "dispatchDetails should be nil")
+      
+    default:
+      XCTFail("Expected invalidResolution but got \(result)")
+    }
+  }
+  
   // MARK: - Resolved Validated Authorisation Request Testing
   
   func testIdVpTokenValidationResolutionGivenReferenceDataIsValid() async throws {

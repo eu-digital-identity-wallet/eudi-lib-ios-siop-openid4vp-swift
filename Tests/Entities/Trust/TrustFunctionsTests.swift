@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
+import XCTest
+@testable import SiopOpenID4VP
+import X509
 
-public enum NonceOption: Sendable {
-  case doNotUse
-  case use(byteLength: Int)
+final class TrustFunctionsTests: XCTestCase {
   
-  public init(byteLength: Int = 32) throws {
-    // Use the `.use` case by default with validation
-    guard byteLength > 1 else {
-      throw NonceError.invalidLength
-    }
-    self = .use(byteLength: byteLength)
+  func testParseCertificateDataWithValidAndInvalidBase64() {
+    
+    let validBase64 = "U2lvcE9wZW5JRDRWUA=="
+    let invalidBase64 = "not_base_64"
+    let input = [validBase64, invalidBase64]
+    
+    let result = parseCertificateData(from: input)
+    
+    XCTAssertEqual(result.count, 1)
+    XCTAssertEqual(String(data: result[0], encoding: .utf8), "SiopOpenID4VP")
   }
 }

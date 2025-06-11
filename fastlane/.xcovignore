@@ -2,4 +2,35 @@
 - ../Tests
 
 # Extensions
-- *Extensions.swift
+- .*Extensions.swift
+
+# Type
+- .*Type.swift
+
+# Folders
+- Sources/Utilities/Builders/
+- Sources/Utilities/RemoteDataAccess/
+
+# Constants 
+- Constants.swift
+
+# Error
+- ValidationError.swift
+- ErrorDispatcher.swift
+- ErrorDispatchDetails.swift
+
+# Entities
+- Types.swift
+- NonceOption.swift
+- JWTClaimNames.swift
+- ClientMetaDataSource.swift
+- ValidatedRequestData.swift
+- SupportedRequestUriMethod.swift
+
+# Utilities
+- Reporting.swift
+- JSONWebTokenHeader.swift
+
+# Files
+- RequestFetcher.swift
+- AuthorisationService.swift

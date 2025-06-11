@@ -212,8 +212,27 @@ class JOSEErrorTests: XCTestCase {
   }
 }
 
-class DispatchOutcomeTests: XCTestCase {
+class AuthorizationRequestErrorCodeTest: XCTestCase {
+  
+  func testFromErrorEqual() {
+    let expectedCode: AuthorizationRequestErrorCode = .invalidRequest
+    let validationError: ValidationError = .invalidRequest
+    let result = AuthorizationRequestErrorCode.fromError(validationError)
+    
+    XCTAssertEqual(result, expectedCode)
+  }
+  
+  func testFromErrorNotEqual() {
+    let validationError: ValidationError = .invalidUri
+    let result = AuthorizationRequestErrorCode.fromError(validationError)
+    
+    XCTAssertEqual(result, .invalidRequest)
+  }
+  
+}
 
+class DispatchOutcomeTests: XCTestCase {
+  
   func testInit() {
     let outcome = DispatchOutcome()
     XCTAssertEqual(outcome, .accepted(redirectURI: nil))

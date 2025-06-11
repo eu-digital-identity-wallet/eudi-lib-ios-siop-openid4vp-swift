@@ -228,4 +228,25 @@ final class TransactionDataTests: XCTestCase {
     let decodedHashAlgorithms = try transactionData.hashAlgorithms().map { $0.name }
     XCTAssertEqual(decodedHashAlgorithms, ["sha-256"])
   }
+  
+  func testTransactionDataWithEmptyValue() throws {
+    XCTAssertThrowsError(try TransactionDataCredentialId(value: "")) { error in
+      XCTAssertEqual(error as? ValidationError, ValidationError.validationError("TransactionDataCredentialId value cannot be empty"))
+    }
+  }
+  
+  func testDescriptionReturnsValue() throws {
+    let expectedValue = "test-value"
+    let credentialId = try TransactionDataCredentialId(value: expectedValue)
+    let description = credentialId.description
+    
+    XCTAssertEqual(description, expectedValue)
+  }
+  
+  func testValueIsStoredCorrectly() throws {
+    let expectedValue = "test-value"
+    let credentialId = try TransactionDataCredentialId(value: expectedValue)
+    
+    XCTAssertEqual(credentialId.value, expectedValue)
+  }
 }

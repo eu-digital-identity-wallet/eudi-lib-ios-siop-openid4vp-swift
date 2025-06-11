@@ -26,9 +26,11 @@ public struct NonceGenerator {
   ///
   /// - Parameter length: The length of the nonce to be generated. Defaults to 32 characters.
   /// - Returns: A random alphanumeric string of the specified length.
-  /// - Precondition: The `length` parameter must be greater than zero.
-  public static func generate(length: Int = 32) -> String {
-    precondition(length > 0, "Length must be greater than zero")
+  /// - Throws: `NonceError.invalidLength` if the provided length is less than or equal to zero.
+  public static func generate(length: Int = 32) throws -> String {
+    guard length > 0 else {
+      throw NonceError.invalidLength
+    }
     
     let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     var nonce = ""

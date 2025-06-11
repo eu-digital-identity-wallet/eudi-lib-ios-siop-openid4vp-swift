@@ -15,15 +15,14 @@
  */
 import Foundation
 
-public enum NonceOption: Sendable {
-  case doNotUse
-  case use(byteLength: Int)
-  
-  public init(byteLength: Int = 32) throws {
-    // Use the `.use` case by default with validation
-    guard byteLength > 1 else {
-      throw NonceError.invalidLength
-    }
-    self = .use(byteLength: byteLength)
-  }
+/// An error type representing possible failures when generating a nonce.
+///
+/// - `invalidLength`: Indicates that the provided length is invalid.
+///   This occurs when the specified length is less than or equal to zero.
+public enum NonceError: Error {
+  /// Indicates that the provided length for generating a nonce is invalid.
+  ///
+  /// This error occurs when the length specified is less than or equal to zero.
+  /// The nonce generator requires a strictly positive integer value for its length.
+  case invalidLength
 }

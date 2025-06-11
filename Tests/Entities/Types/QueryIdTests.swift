@@ -13,17 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
+import XCTest
+@testable import SiopOpenID4VP
 
-public enum NonceOption: Sendable {
-  case doNotUse
-  case use(byteLength: Int)
+final class QueryIdTests: XCTestCase {
   
-  public init(byteLength: Int = 32) throws {
-    // Use the `.use` case by default with validation
-    guard byteLength > 1 else {
-      throw NonceError.invalidLength
-    }
-    self = .use(byteLength: byteLength)
+  func testQueryIdDescription() throws {
+    let rawValue = "test-raw-value"
+    let queryId = try QueryId(value: rawValue)
+    
+    let description = queryId.description
+    
+    XCTAssertEqual(description, rawValue)
+  }
+  
+  func testEncodeToJSON() throws {
+    let rawValue = "test-raw-value"
+    let queryId = try QueryId(value: rawValue)
+    
+    let encodedData = try JSONEncoder().encode(queryId)
+    let encodedString = String(data: encodedData, encoding: .utf8)
+    
+    XCTAssertEqual(encodedString, "\"\(rawValue)\"")
   }
 }
+

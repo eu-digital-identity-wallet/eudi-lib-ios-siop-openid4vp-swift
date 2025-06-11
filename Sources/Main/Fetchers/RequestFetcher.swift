@@ -118,7 +118,7 @@ internal actor RequestFetcher {
     }
 
     let isNotRequired = options.jarEncryption.isNotRequired
-    let nonce = generateNonce(from: options)
+    let nonce = try generateNonce(from: options)
     let keys: (key: SecKey, jwk: ECPrivateKey)? = !isNotRequired ? (try? generateKeysIfNeeded(
       for: supportedMethods
     )) : nil
@@ -185,10 +185,10 @@ internal actor RequestFetcher {
     }
   }
   
-  private func generateNonce(from options: PostOptions) -> String? {
+  private func generateNonce(from options: PostOptions) throws -> String? {
     return switch options.useWalletNonce {
     case .doNotUse: nil
-    case .use(let byteLength): NonceGenerator.generate(length: byteLength)
+    case .use(let byteLength): try NonceGenerator.generate(length: byteLength)
     }
   }
   

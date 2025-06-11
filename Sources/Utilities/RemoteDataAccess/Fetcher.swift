@@ -106,7 +106,7 @@ public struct Fetcher<Element: Codable & Sendable>: Fetching {
       return .failure(.decodingError(error))
     }
   }
-
+  
   public func fetchString(
     session: URLSession = URLSession.shared,
     url: URL
