@@ -19,7 +19,7 @@ import JOSESwift
 public struct JARConfiguration: Sendable {
   public let supportedAlgorithms: [JWSAlgorithm]
   public let supportedRequestUriMethods: SupportedRequestUriMethod
-  
+
   /// Initializer with validation to ensure supportedAlgorithms is not empty
   public init(
     supportedAlgorithms: [JWSAlgorithm],
@@ -29,7 +29,7 @@ public struct JARConfiguration: Sendable {
     self.supportedAlgorithms = supportedAlgorithms
     self.supportedRequestUriMethods = supportedRequestUriMethods
   }
-  
+
   /// Default JAR configuration with trusted algorithms ES256
   public static let encryptionOption: JARConfiguration = .init(
     supportedAlgorithms: [
@@ -39,7 +39,7 @@ public struct JARConfiguration: Sendable {
     ],
     supportedRequestUriMethods: .encryptionOption
   )
-  
+
   public static let noEncryptionOption: JARConfiguration = .init(
     supportedAlgorithms: [
       JWSAlgorithm(
@@ -48,7 +48,7 @@ public struct JARConfiguration: Sendable {
     ],
     supportedRequestUriMethods: .noEncryptionOption
   )
-  
+
   public var supportedEncryption: EncryptionRequirementSpecification? {
     return switch supportedRequestUriMethods {
     case .get: nil

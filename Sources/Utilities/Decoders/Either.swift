@@ -21,7 +21,7 @@ internal enum Either<A: Codable, B: Codable>: Codable {
 
   init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
-    
+
     if let a = try? container.decode(A.self) {
       self = .left(a)
     } else if let b = try? container.decode(B.self) {
@@ -37,5 +37,3 @@ internal enum Either<A: Codable, B: Codable>: Codable {
     }
   }
 }
-
-

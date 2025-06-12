@@ -20,7 +20,7 @@ public struct JSONWebToken {
   public let header: JSONWebTokenHeader
   public let payload: JSON
   public let signature: String
-  
+
   /**
    Initializes a JSONWebToken instance with the provided components.
    
@@ -48,7 +48,7 @@ public extension JSONWebToken {
   init?(jsonWebToken: String) {
     let encodedData = { (string: String) -> Data? in
       var encodedString = string.replacingOccurrences(of: "-", with: "+").replacingOccurrences(of: "_", with: "/")
-      
+
       switch encodedString.utf16.count % 4 {
       case 2: encodedString = "\(encodedString)=="
       case 3: encodedString = "\(encodedString)="
@@ -56,9 +56,9 @@ public extension JSONWebToken {
       }
       return Data(base64Encoded: encodedString)
     }
-    
+
     let components = jsonWebToken.components(separatedBy: ".")
-    
+
     guard
       components.count == 3,
       let headerData = encodedData(components[0] as String),
@@ -66,10 +66,10 @@ public extension JSONWebToken {
     else {
       return nil
     }
-    
+
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .iso8601
-    
+
     do {
       header = try decoder.decode(JSONWebTokenHeader.self, from: headerData)
       let object = try JSONSerialization.jsonObject(with: payloadData, options: .allowFragments)

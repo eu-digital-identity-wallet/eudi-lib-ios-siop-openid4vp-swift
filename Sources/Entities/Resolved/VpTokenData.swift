@@ -26,7 +26,7 @@ extension ResolvedRequestData {
     public let state: String?
     public let vpFormats: VpFormats
     public let transactionData: [TransactionData]?
-    
+
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///
     /// - Parameters:

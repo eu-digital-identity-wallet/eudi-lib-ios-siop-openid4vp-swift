@@ -41,7 +41,7 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
   public let idTokenType: String?
   public let supportedAlgorithm: String?
   public let transactionData: [String]?
-  
+
   enum CodingKeys: String, CodingKey {
     case responseType = "response_type"
     case responseUri = "response_uri"
@@ -64,7 +64,7 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     case supportedAlgorithm = "supported_algorithm"
     case transactionData = "transaction_data"
   }
-  
+
   public init(
     responseType: String? = nil,
     responseUri: String? = nil,
@@ -108,65 +108,65 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     self.supportedAlgorithm = supportedAlgorithm
     self.transactionData = transactionData
   }
-  
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     responseType = try? container.decode(String.self, forKey: .responseType)
     responseUri = try? container.decode(String.self, forKey: .responseUri)
     redirectUri = try? container.decode(String.self, forKey: .redirectUri)
-    
+
     presentationDefinition = try? container.decode(String.self, forKey: .presentationDefinition)
     presentationDefinitionUri = try? container.decode(String.self, forKey: .presentationDefinitionUri)
     dcqlQuery = try? container.decode(JSON.self, forKey: .dcqlQuery)
-    
+
     clientId = try? container.decode(String.self, forKey: .clientId)
     clientMetaData = try? container.decode(String.self, forKey: .clientMetaData)
     clientMetadataUri = try? container.decode(String.self, forKey: .clientMetadataUri)
-    
+
     clientIdScheme = try? container.decode(String.self, forKey: .clientIdScheme)
     nonce = try? container.decode(String.self, forKey: .nonce)
     scope = try? container.decode(String.self, forKey: .scope)
     responseMode = try? container.decode(String.self, forKey: .responseMode)
     state = try? container.decode(String.self, forKey: .state)
-    
+
     idTokenType = try? container.decode(String.self, forKey: .idTokenType)
-    
+
     request = try? container.decode(String.self, forKey: .request)
     requestUri = try? container.decode(String.self, forKey: .requestUri)
     requestUriMethod = try? container.decode(String.self, forKey: .requestUriMethod)
-    
+
     supportedAlgorithm = try? container.decode(String.self, forKey: .supportedAlgorithm)
-    
+
     transactionData = try? container.decode([String].self, forKey: .transactionData)
   }
-  
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
-    
+
     try? container.encode(responseType, forKey: .responseType)
     try? container.encode(responseUri, forKey: .responseUri)
     try? container.encode(redirectUri, forKey: .redirectUri)
-    
+
     try? container.encode(presentationDefinition, forKey: .presentationDefinition)
     try? container.encode(presentationDefinitionUri, forKey: .presentationDefinitionUri)
     try? container.encode(dcqlQuery, forKey: .dcqlQuery)
-    
+
     try? container.encode(clientId, forKey: .clientId)
     try? container.encode(clientMetaData, forKey: .clientMetaData)
     try? container.encode(clientMetadataUri, forKey: .clientMetadataUri)
     try? container.encode(clientIdScheme, forKey: .clientIdScheme)
-    
+
     try? container.encode(nonce, forKey: .nonce)
     try? container.encode(scope, forKey: .scope)
     try? container.encode(responseMode, forKey: .responseMode)
     try? container.encode(state, forKey: .state)
-    
+
     try? container.encode(idTokenType, forKey: .idTokenType)
-    
+
     try? container.encode(request, forKey: .request)
     try? container.encode(requestUri, forKey: .requestUri)
     try? container.encode(requestUriMethod, forKey: .requestUriMethod)
-    
+
     try? container.encode(supportedAlgorithm, forKey: .supportedAlgorithm)
     try? container.encode(transactionData, forKey: .transactionData)
   }
@@ -175,37 +175,37 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
 public extension UnvalidatedRequestObject {
   init?(from url: URL) {
     let parameters = url.queryParameters
-    
+
     responseType = parameters?[CodingKeys.responseType.rawValue] as? String
     responseUri = parameters?[CodingKeys.responseUri.rawValue] as? String
     redirectUri = parameters?[CodingKeys.redirectUri.rawValue] as? String
-    
+
     presentationDefinition = parameters?[CodingKeys.presentationDefinition.rawValue] as? String
     presentationDefinitionUri = parameters?[CodingKeys.presentationDefinitionUri.rawValue] as? String
-    
+
     if let dcqlString = parameters?[CodingKeys.dcqlQuery.rawValue] as? String,
        let jsonData = dcqlString.data(using: .utf8) {
       dcqlQuery = try? JSON(data: jsonData)
     } else {
       dcqlQuery = nil
     }
-    
+
     clientId = parameters?[CodingKeys.clientId.rawValue] as? String
     clientMetaData = parameters?[CodingKeys.clientMetaData.rawValue] as? String
     clientMetadataUri = parameters?[CodingKeys.clientMetadataUri.rawValue] as? String
-    
+
     clientIdScheme = parameters?[CodingKeys.clientIdScheme.rawValue] as? String
     nonce = parameters?[CodingKeys.nonce.rawValue] as? String
     scope = parameters?[CodingKeys.scope.rawValue] as? String
     responseMode = parameters?[CodingKeys.responseMode.rawValue] as? String
     state = parameters?[CodingKeys.state.rawValue] as? String
-    
+
     idTokenType = parameters?[CodingKeys.idTokenType.rawValue] as? String
-    
+
     request = parameters?[CodingKeys.request.rawValue] as? String
     requestUri = parameters?[CodingKeys.requestUri.rawValue] as? String
     requestUriMethod = parameters?[CodingKeys.requestUriMethod.rawValue] as? String
-    
+
     supportedAlgorithm = parameters?[CodingKeys.supportedAlgorithm.rawValue] as? String
     transactionData = JsonHelper.jsonArray(
       for: "transaction_data",
@@ -218,15 +218,15 @@ public extension UnvalidatedRequestObject {
   var hasClientMetaData: Bool {
     return clientMetaData != nil || clientMetadataUri != nil
   }
-  
+
   var hasPresentationDefinitions: Bool {
     return presentationDefinition != nil || presentationDefinitionUri != nil
   }
-  
+
   var hasRequests: Bool {
     return request != nil || requestUri != nil
   }
-  
+
   var hasConflicts: Bool {
     return (hasClientMetaData || hasPresentationDefinitions) && hasRequests
   }
@@ -247,7 +247,7 @@ internal struct JsonHelper {
     else {
       return nil
     }
-    
+
     let json = try? JSON(data: data)
     return json?.array
   }

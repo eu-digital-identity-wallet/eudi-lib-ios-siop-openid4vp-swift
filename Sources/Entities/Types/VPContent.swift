@@ -21,13 +21,13 @@ public enum VpContent: Sendable {
     verifiablePresentations: [VerifiablePresentation],
     presentationSubmission: PresentationSubmission
   )
-  
+
   case dcql(verifiablePresentations: [QueryId: VerifiablePresentation])
-  
+
   static func encodeDCQLQuery(
     _ query: [QueryId: VerifiablePresentation]
   ) -> [String: JSON] {
-    
+
     var components: [String: JSON] = [:]
     for (key, value) in query {
       switch value {
@@ -37,7 +37,7 @@ public enum VpContent: Sendable {
         components[key.value] = value
       }
     }
-    
+
     return components
   }
 }

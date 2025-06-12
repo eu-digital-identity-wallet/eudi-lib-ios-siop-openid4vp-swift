@@ -19,25 +19,25 @@ import X509
 @testable import SiopOpenID4VP
 
 final class X509CertificateTests: XCTestCase {
-  
+
   override func setUpWithError() throws {
   }
-  
+
   override func tearDownWithError() throws {
   }
-  
+
   func testSecKeyCreationFromX509Certificate() throws {
-    
+
     if let data = Data(base64Encoded: TestsConstants.x5cCertificate) {
       let derBytes = [UInt8](data)
       let certificate = try Certificate(derEncoded: derBytes)
-      
+
       let publicKey = certificate.publicKey
       let pem = try publicKey.serializeAsPEM().pemString
-      
+
       let secKey = KeyController.convertPEMToPublicKey(pem)
       XCTAssertNotNil(secKey)
-      
+
       let clientIndentifier = "client_identifer.example.com"
       guard let dnss = try? certificate.extensions.subjectAlternativeNames?.rawSubjectAlternativeNames() else {
         XCTFail("Could not locate subject alternative names")
@@ -45,7 +45,7 @@ final class X509CertificateTests: XCTestCase {
       }
       XCTAssert(!dnss.isEmpty)
       XCTAssert(dnss.contains(where: { $0 == clientIndentifier }))
-      
+
       let uri = "https://www.example.com"
       guard let uris = try? certificate.extensions.subjectAlternativeNames?.rawUniformResourceIdentifiers() else {
         XCTFail("Could not locate uri's")
@@ -53,20 +53,20 @@ final class X509CertificateTests: XCTestCase {
       }
       XCTAssert(!uris.isEmpty)
       XCTAssert(uris.contains(where: { $0 == uri }))
-      
+
       let valid = publicKey.isValidSignature(certificate.signature, for: certificate)
       XCTAssert(valid)
-      
+
       let legacyCertificate = SecCertificateCreateWithData(nil, data as CFData)
       XCTAssertNotNil(legacyCertificate)
-      
+
     } else {
       XCTFail("Could not get SecKey from base64 x509")
     }
   }
-  
+
   func testVerifyRawCerticateChain() {
-    
+
     guard
       let rootCertData = Data(base64Encoded: TestsConstants.x5cRootCertificate),
       let leafCertData = Data(base64Encoded: TestsConstants.x5cLeafCertificate),
@@ -76,39 +76,39 @@ final class X509CertificateTests: XCTestCase {
     }
     // Create a certificate object for the root certificate
     let rootCert = SecCertificateCreateWithData(nil, rootCertData as CFData)
-    
+
     // Create a certificate object for the leaf certificate
     let leafCert = SecCertificateCreateWithData(nil, leafCertData as CFData)
-    
+
     // Create a certificate object for the intermediate certificate
     let interCert = SecCertificateCreateWithData(nil, interCertData as CFData)
-    
+
     // Create a certificate trust object
     var trust: SecTrust?
     let policy = SecPolicyCreateBasicX509()
-    
+
     let certificates = [leafCert, interCert, rootCert] // Add intermediate certificates if needed
-    
+
     // Set the certificate chain and policy for trust evaluation
     SecTrustCreateWithCertificates(certificates as CFTypeRef, policy, &trust)
-    
+
     // Evaluate the trust
     var trustResult: SecTrustResultType = .invalid
     _ = SecTrustEvaluate(trust!, &trustResult)
-    
+
     // Check if the trust evaluation was successful
     if trustResult == .unspecified || trustResult == .proceed || trustResult == .recoverableTrustFailure {
       XCTAssert(true)
     } else {
-        
+
       XCTAssert(false)
     }
   }
-  
+
   func testVerifyCerticateChainWithVerifier() {
-    
+
     let chainVerifier = X509CertificateChainVerifier()
-    
+
     do {
       let verified = try chainVerifier.verifyCertificateChain(
         base64Certificates: [
@@ -119,14 +119,14 @@ final class X509CertificateTests: XCTestCase {
       )
 
       XCTAssert(chainVerifier.isChainTrustResultSuccesful(verified))
-      
+
     } catch {
       XCTAssert(false, "Unable to verify certificate chain")
     }
   }
-  
+
   func testRawCertificateRevokation() {
-    
+
     guard
       let rootCertData = Data(base64Encoded: TestsConstants.x5cRootCertificate)
     else {
@@ -134,21 +134,21 @@ final class X509CertificateTests: XCTestCase {
     }
     // Create a certificate object for the root certificate
     let certificate = SecCertificateCreateWithData(nil, rootCertData as CFData)
-    
+
     if let certificate = certificate {
-      
+
       // Create a policy for certificate validation
       let policy = SecPolicyCreateBasicX509()
-      
+
       // Create a trust object with the certificate and policy
       var trust: SecTrust?
       if SecTrustCreateWithCertificates(certificate, policy, &trust) == errSecSuccess {
-        
+
         // Set the OCSP responder URL
         let ocspResponderURL = URL(string: "http://ocsp.example.com")!
         SecTrustSetNetworkFetchAllowed(trust!, true)
         SecTrustSetOCSPResponse(trust!, ocspResponderURL as CFURL)
-        
+
         // Evaluate the trust
         var trustResult: SecTrustResultType = .invalid
         if SecTrustEvaluate(trust!, &trustResult) == errSecSuccess {
@@ -167,22 +167,22 @@ final class X509CertificateTests: XCTestCase {
       }
     }
   }
-  
+
   func testCertificateRevokationWithVerifier() {
-    
+
     let chainVerifier = X509CertificateChainVerifier()
-    
+
     do {
       let notRevoked = try chainVerifier.checkCertificateValidAndNotRevoked(base64Certificate: TestsConstants.x5cRootCertificateBase64)
       XCTAssert(notRevoked)
-      
+
     } catch {
       XCTAssert(false, "Unable to verify certificate chain")
     }
   }
-  
+
   func testVerifyCerticateChainWithX509Verifier() async throws {
-    
+
     let chainVerifier = X509CertificateChainVerifier()
     let certs = TestsConstants.x509CertificateChain
     let verified = try! await chainVerifier.verifyChain(
@@ -191,23 +191,23 @@ final class X509CertificateTests: XCTestCase {
       leafBase64Certificate: certs.first!,
       showDiagnostics: true
     )
-    
+
     if case .success = verified {
       XCTAssertTrue(true)
     } else {
       XCTFail("Expected .validCertificate, got \(verified)")
     }
   }
-  
+
   func testVerifyVerifierCerticateChainWithX509Verifier() async throws {
-    
+
     let chainVerifier = X509CertificateChainVerifier()
     let verified = try! await chainVerifier.verifyChain(
       rootBase64Certificates: TestsConstants.loadRootCertificates(),
       leafBase64Certificate: TestsConstants.verifierCertificate,
       showDiagnostics: true
     )
-    
+
     if case .success = verified {
       XCTAssertTrue(true)
     } else {

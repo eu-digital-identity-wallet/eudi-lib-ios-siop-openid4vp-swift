@@ -20,7 +20,7 @@ public struct EncryptionRequirementSpecification: Equatable, Sendable {
   public let supportedEncryptionAlgorithm: KeyManagementAlgorithm
   public let supportedEncryptionMethod: ContentEncryptionAlgorithm
   public let ephemeralEncryptionKeyCurve: ECCurveType
-  
+
   public init(
     supportedEncryptionAlgorithm: KeyManagementAlgorithm = .ECDH_ES,
     supportedEncryptionMethod: ContentEncryptionAlgorithm = .A128CBCHS256,
@@ -29,15 +29,15 @@ public struct EncryptionRequirementSpecification: Equatable, Sendable {
     self.supportedEncryptionAlgorithm = supportedEncryptionAlgorithm
     self.supportedEncryptionMethod = supportedEncryptionMethod
     self.ephemeralEncryptionKeyCurve = ephemeralEncryptionKeyCurve
-    
+
     if supportedEncryptionAlgorithm != .ECDH_ES {
       throw ValidationError.validationError("Unsupported encryption algorithm \(supportedEncryptionAlgorithm.rawValue)")
     }
-    
+
     if supportedEncryptionMethod != .A128CBCHS256 {
       throw ValidationError.validationError("Unsupported encryption method \(supportedEncryptionMethod.rawValue)")
     }
-    
+
     if ephemeralEncryptionKeyCurve != .P256 {
       throw ValidationError.validationError("Unsupported ephemeral encryption key curve \(ephemeralEncryptionKeyCurve.rawValue)")
     }
@@ -49,7 +49,7 @@ public enum EncryptionRequirement: Equatable, Sendable {
     * Encryption is not required.
     */
   case notRequired
-  
+
   /**
     * Encryption is required.
     *
@@ -60,7 +60,7 @@ public enum EncryptionRequirement: Equatable, Sendable {
   case required(
     encryptionRequirementSpecification: EncryptionRequirementSpecification
   )
-  
+
   public var isNotRequired: Bool {
     return switch self {
     case .notRequired: true

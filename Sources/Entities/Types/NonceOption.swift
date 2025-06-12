@@ -18,10 +18,12 @@ import Foundation
 public enum NonceOption: Sendable {
   case doNotUse
   case use(byteLength: Int)
-  
-  public init(byteLength: Int = 32) {
+
+  public init(byteLength: Int = 32) throws {
     // Use the `.use` case by default with validation
-    precondition(byteLength > 1, "Byte length should be greater than 1")
+    guard byteLength > 1 else {
+      throw NonceError.invalidLength
+    }
     self = .use(byteLength: byteLength)
   }
 }

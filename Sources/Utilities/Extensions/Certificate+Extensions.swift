@@ -26,7 +26,7 @@ extension SubjectAlternativeNames {
       }
     }
   }
-  
+
   func rawUniformResourceIdentifiers() -> [String] {
     self.compactMap { generalName in
       switch generalName {

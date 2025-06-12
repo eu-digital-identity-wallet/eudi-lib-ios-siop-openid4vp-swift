@@ -22,13 +22,13 @@ public enum AuthorizationRequest: Sendable {
 
   /// A JWT authorization request.
   case jwt(request: ResolvedRequestData)
-  
+
   /// The resolution was not succesful
   case invalidResolution(
     error: AuthorizationRequestError,
     dispatchDetails: ErrorDispatchDetails?
   )
-  
+
   public var resolved: ResolvedRequestData? {
     return switch self {
     case .notSecured(let request):

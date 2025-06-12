@@ -15,13 +15,13 @@
  */
 import Foundation
 
-public actor ErrorDispatcher: DispatcherType, Sendable {
-  
+public actor ErrorDispatcher: DispatcherType {
+
   public let service: AuthorisationServiceType
-  
+
   public let error: AuthorizationRequestError
   public let details: ErrorDispatchDetails?
-  
+
   public init(
     service: AuthorisationServiceType = AuthorisationService(),
     error: AuthorizationRequestError,
@@ -31,13 +31,13 @@ public actor ErrorDispatcher: DispatcherType, Sendable {
     self.error = error
     self.details = details
   }
-  
+
   public func dispatch(poster: any Posting) async throws -> DispatchOutcome {
-    
+
     guard let response = error.responseWith(details: details) else {
       return .rejected(reason: "Unsupported response mode")
     }
-    
+
     let result = try await service.formCheck(
       poster: poster,
       response: response
@@ -55,11 +55,11 @@ internal extension AuthorizationRequestError {
       state: details?.state,
       clientId: details?.clientId
     )
-    
+
     guard let details = details else {
       return nil
     }
-    
+
     switch details.responseMode {
     case .directPost(let responseURI):
       return .directPost(url: responseURI, data: payload)
@@ -70,11 +70,10 @@ internal extension AuthorizationRequestError {
       return .directPostJwt(
         url: responseURI,
         data: payload,
-        jarmSpec:  jarmSpec
+        jarmSpec: jarmSpec
       )
     default:
       return nil
     }
   }
 }
-

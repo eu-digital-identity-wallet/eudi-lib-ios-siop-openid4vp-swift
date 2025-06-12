@@ -9,7 +9,7 @@ let package = Package(
   products: [
     .library(
       name: "SiopOpenID4VP",
-      targets: ["SiopOpenID4VP"]),
+      targets: ["SiopOpenID4VP"])
   ],
   dependencies: [
     .package(
@@ -60,7 +60,7 @@ let package = Package(
         .product(
           name: "CryptorECC",
           package: "BlueECC"
-        ),
+        )
       ],
       path: "Sources",
       resources: [
@@ -85,6 +85,6 @@ let package = Package(
         )
       ],
       path: "Tests"
-    ),
+    )
   ]
 )

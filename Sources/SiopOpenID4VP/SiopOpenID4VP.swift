@@ -36,7 +36,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
 
   let walletConfiguration: SiopOpenId4VPConfiguration?
   let authorizatinRequestResolver: AuthorizationRequestResolving
-  
+
   public init(
     walletConfiguration: SiopOpenId4VPConfiguration? = nil,
     authorizatinRequestResolver: AuthorizationRequestResolving = AuthorizationRequestResolver()
@@ -47,7 +47,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
   }
 
   public func authorize(url: URL) async -> AuthorizationRequest {
-    
+
     guard let walletConfiguration = walletConfiguration else {
       return .invalidResolution(
         error: ValidationError.nonDispatchable(
@@ -56,7 +56,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
         dispatchDetails: nil
       )
     }
-    
+
     let unvalidatedRequest = UnvalidatedRequest.make(from: url.absoluteString)
     switch unvalidatedRequest {
     case .success(let request):
@@ -64,7 +64,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
         walletConfiguration: walletConfiguration,
         unvalidatedRequest: request
       )
-      
+
     case .failure(let error):
       return .invalidResolution(
         error: ValidationError.validationError(error.localizedDescription),
@@ -132,7 +132,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
       )
     )
   }
-  
+
   /**
    WIP: Consent to matches
    */

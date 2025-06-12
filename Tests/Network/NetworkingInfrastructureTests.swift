@@ -67,7 +67,7 @@ class SelfSignedSessionDelegateTests: DiXCTest {
         realm: nil,
         authenticationMethod: NSURLAuthenticationMethodDefault
     )
-    
+
     let challenge = URLAuthenticationChallenge(
         protectionSpace: protectionSpace,
         proposedCredential: nil,

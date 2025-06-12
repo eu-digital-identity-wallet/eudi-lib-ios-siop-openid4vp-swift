@@ -18,7 +18,7 @@ import Foundation
 public struct SupportedTransactionDataType: Codable, Sendable {
   public let type: TransactionDataType
   public let hashAlgorithms: Set<HashAlgorithm>
-  
+
   public init(type: TransactionDataType, hashAlgorithms: Set<HashAlgorithm>) throws {
     guard !hashAlgorithms.isEmpty else {
       throw NSError(domain: "SupportedTransactionDataTypeError", code: 1, userInfo: [NSLocalizedDescriptionKey: "hashAlgorithms cannot be empty"])
@@ -29,7 +29,7 @@ public struct SupportedTransactionDataType: Codable, Sendable {
     self.type = type
     self.hashAlgorithms = hashAlgorithms
   }
-  
+
   public static func `default`() -> SupportedTransactionDataType {
     try! .init(
       type: .init(value: "transaction_data"),
@@ -37,4 +37,3 @@ public struct SupportedTransactionDataType: Codable, Sendable {
     )
   }
 }
-

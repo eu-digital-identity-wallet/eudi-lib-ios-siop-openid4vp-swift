@@ -17,7 +17,7 @@ import Foundation
 
 public struct TransactionDataType: Codable, Equatable, CustomStringConvertible, Sendable {
   public let value: String
-  
+
   public init(value: String) throws {
     guard !value.isEmpty else {
       throw ValidationError.validationError(
@@ -26,7 +26,6 @@ public struct TransactionDataType: Codable, Equatable, CustomStringConvertible, 
     }
     self.value = value
   }
-    
+
   public var description: String { value }
 }
-

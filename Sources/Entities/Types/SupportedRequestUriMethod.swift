@@ -19,7 +19,7 @@ public struct PostOptions: Sendable {
   public let includeWalletMetadata: Bool
   public let useWalletNonce: NonceOption
   public let jarEncryption: EncryptionRequirement
-  
+
   public init(
     includeWalletMetadata: Bool = false,
     useWalletNonce: NonceOption = .doNotUse,
@@ -28,7 +28,7 @@ public struct PostOptions: Sendable {
     self.includeWalletMetadata = includeWalletMetadata
     self.useWalletNonce = useWalletNonce
     self.jarEncryption = jarEncryption
-    
+
     if jarEncryption != .notRequired && includeWalletMetadata == false {
       throw ValidationError.validationError(
         "Wallet Metadata must be included when JAR encryption is required"
@@ -45,7 +45,7 @@ public enum SupportedRequestUriMethod: Sendable {
   case both(
     postOptions: PostOptions
   )
-  
+
   public init?(
     method: String,
     includeWalletMetadata: Bool = true,
@@ -62,13 +62,13 @@ public enum SupportedRequestUriMethod: Sendable {
         return nil
       }
       self = .post(
-        postOptions:options
+        postOptions: options
       )
     default:
       return nil
     }
   }
-  
+
   /// Method to check if `get` is supported
   public func isGetSupported() -> Bool {
     switch self {
@@ -78,7 +78,7 @@ public enum SupportedRequestUriMethod: Sendable {
       return false
     }
   }
-  
+
   /// Method to check if `post` is supported
   public func isPostSupported() -> PostOptions? {
     switch self {
@@ -90,7 +90,7 @@ public enum SupportedRequestUriMethod: Sendable {
       return nil
     }
   }
-  
+
   public static let encryptionOption: SupportedRequestUriMethod = .both(
     postOptions: try! PostOptions(
       includeWalletMetadata: true,
@@ -104,7 +104,7 @@ public enum SupportedRequestUriMethod: Sendable {
       )
     )
   )
-  
+
   public static let noEncryptionOption: SupportedRequestUriMethod = .both(
     postOptions: try! PostOptions(
       includeWalletMetadata: true,
@@ -113,4 +113,3 @@ public enum SupportedRequestUriMethod: Sendable {
     )
   )
 }
-

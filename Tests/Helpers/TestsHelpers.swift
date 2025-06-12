@@ -22,62 +22,62 @@ class TestsHelpers {
   static func getDirectPostSession(
     nonce: String
   ) async throws -> [String: Any] {
-    
+
     // Replace this URL with the endpoint you want to send the POST request to
     let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
-    
+
     // Create a POST request
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    
+
     // Set the request body data (e.g., JSON data)
     let jsonBody = [
       "type": "id_token",
       "id_token_type": "subject_signed_id_token",
       "nonce": nonce
     ]
-    
+
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody, options: [])
     request.httpBody = jsonData
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    
+
     let (data, _) = try await URLSession.shared.data(for: request)
     return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
   }
-  
+
   static func transactionDataBase64String() -> String {
-    
+
     var json = JSON()
     json[OpenId4VPSpec.TRANSACTION_DATA_TYPE].string = "manual-type"
     json[OpenId4VPSpec.TRANSACTION_DATA_CREDENTIAL_IDS].arrayObject = ["wa_driver_license"]
     json[OpenId4VPSpec.TRANSACTION_DATA_HASH_ALGORITHMS].arrayObject = ["sha-256"]
-    
+
     // Serialize JSON to string.
     guard
       let jsonString = json.rawString(),
       let data = jsonString.data(using: .utf8) else {
       fatalError("Failed to serialize JSON")
     }
-    
+
     return data.base64URLEncodedString()
   }
-  
+
   static func getDirectPostJwtSession(
     nonce: String,
     transactionData: JSON
   ) async throws -> [String: Any] {
-    
+
     // Replace this URL with the endpoint you want to send the POST request to
     let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
-    
+
     // Create a POST request
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    
+
     // Set the request body data (e.g., JSON data)
     let jsonBody = [
       "type": "vp_token",
-      "response_mode":  "direct_post.jwt",
+      "response_mode": "direct_post.jwt",
       "nonce": nonce,
       "transaction_data": transactionData,
       "presentation_definition": [
@@ -103,30 +103,30 @@ class TestsHelpers {
         ]
       ]
     ] as JSON
-    
+
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody.object, options: [])
     request.httpBody = jsonData
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    
+
     let (data, _) = try await URLSession.shared.data(for: request)
     return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
   }
-  
+
   static func getDirectPostJwtSession(
     nonce: String
   ) async throws -> [String: Any] {
-    
+
     // Replace this URL with the endpoint you want to send the POST request to
     let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
-    
+
     // Create a POST request
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    
+
     // Set the request body data (e.g., JSON data)
     let jsonBody = [
       "type": "vp_token",
-      "response_mode":  "direct_post.jwt",
+      "response_mode": "direct_post.jwt",
       "nonce": nonce,
       "presentation_definition": [
         "id": TestsConstants.testPresentationId,
@@ -150,31 +150,31 @@ class TestsHelpers {
           ]
         ]
       ]
-    ] as [String : Any]
-    
+    ] as [String: Any]
+
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody, options: [])
     request.httpBody = jsonData
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    
+
     let (data, _) = try await URLSession.shared.data(for: request)
     return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
   }
-  
+
   static func getDirectPostJwtSessionAcceptRequestURI(
     nonce: String
   ) async throws -> [String: Any] {
-    
+
     // Replace this URL with the endpoint you want to send the POST request to
     let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
-    
+
     // Create a POST request
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    
+
     // Set the request body data (e.g., JSON data)
     let jsonBody = [
       "type": "vp_token",
-      "response_mode":  "direct_post.jwt",
+      "response_mode": "direct_post.jwt",
       "nonce": nonce,
       "presentation_definition_mode": "by_reference",
       "wallet_response_redirect_uri_template": "https://eudi.netcompany-intrasoft.com/san-dns/get-wallet-code?response_code={RESPONSE_CODE}",
@@ -200,31 +200,31 @@ class TestsHelpers {
           ]
         ]
       ]
-    ] as [String : Any]
-    
+    ] as [String: Any]
+
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody, options: [])
     request.httpBody = jsonData
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    
+
     let (data, _) = try await URLSession.shared.data(for: request)
     return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
   }
-  
+
   static func getDirectPostVpTokenSession(
     nonce: String
   ) async throws -> [String: Any] {
-    
+
     // Replace this URL with the endpoint you want to send the POST request to
     let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
-    
+
     // Create a POST request
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
-    
+
     // Set the request body data (e.g., JSON data)
     let jsonBody = [
       "type": "vp_token",
-      "response_mode":  "direct_post",
+      "response_mode": "direct_post",
       "nonce": nonce,
       "presentation_definition_mode": "by_reference",
       "presentation_definition": [
@@ -233,17 +233,17 @@ class TestsHelpers {
         "purpose": "purpose",
         "input_descriptors": []
       ]
-    ] as [String : Any]
-    
+    ] as [String: Any]
+
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody, options: [])
     request.httpBody = jsonData
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    
+
     let (data, _) = try await URLSession.shared.data(for: request)
     return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
   }
-  
-  static func pollVerifier(transactionId: String, nonce: String) async throws -> Result<String, FetchError>{
+
+  static func pollVerifier(transactionId: String, nonce: String) async throws -> Result<String, FetchError> {
     let fetcher = Fetcher<String>()
     let pollingUrl = URL(string: "\(TestsConstants.host)/ui/presentations/\(transactionId)?nonce=\(nonce)")!
     return try await fetcher.fetchString(url: pollingUrl)

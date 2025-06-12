@@ -19,22 +19,22 @@ import XCTest
 @testable import SiopOpenID4VP
 
 final class ClientMetaDataValidatorTests: XCTestCase {
-  
+
   var validator: ClientMetaDataValidator!
-  
+
   override func tearDown() {
     DependencyContainer.shared.removeAll()
     self.validator = nil
     super.tearDown()
   }
-  
+
   override func setUp() {
     overrideDependencies()
     self.validator = ClientMetaDataValidator()
   }
-  
+
   func testValidate_WhenFetchByReferenceWithValidURL_ThenReturnSuccess() async throws {
-    
+
     do {
       let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
         jwks: TestsConstants.webKeyJson,
@@ -47,17 +47,17 @@ final class ClientMetaDataValidatorTests: XCTestCase {
         authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
         vpFormats: TestsConstants.testVpFormatsTO()
       ))!
-      
+
       XCTAssertEqual(response.jwkSet?.keys.first?.kty, TestsConstants.webKeySet.keys.first?.kty)
     } catch {
-      
+
       XCTExpectFailure()
       XCTFail()
     }
   }
-  
+
   func testValidate_WhenFetchByReferenceWithInvalidURL_ThenReturnFailure() async throws {
-    
+
     do {
       let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
         jwks: TestsConstants.webKeyJson,
@@ -70,16 +70,16 @@ final class ClientMetaDataValidatorTests: XCTestCase {
         authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
         vpFormats: TestsConstants.testVpFormatsTO()
       ))!
-      
+
       XCTAssertEqual(response.jwkSet?.keys.first, TestsConstants.webKeySet.keys.first)
-      
+
     } catch {
       XCTAssertTrue(error.localizedDescription == "Validation Error Client meta data has no valid JWK source")
     }
   }
-  
+
   func testValidate_WhenPassByValue_ThenReturnSuccess() async throws {
-    
+
     let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
       jwks: TestsConstants.sampleValidJWKS,
       idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
@@ -91,7 +91,7 @@ final class ClientMetaDataValidatorTests: XCTestCase {
       authorizationEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
       vpFormats: TestsConstants.testVpFormatsTO()
     ))!
-    
+
     XCTAssertNotNil(response.jwkSet?.keys.first)
   }
 }

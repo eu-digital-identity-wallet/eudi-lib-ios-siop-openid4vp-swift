@@ -18,12 +18,12 @@ import XCTest
 @testable import SiopOpenID4VP
 
 final class VerifierIdTests: XCTestCase {
-  
+
   // Test successful parsing for valid client IDs with prefixes
   func testParseValidClientIdWithPrefix() {
     let validClientId = "\(OpenId4VPSpec.clientIdSchemeRedirectUri):exampleClientId"
     let result = VerifierId.parse(clientId: validClientId)
-    
+
     switch result {
     case .success(let verifierId):
       XCTAssertEqual(verifierId.scheme, .redirectUri)
@@ -33,12 +33,12 @@ final class VerifierIdTests: XCTestCase {
       XCTFail("Parsing failed for valid client ID")
     }
   }
-  
+
   // Test successful parsing for valid client IDs without prefixes
   func testParseValidClientIdWithoutPrefix() {
     let validClientId = "exampleClientId"
     let result = VerifierId.parse(clientId: validClientId)
-    
+
     switch result {
     case .success(let verifierId):
       XCTAssertEqual(verifierId.scheme, .preRegistered)
@@ -48,12 +48,12 @@ final class VerifierIdTests: XCTestCase {
       XCTFail("Parsing failed for valid client ID without prefix")
     }
   }
-  
+
   // Test failure for invalid client ID scheme
   func testParseInvalidClientIdScheme() {
     let invalidClientId = "invalidScheme:exampleClientId"
     let result = VerifierId.parse(clientId: invalidClientId)
-    
+
     switch result {
     case .success:
       XCTFail("Parsing should have failed for invalid client ID scheme")
@@ -61,12 +61,12 @@ final class VerifierIdTests: XCTestCase {
       XCTAssert(error.localizedDescription.contains("does not contain a valid Client ID Scheme"))
     }
   }
-  
+
   // Test failure for pre-registered scheme
   func testParsePreRegisteredClientIdScheme() {
     let clientId = "\(ClientIdScheme.preRegistered.rawValue):exampleClientId"
     let result = VerifierId.parse(clientId: clientId)
-    
+
     switch result {
     case .success:
       XCTFail("Parsing should have failed for pre-registered scheme")
@@ -74,12 +74,12 @@ final class VerifierIdTests: XCTestCase {
       XCTAssert(error.localizedDescription.contains("'preRegistered' cannot be used as a Client ID Scheme"))
     }
   }
-  
+
   // Test valid HTTPS scheme
   func testParseValidHttpsClientId() {
     let clientId = "\(OpenId4VPSpec.clientIdSchemeHttps):exampleClientId"
     let result = VerifierId.parse(clientId: clientId)
-    
+
     switch result {
     case .success(let verifierId):
       XCTAssertEqual(verifierId.scheme, .https)
@@ -89,12 +89,12 @@ final class VerifierIdTests: XCTestCase {
       XCTFail("Parsing failed for valid HTTPS client ID")
     }
   }
-  
+
   // Test valid DID scheme
   func testParseValidDidClientId() {
     let clientId = "\(OpenId4VPSpec.clientIdSchemeDid):exampleClientId"
     let result = VerifierId.parse(clientId: clientId)
-    
+
     switch result {
     case .success(let verifierId):
       XCTAssertEqual(verifierId.scheme, .did)
@@ -104,7 +104,7 @@ final class VerifierIdTests: XCTestCase {
       XCTFail("Parsing failed for valid DID client ID")
     }
   }
-  
+
   // Test clientId property for different schemes
   func testClientIdProperty() {
     let verifierId = VerifierId(scheme: .redirectUri, originalClientId: "exampleClientId")

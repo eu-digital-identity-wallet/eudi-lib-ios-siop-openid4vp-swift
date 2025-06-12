@@ -19,35 +19,35 @@ import XCTest
 import SwiftyJSON
 
 final class DCQLRulesTests: XCTestCase {
-  
+
   override func setUpWithError() throws {
   }
-  
+
   override func tearDownWithError() throws {
   }
-  
+
   func testGivenCredentialQueryIdWhenValuesAreIllegalThenThrowException() async throws {
-    
+
     var didThrow = false
     let illegalIds = [
       "",
       "@@123a",
-      "^&())_",
+      "^&())_"
     ]
-    
+
     do {
       for id in illegalIds {
         try _ = QueryId(value: id)
       }
       XCTFail("Expected an error to be thrown, but none was.")
-      
+
     } catch {
       didThrow = true
     }
-    
+
     XCTAssertTrue(didThrow, "Expected error was not thrown during iteration.")
   }
-  
+
   func testWhenCredentialsIsEmptyExceptionIsThrown() {
     do {
       try _ = DCQL(credentials: [])
@@ -56,14 +56,14 @@ final class DCQLRulesTests: XCTestCase {
       XCTAssert(true)
     }
   }
-  
+
   func testWhenCredentialsContainsDuplicateEntriesExceptionIsRaised() {
     do {
       let id = try QueryId(value: "id")
       _ = try DCQL(
         credentials: [
           .init(id: id, format: try Format.MsoMdoc()),
-          .init(id: id, format: try Format.SdJwtVc()),
+          .init(id: id, format: try Format.SdJwtVc())
         ]
       )
       XCTAssert(false, "CredentialQuery ids must be unique")
@@ -71,13 +71,13 @@ final class DCQLRulesTests: XCTestCase {
       XCTAssert(true)
     }
   }
-  
+
   func testWhenCredentialsSetIsEmptyAnExceptionIsRaised() {
     do {
       _ = try DCQL(
         credentials: [
           .init(id: .init(value: "1"), format: try Format.MsoMdoc()),
-          .init(id: .init(value: "2"), format: try Format.SdJwtVc()),
+          .init(id: .init(value: "2"), format: try Format.SdJwtVc())
         ],
         credentialSets: []
       )

@@ -29,7 +29,7 @@ public class JWEAlgorithm: JOSEAlgorithm, @unchecked Sendable {
   public override init(name: String, requirement: JOSEAlgorithm.Requirement) {
     super.init(name: name, requirement: requirement)
   }
-  
+
   convenience init?(optionalName: String?) {
     if let optionalName {
       self.init(name: optionalName)
@@ -73,11 +73,11 @@ public extension JWEAlgorithm {
     case PBES2_HS256_A128KW = "PBES2-HS256+A128KW"
     case PBES2_HS384_A192KW = "PBES2-HS384+A192KW"
     case PBES2_HS512_A256KW = "PBES2-HS512+A256KW"
-  
+
     var name: String {
       return self.rawValue
     }
-  
+
     var requirement: Requirement {
       switch self {
       case .RSA1_5:
@@ -149,7 +149,7 @@ public extension JWEAlgorithm.Family {
   }
 
   static func parse(_ type: FamilyType) -> JWEAlgorithm.Family {
-  
+
     var RSA: [JWEAlgorithm] {
       return [
         .init(.RSA1_5),
@@ -159,7 +159,7 @@ public extension JWEAlgorithm.Family {
         .init(.RSA_OAEP_512)
       ]
     }
-  
+
     var ECDH_ES: [JWEAlgorithm] {
       return [
         .init(.ECDH_ES),
@@ -168,7 +168,7 @@ public extension JWEAlgorithm.Family {
         .init(.ECDH_ES_A256KW)
       ]
     }
-  
+
     var AES_KW: [JWEAlgorithm] {
       return [
         .init(.A128KW),
@@ -176,7 +176,7 @@ public extension JWEAlgorithm.Family {
         .init(.A256KW)
       ]
     }
-  
+
     var AES_GCM_KW: [JWEAlgorithm] {
       return [
         .init(.A128GCMKW),
@@ -184,15 +184,15 @@ public extension JWEAlgorithm.Family {
         .init(.A256GCMKW)
       ]
     }
-  
+
     var ASYMMETRIC: [JWEAlgorithm] {
       return RSA + ECDH_ES
     }
-  
+
     var SYMMETRIC: [JWEAlgorithm] {
       return AES_KW + AES_GCM_KW + [.init(.DIR)]
     }
-  
+
     switch type {
     case .RSA:
       return .init(RSA)

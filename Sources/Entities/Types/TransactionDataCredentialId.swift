@@ -17,7 +17,7 @@ import Foundation
 
 public struct TransactionDataCredentialId: Codable, Equatable, CustomStringConvertible {
   public let value: String
-  
+
   public init(value: String) throws {
     guard !value.isEmpty else {
       throw ValidationError.validationError(
@@ -26,6 +26,6 @@ public struct TransactionDataCredentialId: Codable, Equatable, CustomStringConve
     }
     self.value = value
   }
-  
+
   public var description: String { value }
 }

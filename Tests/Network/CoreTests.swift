@@ -18,13 +18,13 @@ import XCTest
 @testable import SiopOpenID4VP
 
 final class CoreTests: DiXCTest {
-  
+
   func testFetcherCodableFailureDecodingGivenInvalidRemoteURL() async {
-    
+
     struct TestCodable: Codable {
       let title: String
     }
-    
+
     let fetcher = Fetcher<TestCodable>()
     let result = await fetcher.fetch(url: URL(string: "https://example.com")!)
     switch result {

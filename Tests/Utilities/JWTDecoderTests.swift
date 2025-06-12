@@ -79,5 +79,3 @@ final class JWTDecoderTests: XCTestCase {
     XCTAssertEqual(result.transactionData, ["txn1", "txn2"])
   }
 }
-
-

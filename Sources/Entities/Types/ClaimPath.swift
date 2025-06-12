@@ -26,28 +26,28 @@ public enum ClaimPathError: Error {
 public struct ClaimPath: Equatable, Hashable, Sendable {
   /// The list of elements representing the path.
   public let value: [ClaimPathElement]
-  
+
   /// Initializes a `ClaimPath` ensuring it is not empty.
   /// - Parameter value: An array of `ClaimPathElement` representing the path.
   public init(_ value: [ClaimPathElement]) {
     self.value = value
   }
-  
+
   /// Returns a string representation of the claim path.
   public var description: String {
     return value.description
   }
-  
+
   /// Appends a `ClaimPathElement` to the current path.
   public static func + (lhs: ClaimPath, rhs: ClaimPathElement) -> ClaimPath {
     return ClaimPath(lhs.value + [rhs])
   }
-  
+
   /// Merges two `ClaimPath` instances into a single path.
   public static func + (lhs: ClaimPath, rhs: ClaimPath) -> ClaimPath {
     return ClaimPath(lhs.value + rhs.value)
   }
-  
+
   /// Checks if the current path contains another path.
   /// - Parameter that: The `ClaimPath` to compare against.
   /// - Returns: `true` if `that` is contained within `self`, otherwise `false`.
@@ -57,22 +57,22 @@ public struct ClaimPath: Equatable, Hashable, Sendable {
       selfElement.contains(thatElement)
     }
   }
-  
+
   /// Appends a wild-card indicator (`ClaimPathElement.allArrayElements`).
   public func allArrayElements() -> ClaimPath {
     return self + .allArrayElements
   }
-  
+
   /// Appends an indexed path (`ClaimPathElement.arrayElement`).
   public func arrayElement(_ index: Int) -> ClaimPath {
     return self + .arrayElement(index: index)
   }
-  
+
   /// Appends a named path (`ClaimPathElement.claim`).
   public func claim(_ name: String) -> ClaimPath {
     return self + .claim(name: name)
   }
-  
+
   /// Retrieves the parent path of the current `ClaimPath`.
   /// - Returns: The parent `ClaimPath` if it exists, otherwise `nil`.
   public func parent() -> ClaimPath? {
@@ -80,29 +80,29 @@ public struct ClaimPath: Equatable, Hashable, Sendable {
     let newValue = Array(value.dropLast())
     return newValue.isEmpty ? nil : ClaimPath(newValue)
   }
-  
+
   /// Retrieves the first element of the claim path.
   public func head() -> ClaimPathElement {
     return value.first!
   }
-  
+
   /// Retrieves the tail of the claim path (all elements except the first).
   /// - Returns: A new `ClaimPath` without the first element, or `nil` if empty.
   public func tail() -> ClaimPath? {
     let tailElements = Array(value.dropFirst())
     return tailElements.isEmpty ? nil : ClaimPath(tailElements)
   }
-  
+
   /// Retrieves the head element.
   public func component1() -> ClaimPathElement {
     return head()
   }
-  
+
   /// Retrieves the tail path.
   public func component2() -> ClaimPath? {
     return tail()
   }
-  
+
   /// Creates a `ClaimPath` from a single claim name.
   /// - Parameter name: The name of the claim.
   /// - Returns: A `ClaimPath` containing a single `ClaimPathElement.claim`.
@@ -115,15 +115,15 @@ public enum ClaimPathElement: Equatable, Hashable, Sendable {
   /// Indicates that all elements of the currently selected array(s) are to be selected.
   /// It is represented as `nil` when serialized.
   case allArrayElements
-  
+
   /// Indicates that a specific index in an array is to be selected.
   /// The index must be non-negative.
   case arrayElement(index: Int)
-  
+
   /// Indicates that a specific key is to be selected.
   /// The key is represented as a string.
   case claim(name: String)
-  
+
   /// Checks whether the current instance contains the other.
   public func contains(_ other: ClaimPathElement) -> Bool {
     switch (self, other) {
@@ -135,7 +135,7 @@ public enum ClaimPathElement: Equatable, Hashable, Sendable {
     default: return false
     }
   }
-  
+
   /// Returns a string representation of the element.
   public var description: String {
     switch self {
@@ -144,7 +144,7 @@ public enum ClaimPathElement: Equatable, Hashable, Sendable {
     case .claim(let name): return name
     }
   }
-  
+
   /// Helper function to apply different closures based on the case.
   public func fold<T>(
     ifAllArrayElements: () -> T,
@@ -163,7 +163,7 @@ extension ClaimPath: Decodable {
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let jsonArray = try container.decode([JSON].self)
-    
+
     let elements = try jsonArray.map { json in
       if let intValue = json.int {
         return ClaimPathElement.arrayElement(index: intValue)
@@ -178,7 +178,7 @@ extension ClaimPath: Decodable {
         )
       }
     }
-    
+
     self.init(elements)
   }
 }
@@ -186,7 +186,7 @@ extension ClaimPath: Decodable {
 extension ClaimPath: Encodable {
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
-    
+
     let jsonArray: [JSON] = value.map { element in
       switch element {
       case .arrayElement(let index):

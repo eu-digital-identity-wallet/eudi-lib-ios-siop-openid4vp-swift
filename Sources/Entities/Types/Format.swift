@@ -18,7 +18,7 @@ import Foundation
 // Define a custom error type
 public enum FormatError: Error, LocalizedError {
   case blankValue
-  
+
   public var errorDescription: String? {
     switch self {
     case .blankValue:
@@ -28,13 +28,13 @@ public enum FormatError: Error, LocalizedError {
 }
 
 public struct Format: Hashable, Codable, Sendable {
-  
+
   public let format: String
-  
+
   enum CodingKeys: String, CodingKey {
     case format = "format"
   }
-  
+
   // Initializer to ensure the value is valid
   public init(format: String) throws {
     guard !format.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -42,34 +42,31 @@ public struct Format: Hashable, Codable, Sendable {
     }
     self.format = format
   }
-  
+
   public var description: String {
     return format
   }
-  
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let format = try container.decode(String.self)
     try self.init(format: format) // Ensure validation on decoding
   }
-  
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(format)
   }
-  
+
   public static func MsoMdoc() throws -> Format {
     return try Format(format: OpenId4VPSpec.FORMAT_MSO_MDOC)
   }
-  
+
   public static func SdJwtVc() throws -> Format {
     return try Format(format: OpenId4VPSpec.FORMAT_SD_JWT_VC)
   }
-  
+
   public static func W3CJwtVcJson() throws -> Format {
     return try Format(format: OpenId4VPSpec.FORMAT_W3C_SIGNED_JWT)
   }
 }
-
-
-

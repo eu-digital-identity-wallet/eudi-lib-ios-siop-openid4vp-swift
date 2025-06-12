@@ -28,12 +28,12 @@ public extension PresentationDefinitionSource {
               let uri = URL(string: uri) {
       self = .fetchByReference(url: uri)
     } else if let presentationDefinitionString = authorizationRequestObject[Constants.PRESENTATION_DEFINITION].string {
-      
+
       let parser = Parser()
       let result: Result<Either<PresentationDefinition, PresentationDefinitionContainer>, ParserError> = parser.decode(
         json: presentationDefinitionString
       )
-      
+
       switch result {
       case .success(let presentationDefinition):
         switch presentationDefinition {
@@ -45,7 +45,7 @@ public extension PresentationDefinitionSource {
       case .failure:
         throw PresentationError.invalidPresentationDefinition
       }
-      
+
     } else if let scope = authorizationRequestObject[Constants.SCOPE].string,
               !scope.components(separatedBy: " ").isEmpty {
       self = .implied(scope: scope.components(separatedBy: " "))
@@ -68,7 +68,7 @@ public extension PresentationDefinitionSource {
       let result: Result<Either<PresentationDefinition, PresentationDefinitionContainer>, ParserError> = parser.decode(
         json: presentationDefinitionString
       )
-      
+
       switch result {
       case .success(let presentationDefinition):
         switch presentationDefinition {
@@ -80,7 +80,7 @@ public extension PresentationDefinitionSource {
       case .failure:
         throw PresentationError.invalidPresentationDefinition
       }
-      
+
     } else if let presentationDefinitionUri = authorizationRequestData.presentationDefinitionUri,
               let uri = URL(string: presentationDefinitionUri) {
       self = .fetchByReference(url: uri)

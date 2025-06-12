@@ -19,4 +19,3 @@ internal enum FetchedRequest: Sendable {
   case plain(requestObject: UnvalidatedRequestObject)
   case jwtSecured(clientId: String, jwt: JWTString)
 }
-

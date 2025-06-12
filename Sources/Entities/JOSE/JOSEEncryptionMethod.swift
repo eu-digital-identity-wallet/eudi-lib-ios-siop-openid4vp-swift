@@ -17,23 +17,23 @@ import Foundation
 import JOSESwift
 
 public final class JOSEEncryptionMethod: JOSEAlgorithm, @unchecked Sendable {
-  
+
   public private(set) var cekBitLength: Int = 0
-  
+
   public init(_ type: EncryptionMethodType) {
     let options = type.options
     super.init(name: type.name, requirement: options.requirement)
     self.cekBitLength = options.cekBitLength
   }
-  
+
   public override init(name: String) {
     super.init(name: name)
   }
-  
+
   public override init(name: String, requirement: JOSEAlgorithm.Requirement) {
     super.init(name: name, requirement: requirement)
   }
-  
+
   public init(
     name: String,
     requirement: JOSEAlgorithm.Requirement,
@@ -42,7 +42,7 @@ public final class JOSEEncryptionMethod: JOSEAlgorithm, @unchecked Sendable {
     super.init(name: name, requirement: requirement)
     self.cekBitLength = cekBitLength
   }
-  
+
   convenience init?(optionalName: String?) {
     if let optionalName {
       self.init(name: optionalName)
@@ -50,7 +50,7 @@ public final class JOSEEncryptionMethod: JOSEAlgorithm, @unchecked Sendable {
       return nil
     }
   }
-  
+
   convenience init?(optionalSupportedName: String?) {
     if let optionalSupportedName {
       self.init(name: optionalSupportedName)
@@ -78,11 +78,11 @@ public extension JOSEEncryptionMethod {
     case A192GCM = "A192GCM"
     case A256GCM = "A256GCM"
     case XC20P = "XC20P"
-    
+
     var name: String {
       return self.rawValue
     }
-    
+
     var options: (requirement: Requirement, cekBitLength: Int) {
       switch self {
       case .A128CBC_HS256:
@@ -109,12 +109,12 @@ public extension JOSEEncryptionMethod {
 }
 
 public extension JOSEEncryptionMethod.Family {
-  
+
   enum JoseEncryptionMethodFamilyType {
     case AES_CBC_HMAC_SHA
     case AES_GCM
   }
-  
+
   static func parse(_ type: JoseEncryptionMethodFamilyType) -> JOSEEncryptionMethod.Family {
     switch type {
     case .AES_CBC_HMAC_SHA:

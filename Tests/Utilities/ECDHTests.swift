@@ -23,33 +23,29 @@ final class ECDHTests: DiXCTest {
 
   var privateKey: SecKey!
   var publicKey: SecKey!
-  
-  override func tearDown() {
-    super.tearDown()
-  }
-  
+
   override func setUp() {
     privateKey = try! KeyController.generateECDHPrivateKey()
     publicKey = try! KeyController.generateECDHPublicKey(from: privateKey!)
   }
-  
+
   func testEncryptionThenDecryption() async throws {
-    
+
     let privateJWK = try ECPrivateKey(privateKey: privateKey)
     let publicJWK = try ECPublicKey(publicKey: publicKey)
-    
+
     let convertedPublicKey: SecKey? = try? XCTUnwrap(publicJWK.converted(to: SecKey.self))
-    
-    guard 
+
+    guard
       let key1Data = SecKeyCopyExternalRepresentation(publicKey, nil) as Data?,
       let key2Data = SecKeyCopyExternalRepresentation(convertedPublicKey!, nil) as Data?
     else {
       XCTAssert(false, "Invalid keys")
       return
     }
-    
+
     XCTAssert(key1Data == key2Data)
-    
+
     let header = JWEHeader(
       keyManagementAlgorithm: .ECDH_ES,
       contentEncryptionAlgorithm: .A128CBCHS256
@@ -58,13 +54,13 @@ final class ECDHTests: DiXCTest {
     let encryptionPayload = try Payload([
       "message": "Babis is the best"
     ].toThrowingJSONData())
-    
+
     let encrypter = Encrypter(
       keyManagementAlgorithm: .ECDH_ES,
       contentEncryptionAlgorithm: .A128CBCHS256,
       encryptionKey: publicJWK
     )!
-    
+
     let jwe = try JWE(
       header: header,
       payload: encryptionPayload,
@@ -72,16 +68,16 @@ final class ECDHTests: DiXCTest {
     )
 
     let encryptedJwe = try JWE(compactSerialization: jwe.compactSerializedString)
-    
+
     let decrypter = Decrypter(
       keyManagementAlgorithm: .ECDH_ES,
       contentEncryptionAlgorithm: .A128CBCHS256,
       decryptionKey: privateJWK
     )!
-    
+
     let decryptionPayload = try encryptedJwe.decrypt(using: decrypter)
     let dictionary = try JSONSerialization.jsonObject(with: decryptionPayload.data(), options: []) as? [String: Any]
-    
+
     XCTAssert(dictionary!["message"] as! String == "Babis is the best")
   }
 }

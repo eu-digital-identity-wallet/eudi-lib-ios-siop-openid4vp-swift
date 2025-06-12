@@ -37,17 +37,17 @@ public enum DataConversionError: Error {
 }
 
 public struct X509CertificateChainVerifier {
-  
+
   public init() {
-    
+
   }
-  
+
   public func isChainTrustResultSuccesful(_ result: ChainTrustResult) -> Bool {
     return result != .failure
   }
-  
+
   public func verifyCertificateChain(base64Certificates: [Base64Certificate]) throws -> ChainTrustResult {
-    
+
     let certificates = try convertStringsToData(
       base64Strings: base64Certificates
     ).compactMap {
@@ -55,11 +55,11 @@ public struct X509CertificateChainVerifier {
     }.compactMap {
       SecCertificateContainer(certificate: $0)
     }
-    
+
     if certificates.isEmpty {
       return .failure
     }
-    
+
     switch SecCertificateHelper.validateCertificateChain(
       certificates: certificates
     ) {
@@ -73,35 +73,35 @@ public struct X509CertificateChainVerifier {
       return .failure
     }
   }
-  
-  public func checkCertificateValidAndNotRevoked(base64Certificate: Base64Certificate) throws -> Bool{
-    
+
+  public func checkCertificateValidAndNotRevoked(base64Certificate: Base64Certificate) throws -> Bool {
+
     let certificates = try convertStringsToData(
       base64Strings: [base64Certificate]
     ).compactMap {
       SecCertificateCreateWithData(nil, $0 as CFData)
     }
-    
+
     guard
       certificates.count == 1
     else {
       return false
     }
-    
+
     if let certificate = certificates.first {
-      
+
       // Create a policy for certificate validation
       let policy = SecPolicyCreateBasicX509()
-      
+
       // Create a trust object with the certificate and policy
       var trust: SecTrust?
       if SecTrustCreateWithCertificates(certificate, policy, &trust) == errSecSuccess {
-        
+
         // Set the OCSP responder URL
         let ocspResponderURL = URL(string: "http://ocsp.example.com")!
         SecTrustSetNetworkFetchAllowed(trust!, true)
         SecTrustSetOCSPResponse(trust!, ocspResponderURL as CFURL)
-        
+
         // Evaluate the trust
         var trustResult: SecTrustResultType = .invalid
         if SecTrustEvaluate(trust!, &trustResult) == errSecSuccess {
@@ -118,12 +118,12 @@ public struct X509CertificateChainVerifier {
       } else {
         return false
       }
-      
+
     } else {
       return false
     }
   }
-  
+
   public func areCertificatesLinked(
     rootCertificateBase64: String,
     otherCertificateBase64: String
@@ -134,40 +134,40 @@ public struct X509CertificateChainVerifier {
     else {
       return false // Invalid Base64-encoded data
     }
-    
+
     // Create SecCertificate objects from DER data
     if let rootCertificate = SecCertificateCreateWithData(nil, rootCertificateData as CFData),
        let otherCertificate = SecCertificateCreateWithData(nil, otherCertificateData as CFData) {
-      
+
       // Create a trust object and evaluate it
       var trust: SecTrust?
       var policy: SecPolicy?
-      
+
       policy = SecPolicyCreateBasicX509()
       let policies = [policy!] as CFArray
-      
+
       let status = SecTrustCreateWithCertificates([rootCertificate] as CFArray, policies, &trust)
-      
+
       if status == errSecSuccess {
         SecTrustSetAnchorCertificates(trust!, [rootCertificate] as CFArray)
-        
+
         let otherCertificates = [otherCertificate] as CFArray
         SecTrustSetAnchorCertificatesOnly(trust!, true)
         SecTrustSetAnchorCertificates(trust!, otherCertificates)
-        
+
         var trustResult: SecTrustResultType = .invalid
         SecTrustEvaluate(trust!, &trustResult)
-        
+
         return trustResult == .unspecified || trustResult == .proceed
       }
     }
-    
+
     return false // The certificates are not linked
   }
 }
 
 private extension X509CertificateChainVerifier {
-  
+
   func convertStringsToData(base64Strings: [String]) throws -> [Data] {
     base64Strings.compactMap { base64String in
       if let data = Data(base64Encoded: base64String),
@@ -184,13 +184,13 @@ private extension X509CertificateChainVerifier {
 }
 
 public extension X509CertificateChainVerifier {
-  
+
   /// Converts a `SecCertificate` to `X509.Certificate`
   private func convertToX509Certificate(_ secCert: SecCertificate) throws -> Certificate {
     let derData = SecCertificateCopyData(secCert) as Data
     return try Certificate(derEncoded: [UInt8](derData))
   }
-  
+
   func verifyChain(
     rootBase64Certificates: [Base64Certificate],
     intermediateBase64Certificates: [Base64Certificate] = [],
@@ -198,7 +198,7 @@ public extension X509CertificateChainVerifier {
     date: Date = Date(),
     showDiagnostics: Bool = false
   ) async throws -> ChainTrustResult {
-    
+
     func decodeBase64Certificates(
       _ base64s: [Base64Certificate]
     ) throws -> [Certificate] {
@@ -207,15 +207,15 @@ public extension X509CertificateChainVerifier {
         .compactMap { SecCertificateContainer(certificate: $0).certificate }
         .map { try convertToX509Certificate($0) }
     }
-    
+
     let rootX509Certs = try decodeBase64Certificates(rootBase64Certificates)
     let intermediateX509Certs = try decodeBase64Certificates(intermediateBase64Certificates)
     let leafX509Certs = try decodeBase64Certificates([leafBase64Certificate])
-    
+
     guard let leafCert = leafX509Certs.first else {
       throw CertificateValidationError.insufficientCertificates
     }
-    
+
     let roots = CertificateStore(rootX509Certs)
     var verifier = Verifier(
       rootCertificates: roots
@@ -226,7 +226,7 @@ public extension X509CertificateChainVerifier {
         )
       }
     }
-    
+
     let result = await verifier.validate(
       leafCertificate: leafCert,
       intermediates: .init(
@@ -237,7 +237,7 @@ public extension X509CertificateChainVerifier {
         print(diagnostic.multilineDescription)
       }
     }
-    
+
     switch result {
     case .validCertificate:
       return .success

@@ -39,6 +39,6 @@ public struct JWTClaimNames {
   public static let jwtId = "jti"
 
   public static let subjectJWK = "sub_jwk"
-  
+
   private init() {}
 }

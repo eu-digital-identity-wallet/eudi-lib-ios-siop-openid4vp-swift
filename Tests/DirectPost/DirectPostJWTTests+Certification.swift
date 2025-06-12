@@ -20,24 +20,24 @@ import JOSESwift
 @testable import SiopOpenID4VP
 
 final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
-  
+
   func testExampleGivenOnlineCertifierHappyPathTestPlanThenExpectSuccess() async throws {
-    
+
     /// To get this URL,  visit https://demo.certification.openid.net/
     /// and run a happy flow no state test then proceed to assign the request uri to the variable below
     let url = "#01"
     let clientId = "demo.certification.openid.net"
-    
+
     guard !url.isEmpty else {
       XCTExpectFailure("The tests need a url")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -45,7 +45,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -53,7 +53,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -71,25 +71,25 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
- 
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
       )!
     )
-    
+
     switch result {
     case .jwt(request: let request):
       let resolved = request
-      
+
       var presentation: String?
       var nonce: String?
       switch resolved {
       case .vpToken(let request):
-        
+
         nonce = request.nonce
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
@@ -97,11 +97,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
           nonce: nonce!,
           useSha3: false
         )
-        
+
       default:
         XCTFail("Incorrectly resolved")
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.testPresentationSubmission
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -113,17 +113,17 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -136,25 +136,25 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testExampleGivenOnlineCertifierHappyPathWithRedirectTestPlanThenExpectSuccess() async throws {
-    
+
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
     /// then proceed to assign the request uri to the variable below
     let url = "#02"
     let clientId = "demo.certification.openid.net"
-    
+
     guard !url.isEmpty else {
       XCTExpectFailure("The tests need a url")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -162,7 +162,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -170,7 +170,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -188,25 +188,25 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
- 
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
       )!
     )
-    
+
     switch result {
     case .jwt(request: let request):
       let resolved = request
-      
+
       var presentation: String?
       var nonce: String?
       switch resolved {
       case .vpToken(let request):
-        
+
         nonce = request.nonce
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
@@ -214,11 +214,11 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
           nonce: nonce!,
           useSha3: false
         )
-        
+
       default:
         XCTFail("Incorrectly resolved")
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.testPresentationSubmission
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -230,17 +230,17 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted(let redirectURI):
@@ -254,25 +254,25 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testExampleGivenOnlineCertifierHappyPathTestPlanThenExpectFailure() async throws {
-    
+
     /// To get this URL, visit https://demo.certification.openid.net/
     /// and run a happy flow no state test
     /// then proceed to assign the request uri to the variable below
     let url = "#03"
     let clientId = "demo.certification.openid.net"
-    
+
     guard !url.isEmpty else {
       XCTExpectFailure("The tests need a url")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -280,7 +280,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -288,7 +288,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -306,20 +306,20 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
- 
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url)"
       )!
     )
-    
+
     switch result {
     case .jwt(request: let request):
       let resolved = request
-      
+
       // Obtain consent
       let submission: PresentationSubmission = .init(
         id: "psId",
@@ -335,17 +335,17 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:

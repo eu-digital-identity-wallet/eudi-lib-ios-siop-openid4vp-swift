@@ -40,31 +40,31 @@ public enum AuthorizationError: LocalizedError {
 
   /// The nonce is invalid.
   case invalidNonce
-  
+
   /// The response mode is invalid.
   case invalidResponseMode
 
   /// Request and request uri both exist.
   case invalidUseOfBothRequestAndRequestUri
-  
+
   /// Unsupported method.
   case unsupportedRequestUriMethod(method: RequestUriMethod)
-  
+
   /// Invalid method
   case invalidRequestUriMethod
-  
+
   /// Invalid transaction data
   case invalidTransactionData
-  
+
   /// Non dispatchable error.
   case nonDispatchableError
-  
+
   /// JWT decryption failed.
   case jwtDecryptionFailed
-  
+
   /// Invalid algorithms.
   case invalidAlgorithms
-  
+
   /// A localized description of the error.
   public var errorDescription: String? {
     switch self {

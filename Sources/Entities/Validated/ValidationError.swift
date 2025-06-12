@@ -56,7 +56,7 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case missingResponseType
   case missingNonce
   case nonDispatchable(ValidationError)
-  
+
   public var errorDescription: String? {
     switch self {
     case .validationError(let message):

@@ -16,7 +16,7 @@
 import XCTest
 
 class ExtensionTests: XCTestCase {
-  
+
   func testToJSONDataSuccess() {
     let testDictionary: [String: Any] = ["key1": "value1", "key2": 42]
 
@@ -35,7 +35,7 @@ class ExtensionTests: XCTestCase {
       XCTFail("Failed to decode JSON data: \(error)")
     }
   }
-  
+
   func testToQueryItems() {
     let dictionary: [String: Any] = [
         "key1": "value1",
@@ -51,26 +51,26 @@ class ExtensionTests: XCTestCase {
     XCTAssertTrue(queryItems.contains { $0.name == "key3" && $0.value == "value3a" })
     XCTAssertTrue(queryItems.contains { $0.name == "key3" && $0.value == "value3b" })
   }
-  
+
   func testToDictionarySuccess() {
-    
+
     struct TestStruct: Encodable {
       let name: String
       let age: Int
     }
-    
+
     let testObject = TestStruct(name: "John Doe", age: 30)
-    
+
     do {
       let dictionary = try testObject.toDictionary()
-      
+
       XCTAssertEqual(dictionary["name"] as? String, "John Doe")
       XCTAssertEqual(dictionary["age"] as? Int, 30)
     } catch {
       XCTFail("Failed to convert to dictionary: \(error)")
     }
   }
-      
+
   func testToDictionaryFailure() {
     // `JSONEncoder().encode(_:)` may throw an error if this object
     // isn't encodable (i.e., if it contains non-encodable properties)
@@ -83,7 +83,7 @@ class ExtensionTests: XCTestCase {
       XCTAssertEqual(nsError.userInfo[NSLocalizedDescriptionKey] as? String, "Failed to convert Codable object to dictionary.")
     }
   }
-  
+
   func testBase64URLEncode() {
     let testString = "Hello, World!"
     let expectedBase64URLEncoded = "SGVsbG8sIFdvcmxkIQ"
@@ -97,7 +97,7 @@ class ExtensionTests: XCTestCase {
 
     XCTAssertEqual(testString.base64urlEncode, expectedBase64URLEncoded)
   }
-  
+
   func testLoadStringFileFromBundle() {
     if let string = String.loadStringFileFromBundle(named: "sample_derfile", withExtension: "der") {
         // Assert

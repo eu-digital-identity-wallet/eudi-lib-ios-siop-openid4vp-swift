@@ -17,7 +17,7 @@ import Foundation
 
 /// An enumeration representing different types of authorization response payloads.
 public enum AuthorizationResponsePayload: Encodable, Sendable {
-  
+
   /// An SIOP authentication response payload.
   case siopAuthenticationResponse(
     idToken: JWTString,
@@ -75,7 +75,7 @@ public enum AuthorizationResponsePayload: Encodable, Sendable {
     case vpToken = "vp_token"
     case presentationSubmission = "presentation_submission"
   }
-  
+
   var encryptionParameters: EncryptionParameters? {
     switch self {
     case .siopAuthenticationResponse(_, _, _, _, let encryptionParameters):
@@ -87,7 +87,7 @@ public enum AuthorizationResponsePayload: Encodable, Sendable {
     default: return nil
     }
   }
-  
+
   var apu: String? {
     switch self.encryptionParameters {
     case .apu(let apu):
@@ -96,7 +96,7 @@ public enum AuthorizationResponsePayload: Encodable, Sendable {
       return nil
     }
   }
-  
+
   var nonce: String {
     switch self {
     case .siopAuthenticationResponse(_, _, let nonce, _, _):
@@ -109,7 +109,7 @@ public enum AuthorizationResponsePayload: Encodable, Sendable {
       ""
     }
   }
-  
+
   /// Encodes the enumeration using the given encoder.
   public func encode(to encoder: Encoder) throws {
      var container = encoder.container(keyedBy: CodingKeys.self)
@@ -135,7 +135,7 @@ public enum AuthorizationResponsePayload: Encodable, Sendable {
          try container.encode(state, forKey: .state)
        case .dcql(let verifiablePresentations):
          try container.encode(state, forKey: .state)
-         try container.encode(VpContent .encodeDCQLQuery(verifiablePresentations),forKey: .vpToken)
+         try container.encode(VpContent .encodeDCQLQuery(verifiablePresentations), forKey: .vpToken)
        }
      case .noConsensusResponseData(let state, let message):
        try container.encode(state, forKey: .state)

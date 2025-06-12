@@ -19,23 +19,23 @@ import XCTest
 @testable import SiopOpenID4VP
 
 class DiXCTest: XCTestCase {
-  
+
   override func setUp() async throws {
     overrideDependencies()
     try await super.setUp()
   }
-  
+
   override func tearDown() {
     DependencyContainer.shared.removeAll()
     super.tearDown()
   }
-  
+
   func testContainer() {
     let reporting = DependencyContainer.shared.resolve(
       type: Reporting.self,
       mode: .new
     )
-    
+
     XCTAssert(reporting is MockReporter)
   }
 }

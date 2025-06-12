@@ -23,23 +23,23 @@ public func walletMetaData(
   key: SecKey? = nil
 ) -> JSON {
   var json = JSON()
-  
+
   json[REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED] = JSON(
     cfg.jarConfiguration.supportedAlgorithms.map { $0.name }
   )
-  
+
   json[PRESENTATION_DEFINITION_URI_SUPPORTED] = JSON(
     cfg.vpConfiguration.presentationDefinitionUriSupported
   )
-  
+
   json[VP_FORMATS_SUPPORTED] = cfg.vpConfiguration.vpFormats.toJSON()["vp_formats"]
   json[CLIENT_ID_SCHEMES_SUPPORTED] = JSON(
     cfg.supportedClientIdSchemes.map { $0.name }
   )
-  
+
   json[RESPONSE_TYPES_SUPPORTED] = JSON(["vp_token", "id_token"])
   json[RESPONSE_MODES_SUPPORTED] = JSON(["direct_post", "direct_post.jwt"])
-  
+
   if let options: PostOptions = cfg.jarConfiguration.supportedRequestUriMethods.isPostSupported() {
     switch options.jarEncryption {
     case .notRequired: break
@@ -58,7 +58,7 @@ public func walletMetaData(
          ),
          let jwkJson = try? JSON(["keys": [publicJwk.toDictionary()]]),
          publicJwk["crv"] == encryptionRequirementSpecification.ephemeralEncryptionKeyCurve.rawValue {
-        
+
         json[JWKS] = jwkJson
         json[AUTHORIZATION_ENCRYPTION_ALG_VALUES_SUPPORTED] = JSON(
           [encryptionRequirementSpecification.supportedEncryptionAlgorithm.rawValue]
@@ -69,7 +69,7 @@ public func walletMetaData(
       }
     }
   }
-  
+
   return json
 }
 
@@ -94,7 +94,7 @@ private extension JWKSet {
     guard let data = try? encoder.encode(self) else {
       return nil
     }
-    
+
     return JSON(data)
   }
 }

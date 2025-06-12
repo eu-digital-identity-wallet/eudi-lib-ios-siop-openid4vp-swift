@@ -24,14 +24,14 @@ public protocol AuthorizationRequestResolving: Sendable {
 }
 
 public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
-  
+
   public init() {}
-  
+
   public func resolve(
     walletConfiguration: SiopOpenId4VPConfiguration,
     unvalidatedRequest: UnvalidatedRequest
   ) async -> AuthorizationRequest {
-    
+
     let clientMetaDataValidator: ClientMetaDataValidator = .init()
     let clientAuthenticator: ClientAuthenticator = .init(
       config: walletConfiguration
@@ -40,7 +40,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       config: walletConfiguration,
       clientAuthenticator: clientAuthenticator
     )
-    
+
     let fetchedRequest: FetchedRequest
     do {
       fetchedRequest = try await fetchRequest(
@@ -53,7 +53,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         dispatchDetails: nil
       )
     }
-    
+
     let authorizedRequest: AuthenticatedRequest
     do {
       authorizedRequest = try await authenticateRequest(
@@ -73,14 +73,14 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         dispatchDetails: dispatchDetails
       )
     }
-    
+
     guard let clientMetaData = authorizedRequest.requestObject.clientMetaData else {
       return .invalidResolution(
         error: ValidationError.invalidClientMetadata,
         dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
       )
     }
-    
+
     let validatedClientMetaData: ClientMetaData.Validated?
     do {
       validatedClientMetaData = try await validateClientMetaData(
@@ -93,14 +93,14 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
       )
     }
-    
+
     guard let validatedClientMetaData = validatedClientMetaData else {
       return .invalidResolution(
         error: ValidationError.invalidClientMetadata,
         dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
       )
     }
-    
+
     guard
       let unvalidatedResponseType = authorizedRequest.requestObject.responseType,
       let responseType = ResponseType(rawValue: unvalidatedResponseType)
@@ -110,14 +110,14 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
       )
     }
-    
+
     guard let nonce = authorizedRequest.requestObject.nonce else {
       return .invalidResolution(
         error: ValidationError.missingNonce,
         dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
       )
     }
-    
+
     let validated: ValidatedRequestData
     do {
       validated = try await createValidatedAuthorizationRequest(
@@ -134,7 +134,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         dispatchDetails: optionalDispatchDetails(requestObject: authorizedRequest.requestObject)
       )
     }
-    
+
     let resolved: ResolvedRequestData
     do {
       resolved = try await resolveRequest(
@@ -152,13 +152,13 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         )
       )
     }
-    
+
     return buildFinalRequest(
       fetchedRequest: fetchedRequest,
       resolved: resolved
     )
   }
-  
+
   private func fetchRequest(
     config: SiopOpenId4VPConfiguration,
     unvalidatedRequest: UnvalidatedRequest
@@ -167,7 +167,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       config: config
     ).fetchRequest(request: unvalidatedRequest)
   }
-  
+
   private func authenticateRequest(
     requestAuthenticator: RequestAuthenticator,
     config: SiopOpenId4VPConfiguration,
@@ -177,7 +177,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       fetchRequest: fetchedRequest
     )
   }
-  
+
   private func validateClientMetaData(
     validator: ClientMetaDataValidator,
     clientMetaData: String?
@@ -188,7 +188,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     let metaData: ClientMetaData = try .init(metaDataString: clientMetaData)
     return try await validator.validate(clientMetaData: metaData)
   }
-  
+
   private func createValidatedAuthorizationRequest(
     responseType: ResponseType,
     config: SiopOpenId4VPConfiguration,
@@ -198,7 +198,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     clientMetaData: ClientMetaData.Validated
   ) async throws -> ValidatedRequestData {
     let clientId = authorizedRequest.client.id.originalClientId
-    
+
     switch responseType {
     case .vpToken:
       return try await requestAuthenticator.createVpToken(
@@ -227,7 +227,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       throw ValidationError.unsupportedResponseType(responseType.rawValue)
     }
   }
-  
+
   private func resolveRequest(
     config: SiopOpenId4VPConfiguration,
     validatedClientMetaData: ClientMetaData.Validated,
@@ -242,7 +242,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       validatedAuthorizationRequest: validatedAuthorizationRequest
     )
   }
-  
+
   private func buildFinalRequest(
     fetchedRequest: FetchedRequest,
     resolved: ResolvedRequestData
@@ -257,7 +257,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
 }
 
 internal extension AuthorizationRequestResolver {
-  
+
   /**
    * Creates an invalid resolution for errors that manifested while trying to authenticate a Client.
    */
@@ -276,7 +276,7 @@ internal extension AuthorizationRequestResolver {
       else {
         return nil
       }
-      
+
       guard let responseMode: ResponseMode = switch mode {
       case "direct_post":
         ResponseMode.directPost(responseURI: url)
@@ -287,7 +287,7 @@ internal extension AuthorizationRequestResolver {
       } else {
         return nil
       }
-      
+
       return ErrorDispatchDetails(
         responseMode: responseMode,
         nonce: jws.claimValue(forKey: "nonce") as? String,
@@ -297,12 +297,12 @@ internal extension AuthorizationRequestResolver {
       )
     }
   }
-  
+
   func optionalDispatchDetails(requestObject: UnvalidatedRequestObject) -> ErrorDispatchDetails? {
     guard let responseMode = requestObject.validatedResponseMode else {
       return nil
     }
-    
+
     return if !responseMode.isJarm() {
       ErrorDispatchDetails(
         responseMode: responseMode,
@@ -323,7 +323,7 @@ internal extension AuthorizationRequestResolver {
       nil
     }
   }
-  
+
   func optionalDispatchDetails(
     validatedRequestObject: ValidatedRequestData,
     clientMetaData: ClientMetaData.Validated?,

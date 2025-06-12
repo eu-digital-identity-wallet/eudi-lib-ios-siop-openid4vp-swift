@@ -44,7 +44,7 @@ public extension JOSEAlgorithmFamily {
   func clear() {
     self.algorithms = []
   }
-  
+
   func contains(_ item: T) -> Bool {
     self.algorithms.contains(where: { $0 == item })
   }

@@ -17,10 +17,10 @@ import Foundation
 import CryptoKit
 
 public struct Constants {
-  
+
   public static let WALLET_NONCE_FORM_PARAM = "wallet_nonce"
   public static let WALLET_METADATA_FORM_PARAM = "wallet_metadata"
-  
+
   public static let CLIENT_ID = "client_id"
   public static let NONCE = "nonce"
   public static let SCOPE = "scope"
@@ -34,7 +34,7 @@ public struct Constants {
   public static let CLIENT_METADATA = "client_metadata"
   public static let TRANSACTION_DATA = "transaction_data"
   public static let RESPONSE_URI = "response_uri"
-  
+
   public static let clientMetaDataJWKSString = """
   {
     "keys": [{
@@ -110,6 +110,6 @@ public struct Constants {
     let base64URL = randomData.base64URLEncodedString()
     return base64URL
   }
-  
+
   static let presentationSubmissionKey = "presentation_submission"
 }

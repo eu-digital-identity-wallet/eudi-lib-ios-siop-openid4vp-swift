@@ -33,7 +33,7 @@ private struct DateUtils {
   static func isAfter(_ date1: Date, _ date2: Date, _ skew: TimeInterval) -> Bool {
     return date1.timeIntervalSince(date2) > skew
   }
-  
+
   static func isBefore(_ date1: Date, _ date2: Date, _ skew: TimeInterval = .zero) -> Bool {
     return date1.timeIntervalSince(date2) < -skew
   }
@@ -42,30 +42,29 @@ private struct DateUtils {
 // TimeChecks class implementation in Swift
 internal class TimeChecks: JWTClaimsSetVerifier {
   private let skew: TimeInterval
-  
+
   init(skew: TimeInterval) {
     self.skew = skew
   }
-  
+
   func verify(claimsSet: JWTClaimsSet) throws {
     let now = Date()
     let skewInSeconds = skew
-    
+
     if let exp = claimsSet.expirationTime {
       if !DateUtils.isAfter(exp, now, skewInSeconds) {
         throw JWTVerificationError.expiredJWT
       }
     }
-    
+
     if let iat = claimsSet.issueTime {
       if !DateUtils.isBefore(iat, now) {
         throw JWTVerificationError.issuedInFuture
       }
-      
+
       if let exp = claimsSet.expirationTime, !iat.timeIntervalSince(exp).isLess(than: 0) {
         throw JWTVerificationError.issuedAfterExpiration
       }
     }
   }
 }
-

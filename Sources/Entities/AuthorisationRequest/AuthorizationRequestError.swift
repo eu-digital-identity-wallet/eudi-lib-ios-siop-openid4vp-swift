@@ -18,4 +18,3 @@ import Foundation
 public protocol AuthorizationRequestError: LocalizedError {
   var errorDescription: String? { get }
 }
-

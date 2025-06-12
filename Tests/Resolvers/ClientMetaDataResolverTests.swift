@@ -19,28 +19,28 @@ import XCTest
 @testable import SiopOpenID4VP
 
 final class ClientMetaDataResolverTests: XCTestCase {
-  
+
   var clientMetaDataResolver: ClientMetaDataResolver!
-  
+
   override func setUp() async throws {
     overrideDependencies()
     try await super.setUp()
   }
-  
+
   override func tearDown() {
     DependencyContainer.shared.removeAll()
     self.clientMetaDataResolver = nil
     super.tearDown()
   }
-  
+
   override func setUp() {
     self.clientMetaDataResolver = ClientMetaDataResolver()
   }
-  
+
   func testResolve_WhenSourceIsNil_ThenReturnSuccessWithNilValue() async throws {
-    
+
     let response = await self.clientMetaDataResolver.resolve(source: nil)
-    
+
     switch response {
     case .success(let metaData):
       XCTAssertNil(metaData)
@@ -48,12 +48,12 @@ final class ClientMetaDataResolverTests: XCTestCase {
       XCTFail(error.localizedDescription)
     }
   }
-  
+
   func testResolve_WhenPassByValue_ThenReturnSuccessMetaData() async throws {
-    
+
     let clientMetaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
     let response = await self.clientMetaDataResolver.resolve(source: .passByValue(metaData: clientMetaData))
-    
+
     switch response {
     case .success(let metaData):
       XCTAssertEqual(metaData, clientMetaData)

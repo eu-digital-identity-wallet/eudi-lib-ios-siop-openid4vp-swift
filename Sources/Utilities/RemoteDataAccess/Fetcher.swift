@@ -59,7 +59,7 @@ public protocol Fetching: Sendable {
 }
 
 public struct Fetcher<Element: Codable & Sendable>: Fetching {
-  
+
   @Injected var reporter: Reporting
   public var session: Networking
 
