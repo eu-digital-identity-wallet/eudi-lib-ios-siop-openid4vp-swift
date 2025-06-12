@@ -21,7 +21,7 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 [bundle exec] fastlane ios lint_fix
 ```
 
-Code coverage
+Fix lint issues
 
 ### ios code_coverage
 
@@ -29,7 +29,7 @@ Code coverage
 [bundle exec] fastlane ios code_coverage
 ```
 
-
+Code coverage
 
 ### ios tests
 
