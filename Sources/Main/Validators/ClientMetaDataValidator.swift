@@ -17,33 +17,33 @@ import Foundation
 import SwiftyJSON
 
 internal actor ClientMetaDataValidator {
-  
+
   @discardableResult
   func validate(clientMetaData: ClientMetaData?) async throws -> ClientMetaData.Validated? {
-    
+
     guard let clientMetaData = clientMetaData else {
       return nil
     }
-    
+
     let idTokenJWSAlg: JWSAlgorithm? = parseOptionJWSAlgorithm(algorithm: clientMetaData.idTokenSignedResponseAlg)
-    
+
     let idTokenJWEAlg: JWEAlgorithm? = .init(
       optionalName: clientMetaData.idTokenEncryptedResponseAlg
     )
-    
+
     let idTokenJWEEnc: JOSEEncryptionMethod? = .init(
       optionalName: clientMetaData.idTokenEncryptedResponseEnc
     )
-    
+
     let subjectSyntaxTypesSupported: [SubjectSyntaxType] = clientMetaData.subjectSyntaxTypesSupported.compactMap { SubjectSyntaxType(rawValue: $0) }
-    
+
     if !clientMetaData.authorizationEncryptedResponseAlg.isNilOrEmpty && clientMetaData.authorizationEncryptedResponseEnc.isNilOrEmpty {
       throw ValidationError.validationError("authorizationEncryptedResponseAlg exists, authorizationEncryptedResponseEnc does not exist, both should exist")
-      
+
     } else if clientMetaData.authorizationEncryptedResponseAlg.isNilOrEmpty && !clientMetaData.authorizationEncryptedResponseEnc.isNilOrEmpty {
       throw ValidationError.validationError("authorizationEncryptedResponseAlg does not exist, authorizationEncryptedResponseEnc exists, both should exist")
     }
-    
+
     let formats = try? VpFormats(from: clientMetaData.vpFormats)
     let validated = await ClientMetaData.Validated(
       jwkSet: try extractKeySet(clientMetaData: clientMetaData),
@@ -56,40 +56,40 @@ internal actor ClientMetaDataValidator {
       authorizationEncryptedResponseEnc: .init(optionalSupportedName: clientMetaData.authorizationEncryptedResponseEnc),
       vpFormats: try (formats ?? VpFormats.empty())
     )
-    
+
     return validated
   }
 }
 
 private extension ClientMetaDataValidator {
-  
+
   func parseOptionJWSAlgorithm(algorithm: String?) -> JWSAlgorithm? {
     guard let algorithm = algorithm else { return nil }
     return .init(
       name: algorithm
     )
   }
-  
+
   func parseOptionJWEAlgorithm(algorithm: String?) -> JWEAlgorithm? {
     guard let algorithm = algorithm else { return nil }
     return .init(
       name: algorithm
     )
   }
-  
+
   func parseOptionEncryptionAlgorithm(algorithm: String?) -> JOSEEncryptionMethod? {
     guard let algorithm = algorithm else { return nil }
     return .init(
       name: algorithm
     )
   }
-  
+
   func extractKeySet(clientMetaData: ClientMetaData) async throws -> WebKeySet {
-    
+
     if let jwks = clientMetaData.jwks,
        let keys = try? JSON(jwks.convertToDictionary() ?? [:]) {
       return try WebKeySet(keys)
-      
+
     } else {
       throw ValidationError.validationError("Client meta data has no valid JWK source")
     }

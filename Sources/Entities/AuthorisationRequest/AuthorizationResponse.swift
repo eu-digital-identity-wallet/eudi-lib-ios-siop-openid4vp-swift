@@ -34,7 +34,7 @@ public enum AuthorizationResponse: Sendable {
 
   /// A fragment JWT authorization response.
   case fragmentJwt(url: URL, data: AuthorizationResponsePayload, jarmSpec: JarmSpec)
-  
+
   case invalidRequest(
     error: AuthorizationRequestError,
     nonce: String?,
@@ -61,7 +61,7 @@ public extension AuthorizationResponse {
       case .idToken(let request):
         let payload: AuthorizationResponsePayload = .siopAuthenticationResponse(
           idToken: idToken,
-          state: try request.state ?? { throw AuthorizationError.invalidState }(), 
+          state: try request.state ?? { throw AuthorizationError.invalidState }(),
           nonce: try request.state ?? { throw AuthorizationError.invalidNonce }(),
           clientId: resolvedRequest.client.id,
           encryptionParameters: encryptionParameters
@@ -77,9 +77,9 @@ public extension AuthorizationResponse {
     case .vpToken(let vpContent):
       switch resolvedRequest {
       case .vpToken(let request):
-        let payload : AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
+        let payload: AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
           vpContent: vpContent,
-          state: request.state ?? "", 
+          state: request.state ?? "",
           nonce: request.nonce,
           clientId: resolvedRequest.client.id,
           encryptionParameters: encryptionParameters

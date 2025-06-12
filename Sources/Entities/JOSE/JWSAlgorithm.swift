@@ -55,11 +55,11 @@ public extension JWSAlgorithm {
     case PS384
     case PS512
     case EdDSA
-  
+
     var name: String {
       return self.rawValue
     }
-  
+
     var requirement: Requirement {
       switch self {
       case .HS256:

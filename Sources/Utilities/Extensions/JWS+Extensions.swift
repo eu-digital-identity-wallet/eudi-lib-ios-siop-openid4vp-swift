@@ -17,7 +17,7 @@ import Foundation
 import JOSESwift
 
 internal extension JWS {
-  
+
   // Function to convert Unix timestamp to Date
   func dateFromUnixTimestamp(_ timestamp: Any) -> Date? {
     if let timestampInt = timestamp as? Int {
@@ -27,9 +27,9 @@ internal extension JWS {
     }
     return nil
   }
-  
+
   func verifierAttestationClaims() throws -> VerifierAttestationClaims {
-    
+
     let payload = payload.data()
     guard let json = try JSONSerialization.jsonObject(
       with: payload,
@@ -37,7 +37,7 @@ internal extension JWS {
     ) as? [String: Any] else {
       throw ValidationError.validationError("Invalid JWS payload")
     }
-    
+
     guard
       let cnf = json["cnf"] as? [String: Any],
       let jwkDict = cnf["jwk"] as? [String: Any],
@@ -45,7 +45,7 @@ internal extension JWS {
     else {
       throw ValidationError.validationError("Cannot locate cnf/jwk in payload")
     }
-    
+
     return VerifierAttestationClaims(
       iss: try tryExtract(JWTClaimNames.issuer, from: json),
       sub: try tryExtract(JWTClaimNames.subject, from: json),
@@ -56,13 +56,13 @@ internal extension JWS {
       responseUris: try tryExtract("response_uris", from: json)
     )
   }
-  
+
   // Function to convert JSON to ECPublicKey or RSAPublicKey
   func convertJSONToPublicKey(json: [String: Any]) -> JWK? {
     guard let kty = json["kty"] as? String else {
       return nil
     }
-    
+
     switch kty {
     case "EC":
       return convertJSONToECPublicKey(json: json)
@@ -72,7 +72,7 @@ internal extension JWS {
       return nil
     }
   }
-  
+
   // Function to convert JSON to ECPublicKey
   func convertJSONToECPublicKey(json: [String: Any]) -> ECPublicKey? {
     guard
@@ -85,7 +85,7 @@ internal extension JWS {
     }
     return ECPublicKey(crv: curve, x: x, y: y)
   }
-  
+
   // Function to convert JSON to RSAPublicKey
   func convertJSONToRSAPublicKey(json: [String: Any]) -> RSAPublicKey? {
     guard
@@ -99,12 +99,12 @@ internal extension JWS {
 }
 
 public extension JWS {
-  
+
   func verifyJWS(publicKey: SecKey) throws {
-    
+
     let keyAttributes = SecKeyCopyAttributes(publicKey) as? [CFString: Any]
     let keyType = keyAttributes?[kSecAttrKeyType as CFString] as? String
-    
+
     if keyType == (kSecAttrKeyTypeRSA as String) {
       if let verifier = Verifier(
         signatureAlgorithm: .RS256,
@@ -122,14 +122,14 @@ public extension JWS {
         return
       }
     }
-    
+
     throw ValidationError.validationError("Unable to verif JWS")
   }
-  
+
   func claimValue(forKey key: String) -> Any? {
     // Get the payload from the JWS
     let payloadData = self.payload.data()
-    
+
     // Convert the payload data into a JSON dictionary
     if let jsonPayload = try? JSONSerialization.jsonObject(with: payloadData, options: []) as? [String: Any] {
       // Return the value for the specified key

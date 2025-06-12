@@ -5,6 +5,11 @@ default_platform(:ios)
 
 platform :ios do
   desc "Code coverage"
+
+  lane :lint_fix do
+    sh "swiftlint lint --fix --config ../.swiftlint.yml --quiet ../"
+  end
+
   lane :code_coverage do
     
     # You can convert the generated report to JSON using the following command:

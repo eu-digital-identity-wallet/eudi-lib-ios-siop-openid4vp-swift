@@ -17,24 +17,23 @@ import XCTest
 @testable import SiopOpenID4VP
 
 final class QueryIdTests: XCTestCase {
-  
+
   func testQueryIdDescription() throws {
     let rawValue = "test-raw-value"
     let queryId = try QueryId(value: rawValue)
-    
+
     let description = queryId.description
-    
+
     XCTAssertEqual(description, rawValue)
   }
-  
+
   func testEncodeToJSON() throws {
     let rawValue = "test-raw-value"
     let queryId = try QueryId(value: rawValue)
-    
+
     let encodedData = try JSONEncoder().encode(queryId)
     let encodedString = String(data: encodedData, encoding: .utf8)
-    
+
     XCTAssertEqual(encodedString, "\"\(rawValue)\"")
   }
 }
-

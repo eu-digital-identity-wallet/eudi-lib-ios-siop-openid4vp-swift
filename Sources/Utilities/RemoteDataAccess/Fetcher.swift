@@ -59,7 +59,7 @@ public protocol Fetching: Sendable {
 }
 
 public struct Fetcher<Element: Codable & Sendable>: Fetching {
-  
+
   @Injected var reporter: Reporting
   public var session: Networking
 
@@ -106,7 +106,7 @@ public struct Fetcher<Element: Codable & Sendable>: Fetching {
       return .failure(.decodingError(error))
     }
   }
-  
+
   public func fetchString(
     session: URLSession = URLSession.shared,
     url: URL

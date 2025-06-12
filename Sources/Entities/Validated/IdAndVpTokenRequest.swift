@@ -29,7 +29,7 @@ extension ValidatedRequestData {
     let state: String?
     let vpFormats: VpFormats
     let transactionData: [String]?
-    
+
     public init(
       idTokenType: IdTokenType,
       querySource: QuerySource,

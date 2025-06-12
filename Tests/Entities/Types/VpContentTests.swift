@@ -18,35 +18,35 @@ import SwiftyJSON
 @testable import SiopOpenID4VP
 
 class VpContentTests: XCTestCase {
-  
+
   func testEncodeDCQLQueryWithGenericPresentation() throws {
     let queryId = try QueryId(value: "query1")
     let presentation: VerifiablePresentation = .generic("123")
-    
+
     let result = VpContent.encodeDCQLQuery([queryId: presentation])
-    
+
     XCTAssertEqual(result["query1"]?.stringValue, "123")
   }
-  
+
   func testEncodeDCQLQueryWithJsonPresentation() throws {
-    
+
     let queryId = try QueryId(value: "query2")
     let json = JSON(["id": "456", "type": "JsonTest"])
     let presentation: VerifiablePresentation = .json(json)
-    
+
     let result = VpContent.encodeDCQLQuery([queryId: presentation])
-    
+
     XCTAssertEqual(result["query2"]?["id"].stringValue, "456")
     XCTAssertEqual(result["query2"]?["type"].stringValue, "JsonTest")
   }
-  
+
   func testEncodeDCQLQueryWithMultiplePresentations() throws {
     let query1 = try QueryId(value: "q1")
     let query2 = try QueryId(value: "q2")
-    
+
     let presentation1: VerifiablePresentation = .generic("John")
     let presentation2: VerifiablePresentation = .json(JSON(["age": "13"]))
-    
+
     let query: [QueryId: VerifiablePresentation] = [
       query1: presentation1,
       query2: presentation2

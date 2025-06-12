@@ -19,35 +19,35 @@ import SwiftASN1
 @testable import SiopOpenID4VP
 
 class JWSAlgorithmTests: XCTestCase {
-  
+
   func testInitWithName() {
     let alg = JWSAlgorithm(name: "HS256")
     XCTAssertEqual(alg.name, "HS256")
   }
-  
+
   func testInitWithNameAndRequirement() {
     let alg = JWSAlgorithm(name: "HS256", requirement: .REQUIRED)
     XCTAssertEqual(alg.name, "HS256")
     XCTAssertEqual(alg.requirement, .REQUIRED)
   }
-  
+
   func testInitWithAlgorithmType() {
     let alg = JWSAlgorithm(.HS256)
     XCTAssertEqual(alg.name, "HS256")
     XCTAssertEqual(alg.requirement, .REQUIRED)
   }
-  
+
   func testParseKnownAlgorithmType() {
     let alg = JWSAlgorithm.parse("HS256")
     XCTAssertEqual(alg.name, "HS256")
     XCTAssertEqual(alg.requirement, .REQUIRED)
   }
-  
+
   func testParseUnknownAlgorithmType() {
     let alg = JWSAlgorithm.parse("UNKNOWN")
     XCTAssertEqual(alg.name, "UNKNOWN")
   }
-  
+
   func testAlgorithmTypeNameAndRequirement() {
     for type in JWSAlgorithm.AlgorithmType.allCases {
       XCTAssertEqual(type.name, type.rawValue)

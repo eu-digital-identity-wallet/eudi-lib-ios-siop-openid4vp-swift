@@ -19,7 +19,7 @@ import Foundation
 @testable import SiopOpenID4VP
 
 final class NonceGeneratorTests: XCTestCase {
-  
+
   func testGenerateNonceWhenLengthIsZero() {
     XCTAssertThrowsError(try NonceGenerator.generate(length: 0)) { error in
       XCTAssertEqual(error as? NonceError, .invalidLength)
@@ -30,38 +30,38 @@ final class NonceGeneratorTests: XCTestCase {
     let nonce = try NonceGenerator.generate()
     XCTAssertEqual(nonce.count, 32)
   }
-  
+
   func testGenerateCustomLength() throws {
     let nonce = try NonceGenerator.generate(length: 12)
     XCTAssertEqual(nonce.count, 12)
   }
-  
+
   func testGenerateContainsOnlyAlphanumericCharacters() throws {
     let nonce = try NonceGenerator.generate(length: 100)
     let allowedChars = CharacterSet.alphanumerics
     XCTAssertTrue(nonce.unicodeScalars.allSatisfy { allowedChars.contains($0) })
   }
-  
+
   func testGenerateRandomness() throws {
     let nonce1 = try NonceGenerator.generate()
     let nonce2 = try NonceGenerator.generate()
     XCTAssertNotEqual(nonce1, nonce2)
   }
-  
+
   func testGenerateSecureNonceDefaultByteLength() {
     let secureNonce = NonceGenerator.generateSecureNonce()
     let data = Data(base64Encoded: secureNonce)
     XCTAssertNotNil(data)
     XCTAssertEqual(data?.count, 32)
   }
-  
+
   func testGenerateSecureNonceCustomByteLength() {
     let secureNonce = NonceGenerator.generateSecureNonce(byteLength: 64)
     let data = Data(base64Encoded: secureNonce)
     XCTAssertNotNil(data)
     XCTAssertEqual(data?.count, 64)
   }
-  
+
   func testGenerateSecureNonceRandomness() {
     let nonce1 = NonceGenerator.generateSecureNonce()
     let nonce2 = NonceGenerator.generateSecureNonce()

@@ -19,22 +19,22 @@ import XCTest
 @testable import SiopOpenID4VP
 
 final class WebKeyResolverTests: DiXCTest {
-  
+
   var webKeyResolver: WebKeyResolver!
-  
+
   override func tearDown() {
     self.webKeyResolver = nil
     super.tearDown()
   }
-  
+
   override func setUp() {
     self.webKeyResolver = WebKeyResolver()
   }
-  
+
   func testResolve_WhenSourceIsNil_ThenReturnSuccessWithNilValue() async throws {
-    
+
     let response = await self.webKeyResolver.resolve(source: nil)
-    
+
     switch response {
     case .success(let webKeys):
       XCTAssertNil(webKeys)
@@ -42,11 +42,11 @@ final class WebKeyResolverTests: DiXCTest {
       XCTFail(error.localizedDescription)
     }
   }
-  
+
   func testResolve_WhenPassByValue_ThenReturnSuccessWebKeySet() async throws {
-    
+
     let response = await self.webKeyResolver.resolve(source: .passByValue(webKeys: TestsConstants.webKeySet))
-    
+
     switch response {
     case .success(let webKeys):
       XCTAssertEqual(webKeys?.keys.first, TestsConstants.webKeySet.keys.first)
@@ -54,11 +54,11 @@ final class WebKeyResolverTests: DiXCTest {
       XCTFail(error.localizedDescription)
     }
   }
-  
+
   func testResolve_WhenFetchByReferenceWithValidURL_ThenRetrieveJsonRemotelyAndReturnSuccessWebKeySet() async throws {
-    
+
     let response = await self.webKeyResolver.resolve(source: .fetchByReference(url: TestsConstants.validByReferenceWebKeyUrl))
-    
+
     switch response {
     case .success(let webKeys):
       XCTAssertEqual(webKeys?.keys.first?.use, TestsConstants.webKeySet.keys.first?.use)
@@ -67,11 +67,11 @@ final class WebKeyResolverTests: DiXCTest {
       XCTFail(error.localizedDescription)
     }
   }
-  
+
   func testResolve_WhenFetchByReferenceWithInvalidURL_ThenReturnFailure() async throws {
-    
+
     let response = await self.webKeyResolver.resolve(source: .fetchByReference(url: TestsConstants.invalidUrl))
-    
+
     switch response {
     case .success:
       XCTFail("Success is not an option here")

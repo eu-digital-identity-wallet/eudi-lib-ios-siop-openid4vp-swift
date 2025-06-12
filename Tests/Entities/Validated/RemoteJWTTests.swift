@@ -17,35 +17,35 @@ import XCTest
 @testable import SiopOpenID4VP
 
 class RemoteJWTTests: XCTestCase {
-  
+
   func testInitialiseRemoteJWT() {
     let jwtString = ("\(TestsConstants.header).\(TestsConstants.payload).\(TestsConstants.signature)")
-    
+
     let remoteJWT = RemoteJWT(jwt: jwtString)
-    
+
     XCTAssertEqual(remoteJWT.jwt, jwtString)
   }
-  
+
   func testEncodeRemoteJWT() throws {
     let jwtString = ("\(TestsConstants.header).\(TestsConstants.payload).\(TestsConstants.signature)")
     let remoteJWT = RemoteJWT(jwt: jwtString)
-    
+
     let encoder = JSONEncoder()
     let data = try encoder.encode(remoteJWT)
-    
+
     let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
     XCTAssertEqual(json?["jwt"] as? String, jwtString)
   }
-  
+
   func testDecodeRemoteJWT() throws {
     let jwtString = ("\(TestsConstants.header).\(TestsConstants.payload).\(TestsConstants.signature)")
     let json = """
         { "jwt": "\(jwtString)" }
         """.data(using: .utf8)!
-    
+
     let decoder = JSONDecoder()
     let decoded = try decoder.decode(RemoteJWT.self, from: json)
-    
+
     XCTAssertEqual(decoded.jwt, jwtString)
   }
 }

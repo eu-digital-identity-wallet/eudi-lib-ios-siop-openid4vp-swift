@@ -18,15 +18,15 @@ import XCTest
 import X509
 
 final class TrustFunctionsTests: XCTestCase {
-  
+
   func testParseCertificateDataWithValidAndInvalidBase64() {
-    
+
     let validBase64 = "U2lvcE9wZW5JRDRWUA=="
     let invalidBase64 = "not_base_64"
     let input = [validBase64, invalidBase64]
-    
+
     let result = parseCertificateData(from: input)
-    
+
     XCTAssertEqual(result.count, 1)
     XCTAssertEqual(String(data: result[0], encoding: .utf8), "SiopOpenID4VP")
   }

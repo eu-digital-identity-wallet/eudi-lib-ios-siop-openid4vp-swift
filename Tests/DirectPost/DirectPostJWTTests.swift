@@ -20,13 +20,13 @@ import JOSESwift
 @testable import SiopOpenID4VP
 
 final class DirectPostJWTTests: DiXCTest {
-  
+
   func testSDKEndtoEndWebVerifierDirectPostJwtPreregistered() async throws {
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -34,7 +34,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let wallet: SiopOpenId4VPConfiguration = .init(
@@ -63,37 +63,37 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    
+
     /// To get this URL, visit https://verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#04"
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: url
       )!
     )
-    
+
     switch result {
     case .jwt(request: let request):
       let presentationDefinition = try?  XCTUnwrap(
         request.presentationDefinition,
         "Unable to resolve presentation definition"
       )
-      
+
       XCTAssertNotNil(presentationDefinition)
-      
+
       guard let presentationDefinition = presentationDefinition else {
         XCTAssert(false, "Presentation definition expected")
         return
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -105,17 +105,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -128,13 +128,13 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testSDKEndtoEndWebVerifierDirectPostJwtRedirectUrl() async throws {
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -142,7 +142,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -163,37 +163,37 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    
+
     /// To get this URL, visit https://verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#08"
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: .init(
         string: url
       )!
     )
-    
+
     switch result {
     case .jwt(request: let request):
       let presentationDefinition = try?  XCTUnwrap(
         request.presentationDefinition,
         "Unable to resolve presentation definition"
       )
-      
+
       XCTAssertNotNil(presentationDefinition)
-      
+
       guard let presentationDefinition = presentationDefinition else {
         XCTAssert(false, "Presentation definition expected")
         return
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -205,17 +205,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -228,13 +228,13 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testSDKEndtoEndDirectPostJwtWithUrlPreregistered() async throws {
-        
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -242,7 +242,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let wallet: SiopOpenId4VPConfiguration = .init(
@@ -268,33 +268,33 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     // Add your own URL here that you can obtain from
     // https://verifier.eudiw.dev/
     let url = "#07"
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: url
       )!
     )
-    
+
     switch result {
     case .jwt(let request):
       let presentationDefinition = try?  XCTUnwrap(
         request.presentationDefinition,
         "Unable to resolve presentation definition"
       )
-      
+
       XCTAssertNotNil(presentationDefinition)
-      
+
       guard let presentationDefinition = presentationDefinition else {
         XCTAssert(false, "Presentation definition expected")
         return
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -306,17 +306,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -329,12 +329,12 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testPostDirectPostJwtAuthorisationResponseGivenValidResolutionAndNegativeConsent() async throws {
-    
+
     let validator = ClientMetaDataValidator()
     let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
-    
+
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
@@ -347,25 +347,25 @@ final class DirectPostJWTTests: DiXCTest {
         scope: Constants.testScope
       )
     )
-    
+
     let jose = JOSEController()
     let kid = UUID()
-    
+
     let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: publicKey,
       additionalParameters: [
         "use": "sig",
         "kid": kid.uuidString
       ])
-    
+
     let holderInfo: HolderInfo = .init(
       email: "email@example.com",
       name: "Bob"
     )
-    
+
     let jws = try jose.build(
       request: resolved,
       holderInfo: holderInfo,
@@ -385,12 +385,12 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey!,
       kid: kid
     )
-    
+
     XCTAssert(try jose.verify(jws: jose.getJWS(compactSerialization: jws), publicKey: publicKey))
-    
+
     // Obtain consent
     let consent: ClientConsent = .negative(message: "user_cancelled")
-    
+
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
@@ -405,30 +405,30 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     // Generate a direct post authorisation response
     let response = try? AuthorizationResponse(
       resolvedRequest: resolved,
       consent: consent,
       walletOpenId4VPConfig: wallet
     )
-    
+
     XCTAssertNotNil(response)
-    
+
     let service = AuthorisationService()
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
     _ = try? await dispatcher.dispatch()
-    
+
     XCTAssert(true)
   }
-  
+
   func testPostDirectPostJwtAuthorisationResponseGivenValidResolutionAndIdTokenConsent() async throws {
-    
+
     let token = "eyJhbGciOiJIUzI1NiJ9.eyIxIjoiMSJ9.aoHTuJmTqZDNNuHqw-O6Gp5HACYEYo4p7RwG0ZhGrKY"
-    
+
     let privateKey = try KeyController.generateECDHPrivateKey()
     let publicKey = try KeyController.generateECDHPublicKey(from: privateKey)
-    
+
     let publicJwk = try ECPublicKey(
       publicKey: publicKey,
       additionalParameters: [
@@ -437,13 +437,13 @@ final class DirectPostJWTTests: DiXCTest {
         "alg": "ECDH-ES"
       ]
     )
-    
+
     let privateJWK = try ECPrivateKey(
       privateKey: privateKey
     )
-    
+
     let keySet = try WebKeySet(jwks: [publicJwk])
-    
+
     let clientMetaData = ClientMetaData(
       jwks: ["keys": [try publicJwk.toDictionary()]].toJSONString(),
       idTokenEncryptedResponseAlg: "RS256",
@@ -453,10 +453,10 @@ final class DirectPostJWTTests: DiXCTest {
       authorizationEncryptedResponseEnc: "A128CBC-HS256", // was: A256GCM"
       vpFormats: TestsConstants.testVpFormatsTO()
     )
-    
+
     let validator = ClientMetaDataValidator()
     let metaData = try await validator.validate(clientMetaData: clientMetaData)
-    
+
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
@@ -471,7 +471,7 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
@@ -483,55 +483,55 @@ final class DirectPostJWTTests: DiXCTest {
         scope: Constants.testScope
       )
     )
-    
+
     let consent: ClientConsent = .idToken(idToken: token)
-    
+
     // Generate a direct post jwt authorisation response
     let response = try? AuthorizationResponse(
       resolvedRequest: resolved,
       consent: consent,
       walletOpenId4VPConfig: wallet
     )
-    
+
     XCTAssertNotNil(response)
-    
+
     let service = AuthorisationService()
     let dispatcher = Dispatcher(service: service, authorizationResponse: response!)
     _ = try? await dispatcher.dispatch()
-    
+
     let joseResponse = await service.joseResponse
-    
+
     XCTAssertNotNil(response)
-    
+
     let encryptedJwe = try JWE(compactSerialization: joseResponse!)
-    
+
     let decrypter = Decrypter(
       keyManagementAlgorithm: .init(algorithm: .init(.ECDH_ES))!,
       contentEncryptionAlgorithm: .A128CBCHS256,
       decryptionKey: privateJWK
     )!
-    
+
     let decryptionPayload = try encryptedJwe.decrypt(using: decrypter)
     let decryption = try JSONSerialization.jsonObject(with: decryptionPayload.data()) as! [String: Any]
-    
+
     XCTAssertEqual(decryption["id_token"] as! String, token)
   }
-  
+
   func testSDKEndtoEndDirectPostJwtPreregistered() async throws {
-    
+
     let nonce = UUID().uuidString
     let session = try? await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
-    
+
     guard let session = session else {
       XCTExpectFailure("this tests depends on a local verifier running")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -539,7 +539,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let wallet: SiopOpenId4VPConfiguration = .init(
@@ -565,23 +565,23 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]
     let transactionId = session["transaction_id"] as! String
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)"
       )!
     )
-    
+
     switch result {
     case .jwt(request: let request):
       let resolved = request
-      
+
       // Obtain consent
       let submission = TestsConstants.testPresentationSubmission
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -593,17 +593,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -611,12 +611,12 @@ final class DirectPostJWTTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-      
+
       let pollingResult = try await TestsHelpers.pollVerifier(
         transactionId: transactionId,
         nonce: nonce
       )
-      
+
       switch pollingResult {
       case .success:
         XCTAssert(true)
@@ -627,23 +627,23 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testSDKEndtoEndDirectPostJwtX509WithRemovedSchemeWithSdJwt() async throws {
-    
+
     let nonce = TestsConstants.testNonce
     let session = try? await TestsHelpers.getDirectPostJwtSession(
       nonce: nonce
     )
-    
+
     guard let session = session else {
       XCTExpectFailure("this tests depends on a local verifier running")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -651,7 +651,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -659,7 +659,7 @@ final class DirectPostJWTTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -677,19 +677,19 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]!
     let transactionId = session["transaction_id"] as! String
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
       )!
     )
-    
+
     switch result {
     case .jwt(let request):
       let resolved = request
@@ -697,17 +697,17 @@ final class DirectPostJWTTests: DiXCTest {
       var presentation: String?
       switch resolved {
       case .vpToken(let request):
-        
+
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
           clientID: request.client.id.originalClientId,
           nonce: TestsConstants.testNonce
         )
-        
+
       default:
         XCTFail("Incorrectly resolved")
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.testPresentationSubmissionSdJwt
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -719,17 +719,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -739,12 +739,12 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
         return
       }
-      
+
       let pollingResult = try await TestsHelpers.pollVerifier(
         transactionId: transactionId,
         nonce: nonce
       )
-      
+
       switch pollingResult {
       case .success:
         XCTAssert(true)
@@ -755,13 +755,13 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
- 
+
   func testSDKEndtoEndWebVerifierDirectPostJwtX509WithAccepetedRequestURI() async throws {
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -769,7 +769,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -777,7 +777,7 @@ final class DirectPostJWTTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -795,37 +795,37 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    
+
     /// To get this URL, visit https://verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#05"
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: url
       )!
     )
-    
+
     switch result {
     case .jwt(request: let request):
       let presentationDefinition = try?  XCTUnwrap(
         request.presentationDefinition,
         "Unable to resolve presentation definition"
       )
-      
+
       XCTAssertNotNil(presentationDefinition)
-      
+
       guard let presentationDefinition = presentationDefinition else {
         XCTAssert(false, "Presentation definition expected")
         return
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -837,17 +837,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted(let redirectURI):
@@ -860,23 +860,23 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
- 
+
   func testSDKEndtoEndDirectPostJwtX509() async throws {
-    
+
     let nonce = UUID().uuidString
     let session = try? await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
-    
+
     guard let session = session else {
       XCTExpectFailure("this tests depends on a local verifier running")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(
       from: rsaPrivateKey
     )
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -884,7 +884,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -892,7 +892,7 @@ final class DirectPostJWTTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -912,19 +912,19 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]
     let transactionId = session["transaction_id"] as! String
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId!)&request_uri=\(url!)"
       )!
     )
-    
+
     switch result {
     case .jwt(let request):
       let resolved = request
@@ -940,17 +940,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -958,12 +958,12 @@ final class DirectPostJWTTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-      
+
       let pollingResult = try await TestsHelpers.pollVerifier(
         transactionId: transactionId,
         nonce: nonce
       )
-      
+
       switch pollingResult {
       case .success:
         XCTAssert(true)
@@ -974,9 +974,9 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testSDKEndtoEndDirectPostJwtX509WithTransactionData() async throws {
-    
+
     let nonce = TestsConstants.testNonce
     let session = try? await TestsHelpers.getDirectPostJwtSession(
       nonce: nonce,
@@ -990,18 +990,18 @@ final class DirectPostJWTTests: DiXCTest {
         )
       ]
     )
-    
+
     guard let session = session else {
       XCTExpectFailure("this tests depends on a local verifier running")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(
       from: rsaPrivateKey
     )
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -1009,7 +1009,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -1017,7 +1017,7 @@ final class DirectPostJWTTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -1035,19 +1035,19 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]!
     let transactionId = session["transaction_id"] as! String
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
       )!
     )
-    
+
     switch result {
     case .jwt(let request):
       let resolved = request
@@ -1059,21 +1059,21 @@ final class DirectPostJWTTests: DiXCTest {
         let type = try! transactionData!.type()
         let credentialId = try! transactionData!.credentialIds().first
         let hashAlgorithm = try! transactionData!.hashAlgorithms().first
-        
+
         XCTAssertEqual(type.value, "authorization")
         XCTAssertEqual(credentialId!.value, "wa_driver_license")
         XCTAssertEqual(hashAlgorithm!.name, "sha-256")
-        
+
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
           clientID: request.client.id.originalClientId,
           nonce: TestsConstants.testNonce
         )
-        
+
       default:
         XCTFail("Incorrectly resolved")
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.testPresentationSubmissionSdJwt
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -1085,17 +1085,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -1105,12 +1105,12 @@ final class DirectPostJWTTests: DiXCTest {
         XCTAssert(false)
         return
       }
-      
+
       let pollingResult = try await TestsHelpers.pollVerifier(
         transactionId: transactionId,
         nonce: nonce
       )
-      
+
       switch pollingResult {
       case .success:
         XCTAssert(true)
@@ -1121,22 +1121,22 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testSDKEndtoEndDirectPostJwtX509WithRemovedScheme() async throws {
-    
+
     let nonce = UUID().uuidString
     let session = try? await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
-    
+
     guard let session = session else {
       XCTExpectFailure("this tests depends on a local verifier running")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -1144,7 +1144,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -1152,7 +1152,7 @@ final class DirectPostJWTTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -1170,19 +1170,19 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]!
     let transactionId = session["transaction_id"] as! String
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(clientId)&request_uri=\(url!)"
       )!
     )
-    
+
     switch result {
     case .jwt(let request):
       let resolved = request
@@ -1198,17 +1198,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -1216,12 +1216,12 @@ final class DirectPostJWTTests: DiXCTest {
       default:
         XCTAssert(false)
       }
-      
+
       let pollingResult = try await TestsHelpers.pollVerifier(
         transactionId: transactionId,
         nonce: nonce
       )
-      
+
       switch pollingResult {
       case .success:
         XCTAssert(true)
@@ -1232,22 +1232,22 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testSDKEndtoEndDirectPostJwtX509WithRemovedSchemeAndExpectedInvalid() async throws {
-    
+
     let nonce = UUID().uuidString
     let session = try? await TestsHelpers.getDirectPostJwtSession(nonce: nonce)
-    
+
     guard let session = session else {
       XCTExpectFailure("this tests depends on a local verifier running")
       XCTAssert(false)
       return
     }
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -1255,7 +1255,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -1263,7 +1263,7 @@ final class DirectPostJWTTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -1281,17 +1281,17 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: "eudi-wallet://authorize?client_id=\(TestsConstants.clientId)&request_uri=\(url!)"
       )!
     )
-    
+
     switch result {
     case .invalidResolution(let error, let details):
       let result: DispatchOutcome = try await sdk.dispatch(
@@ -1308,12 +1308,12 @@ final class DirectPostJWTTests: DiXCTest {
       break
     }
   }
-  
+
   func testGivenClientMetaDataWhenAValidResolutionIsObtainedThenDecodeJwtWithSucess() async throws {
-    
+
     let ecPrivateKey = try KeyController.generateECDHPrivateKey()
     let ecPublicKey = try KeyController.generateECDHPublicKey(from: ecPrivateKey)
-    
+
     let ecPublicJwk = try ECPublicKey(
       publicKey: ecPublicKey,
       additionalParameters: [
@@ -1322,19 +1322,19 @@ final class DirectPostJWTTests: DiXCTest {
         "alg": "ECDH-ES"
       ]
     )
-    
+
     let ecPublicJwkString = try? XCTUnwrap(
       ecPublicJwk.toDictionary().toJSONString(),
       "Expected non-nil value"
     )
-    
+
     let ecPrivateJWK = try ECPrivateKey(
       privateKey: ecPrivateKey
     )
-    
+
     let rsaPrivateKey = try KeyController.generateHardcodedRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey!)
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -1342,16 +1342,16 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let rsaPublicJwkString: String! = try? XCTUnwrap(
       rsaJWK.toDictionary().toJSONString(),
       "Expected non-nil value"
     )
-    
+
     let rsaKeySet = try WebKeySet([
       "keys": [rsaJWK.jsonString()?.convertToDictionary()]
     ])
-    
+
     let clientMetaDataString: String = """
     {
       "jwks": {
@@ -1366,16 +1366,16 @@ final class DirectPostJWTTests: DiXCTest {
       "authorization_encrypted_response_enc": "A128CBC-HS256"
     }
     """
-    
+
     let clientMetaData = try ClientMetaData(metaDataString: clientMetaDataString)
-    
+
     let validator = ClientMetaDataValidator()
-    
+
     guard let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData) else {
       XCTAssert(false, "Invalid client metadata")
       return
     }
-    
+
     let resolved: ResolvedRequestData = .vpToken(
       request: .init(
         presentationQuery: .byPresentationDefinition(.init(
@@ -1391,7 +1391,7 @@ final class DirectPostJWTTests: DiXCTest {
         state: "state",
         vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
       ))
-    
+
     let submission: PresentationSubmission = .init(
       id: "psId",
       definitionID: "psId",
@@ -1406,7 +1406,7 @@ final class DirectPostJWTTests: DiXCTest {
         presentationSubmission: submission
       )
     )
-    
+
     let response: AuthorizationResponse = try .init(
       resolvedRequest: resolved,
       consent: consent,
@@ -1423,35 +1423,35 @@ final class DirectPostJWTTests: DiXCTest {
         vpFormatsSupported: []
       )
     )
-    
+
     let service = AuthorisationService()
     let dispatcher = Dispatcher(service: service, authorizationResponse: response)
     _ = try? await dispatcher.dispatch()
-    
+
     let joseResponse = await service.joseResponse
     let encryptedJwe = try JWE(compactSerialization: joseResponse!)
-    
+
     let decrypter = Decrypter(
       keyManagementAlgorithm: .init(algorithm: validatedClientMetaData.authorizationEncryptedResponseAlg!)!,
       contentEncryptionAlgorithm: .init(encryptionMethod: validatedClientMetaData.authorizationEncryptedResponseEnc!)!,
       decryptionKey: ecPrivateJWK
     )!
-    
+
     let decryptionPayload = try encryptedJwe.decrypt(using: decrypter)
-    
+
     let jwt = String.init(data: decryptionPayload.data(), encoding: .utf8)
     XCTAssert(jwt!.isValidJWT())
-    
+
     let iss = JSONWebToken(jsonWebToken: jwt!)?.payload["iss"].string!
     XCTAssert(iss == "did:example:123")
   }
-  
+
   func testSDKEndtoEndWebVerifierDirectPostJwtX509() async throws {
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -1459,13 +1459,13 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier: CertificateTrust = { certificates in
-      
+
       guard let leaf = certificates.first else {
         return false
       }
-      
+
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? await chainVerifier.verifyChain(
         rootBase64Certificates: TestsConstants.loadRootCertificates(),
@@ -1474,8 +1474,7 @@ final class DirectPostJWTTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -1493,37 +1492,37 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    
+
     /// To get this URL, visit https://verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#09"
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
-        string:url
+        string: url
       )!
     )
-    
+
     switch result {
     case .jwt(request: let request):
       let presentationDefinition = try?  XCTUnwrap(
         request.presentationDefinition,
         "Unable to resolve presentation definition"
       )
-      
+
       XCTAssertNotNil(presentationDefinition)
-      
+
       guard let presentationDefinition = presentationDefinition else {
         XCTAssert(false, "Presentation definition expected")
         return
       }
-      
+
       // Obtain consent
       let submission = TestsConstants.presentationSubmission(presentationDefinition)
       let verifiablePresentations: [VerifiablePresentation] = [
@@ -1535,17 +1534,17 @@ final class DirectPostJWTTests: DiXCTest {
           presentationSubmission: submission
         )
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -1558,13 +1557,13 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testSDKEndtoEndWebVerifierDirectPostJwtX509DCQL() async throws {
-    
+
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
-    
+
     let rsaJWK = try RSAPublicKey(
       publicKey: rsaPublicKey,
       additionalParameters: [
@@ -1572,7 +1571,7 @@ final class DirectPostJWTTests: DiXCTest {
         "kid": UUID().uuidString,
         "alg": "RS256"
       ])
-    
+
     let chainVerifier = { certificates in
       let chainVerifier = X509CertificateChainVerifier()
       let verified = try? chainVerifier.verifyCertificateChain(
@@ -1580,8 +1579,7 @@ final class DirectPostJWTTests: DiXCTest {
       )
       return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
     }
-    
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -1599,43 +1597,43 @@ final class DirectPostJWTTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default()
     )
-    
+
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    
+
     /// To get this URL, visit https://verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#10"
-    
+
     overrideDependencies()
     let result = await sdk.authorize(
       url: URL(
         string: url
       )!
     )
-    
+
     switch result {
     case .jwt(let request):
-      
+
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
           try QueryId(value: "query_0"): .generic(TestsConstants.cbor)
         ])
       )
-      
+
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
         resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
-      
+
       // Dispatch
       XCTAssertNotNil(response)
-      
+
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
@@ -1648,13 +1646,13 @@ final class DirectPostJWTTests: DiXCTest {
       XCTAssert(false)
     }
   }
-  
+
   func testSDKEndtoEndWebVerifierX509DirectPostJwt() async throws {
-      
+
       let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
       let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
       let privateKey = try KeyController.generateECDHPrivateKey()
-      
+
       let rsaJWK = try RSAPublicKey(
         publicKey: rsaPublicKey,
         additionalParameters: [
@@ -1662,7 +1660,7 @@ final class DirectPostJWTTests: DiXCTest {
           "kid": UUID().uuidString,
           "alg": "RS256"
         ])
-      
+
       let chainVerifier = { certificates in
         let chainVerifier = X509CertificateChainVerifier()
         let verified = try? chainVerifier.verifyCertificateChain(
@@ -1670,8 +1668,7 @@ final class DirectPostJWTTests: DiXCTest {
         )
         return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
       }
-      
-      
+
       let keySet = try WebKeySet(jwk: rsaJWK)
       let wallet: SiopOpenId4VPConfiguration = .init(
         subjectSyntaxTypesSupported: [
@@ -1689,37 +1686,37 @@ final class DirectPostJWTTests: DiXCTest {
         jarConfiguration: .noEncryptionOption,
         vpConfiguration: VPConfiguration.default()
       )
-      
+
       let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-      
+
       /// To get this URL, visit https://verifier.eudiw.dev/
       /// and  "Request for the entire PID"
       /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
       /// Decode the URL online and paste it below in the url variable
       /// Note:  The url is only valid for one use
       let url = "#09"
-      
+
       overrideDependencies()
       let result = await sdk.authorize(
         url: URL(
           string: url
         )!
       )
-      
+
       switch result {
       case .jwt(request: let request):
         let presentationDefinition = try?  XCTUnwrap(
           request.presentationDefinition,
           "Unable to resolve presentation definition"
         )
-        
+
         XCTAssertNotNil(presentationDefinition)
-        
+
         guard let presentationDefinition = presentationDefinition else {
           XCTAssert(false, "Presentation definition expected")
           return
         }
-        
+
         // Obtain consent
         let submission = TestsConstants.presentationSubmission(presentationDefinition)
         let consent: ClientConsent = .vpToken(
@@ -1730,7 +1727,7 @@ final class DirectPostJWTTests: DiXCTest {
             presentationSubmission: submission
           )
         )
-        
+
         // Generate a direct post authorisation response
         let response = try? XCTUnwrap(AuthorizationResponse(
           resolvedRequest: request,
@@ -1740,10 +1737,10 @@ final class DirectPostJWTTests: DiXCTest {
             TestsConstants.generateMdocGeneratedNonce()
           )
         ), "Expected item to be non-nil")
-        
+
         // Dispatch
         XCTAssertNotNil(response)
-        
+
         let result: DispatchOutcome = try await sdk.dispatch(response: response!)
         switch result {
         case .accepted:

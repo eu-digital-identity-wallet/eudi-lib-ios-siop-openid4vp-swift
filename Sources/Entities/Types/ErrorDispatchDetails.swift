@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 import Foundation
-import Foundation
-
 public struct ErrorDispatchDetails: Sendable {
   public let responseMode: ResponseMode?
   public let nonce: String?
   public let state: String?
   public let clientId: VerifierId?
   public let jarmSpec: JarmSpec?
-  
+
   // Default initializer
   public init(
     responseMode: ResponseMode?,
@@ -38,5 +36,3 @@ public struct ErrorDispatchDetails: Sendable {
     self.jarmSpec = jarmSpec
   }
 }
-
-

@@ -38,15 +38,15 @@ private let config: SiopOpenId4VPConfiguration = .init(
   vpConfiguration: VPConfiguration.default()
 )
 final class VerifierAttestaionTestsTests: XCTestCase {
-  
+
   override func setUpWithError() throws {
   }
-  
+
   override func tearDownWithError() throws {
   }
-  
+
   func testVerifierAttestationHappyPath() async throws {
-    
+
     let clientId = "client-id"
     let issuer = VerifierAttestationIssuer()
     let verifier = await issuer.verifier!
@@ -56,24 +56,23 @@ final class VerifierAttestaionTestsTests: XCTestCase {
       redirectUris: [URL(string: "https://www.example.com")!],
       responseUris: [URL(string: "https://www.example.com")!]
     )
-    
+
     let config = try await verifierAttestationWalletConfiguration(
       privateKey: issuer.algAndKey.key,
       verifier: verifier
     )
-    
-    
+
     let authenticator = RequestAuthenticator(
       config: config,
       clientAuthenticator: .init(config: config)
     )
-    
+
     let client = try await authenticator.clientAuthenticator.getClient(
       clientId: clientId,
       jwt: jwt.compactSerializedString,
       config: config
     )
-    
+
     switch client {
     case .attested(let client):
       XCTAssertEqual(client, "client-id")
@@ -83,13 +82,13 @@ final class VerifierAttestaionTestsTests: XCTestCase {
   }
 
   func testVerifierAttestationInvalidIssuer() async throws {
-    
+
     let clientId = "client-id"
     var issuer: VerifierAttestationIssuer
-    
+
     issuer = VerifierAttestationIssuer()
     let verifier = await issuer.verifier!
-    
+
     issuer = VerifierAttestationIssuer()
     let jwt = try await issuer.attestation(
       clock: 10.0,
@@ -97,25 +96,25 @@ final class VerifierAttestaionTestsTests: XCTestCase {
       redirectUris: [URL(string: "https://www.example.com")!],
       responseUris: [URL(string: "https://www.example.com")!]
     )
-    
+
     let config = try await verifierAttestationWalletConfiguration(
       privateKey: issuer.algAndKey.key,
       verifier: verifier
     )
-    
+
     do {
       let authenticator = RequestAuthenticator(
         config: config,
         clientAuthenticator: .init(config: config)
       )
-      
+
       // Attempt to call the async function
       _ = try await authenticator.clientAuthenticator.getClient(
         clientId: clientId,
         jwt: jwt.compactSerializedString,
         config: config
       )
-      
+
       // If no error is thrown, this assertion will fail the test
       XCTFail("Expected error to be thrown, but no error was thrown.")
     } catch {
@@ -123,7 +122,7 @@ final class VerifierAttestaionTestsTests: XCTestCase {
         XCTAssert(false)
         return
       }
-      
+
       switch joseError {
       case .verifyingFailed:
         XCTAssert(true)
@@ -135,14 +134,14 @@ final class VerifierAttestaionTestsTests: XCTestCase {
 }
 
 private extension VerifierAttestaionTestsTests {
-  
+
   func verifierAttestationWalletConfiguration(
     privateKey: SecKey,
     verifier: Verifier
   ) throws -> SiopOpenId4VPConfiguration {
-    
+
     let publicKey = try KeyController.generateECDHPublicKey(from: privateKey)
-    
+
     let alg = JWSAlgorithm(.ES256)
     let publicKeyJWK = try ECPublicKey(
       publicKey: publicKey,
@@ -151,11 +150,11 @@ private extension VerifierAttestaionTestsTests {
         "use": "sig",
         "kid": UUID().uuidString
       ])
-    
+
     let keySet = try WebKeySet([
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
-    
+
     return SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
@@ -176,7 +175,7 @@ private extension VerifierAttestaionTestsTests {
       vpConfiguration: VPConfiguration.default()
     )
   }
-  
+
   func overrideDependencies() {
     DependencyContainer.shared.register(type: Reporting.self, dependency: {
       Reporter()

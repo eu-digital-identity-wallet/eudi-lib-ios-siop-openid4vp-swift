@@ -17,7 +17,7 @@ import XCTest
 @testable import SiopOpenID4VP
 
 class ErrorTests: XCTestCase {
-  
+
   func testUnsupportedResponseType() {
     let error = AuthorizationError.unsupportedResponseType(type: "code")
     XCTAssertEqual(error.errorDescription, ".unsupportedResponseType code")
@@ -57,7 +57,7 @@ class ErrorTests: XCTestCase {
     let error = AuthorizationError.invalidResponseMode
     XCTAssertEqual(error.errorDescription, ".invalidResponseMode")
   }
-  
+
   func testUnsupportedClientIdScheme() {
     let error = ValidationError.unsupportedClientIdScheme("http")
     XCTAssertEqual(error.errorDescription, ".unsupportedClientIdScheme http")
@@ -152,7 +152,7 @@ class ErrorTests: XCTestCase {
     let error = ValidationError.negativeConsent
     XCTAssertEqual(error.errorDescription, ".negativeConsent")
   }
-  
+
   func testInvalidSource() {
     let error = ResolvingError.invalidSource
     XCTAssertEqual(error.errorDescription, ".invalidSource")
@@ -162,7 +162,7 @@ class ErrorTests: XCTestCase {
     let error = ResolvingError.invalidScopes
     XCTAssertEqual(error.errorDescription, ".invalidScopes")
   }
-  
+
   func testInvalidClientData() {
     let error = ResolvedAuthorisationError.invalidClientData
     XCTAssertEqual(error.errorDescription, ".invalidClientData")
@@ -177,7 +177,7 @@ class ErrorTests: XCTestCase {
     let error = ResolvedAuthorisationError.unsupportedResponseType("code")
     XCTAssertEqual(error.errorDescription, ".unsupportedResponseType code")
   }
-  
+
   func testErrorDescription() {
     // .invalidUrl
     let invalidUrlError = FetchError.invalidUrl
@@ -200,7 +200,7 @@ class ErrorTests: XCTestCase {
 }
 
 class JOSEErrorTests: XCTestCase {
-    
+
   func testErrorDescription() {
     XCTAssertEqual(JOSEError.notSupportedRequest.errorDescription, ".notSupportedRequest")
     XCTAssertEqual(JOSEError.invalidIdTokenRequest.errorDescription, ".invalidIdTokenRequest")
@@ -213,70 +213,70 @@ class JOSEErrorTests: XCTestCase {
 }
 
 class AuthorizationRequestErrorCodeTest: XCTestCase {
-  
+
   func testFromErrorEqual() {
     let expectedCode: AuthorizationRequestErrorCode = .invalidRequest
     let validationError: ValidationError = .invalidRequest
     let result = AuthorizationRequestErrorCode.fromError(validationError)
-    
+
     XCTAssertEqual(result, expectedCode)
   }
-  
+
   func testFromErrorNotEqual() {
     let validationError: ValidationError = .invalidUri
     let result = AuthorizationRequestErrorCode.fromError(validationError)
-    
+
     XCTAssertEqual(result, .invalidRequest)
   }
-  
+
 }
 
 class DispatchOutcomeTests: XCTestCase {
-  
+
   func testInit() {
     let outcome = DispatchOutcome()
     XCTAssertEqual(outcome, .accepted(redirectURI: nil))
   }
-  
+
   func testInitFromDecoder_accepted() throws {
     let json = """
     { "accepted": "https://www.example.com" }
     """
     let data = Data(json.utf8)
     let decoder = JSONDecoder()
-    
+
     let outcome = try decoder.decode(DispatchOutcome.self, from: data)
     XCTAssertEqual(outcome, .accepted(redirectURI: URL(string: "https://www.example.com")))
   }
-  
+
   func testInitFromDecoder_rejected() throws {
     let json = """
     { "rejected": "reason" }
     """
     let data = Data(json.utf8)
     let decoder = JSONDecoder()
-    
+
     let outcome = try decoder.decode(DispatchOutcome.self, from: data)
     XCTAssertEqual(outcome, .rejected(reason: "reason"))
   }
-  
+
   func testInitFromDecoder_invalid() throws {
     let json = """
     { "unknown": "value" }
     """
     let data = Data(json.utf8)
     let decoder = JSONDecoder()
-    
+
     XCTAssertThrowsError(try decoder.decode(DispatchOutcome.self, from: data))
   }
-  
+
   func testEncode() throws {
     let outcome = DispatchOutcome.accepted(redirectURI: URL(string: "https://www.example.com"))
     let encoder = JSONEncoder()
-    
+
     let data = try encoder.encode(outcome)
     let decodedOutcome = try JSONDecoder().decode(DispatchOutcome.self, from: data)
-    
+
     XCTAssertEqual(decodedOutcome, outcome)
   }
 }

@@ -19,12 +19,12 @@ import JOSESwift
 @testable import SiopOpenID4VP
 
 final class JOSETests: DiXCTest {
-  
+
   func testJOSEBuildTokenGivenValidRequirements() async throws {
-    
+
     let kid = UUID()
     let jose = JOSEController()
-    
+
     let privateKey = try KeyController.generateHardcodedRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey!)
     let rsaJWK = try RSAPublicKey(
@@ -33,15 +33,15 @@ final class JOSETests: DiXCTest {
         "use": "sig",
         "kid": kid.uuidString
       ])
-    
+
     let holderInfo: HolderInfo = .init(
       email: "email@example.com",
       name: "Bob"
     )
-    
+
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    
+
     let walletConfiguration: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
@@ -63,17 +63,17 @@ final class JOSETests: DiXCTest {
       ],
       vpFormatsSupported: []
     )
-    
+
     let unvalidatedRequest = UnvalidatedRequest.make(
       from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl.absoluteString
     )
-    
+
     let resolver = AuthorizationRequestResolver()
     let request = try await resolver.resolve(
       walletConfiguration: walletConfiguration,
       unvalidatedRequest: unvalidatedRequest.get()
     )
-    
+
     switch request {
     case .notSecured(let data):
       let jws = try jose.build(

@@ -21,52 +21,52 @@ final class FormatTests: XCTestCase {
     let format = try Format(format: "validFormat")
     XCTAssertEqual(format.format, "validFormat")
   }
-  
+
   func testInitWithBlankFormat() {
     XCTAssertThrowsError(try Format(format: "")) { error in
       XCTAssertEqual(error as? FormatError, FormatError.blankValue)
     }
-    
+
     XCTAssertThrowsError(try Format(format: "    ")) { error in
       XCTAssertEqual(error as? FormatError, FormatError.blankValue)
     }
   }
-  
+
   func testEncodingAndDecoding() throws {
     let original = try Format(format: "jsonFormat")
     let encoder = JSONEncoder()
     let data = try encoder.encode(original)
-    
+
     let decoder = JSONDecoder()
     let decoded = try decoder.decode(Format.self, from: data)
-    
+
     XCTAssertEqual(decoded, original)
   }
-  
+
   func testDecodingInvalidFormat() {
     let json = "\"   \"".data(using: .utf8)!
     let decoder = JSONDecoder()
-    
+
     XCTAssertThrowsError(try decoder.decode(Format.self, from: json)) { error in
       XCTAssertEqual(error as? FormatError, FormatError.blankValue)
     }
   }
-  
+
   func testDescription() throws {
     let format = try Format(format: "descFormat")
     XCTAssertEqual(format.description, "descFormat")
   }
-  
+
   func testStaticMsoMdoc() throws {
     let format = try Format.MsoMdoc()
     XCTAssertEqual(format.format, OpenId4VPSpec.FORMAT_MSO_MDOC)
   }
-  
+
   func testStaticSdJwtVc() throws {
     let format = try Format.SdJwtVc()
     XCTAssertEqual(format.format, OpenId4VPSpec.FORMAT_SD_JWT_VC)
   }
-  
+
   func testStaticW3CJwtVcJSON() throws {
     let format = try Format.W3CJwtVcJson()
     XCTAssertEqual(format.format, OpenId4VPSpec.FORMAT_W3C_SIGNED_JWT)

@@ -24,7 +24,7 @@ public struct VerifierAttestationClaims {
   public let verifierPubJwk: JWK
   public let redirectUris: [String]?
   public let responseUris: [String]?
-    
+
   public init(
     iss: String,
     sub: String,

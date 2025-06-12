@@ -23,16 +23,16 @@ extension JWS: @retroactive @unchecked Sendable {}
 actor VerifierAttestationIssuer {
 
   static let ID = "Attestation Issuer"
-  
+
   let attestationDuration: TimeInterval = 100.0
-  
+
   lazy var algAndKey: (algorithm: SignatureAlgorithm, key: SecKey) = {
     let privateKey = try? KeyController.generateECDHPrivateKey()
     return (.ES256, privateKey!)
   }()
-  
+
   lazy var verifier: Verifier? = {
-    
+
     let publicKey: SecKey = try! KeyController.generateECDHPublicKey(from: self.algAndKey.key)
     let verifier: Verifier? = .init(
       signatureAlgorithm: .ES256,
@@ -40,10 +40,10 @@ actor VerifierAttestationIssuer {
     )
     return verifier
   }()
-  
+
   init() {
   }
-  
+
   func attestation(
     clock: TimeInterval,
     clientId: String,
@@ -55,7 +55,7 @@ actor VerifierAttestationIssuer {
     ) else {
       throw ValidationError.validationError("Unable to get private key")
     }
-    
+
     let ecPublicJwk = try ECPublicKey(
       publicKey: publicKey,
       additionalParameters: [
@@ -64,7 +64,7 @@ actor VerifierAttestationIssuer {
         "alg": "ECDH-ES"
       ]
     )
-    
+
     let now = Date().timeIntervalSince1970
     let payload = [
       "iss": Self.ID,
@@ -76,8 +76,8 @@ actor VerifierAttestationIssuer {
       ],
       "redirect_uris": [],
       "response_uris": []
-    ] as [String : Any]
-    
+    ] as [String: Any]
+
     return try JWS(
       header: .init(
         parameters: [

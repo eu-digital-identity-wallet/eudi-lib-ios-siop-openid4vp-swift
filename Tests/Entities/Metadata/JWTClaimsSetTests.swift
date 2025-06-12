@@ -18,9 +18,9 @@ import SwiftyJSON
 @testable import SiopOpenID4VP
 
 class JWTClaimsSetTests: XCTestCase {
-  
+
   func testParseWhenValidJSON() throws {
-    
+
     let timestamp = Int64(Date().timeIntervalSince1970)
     let json: [String: Any] = [
       "iss": "issuer",
@@ -33,35 +33,35 @@ class JWTClaimsSetTests: XCTestCase {
       "custom": "custom-claim"
     ]
     let claimsSet = try JWTClaimsSet.parse(json)
-    
+
     XCTAssertEqual(claimsSet.issuer, "issuer")
     XCTAssertEqual(claimsSet.subject, "subject")
     XCTAssertEqual(claimsSet.audience, ["aud1", "aud2"])
     XCTAssertEqual(claimsSet.jwtID, "jwt-id")
     XCTAssertEqual(claimsSet.claims["custom"] as? String, "custom-claim")
-    
+
     XCTAssertNotNil(claimsSet.expirationTime)
     XCTAssertNotNil(claimsSet.notBeforeTime)
     XCTAssertNotNil(claimsSet.issueTime)
   }
-  
+
   func testParseClaimsAudienceWhenSingleString() throws {
-    
+
     let json: [String: Any] = [
       "aud": "aud1"
     ]
     let claimsSet = try JWTClaimsSet.parse(json)
     let audClaim = claimsSet.claims["aud"]
-    
+
     XCTAssertEqual(audClaim as? String, "aud1")
     XCTAssertEqual(claimsSet.audience, [])
   }
-  
+
   func testParseWhenMissingOptionalClaims() throws {
-    
+
     let json: [String: Any] = [:]
     let claimsSet = try JWTClaimsSet.parse(json)
-    
+
     XCTAssertNil(claimsSet.issuer)
     XCTAssertNil(claimsSet.subject)
     XCTAssertEqual(claimsSet.audience, [])
@@ -70,39 +70,39 @@ class JWTClaimsSetTests: XCTestCase {
     XCTAssertNil(claimsSet.issueTime)
     XCTAssertNil(claimsSet.jwtID)
   }
-  
+
   func testParseWhenInvalidIssuerType() {
     let json: [String: Any] = ["iss": 123]
-    
+
     XCTAssertThrowsError(try JWTClaimsSet.parse(json)) { error in
       XCTAssertTrue(error.localizedDescription.contains("iss"))
     }
   }
-  
+
   func testParseWhenInvalidSubjectType() {
     let json: [String: Any] = ["sub": 456]
-    
+
     XCTAssertThrowsError(try JWTClaimsSet.parse(json)) { error in
       XCTAssertTrue(error.localizedDescription.contains("sub"))
     }
   }
-  
+
   func testParseWhenInvalidJWTIDType() {
     let json: [String: Any] = ["jti": false]
-    
+
     XCTAssertThrowsError(try JWTClaimsSet.parse(json)) { error in
       XCTAssertTrue(error.localizedDescription.contains("jti"))
     }
   }
-  
+
   func testParseWhenInvalidAudienceList() {
     let json: [String: Any] = ["aud": [123, true]]
-    
+
     XCTAssertThrowsError(try JWTClaimsSet.parse(json)) { error in
       XCTAssertTrue(error.localizedDescription.contains("aud"))
     }
   }
-  
+
   func testParseJSONStringWhenValid() throws {
     let timestamp = Int64(Date().timeIntervalSince1970)
     let jsonString = """
@@ -112,19 +112,19 @@ class JWTClaimsSetTests: XCTestCase {
               "exp": \(timestamp)
           }
           """
-    
+
     let claimsSet = try JWTClaimsSet.parse(jsonString)
-    
+
     XCTAssertEqual(claimsSet.issuer, "issuer")
     XCTAssertEqual(claimsSet.audience, [])
     XCTAssertNotNil(claimsSet.expirationTime)
   }
-  
+
   func testParseJSONStringWhenInvalidJSON() {
     let invalidJSONString = """
           { invalid json }
           """
-    
+
     XCTAssertThrowsError(try JWTClaimsSet.parse(invalidJSONString))
   }
 }

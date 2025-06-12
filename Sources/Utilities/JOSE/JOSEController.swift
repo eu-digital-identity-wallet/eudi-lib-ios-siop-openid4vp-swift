@@ -21,7 +21,7 @@ import PresentationExchange
 public struct HolderInfo: Codable {
   public let email: String
   public let name: String
-  
+
   public init(email: String, name: String) {
     self.email = email
     self.name = name
@@ -29,14 +29,14 @@ public struct HolderInfo: Codable {
 }
 
 public class JOSEController {
-  
+
   public init() { }
-  
+
   public func verify(jws: JWS, publicKey: SecKey, algorithm: SignatureAlgorithm = .RS256) throws -> Bool {
     let verifier = try self.verifier(algorithhm: algorithm, publicKey: publicKey)
     return try jws.validate(using: verifier).isValid(for: verifier)
   }
-  
+
   public func build<T: Codable>(
     request: ResolvedRequestData,
     holderInfo: T,
@@ -46,25 +46,25 @@ public class JOSEController {
     ttl: TimeInterval = 600.0,
     kid: UUID = UUID()
   ) throws -> JWTString {
-    
+
     var idTokenData: ResolvedRequestData.IdTokenData?
     switch request {
     case .idToken(request: let data):
       idTokenData = data
     default: throw JOSEError.notSupportedRequest
     }
-    
+
     guard let idTokenData = idTokenData else {
       throw JOSEError.invalidIdTokenRequest
     }
-    
+
     let subjectJwk = JWKSet(keys: [rsaJWK])
     let (iat, exp) = computeTokenDates(ttl: ttl)
     let issuerClaim = try buildIssuerClaim(
       walletConfiguration: walletConfiguration,
       rsaJWK: rsaJWK
     )
-    
+
     let claimSet = try ([
       JWTClaimNames.issuer: issuerClaim,
       JWTClaimNames.subject: issuerClaim,
@@ -77,14 +77,14 @@ public class JOSEController {
         new
       })
       .toThrowingJSONData()
-    
+
     return try sign(
       payload: Payload(claimSet),
       kid: kid,
       signingKey: signingKey
     )
   }
-  
+
   public func getJWS(compactSerialization: String) throws -> JWS {
     guard let jws = try? JWS(compactSerialization: compactSerialization) else {
       throw JOSEError.invalidJWS
@@ -94,7 +94,7 @@ public class JOSEController {
 }
 
 private extension JOSEController {
-  
+
   func verifier(algorithhm: SignatureAlgorithm, publicKey: SecKey) throws -> Verifier {
     guard let verifier = Verifier(
       signatureAlgorithm: algorithhm,
@@ -104,7 +104,7 @@ private extension JOSEController {
     }
     return verifier
   }
-  
+
   func signer(algorithhm: SignatureAlgorithm, privateKey: SecKey) throws -> Signer {
     guard let signer = Signer(
       signatureAlgorithm: algorithhm,
@@ -114,13 +114,13 @@ private extension JOSEController {
     }
     return signer
   }
-  
+
   func computeTokenDates(ttl: TimeInterval) -> (Date, Date) {
     let iat = Date()
     let exp = iat.addingTimeInterval(ttl)
     return (iat, exp)
   }
-  
+
   func buildIssuerClaim(
     walletConfiguration: SiopOpenId4VPConfiguration,
     rsaJWK: RSAPublicKey
@@ -132,7 +132,7 @@ private extension JOSEController {
       return walletConfiguration.decentralizedIdentifier.stringValue
     }
   }
-  
+
   func sign(
     payload: Payload,
     kid: UUID,
@@ -143,9 +143,9 @@ private extension JOSEController {
       "alg": algorithm.rawValue,
       "kid": kid.uuidString
     ])
-    
+
     let signer = try self.signer(algorithhm: algorithm, privateKey: signingKey)
-    
+
     return try JWS(
       header: header,
       payload: payload,

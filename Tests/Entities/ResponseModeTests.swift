@@ -24,37 +24,37 @@ class ResponseModeTests: XCTestCase {
       "response_mode": "direct_post",
       "response_uri": url
     ]
-    
+
     let responseMode = try ResponseMode(authorizationRequestObject: json)
-    
+
     if case let .directPost(responseURI) = responseMode {
       XCTAssertEqual(responseURI.absoluteString, url)
     } else {
       XCTFail("Expected .directPost but got \(responseMode)")
     }
   }
-  
+
   func testInitWithValidQueryJSON() throws {
     let url = "https://siopOpenID4VP.com/redirect"
     let json: JSON = [
       "response_mode": "query",
       "redirect_uri": url
     ]
-    
+
     let responseMode = try ResponseMode(authorizationRequestObject: json)
-    
+
     if case let .query(responseURI) = responseMode {
       XCTAssertEqual(responseURI.absoluteString, url)
     } else {
       XCTFail("Expected .query but got \(responseMode)")
     }
   }
-  
+
   func testInitWithMissingResponseMode() {
     let json: JSON = [
       "redirect_uri": "https://siopOpenID4VP.com/redirect"
     ]
-    
+
     XCTAssertThrowsError(try ResponseMode(authorizationRequestObject: json)) { error in
       guard let validationError = error as? ValidationError else {
         return XCTFail("Expected ValidationError")
@@ -62,12 +62,12 @@ class ResponseModeTests: XCTestCase {
       XCTAssertEqual(validationError, .missingRequiredField(".responseMode"))
     }
   }
-  
+
   func testInitWithUnsupportedResponseMode() {
     let json: JSON = [
       "response_mode": "unsupported_mode"
     ]
-    
+
     XCTAssertThrowsError(try ResponseMode(authorizationRequestObject: json)) { error in
       guard let validationError = error as? ValidationError else {
         return XCTFail("Expected ValidationError")
@@ -75,26 +75,26 @@ class ResponseModeTests: XCTestCase {
       XCTAssertEqual(validationError, .unsupportedResponseMode("unsupported_mode"))
     }
   }
-  
+
   func testIsJarmWhenDirectPostJWT() {
     let url = URL(string: "https://siopOpenID4VP.com")!
     let mode = ResponseMode.directPostJWT(responseURI: url)
     XCTAssertTrue(mode.isJarm())
   }
-  
+
   func testIsJarmWhenDirectPost() {
     let url = URL(string: "https://siopOpenID4VP.com")!
     let mode = ResponseMode.directPost(responseURI: url)
     XCTAssertFalse(mode.isJarm())
   }
-  
+
   func testValidatedResponseModeWithValidData() {
     let data = UnvalidatedRequestObject(
       responseUri: nil,
-      redirectUri: "https://siopOpenID4VP.com", 
+      redirectUri: "https://siopOpenID4VP.com",
       responseMode: "query"
     )
-    
+
     let mode = data.validatedResponseMode
     if case let .query(responseURI)? = mode {
       XCTAssertEqual(responseURI.absoluteString, "https://siopOpenID4VP.com")

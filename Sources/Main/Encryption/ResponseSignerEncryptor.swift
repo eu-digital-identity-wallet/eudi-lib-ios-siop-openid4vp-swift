@@ -40,7 +40,7 @@ internal actor ResponseSignerEncryptor {
           signingKey: signingKey,
           data: data
         ).compactSerializedString
-        
+
       case .encryptedResponse(
         responseSigningAlg: let responseSigningAlg,
         responseEncryptionEnc: let responseEncryptionEnc,
@@ -53,7 +53,7 @@ internal actor ResponseSignerEncryptor {
           signingKeySet: signingKeySet,
           data: data
         ).compactSerializedString
-        
+
       case .signedAndEncryptedResponse(
         signed: let signed,
         encrypted: let encrypted
@@ -70,7 +70,7 @@ internal actor ResponseSignerEncryptor {
 }
 
 private extension ResponseSignerEncryptor {
-  
+
   func sign(
     holderId: String,
     option: JarmOption,
@@ -92,7 +92,7 @@ private extension ResponseSignerEncryptor {
     default: throw ValidationError.invalidJarmOption
     }
   }
-  
+
   func sign(
     holderId: String,
     responseSigningAlg: JWSAlgorithm,
@@ -103,13 +103,13 @@ private extension ResponseSignerEncryptor {
     guard let signatureAlgorithm = SignatureAlgorithm(rawValue: responseSigningAlg.name) else {
       throw ValidationError.unsupportedAlgorithm(responseSigningAlg.name)
     }
-    
+
     let keyAndSigner = try self.keyAndSigner(
       jwsAlgorithm: signatureAlgorithm,
       keySet: signingKeySet,
       signingKey: signingKey
     )
-    
+
     return try JWS(
       header: JWSHeader(parameters: [
         "alg": signatureAlgorithm.rawValue,
@@ -128,7 +128,7 @@ private extension ResponseSignerEncryptor {
       signer: keyAndSigner.signer
     )
   }
-  
+
   func encrypt(
     holderId: String,
     responseSigningAlg: JWEAlgorithm,
@@ -136,13 +136,13 @@ private extension ResponseSignerEncryptor {
     signingKeySet: WebKeySet,
     data: AuthorizationResponsePayload
   ) throws -> JWE {
-    
+
     let keyAndEncryptor = try keyAndEncryptor(
       jweAlgorithm: responseSigningAlg,
       encryptionMethod: responseEncryptionEnc,
       keySet: signingKeySet
     )
-    
+
     let parameters: [String: Any?] = [
       "alg": responseSigningAlg.name,
       "enc": responseEncryptionEnc.name,
@@ -150,9 +150,9 @@ private extension ResponseSignerEncryptor {
       "apv": data.nonce.base64urlEncode,
       "apu": data.apu
     ].filter { $0.value != nil }
-    
-    let header = try JWEHeader(parameters: parameters as [String : Any])
-    
+
+    let header = try JWEHeader(parameters: parameters as [String: Any])
+
     let jwe = try JWE(
       header: header,
       payload: Payload(
@@ -162,7 +162,7 @@ private extension ResponseSignerEncryptor {
     )
     return jwe
   }
-  
+
   func signAndEncrypt(
     holderId: String,
     signed: JarmOption,
@@ -181,7 +181,7 @@ private extension ResponseSignerEncryptor {
         encryptionMethod: responseEncryptionEnc,
         keySet: signingKeySet
       )
-      
+
       let parameters: [String: Any?] = [
         "alg": responseSigningAlg.name,
         "enc": responseEncryptionEnc.name,
@@ -189,8 +189,8 @@ private extension ResponseSignerEncryptor {
         "apv": data.nonce.base64urlEncode,
         "apu": data.apu
       ].filter { $0.value != nil }
-      let header = try JWEHeader(parameters: parameters as [String : Any])
-      
+      let header = try JWEHeader(parameters: parameters as [String: Any])
+
       return try JWE(
         header: header,
         payload: Payload(signedJwt.compactSerializedData),
@@ -199,7 +199,7 @@ private extension ResponseSignerEncryptor {
     default: throw ValidationError.validationError("Unable to retrieve encrypted from  JarmOption")
     }
   }
-  
+
   func keyAndSigner(
     jwsAlgorithm: SignatureAlgorithm,
     keySet: WebKeySet,
@@ -208,11 +208,11 @@ private extension ResponseSignerEncryptor {
     let key = try keySet.keys.first { key in
       key.alg == jwsAlgorithm.rawValue
     } ?? { throw ValidationError.invalidJWTWebKeySet }()
-    
+
     guard let alg = key.alg, let signatureAlgorithm = SignatureAlgorithm(rawValue: alg) else {
       throw ValidationError.unsupportedAlgorithm(key.alg ?? "")
     }
-    
+
     guard let signer = Signer(
       signatureAlgorithm: signatureAlgorithm,
       key: signingKey
@@ -221,7 +221,7 @@ private extension ResponseSignerEncryptor {
     }
     return (key, signer)
   }
-  
+
   func keyAndEncryptor(
     jweAlgorithm: JWEAlgorithm,
     encryptionMethod: JOSEEncryptionMethod,
@@ -238,16 +238,16 @@ private extension ResponseSignerEncryptor {
     }
     throw ValidationError.validationError("Unable to create key/encryptor pair")
   }
-  
+
   // swiftlint:disable line_length
   func createEncrypter(
     jweAlgorithm: JWEAlgorithm,
     encryptionMethod: JOSEEncryptionMethod,
     key: WebKeySet.Key
   ) throws -> Encrypter? {
-    
+
     let data = try key.toDictionary().toThrowingJSONData()
-    
+
     guard let keyAlgorithm: KeyManagementAlgorithm = .init(rawValue: jweAlgorithm.name) else {
       throw ValidationError.validationError("Create encrypter - Unknown key management algorithm")
     }
@@ -255,7 +255,7 @@ private extension ResponseSignerEncryptor {
     guard let contentEncryptionAlgorithm: ContentEncryptionAlgorithm = .init(rawValue: encryptionMethod.name) else {
       throw ValidationError.validationError("Create encrypter - Unknown content encryption algorithm")
     }
-    
+
     if JWEAlgorithm.Family.parse(.RSA).contains(jweAlgorithm) {
       let publicKey = try RSAPublicKey(data: data)
       let secKey: SecKey = try publicKey.converted(to: SecKey.self)
@@ -287,7 +287,7 @@ private extension ResponseSignerEncryptor {
         encryptionMethod: encryptionMethod, key: key
       )
     }
-    
+
     return Dictionary(uniqueKeysWithValues: keySet.keys.compactMap { key in
       try? encrypter(for: key).map { (key, $0) }
     })

@@ -19,7 +19,7 @@ public enum ResolvedRequestData: Sendable {
   case idToken(request: IdTokenData)
   case vpToken(request: VpTokenData)
   case idAndVpToken(request: IdAndVpTokenData)
-  
+
   var presentationDefinition: PresentationDefinition? {
     switch self {
     case .vpToken(let request):
@@ -35,7 +35,7 @@ public enum ResolvedRequestData: Sendable {
       return nil
     }
   }
-  
+
   var dcql: DCQL? {
     switch self {
     case .vpToken(let request):
@@ -51,7 +51,7 @@ public enum ResolvedRequestData: Sendable {
       return nil
     }
   }
-  
+
   var client: Client {
     switch self {
     case .vpToken(let request):
@@ -65,7 +65,7 @@ public enum ResolvedRequestData: Sendable {
 }
 
 public extension ResolvedRequestData {
-  
+
   /// Initializes a `ResolvedRequestData` instance with the provided parameters.
   ///
   /// - Parameters:
@@ -94,7 +94,7 @@ public extension ResolvedRequestData {
         request.vpFormats,
         vpConfiguration.vpFormats
       ) ?? request.vpFormats
-      
+
       switch request.querySource {
       case .byPresentationDefinitionSource(let source):
         guard
@@ -102,9 +102,9 @@ public extension ResolvedRequestData {
         else {
           throw ResolvedAuthorisationError.invalidPresentationDefinitionData
         }
-        
+
         let presentationQuery: PresentationQuery = .byPresentationDefinition(presentationDefinition)
-        
+
         self = .vpToken(
           request: .init(
             presentationQuery: presentationQuery,
@@ -123,7 +123,7 @@ public extension ResolvedRequestData {
         )
       case .dcqlQuery(let dcql):
         let presentationQuery: PresentationQuery = .byDigitalCredentialsQuery(dcql)
-        
+
         self = .vpToken(
           request: .init(
             presentationQuery: presentationQuery,
@@ -147,7 +147,7 @@ public extension ResolvedRequestData {
         request.vpFormats,
         vpConfiguration.vpFormats
       ) ?? request.vpFormats
-      
+
       switch request.querySource {
       case .byPresentationDefinitionSource(let source):
         guard
@@ -155,9 +155,9 @@ public extension ResolvedRequestData {
         else {
           throw ResolvedAuthorisationError.invalidPresentationDefinitionData
         }
-        
+
         let presentationQuery: PresentationQuery = .byPresentationDefinition(presentationDefinition)
-        
+
         self = .idAndVpToken(request: .init(
           idTokenType: request.idTokenType,
           presentationQuery: presentationQuery,
@@ -177,7 +177,7 @@ public extension ResolvedRequestData {
         ))
       case .dcqlQuery(let dcql):
         let presentationQuery: PresentationQuery = .byDigitalCredentialsQuery(dcql)
-        
+
         self = .vpToken(
           request: .init(
             presentationQuery: presentationQuery,
@@ -198,7 +198,7 @@ public extension ResolvedRequestData {
       }
     }
   }
-  
+
   var legalName: String? {
     switch self {
     case .idToken(let request):
@@ -219,7 +219,7 @@ private extension ResolvedRequestData {
   ) throws -> [TransactionData]? {
     /// If there is no transactionData in the request, return nil.
     guard let data = transactionData else { return nil }
-    
+
     /// For each item in data, attempt to parse and unwrap it.
     return try data.compactMap { item in
       try TransactionData.parse(
