@@ -499,7 +499,7 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
           format: "mso_mdoc",
           path: "$"
         )
-        }
+      }
     )
   }
 
@@ -566,10 +566,12 @@ func generateVerifiablePresentation(
 ) throws -> String {
 
   // Create JWT Header
-  let header = try! JWSHeader(parameters: [
+  let header = try! JWSHeader(
+    parameters: [
     "alg": "RS256",
     "typ": "kb+jwt"
-  ])
+    ]
+  )
 
   let keyData = Data(
     base64Encoded: TestsConstants.sdJwtVcPidKey
