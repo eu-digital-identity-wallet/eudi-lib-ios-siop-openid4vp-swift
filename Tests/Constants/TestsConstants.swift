@@ -609,7 +609,10 @@ func generateVerifiablePresentation(
   }
 
   // Create JWT Payload
-  let payloadData = try! JSONSerialization.data(withJSONObject: claims, options: [])
+  let payloadData = try! JSONSerialization.data(
+    withJSONObject: claims,
+    options: []
+  )
   let payload = Payload(payloadData)
 
   // Sign JWT
