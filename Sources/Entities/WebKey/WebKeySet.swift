@@ -49,14 +49,14 @@ public extension WebKeySet {
     public let use: String
     public let kid: String
     public let iat: Int64?
-    
+
     public let crv: String?
     public let x: String?
     public let y: String?
-    
+
     public let exponent: String?
     public let modulus: String?
-    
+
     public let alg: String?
 
     /// Coding keys for encoding and decoding the structure.
@@ -65,14 +65,14 @@ public extension WebKeySet {
       case use
       case kid
       case iat
-      
+
       case crv
       case x
       case y
-      
+
       case exponent = "e"
       case modulus = "n"
-      
+
       case alg
     }
 
@@ -171,7 +171,7 @@ public extension WebKeySet {
       [JSON(jwk.toDictionary())]
     )
   }
-  
+
   init(jwks: [JWK]) throws {
     self.keys = try WebKeySet.transformToKey(jwks.map {
       try JSON($0.toDictionary())

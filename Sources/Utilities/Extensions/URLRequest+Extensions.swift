@@ -18,25 +18,25 @@ import Foundation
 extension URLRequest {
   func toCurlCommand() -> String {
     var curlCommand = "curl -v"
-    
+
     if let httpMethod = httpMethod {
       curlCommand += " -X \(httpMethod)"
     }
-    
+
     if let url = url {
       curlCommand += " '\(url.absoluteString)'"
     }
-    
+
     if let allHTTPHeaderFields = allHTTPHeaderFields {
       for (key, value) in allHTTPHeaderFields {
         curlCommand += " -H '\(key): \(value)'"
       }
     }
-    
+
     if let httpBody = httpBody, let bodyString = String(data: httpBody, encoding: .utf8) {
       curlCommand += " -d '\(bodyString)'"
     }
-    
+
     return curlCommand
   }
 }

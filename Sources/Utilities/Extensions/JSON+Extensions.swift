@@ -25,7 +25,7 @@ extension JSON {
     let jsonData = try self.rawData()
     return try JSONDecoder().decode(T.self, from: jsonData)
   }
-  
+
   /// Retrieves a required string value from a JSON object.
   /// - Parameter name: The key of the required string property.
   /// - Throws: An error if the property is missing or not a string.
@@ -38,7 +38,7 @@ extension JSON {
     }
     return value
   }
-  
+
   /// Retrieves a required array of strings from a JSON object.
   /// - Parameter name: The key of the required string array property.
   /// - Throws: An error if the property is missing, not an array, or contains non-string values.
@@ -51,7 +51,7 @@ extension JSON {
     }
     return array.compactMap { $0.string }
   }
-  
+
   /// Retrieves an optional array of strings from a JSON object.
   /// - Parameter name: The key of the optional string array property.
   /// - Returns: An array of strings if the property exists and is valid, otherwise `nil`.

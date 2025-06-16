@@ -108,7 +108,7 @@ public struct Poster: Posting {
 
    - Returns: A Result type with a success boolean (based on status code) or an error.
    */
-  public func check(key: String, request: URLRequest) async -> Result<(String, Bool) , PostError> {
+  public func check(key: String, request: URLRequest) async -> Result<(String, Bool), PostError> {
     do {
 
       let (data, response) = try await self.session.data(for: request)
@@ -117,7 +117,7 @@ public struct Poster: Posting {
       let dictionary = string?.toDictionary() ?? [:]
       let value = dictionary[key] as? String ?? ""
       let success = (response as? HTTPURLResponse)?.statusCode.isWithinRange(200...299) ?? false
-      
+
       return .success((value, success))
     } catch let error as NSError {
       if error.domain == NSURLErrorDomain {
@@ -129,7 +129,7 @@ public struct Poster: Posting {
       return .failure(.networkError(error))
     }
   }
-  
+
   /**
    Performs a POST request with the provided URLRequest.
 
@@ -145,7 +145,7 @@ public struct Poster: Posting {
       if !statusCode.isWithinRange(200...299) {
         return .failure(.invalidResponse)
       }
-      
+
       if let string = String(data: data, encoding: .utf8) {
         return .success(string)
       } else {

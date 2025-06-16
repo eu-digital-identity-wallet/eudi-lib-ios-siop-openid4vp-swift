@@ -18,7 +18,7 @@ import CryptoKit
 
 /// A utility struct for generating secure random nonces for use in cryptographic and unique identifier contexts.
 public struct NonceGenerator {
-  
+
   /// Generates a nonce of the specified length using alphanumeric characters.
   ///
   /// This method creates a nonce using a character set consisting of lowercase letters,
@@ -26,21 +26,23 @@ public struct NonceGenerator {
   ///
   /// - Parameter length: The length of the nonce to be generated. Defaults to 32 characters.
   /// - Returns: A random alphanumeric string of the specified length.
-  /// - Precondition: The `length` parameter must be greater than zero.
-  public static func generate(length: Int = 32) -> String {
-    precondition(length > 0, "Length must be greater than zero")
-    
+  /// - Throws: `NonceError.invalidLength` if the provided length is less than or equal to zero.
+  public static func generate(length: Int = 32) throws -> String {
+    guard length > 0 else {
+      throw NonceError.invalidLength
+    }
+
     let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     var nonce = ""
-    
+
     for _ in 0..<length {
       guard let randomCharacter = characters.randomElement() else { continue }
       nonce.append(randomCharacter)
     }
-    
+
     return nonce
   }
-  
+
   /// Generates a cryptographically secure nonce as a base64-encoded string.
   ///
   /// This method uses the `CryptoKit` library to generate a nonce with random bytes, providing
@@ -54,4 +56,3 @@ public struct NonceGenerator {
     return Data(randomBytes).base64EncodedString()
   }
 }
-

@@ -22,11 +22,11 @@ public protocol AccessValidating: Sendable {
 }
 
 public actor AccessValidator: AccessValidating {
-  
+
   public let walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
   private let resolver = WebKeyResolver()
   private let objectType: JOSEObjectType
-  
+
   public init(
     walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
     objectType: JOSEObjectType = .REQ_JWT
@@ -34,24 +34,24 @@ public actor AccessValidator: AccessValidating {
     self.walletOpenId4VPConfig = walletOpenId4VPConfig
     self.objectType = objectType
   }
-  
+
   public func validate(clientId: String?, jwt: JWTString) async throws {
     let jwt = try JWS(compactSerialization: jwt)
     try await doValidate(clientId: clientId, jws: jwt)
   }
-  
+
   private func doValidate(clientId: String?, jws: JWS) async throws {
-    
+
     guard let clientId = clientId else {
       throw ValidationError.missingRequiredField("client_id")
     }
-    
+
     guard
       let clientIdScheme = try? VerifierId.parse(clientId: clientId).get().scheme
     else {
       throw ValidationError.unsupportedClientIdScheme(nil)
     }
-    
+
     switch clientIdScheme {
     case .preRegistered:
       let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
@@ -91,25 +91,25 @@ public actor AccessValidator: AccessValidating {
     default: break
     }
   }
-  
+
   private func validateX509(
     supportedClientIdScheme: SupportedClientIdScheme?,
     clientId: String,
     jws: JWS,
     alternativeNames: (Certificate) -> [String]
   ) async throws {
-    
+
     let header = jws.header
     guard let chain: [String] = header.x5c else {
       throw ValidationError.validationError("x5c header field does not contain a serialized leaf certificate")
     }
-    
+
     let certificates: [Certificate] = parseCertificates(from: chain)
 
     guard !certificates.isEmpty else {
       throw ValidationError.validationError("x5c header field does not contain a serialized leaf certificate")
     }
-    
+
     switch supportedClientIdScheme {
     case .x509SanDns(let trust),
          .x509SanUri(let trust):
@@ -119,7 +119,7 @@ public actor AccessValidator: AccessValidating {
       }
     default: throw ValidationError.validationError("Invalid client id scheme for x509")
     }
-    
+
     guard let leafCertificate = certificates.first else {
       throw ValidationError.validationError("Could not locate leaf certificate")
     }
@@ -130,14 +130,14 @@ public actor AccessValidator: AccessValidating {
        !alternativeNames.contains(originalClientId) {
       throw ValidationError.validationError("Client id (\(clientId) not part of list (\(alternativeNames))")
     }
-    
+
     let publicKey = leafCertificate.publicKey
     let pem = try publicKey.serializeAsPEM().pemString
-    
+
     guard let signingAlgorithm = jws.header.algorithm else {
       throw ValidationError.validationError("JWS header does not contain algorith field")
     }
-    
+
     if let secKey = KeyController.convertPEMToPublicKey(pem, algorithm: signingAlgorithm) {
       let joseController = JOSEController()
       let verified = (try? joseController.verify(
@@ -145,7 +145,7 @@ public actor AccessValidator: AccessValidating {
         publicKey: secKey,
         algorithm: signingAlgorithm
       )) ?? false
-      
+
       if !verified {
         throw ValidationError.validationError("Unable to verify signature using public key from leaf certificate")
       }
@@ -154,20 +154,20 @@ public actor AccessValidator: AccessValidating {
       throw ValidationError.validationError("Unable to decode public key from leaf certificate")
     }
   }
-  
+
   private func validatePreregistered(
     supportedClientIdScheme: SupportedClientIdScheme?,
     clientId: String,
     jws: JWS
   ) async throws {
-    
+
     guard let supportedClientIdScheme = supportedClientIdScheme,
           supportedClientIdScheme.scheme == .preRegistered else {
       throw ValidationError.unsupportedClientIdScheme(
         supportedClientIdScheme?.scheme.rawValue
       )
     }
-    
+
     switch supportedClientIdScheme {
     case .preregistered(let clients):
       guard let client = clients[clientId] else {
@@ -182,16 +182,16 @@ public actor AccessValidator: AccessValidating {
     )
     }
   }
-  
+
   private func verifySignature(
     jws: JWS,
     client: PreregisteredClient
   ) async throws {
-    
+
     if jws.header.typ != objectType.rawValue {
       throw ValidationError.validationError("Header object type mismatch")
     }
-    
+
     let jwk = await resolver.resolve(source: client.jwkSetSource)
     switch jwk {
     case .success(let set):
@@ -204,7 +204,7 @@ public actor AccessValidator: AccessValidating {
       guard let secKey = self.key(for: key, and: algorithm) else {
         throw ValidationError.validationError("Unable to convert key to SecKey")
       }
-      
+
       if let verifier = Verifier(
         signatureAlgorithm: algorithm,
         key: secKey
@@ -213,7 +213,7 @@ public actor AccessValidator: AccessValidating {
         if !isValid {
           throw ValidationError.validationError("Unable to verify signature")
         }
-        
+
       } else {
         throw ValidationError.validationError("Unable to verify signature")
       }
@@ -222,7 +222,7 @@ public actor AccessValidator: AccessValidating {
       throw ValidationError.validationError("Could not resolve key from JWK source")
     }
   }
-  
+
   private func key(for key: WebKeySet.Key, and algorithm: SignatureAlgorithm) -> SecKey? {
     switch algorithm {
     case .RS256, .RS384, .RS512:

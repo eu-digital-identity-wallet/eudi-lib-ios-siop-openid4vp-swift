@@ -22,17 +22,17 @@ public struct OpenId4VPSpec {
   public static let clientIdSchemeX509SanUri = "x509_san_uri"
   public static let clientIdSchemeX509SanDns = "x509_san_dns"
   public static let clientIdSchemeVerifierAttestation = "verifier_attestation"
-  
+
   public static let AUTHORIZATION_REQUEST_OBJECT_TYPE = "oauth-authz-req+jwt"
-  
+
   public static let TRANSACTION_DATA_TYPE = "type"
   public static let TRANSACTION_DATA_CREDENTIAL_IDS = "credential_ids"
   public static let TRANSACTION_DATA_HASH_ALGORITHMS = "transaction_data_hashes_alg"
-  
+
   public static let FORMAT_MSO_MDOC: String = "mso_mdoc"
   public static let FORMAT_SD_JWT_VC: String = "dc+sd-jwt"
   public static let FORMAT_W3C_SIGNED_JWT: String = "jwt_vc_json"
-  
+
   public static let DCQL_CREDENTIALS: String = "credentials"
   public static let DCQL_CREDENTIAL_SETS: String = "credential_sets"
 
@@ -50,7 +50,6 @@ public struct OpenId4VPSpec {
   public static let DCQL_MSO_MDOC_DOCTYPE_VALUE: String = "doctype_value"
   public static let DCQL_MSO_MDOC_NAMESPACE: String = "namespace"
   public static let DCQL_MSO_MDOC_CLAIM_NAME: String = "claim_name"
-  
+
   public static let DCQL_MSO_MDOC_INTENT_TO_RETAIN = "intent_to_retain"
 }
-

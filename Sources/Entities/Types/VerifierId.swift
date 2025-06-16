@@ -16,7 +16,7 @@
 public struct VerifierId: Sendable {
   public let scheme: ClientIdScheme
   public let originalClientId: OriginalClientId
-  
+
   public var clientId: OriginalClientId {
     let prefix: String? = {
       switch scheme {
@@ -32,7 +32,7 @@ public struct VerifierId: Sendable {
         return nil
       }
     }()
-    
+
     var result = ""
     if let prefix = prefix {
       result.append(prefix)
@@ -41,20 +41,20 @@ public struct VerifierId: Sendable {
     result.append(originalClientId)
     return result
   }
-  
+
   public func toString() -> String {
     clientId
   }
-  
+
   public static func parse(clientId: String) -> Result<VerifierId, Error> {
     return Result {
       func invalid(_ message: String) -> Error {
         return ValidationError.validationError(message)
       }
-      
+
       if !clientId.contains(OpenId4VPSpec.clientIdSchemeSeparator) {
         return VerifierId(scheme: .preRegistered, originalClientId: clientId)
-        
+
       } else {
         let parts = clientId.split(separator: OpenId4VPSpec.clientIdSchemeSeparator, maxSplits: 1)
         guard parts.count == 2 else {
@@ -62,11 +62,11 @@ public struct VerifierId: Sendable {
         }
         let schemeString = String(parts[0])
         let originalClientId = String(parts[1])
-        
+
         guard let scheme = ClientIdScheme(rawValue: schemeString) else {
           throw invalid("'\(clientId)' does not contain a valid Client ID Scheme")
         }
-        
+
         switch scheme {
         case .preRegistered:
           throw invalid("'\(ClientIdScheme.preRegistered)' cannot be used as a Client ID Scheme")
@@ -79,4 +79,3 @@ public struct VerifierId: Sendable {
     }
   }
 }
-

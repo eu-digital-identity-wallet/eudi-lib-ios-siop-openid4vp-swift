@@ -35,11 +35,11 @@ public final class SecCertificateContainer: @unchecked Sendable {
 }
 
 public struct SecCertificateHelper: Sendable {
-  
+
   public init() {
-    
+
   }
-  
+
   /// Extracts the public key from a PEM-encoded certificate as `SecKey`
   public func publicKey(fromPem pemString: String) -> SecKey? {
     // Remove PEM headers and footers
@@ -47,60 +47,60 @@ public struct SecCertificateHelper: Sendable {
       .replacingOccurrences(of: "-----BEGIN CERTIFICATE-----", with: "")
       .replacingOccurrences(of: "-----END CERTIFICATE-----", with: "")
       .replacingOccurrences(of: "\n", with: "")
-    
+
     // Convert Base64 PEM to Data
     guard let certData = Data(base64Encoded: cleanedPem) else {
       return nil
     }
-    
+
     // Create SecCertificate
     guard let certificate = SecCertificateCreateWithData(nil, certData as CFData) else {
       return nil
     }
-    
+
     return extractPublicKey(certificate: certificate)
   }
-  
+
   /// Extracts the public key (`SecKey`) from a `SecCertificate`
   public func extractPublicKey(certificate: SecCertificate) -> SecKey? {
     var trust: SecTrust?
     let policy = SecPolicyCreateBasicX509()
-    
+
     // Create trust
     if SecTrustCreateWithCertificates(certificate, policy, &trust) != errSecSuccess {
       return nil
     }
-    
+
     guard let trust = trust else { return nil }
-    
+
     var result: SecTrustResultType = .invalid
     if SecTrustEvaluate(trust, &result) != errSecSuccess {
       return nil
     }
-    
+
     // Extract public key
     guard let publicKey = SecTrustCopyKey(trust) else {
       return nil
     }
-    
+
     return publicKey
   }
-  
+
   public func extractPublicKeyAlgorithm(certificate: SecCertificate) -> String? {
     guard let publicKey = extractPublicKey(certificate: certificate) else {
       return nil
     }
-    
+
     // Get key attributes
     guard let attributes = SecKeyCopyAttributes(publicKey) as? [String: Any] else {
       return nil
     }
-    
+
     // Ensure we get a valid key type
     guard let keyType = attributes[kSecAttrKeyType as String] as? String else {
       return nil
     }
-    
+
     // Match against known key types
     switch keyType {
     case kSecAttrKeyTypeRSA as CFString:
@@ -111,7 +111,7 @@ public struct SecCertificateHelper: Sendable {
       return "Unknown Algorithm (\(keyType))"
     }
   }
-  
+
   /// Creates a `SecCertificate` from a PEM-encoded string
   public static func createCertificate(fromPEM pemString: String) -> SecCertificateContainer? {
     guard let data = Data(base64Encoded: pemString
@@ -124,7 +124,7 @@ public struct SecCertificateHelper: Sendable {
       certificate: SecCertificateCreateWithData(nil, data as CFData)
     )
   }
-  
+
   /// Validates a certificate chain using a given set of certificates
   public static func validateCertificateChain(certificates: [SecCertificateContainer]) -> SecTrustResultType {
     var trust: SecTrust?
@@ -134,7 +134,7 @@ public struct SecCertificateHelper: Sendable {
       policy,
       &trust
     )
-    
+
     guard
       result == errSecSuccess,
       let trust = trust,
@@ -142,16 +142,16 @@ public struct SecCertificateHelper: Sendable {
     else {
       return .invalid
     }
-    
+
     // Perform the certificate validation
     var trustResult: SecTrustResultType = .invalid
     let rootArray = [root] as CFArray
     SecTrustSetAnchorCertificates(trust, rootArray)
     _ = SecTrustEvaluate(trust, &trustResult)
-    
+
     var error: CFError?
     SecTrustEvaluateWithError(trust, &error)
-    
+
     // Check the result of the trust evaluation
     switch trustResult {
     case .unspecified, .proceed:

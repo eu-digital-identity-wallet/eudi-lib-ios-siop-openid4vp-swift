@@ -28,7 +28,7 @@ extension ValidatedRequestData {
     let state: String?
     let vpFormats: VpFormats
     let transactionData: [String]?
-    
+
     public init(
       querySource: QuerySource,
       clientMetaDataSource: ClientMetaDataSource?,

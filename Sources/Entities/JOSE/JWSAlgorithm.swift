@@ -40,7 +40,7 @@ public extension JWSAlgorithm {
 }
 
 public extension JWSAlgorithm {
-  enum AlgorithmType: String {
+  enum AlgorithmType: String, CaseIterable {
     case HS256
     case HS384
     case HS512
@@ -55,11 +55,11 @@ public extension JWSAlgorithm {
     case PS384
     case PS512
     case EdDSA
-  
+
     var name: String {
       return self.rawValue
     }
-  
+
     var requirement: Requirement {
       switch self {
       case .HS256:

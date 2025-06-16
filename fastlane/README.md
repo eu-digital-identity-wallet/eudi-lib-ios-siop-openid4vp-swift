@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios lint_fix
+
+```sh
+[bundle exec] fastlane ios lint_fix
+```
+
+Fix lint issues
+
 ### ios code_coverage
 
 ```sh

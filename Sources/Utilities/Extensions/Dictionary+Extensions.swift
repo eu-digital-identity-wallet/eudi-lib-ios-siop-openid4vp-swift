@@ -33,7 +33,7 @@ public extension Dictionary where Key: Encodable {
     do {
       // Convert the dictionary to Data using JSONSerialization
       let data = try JSONSerialization.data(withJSONObject: self, options: [])
-      
+
       // Decode the data into the specified Codable type
       let decodedObject = try JSONDecoder().decode(T.self, from: data)
       return decodedObject
@@ -42,7 +42,7 @@ public extension Dictionary where Key: Encodable {
       return nil
     }
   }
-  
+
   func toJSONData() -> Data? {
     do {
       return try JSONSerialization.data(withJSONObject: self, options: [])
@@ -50,7 +50,7 @@ public extension Dictionary where Key: Encodable {
       return nil
     }
   }
-  
+
   func toThrowingJSONData() throws -> Data {
     return try JSONSerialization.data(withJSONObject: self, options: [])
   }
@@ -65,7 +65,7 @@ public extension Dictionary where Key == String, Value == Any {
     }
     return from(JSONfile: URL(fileURLWithPath: path))
   }
-  
+
   // Converts the dictionary to an array of URLQueryItem objects
   func toQueryItems() -> [URLQueryItem] {
     var queryItems: [URLQueryItem] = []
@@ -89,7 +89,7 @@ public extension Dictionary where Key == String, Value == Any {
     }
     return queryItems
   }
-  
+
   func getValue<T: Codable>(
     for key: String,
     error: LocalizedError
