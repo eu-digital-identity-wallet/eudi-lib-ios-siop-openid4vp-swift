@@ -18,7 +18,7 @@ import SwiftyJSON
 
 /// Represents an unvalidated authorization request.
 public enum UnvalidatedRequest: Sendable {
-  
+
   case plain(UnvalidatedRequestObject)
   case jwtSecuredPassByValue(
     clientId: String,
@@ -29,7 +29,7 @@ public enum UnvalidatedRequest: Sendable {
     jwtURI: URL,
     requestURIMethod: RequestUriMethod?
   )
-  
+
   /// Attempts to parse a URI string into an `UnvalidatedRequest`.
   /// - Parameter uriStr: The authorization request URI as a string.
   /// - Returns: A `Result` containing either a valid `UnvalidatedRequest` or an error.
@@ -40,13 +40,13 @@ public enum UnvalidatedRequest: Sendable {
       else {
         throw ValidationError.invalidUri
       }
-      
+
       let helper = QueryHelper(components)
-      
+
       let request = helper.string("request")
       let requestURI = helper.string("request_uri")
       let method = try helper.requestUriMethod()
-      
+
       switch (request?.isEmpty == false, requestURI?.isEmpty == false) {
       case (true, false):
         guard method == nil else {
@@ -56,7 +56,7 @@ public enum UnvalidatedRequest: Sendable {
           clientId: try helper.required("client_id"),
           jwt: request!
         )
-        
+
       case (false, true):
         guard let uri = URL(string: requestURI!) else {
           throw ValidationError.invalidUri
@@ -66,10 +66,10 @@ public enum UnvalidatedRequest: Sendable {
           jwtURI: uri,
           requestURIMethod: method
         )
-        
+
       case (false, false):
         return .plain(try helper.parseUnsecured())
-        
+
       default:
         throw ValidationError.invalidUseOfBothRequestAndRequestUri
       }
@@ -81,30 +81,30 @@ public enum UnvalidatedRequest: Sendable {
 
 internal struct QueryHelper {
   let components: URLComponents
-  
+
   init(_ components: URLComponents) {
     self.components = components
   }
-  
+
   func string(_ name: String) -> String? {
     components.queryItems?.first(where: { $0.name == name })?.value
   }
-  
+
   func required(_ name: String) throws -> String {
     guard let value = string(name) else {
       throw ValidationError.missingClientId
     }
     return value
   }
-  
+
   func json(_ name: String) -> JSON? {
     string(name).map { JSON(parseJSON: $0) }
   }
-  
+
   func jsonArray(_ name: String) -> [String]? {
     json(name)?.array?.compactMap { $0.string }
   }
-  
+
   func requestUriMethod() throws -> RequestUriMethod? {
     guard let raw = string("request_uri_method")?.lowercased() else { return nil }
     switch raw {
@@ -113,7 +113,7 @@ internal struct QueryHelper {
     default: throw ValidationError.invalidRequestUriMethod
     }
   }
-  
+
   func parseUnsecured() throws -> UnvalidatedRequestObject {
     let clientMetaData = json("client_metadata")?.dictionaryObject?.toJSONString() ?? json("client_metadata")?.string
     let pd = json(Constants.PRESENTATION_DEFINITION)?.rawString(options: []) ?? json(Constants.PRESENTATION_DEFINITION)?.dictionaryObject?.toJSONString() ?? json(Constants.PRESENTATION_DEFINITION)?.string
@@ -134,7 +134,7 @@ internal struct QueryHelper {
       transactionData: jsonArray(Constants.TRANSACTION_DATA)
     )
   }
-  
+
   internal func jsonString(from dictionary: [String: Any]?) -> String? {
     guard let dictionary = dictionary,
           JSONSerialization.isValidJSONObject(dictionary),

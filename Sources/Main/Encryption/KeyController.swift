@@ -19,9 +19,9 @@ import CryptorECC
 import JOSESwift
 
 public class KeyController {
-  
+
   public static func generateHardcodedRSAPrivateKey() throws -> SecKey? {
-    
+
     // Convert DER key to Data
     guard
       let contents = String.loadStringFileFromBundle(
@@ -32,13 +32,13 @@ public class KeyController {
     else {
       return nil
     }
-    
+
     // Define the key attributes
     let attributes: [CFString: Any] = [
       kSecAttrKeyType: kSecAttrKeyTypeRSA,
       kSecAttrKeyClass: kSecAttrKeyClassPrivate
     ]
-    
+
     // Create the SecKey object
     var error: Unmanaged<CFError>?
     guard let secKey = SecKeyCreateWithData(data as CFData, attributes as CFDictionary, &error) else {
@@ -49,55 +49,55 @@ public class KeyController {
     }
     return secKey
   }
-  
+
   public static func generateRSAPrivateKey() throws -> SecKey {
     let attributes: [String: Any] = [
       kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
       kSecAttrKeySizeInBits as String: 2048
     ]
-    
+
     var error: Unmanaged<CFError>?
     guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
       throw error!.takeRetainedValue() as Error
     }
     return privateKey
   }
-  
+
   public static func generateRSAPublicKey(from privateKey: SecKey) throws -> SecKey {
     guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
       throw JOSEError.invalidPublicKey
     }
     return publicKey
   }
-  
+
   public static func generateECDHPrivateKey() throws -> SecKey {
     let attributes: [String: Any] = [
       kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
       kSecAttrKeySizeInBits as String: 256
     ]
-    
+
     var error: Unmanaged<CFError>?
     guard let privateKey = SecKeyCreateRandomKey(attributes as CFDictionary, &error) else {
       throw error!.takeRetainedValue() as Error
     }
     return privateKey
   }
-  
+
   public static func generateECDHPublicKey(from privateKey: SecKey) throws -> SecKey {
     guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
       throw NSError(domain: "YourDomain", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to generate public key"])
     }
     return publicKey
   }
-  
+
   public static func convertRSAPrivateKeyToPEM(key: SecKey) throws -> String {
-    
+
     // Convert to DER first
     var error: Unmanaged<CFError>?
     guard let derData = SecKeyCopyExternalRepresentation(key, &error) as Data? else {
       throw error?.takeRetainedValue() as Error? ?? NSError(domain: "SecKeyError", code: -1, userInfo: nil)
     }
-    
+
     let base64Encoded = derData.base64EncodedString()
     var pemString = "-----BEGIN RSA PRIVATE KEY-----\n"
     pemString += base64Encoded.chunked(length: 64)
@@ -108,7 +108,7 @@ public class KeyController {
     pemString += "\n-----END RSA PRIVATE KEY-----\n"
     return pemString
   }
-  
+
   public static func convertPEMToPublicKey(
     _ pem: String,
     algorithm: SignatureAlgorithm = .RS256
@@ -124,27 +124,27 @@ public class KeyController {
       return nil
     }
   }
-  
+
   public static func convertRSAPEMToPublicKey(_ pem: String) throws -> SecKey? {
-    
+
     let key = pem
       .replacingOccurrences(of: "-----BEGIN PUBLIC KEY-----", with: "")
       .replacingOccurrences(of: "-----END PUBLIC KEY-----", with: "")
       .split(separator: "\n").joined()
-    
+
     // Define the key attributes
     let attributes: [CFString: Any] = [
       kSecAttrKeyType: kSecAttrKeyTypeRSA,
       kSecAttrKeyClass: kSecAttrKeyClassPublic
     ]
-    
+
     guard let privateKeyData = Data(
       base64Encoded: key,
       options: .ignoreUnknownCharacters
     ) else {
       return nil
     }
-    
+
     // Create the SecKey object
     var error: Unmanaged<CFError>?
     guard let secKey = SecKeyCreateWithData(privateKeyData as CFData, attributes as CFDictionary, &error) else {

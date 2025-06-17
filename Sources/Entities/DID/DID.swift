@@ -20,20 +20,20 @@ public let DID_SYNTAX = try? NSRegularExpression(pattern: "^did:[a-z0-9]+:(([A-Z
 
 public struct AbsoluteDIDUrl {
   private let uri: URL
-  
+
   private init(uri: URL) {
     self.uri = uri
   }
-  
+
   var string: String {
     return uri.absoluteString
   }
-  
+
   public static func parse(_ string: String) -> AbsoluteDIDUrl? {
     guard let regex = DID_URL_SYNTAX else {
       return nil
     }
-    
+
     let parsed = DID.parse(string, regex: regex)
     if regex.matches(
       in: string,
@@ -54,17 +54,17 @@ public struct AbsoluteDIDUrl {
 }
 
 public struct DID: Sendable {
-  
+
   public let uri: URL
-  
+
   public init(uri: URL) {
     self.uri = uri
   }
-  
+
   public var string: String {
     return uri.absoluteString
   }
-  
+
   public static func parse(_ string: String, regex: NSRegularExpression? = DID_SYNTAX) -> DID? {
     guard
       let regex = regex,
@@ -80,8 +80,7 @@ public struct DID: Sendable {
     else {
       return nil
     }
-    
+
     return DID(uri: url)
   }
 }
-

@@ -30,7 +30,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let vpConfiguration: VPConfiguration
   public let errorDispatchPolicy: ErrorDispatchPolicy
   public let session: Networking
-  
+
   public init(
     subjectSyntaxTypesSupported: [SubjectSyntaxType],
     preferredSubjectSyntaxType: SubjectSyntaxType,
@@ -62,7 +62,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     self.errorDispatchPolicy = errorDispatchPolicy
     self.session = session
   }
-  
+
   internal init() throws {
     subjectSyntaxTypesSupported = []
     preferredSubjectSyntaxType = .decentralizedIdentifier
@@ -79,7 +79,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     errorDispatchPolicy = .onlyAuthenticatedClients
     session = URLSession.shared
   }
-  
+
   public static let walletSession: Networking = {
     /*let delegate = SelfSignedSessionDelegate()
      let configuration = URLSessionConfiguration.default

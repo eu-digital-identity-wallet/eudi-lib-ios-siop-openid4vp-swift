@@ -4,6 +4,12 @@
 default_platform(:ios)
 
 platform :ios do
+
+  desc "Fix lint issues"
+  lane :lint_fix do
+    sh "swiftlint lint --fix --config ../.swiftlint.yml --quiet ../"
+  end
+  
   desc "Code coverage"
   lane :code_coverage do
     

@@ -16,11 +16,10 @@
 import Foundation
 
 public enum ErrorDispatchPolicy: Sendable {
-  
+
   /// Allow dispatching of errors to all clients, regardless of authentication status.
   case allClients
-  
-  ///Allow dispatching of errors only to authenticated clients.
+
+  /// Allow dispatching of errors only to authenticated clients.
   case onlyAuthenticatedClients
 }
-

@@ -24,17 +24,17 @@ func tryExtract<T>(
   guard let value = json[key] else {
     throw ValidationError.validationError("\(key) not found")
   }
-    
+
   // If converter is provided, use it to convert the value
   if let converter = converter, let convertedValue = converter(value) {
     return convertedValue
   }
-    
+
   // Handle basic types
   if let typedValue = value as? T {
     return typedValue
   }
-    
+
   // Throw error if conversion fails
   throw ValidationError.validationError("Failed to convert \(key) to expected type")
 }

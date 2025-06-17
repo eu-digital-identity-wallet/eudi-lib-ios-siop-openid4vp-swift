@@ -18,8 +18,6 @@ import XCTest
 
 @testable import SiopOpenID4VP
 
-import XCTest
-
 struct Cat: Codable, Equatable {
   let meow: String
 }
@@ -29,11 +27,11 @@ struct Dog: Codable, Equatable {
 }
 
 final class EitherTests: XCTestCase {
-  
+
   func testDecodeCat() throws {
     let json = #"{"meow":"purr"}"#.data(using: .utf8)!
     let decoded = try JSONDecoder().decode(Either<Cat, Dog>.self, from: json)
-    
+
     switch decoded {
     case .left(let cat):
       XCTAssertEqual(cat.meow, "purr")
@@ -41,11 +39,11 @@ final class EitherTests: XCTestCase {
       XCTFail("Expected .left (Cat), got .right")
     }
   }
-  
+
   func testDecodeDog() throws {
     let json = #"{"bark":"woof"}"#.data(using: .utf8)!
     let decoded = try JSONDecoder().decode(Either<Cat, Dog>.self, from: json)
-    
+
     switch decoded {
     case .right(let dog):
       XCTAssertEqual(dog.bark, "woof")
@@ -53,17 +51,17 @@ final class EitherTests: XCTestCase {
       XCTFail("Expected .right (Dog), got .left")
     }
   }
-  
+
   func testInvalidJson() {
     let json = #"{"quack":"duck"}"#.data(using: .utf8)!
-    
+
     XCTAssertThrowsError(try JSONDecoder().decode(Either<Cat, Dog>.self, from: json)) { error in
       guard case DecodingError.typeMismatch = error else {
         return XCTFail("Expected typeMismatch error, got \(error)")
       }
     }
   }
-  
+
   func testAmbiguousJsonPrefersLeft() throws {
     struct FlexibleCat: Codable {
       let sound: String
@@ -71,10 +69,10 @@ final class EitherTests: XCTestCase {
     struct FlexibleDog: Codable {
       let sound: String
     }
-    
+
     let json = #"{"sound":"hi"}"#.data(using: .utf8)!
     let decoded = try JSONDecoder().decode(Either<FlexibleCat, FlexibleDog>.self, from: json)
-    
+
     switch decoded {
     case .left(let cat):
       XCTAssertEqual(cat.sound, "hi")

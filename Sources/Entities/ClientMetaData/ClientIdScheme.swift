@@ -34,7 +34,7 @@ public enum ClientIdScheme: String, Codable, Sendable {
 
 /// Extension providing additional functionality to the `ClientIdScheme` enumeration.
 extension ClientIdScheme {
-  
+
   /// Initializes a `ClientIdScheme` based on the authorization request object.
   /// - Parameter authorizationRequestObject: The authorization request object.
   /// - Throws: An error if the client ID scheme is unsupported.
@@ -52,10 +52,10 @@ extension ClientIdScheme {
     else {
       throw ValidationError.unsupportedClientIdScheme(scheme)
     }
-    
+
     self = clientIdScheme
   }
-  
+
   /// Initializes a `ClientIdScheme` based on the authorization request data.
   /// - Parameter authorizationRequestData: The authorization request data.
   /// - Throws: An error if the client ID scheme is unsupported.
@@ -66,10 +66,10 @@ extension ClientIdScheme {
     else {
       throw ValidationError.unsupportedClientIdScheme(authorizationRequestData.clientIdScheme)
     }
-    
+
     self = clientIdScheme
   }
-  
+
   /// Creates a new instance of `ClientIdScheme` from a raw value.
   ///
   /// - Parameter rawValue: The raw string value representing the client ID scheme.

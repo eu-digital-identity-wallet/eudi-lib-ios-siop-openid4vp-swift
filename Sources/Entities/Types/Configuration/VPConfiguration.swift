@@ -20,7 +20,7 @@ public struct VPConfiguration: Sendable {
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
   public let vpFormats: VpFormats
   public let supportedTransactionDataTypes: [SupportedTransactionDataType]
-  
+
   public static func `default`() -> VPConfiguration {
     try! .init(
       vpFormats: .init(
@@ -40,7 +40,7 @@ public struct VPConfiguration: Sendable {
       ]
     )
   }
-  
+
   public init(
     presentationDefinitionUriSupported: Bool = true,
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],

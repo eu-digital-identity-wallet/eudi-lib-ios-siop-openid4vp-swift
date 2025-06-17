@@ -20,32 +20,32 @@ import JOSESwift
 @testable import SiopOpenID4VP
 
 final class JarJwtSignatureValidatorTests: XCTestCase {
-  
+
   var validator: AccessValidator!
-  
+
   override func tearDown() {
     DependencyContainer.shared.removeAll()
     self.validator = nil
     super.tearDown()
   }
-  
+
   override func setUp() {
     overrideDependencies()
   }
-  
+
   func testJarJwtSignature_WhenInputsAreValid_ThenAssertSuccess() async throws {
-    
+
     self.validator = try? XCTUnwrap(AccessValidator(
       walletOpenId4VPConfig: preRegisteredWalletConfiguration()
     ))
-    
+
     let walletConfig = await validator.walletOpenId4VPConfig!
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
-    
+
     let clientId = "Verifier"
     let scheme = "pre-registered"
     let type = "oauth-authz-req+jwt"
-    
+
     let jws = try JWS(
       header: .init(
         parameters: [
@@ -62,27 +62,27 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
         key: walletConfig.signingKey
       )!
     )
-    
+
     try await validator.validate(
       clientId: clientId,
       jwt: jws.compactSerializedString
     )
-    
+
     XCTAssert(true)
   }
-  
+
   func testJarJwtSignature_WhenInputsAreValidExceptClientId_ThenReturnFailure() async throws {
-    
+
     self.validator = try? XCTUnwrap(AccessValidator(
       walletOpenId4VPConfig: preRegisteredWalletConfiguration()
     ))
-    
+
     let walletConfig = await validator.walletOpenId4VPConfig!
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
-    
+
     let clientId = "Verifier"
     let scheme = "pre-registered"
-    
+
     let jws = try JWS(
       header: .init(parameters: [
         "alg": algorithm.rawValue,
@@ -96,7 +96,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
         key: walletConfig.signingKey
       )!
     )
-    
+
     do {
       try await validator.validate(
         clientId: clientId,
@@ -106,22 +106,22 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
       XCTAssert(false)
       return
     }
-    
+
     XCTAssert(true)
   }
-  
+
   func testJarJwtSignature_WhenInputsAreValidWithoutPregistered_ThenAssertSuccess() async throws {
-    
+
     self.validator = try? XCTUnwrap(AccessValidator(
       walletOpenId4VPConfig: iso509WalletConfiguration()
     ))
-    
+
     let walletConfig = await validator.walletOpenId4VPConfig!
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
-    
+
     let clientId = "Verifier"
     let scheme = "did"
-    
+
     let jws = try JWS(
       header: .init(parameters: [
         "alg": algorithm.rawValue,
@@ -135,23 +135,23 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
         key: walletConfig.signingKey
       )!
     )
-    
+
     try await validator.validate(
       clientId: clientId,
       jwt: jws.compactSerializedString
     )
-    
+
     XCTAssert(true)
   }
 }
 
 private extension JarJwtSignatureValidatorTests {
-  
+
   func preRegisteredWalletConfiguration() throws -> SiopOpenId4VPConfiguration {
-    
+
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
-    
+
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
       publicKey: publicKey,
@@ -160,11 +160,11 @@ private extension JarJwtSignatureValidatorTests {
         "use": "sig",
         "kid": UUID().uuidString
       ])
-    
+
     let keySet = try WebKeySet([
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
-    
+
     return SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
@@ -188,12 +188,12 @@ private extension JarJwtSignatureValidatorTests {
       vpConfiguration: VPConfiguration.default()
     )
   }
-  
+
   func iso509WalletConfiguration() throws -> SiopOpenId4VPConfiguration {
-    
+
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
-    
+
     let alg = JWSAlgorithm(.RS256)
     let publicKeyJWK = try RSAPublicKey(
       publicKey: publicKey,
@@ -202,11 +202,11 @@ private extension JarJwtSignatureValidatorTests {
         "use": "sig",
         "kid": UUID().uuidString
       ])
-    
+
     let keySet = try WebKeySet([
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
-    
+
     return SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
@@ -230,7 +230,7 @@ private extension JarJwtSignatureValidatorTests {
       vpConfiguration: VPConfiguration.default()
     )
   }
-  
+
   func overrideDependencies() {
     DependencyContainer.shared.register(type: Reporting.self, dependency: {
       Reporter()

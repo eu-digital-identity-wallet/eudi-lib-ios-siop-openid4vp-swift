@@ -19,7 +19,7 @@ import Foundation
 public enum SupportedClientIdScheme: @unchecked Sendable {
   public var scheme: ClientIdScheme {
     switch self {
-      
+
     /**
       * The Client Identifier is known to the Wallet in advance of the Authorization Request.
       */
@@ -40,7 +40,7 @@ public enum SupportedClientIdScheme: @unchecked Sendable {
 
   public var name: String {
     switch self {
-      
+
     /**
       * The Client Identifier is known to the Wallet in advance of the Authorization Request.
       */
@@ -58,7 +58,7 @@ public enum SupportedClientIdScheme: @unchecked Sendable {
       return "redirect_uri"
     }
   }
-  
+
   var redirectUri: URL? {
     switch self {
     case .redirectUri(let clientId):

@@ -19,15 +19,15 @@ import XCTest
 import SwiftyJSON
 
 final class DCQLParseTests: XCTestCase {
-  
+
   override func setUpWithError() throws {
   }
-  
+
   override func tearDownWithError() throws {
   }
-  
+
   func testOne() throws {
-    
+
     let dcqlString = """
     {
       "credentials": [
@@ -46,23 +46,23 @@ final class DCQLParseTests: XCTestCase {
       ]
     }
     """
-    
+
     let data = dcqlString.data(using: .utf8)!
     let json = try! JSON(data: data)
-    
+
     do {
       let dcql = try DCQL(from: json)
       print(dcql)
       XCTAssert(true)
-      
+
     } catch {
       print(error)
       XCTAssert(false)
     }
   }
-  
+
   func testTwo() throws {
-    
+
     let dcqlString = """
     {
       "credentials": [
@@ -81,23 +81,23 @@ final class DCQLParseTests: XCTestCase {
       ]
     }
     """
-    
+
     let data = dcqlString.data(using: .utf8)!
     let json = try! JSON(data: data)
-    
+
     do {
       let dcql = try DCQL(from: json)
       print(dcql)
       XCTAssert(true)
-      
+
     } catch {
       print(error)
       XCTAssert(false)
     }
   }
-  
+
   func testThree() throws {
-    
+
     let dcqlString = """
     {
       "credentials": [
@@ -117,23 +117,23 @@ final class DCQLParseTests: XCTestCase {
       ]
     }
     """
-    
+
     let data = dcqlString.data(using: .utf8)!
     let json = try! JSON(data: data)
-    
+
     do {
       let dcql = try DCQL(from: json)
       print(dcql)
       XCTAssert(true)
-      
+
     } catch {
       print(error)
       XCTAssert(false)
     }
   }
-  
+
   func testComplex() throws {
-    
+
     let dcqlString = """
     {
       "credentials": [
@@ -233,23 +233,23 @@ final class DCQLParseTests: XCTestCase {
       ]
     }
     """
-    
+
     let data = dcqlString.data(using: .utf8)!
     let json = try! JSON(data: data)
-    
+
     do {
       let dcql = try DCQL(from: json)
       print(dcql)
       XCTAssert(true)
-      
+
     } catch {
       print(error)
       XCTAssert(false)
     }
   }
-  
+
   func testParse() throws {
-    
+
     let jsonString = """
     {
       "credentials": [
@@ -276,7 +276,7 @@ final class DCQLParseTests: XCTestCase {
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
     let primary = try DCQL(from: json)
-    
+
     let secondary = try DCQL(
       credentials: [
         .mdoc(
@@ -297,12 +297,12 @@ final class DCQLParseTests: XCTestCase {
         )
       ]
     )
-    
+
     print("**********\(primary == secondary)")
   }
-  
+
   func testWhenMsoMdocNamespaceMissesAnExceptionThrown() throws {
-    
+
     let jsonString = """
     {
       "credentials": [
@@ -326,17 +326,17 @@ final class DCQLParseTests: XCTestCase {
     """
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
-    
+
     do {
-      let _ = try DCQL(from: json)
+      _ = try DCQL(from: json)
       XCTAssert(false)
     } catch {
       XCTAssert(error is DCQLError, "Claim paths for mso mdoc based must have exactly two elements")
     }
   }
-  
+
   func testWhenMsoMdocClaimNameMissingExceptionThrown() throws {
-    
+
     let jsonString = """
     {
       "credentials": [
@@ -357,17 +357,17 @@ final class DCQLParseTests: XCTestCase {
     """
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
-    
+
     do {
-      let _ = try DCQL(from: json)
+      _ = try DCQL(from: json)
       XCTAssert(false)
     } catch {
       XCTAssert(error is DCQLError, "Claim paths for mso mdoc based must have exactly two elements")
     }
   }
-  
+
   func testWhenIntentToRetainIsUsedWithNonMsoMdocFormatsAnExceptionIsThrown() throws {
-    
+
     let jsonString = """
     {
       "credentials": [
@@ -389,15 +389,15 @@ final class DCQLParseTests: XCTestCase {
     """
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
-    
+
     do {
-      let _ = try DCQL(from: json)
+      _ = try DCQL(from: json)
       XCTAssert(false)
     } catch {
       XCTAssert(error is DCQLError, "intent_to_retain can be used only with msp mdoc based formats")
     }
   }
-  
+
   func test01() throws {
     let jsonString = """
     {
@@ -422,11 +422,11 @@ final class DCQLParseTests: XCTestCase {
       ]
     }
     """
-    
+
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
     let primary = try DCQL(from: json)
-    
+
     let secondary = try! DCQL(
       credentials: .init([
         .mdoc(
@@ -448,12 +448,12 @@ final class DCQLParseTests: XCTestCase {
               intentToRetain: false
             )
           ]
-        ),
+        )
       ])
     )
     XCTAssert(primary == secondary)
   }
-  
+
   func test02() async throws {
     let jsonString = """
     {
@@ -482,18 +482,18 @@ final class DCQLParseTests: XCTestCase {
               "intent_to_retain": true
             },
             {
-              "path": ["org.iso.18013.5.1", "first_name"] 
+              "path": ["org.iso.18013.5.1", "first_name"]
             }
           ]
         }
       ]
     }
     """
-    
+
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
     let primary = try DCQL(from: json)
-    
+
     let secondary = try! DCQL(
       credentials: [
         .sdJwtVc(
@@ -528,10 +528,10 @@ final class DCQLParseTests: XCTestCase {
         )
       ]
     )
-    
+
     XCTAssert(primary == secondary)
   }
-  
+
   func test03() async throws {
     let jsonString = """
     {
@@ -616,7 +616,7 @@ final class DCQLParseTests: XCTestCase {
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
     let primary = try DCQL(from: json)
-    
+
     let secondary = try! DCQL.init(
       credentials: [
         .sdJwtVc(
@@ -690,12 +690,12 @@ final class DCQLParseTests: XCTestCase {
         )
       ]
     )
-    
+
     XCTAssert(primary == secondary)
   }
-  
+
   func test04() throws {
-    
+
     let jsonString = """
     {
       "credentials": [
@@ -799,11 +799,11 @@ final class DCQLParseTests: XCTestCase {
       ]
     }
     """
-    
+
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
     let primary = try DCQL(from: json)
-    
+
     let secondary = try! DCQL(
       credentials: [
         .mdoc(
@@ -830,7 +830,7 @@ final class DCQLParseTests: XCTestCase {
               namespace: "org.iso.18013.5.1",
               claimName: "portrait",
               intentToRetain: false
-            ),
+            )
           ]
         ),
         .mdoc(
@@ -877,7 +877,7 @@ final class DCQLParseTests: XCTestCase {
               namespace: "org.iso.23220.1",
               claimName: "portrait",
               intentToRetain: false
-            ),
+            )
           ]
         ),
         .mdoc(
@@ -919,10 +919,10 @@ final class DCQLParseTests: XCTestCase {
         )
       ]
     )
-    
+
     XCTAssert(primary == secondary)
   }
-  
+
   func test05() throws {
     let jsonString = """
     {
@@ -948,11 +948,11 @@ final class DCQLParseTests: XCTestCase {
       ]
     }
     """
-    
+
     let data = jsonString.data(using: .utf8)!
     let json = try! JSON(data: data)
     let primary = try DCQL(from: json)
-    
+
     let secondary = try! DCQL(
       credentials: [
         .sdJwtVc(

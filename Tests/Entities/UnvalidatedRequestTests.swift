@@ -18,13 +18,13 @@ import XCTest
 @testable import SiopOpenID4VP
 
 final class UnvalidatedRequestTests: XCTestCase {
-  
+
   // MARK: - Helpers
-  
+
   func url(_ query: String) -> String {
     return "https://example.com/authorize?\(query)"
   }
-  
+
   func encodeJSON(_ object: Any) -> String {
     guard let data = try? JSONSerialization.data(withJSONObject: object, options: []),
           let jsonString = String(data: data, encoding: .utf8) else {
@@ -32,9 +32,9 @@ final class UnvalidatedRequestTests: XCTestCase {
     }
     return jsonString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
   }
-  
+
   // MARK: - Tests
-  
+
   func testPlainRequest_successfullyParses() {
     let query = [
       "client_id=abc123",
@@ -45,9 +45,9 @@ final class UnvalidatedRequestTests: XCTestCase {
       "dcql_query=\(encodeJSON(["query": "foo"]))",
       "transaction_data=\(encodeJSON(["tx1", "tx2"]))"
     ].joined(separator: "&")
-    
+
     let result = UnvalidatedRequest.make(from: url(query))
-    
+
     switch result {
     case .success(.plain(let object)):
       XCTAssertEqual(object.clientId, "abc123")
@@ -59,11 +59,11 @@ final class UnvalidatedRequestTests: XCTestCase {
       XCTFail("Expected plain request to succeed")
     }
   }
-  
+
   func testJwtSecuredPassByValue_successfullyParses() {
     let query = "client_id=abc123&request=some.jwt.token"
     let result = UnvalidatedRequest.make(from: url(query))
-    
+
     switch result {
     case .success(.jwtSecuredPassByValue(let clientId, let jwt)):
       XCTAssertEqual(clientId, "abc123")
@@ -72,11 +72,11 @@ final class UnvalidatedRequestTests: XCTestCase {
       XCTFail("Expected jwtSecuredPassByValue to succeed")
     }
   }
-  
+
   func testJwtSecuredPassByReference_withMethod_successfullyParses() {
     let query = "client_id=abc123&request_uri=https://example.com/jar.jwt&request_uri_method=POST"
     let result = UnvalidatedRequest.make(from: url(query))
-    
+
     switch result {
     case .success(.jwtSecuredPassByReference(let clientId, let jwtURI, let method)):
       XCTAssertEqual(clientId, "abc123")
@@ -86,11 +86,11 @@ final class UnvalidatedRequestTests: XCTestCase {
       XCTFail("Expected jwtSecuredPassByReference to succeed")
     }
   }
-  
+
   func testJwtSecuredPassByReference_withoutMethod_successfullyParses() {
     let query = "client_id=abc123&request_uri=https://example.com/jar.jwt"
     let result = UnvalidatedRequest.make(from: url(query))
-    
+
     switch result {
     case .success(.jwtSecuredPassByReference(let clientId, let jwtURI, let method)):
       XCTAssertEqual(clientId, "abc123")
@@ -100,36 +100,34 @@ final class UnvalidatedRequestTests: XCTestCase {
       XCTFail("Expected jwtSecuredPassByReference to succeed")
     }
   }
-  
+
   func testError_whenBothRequestAndRequestUriProvided() {
     let query = "client_id=abc123&request=token&request_uri=https://example.com/jar"
     let result = UnvalidatedRequest.make(from: url(query))
-    
+
     guard case .failure(let error as ValidationError) = result else {
       return XCTFail("Expected failure with ValidationError")
     }
     XCTAssertEqual(error, .invalidUseOfBothRequestAndRequestUri)
   }
-  
+
   func testError_whenMissingClientId() {
     let query = "request=token"
     let result = UnvalidatedRequest.make(from: url(query))
-    
+
     guard case .failure(let error as ValidationError) = result else {
       return XCTFail("Expected failure with ValidationError")
     }
     XCTAssertEqual(error, .missingClientId)
   }
-  
+
   func testError_whenInvalidRequestUriMethod() {
     let query = "client_id=abc123&request_uri=https://example.com/jar&request_uri_method=INVALID"
     let result = UnvalidatedRequest.make(from: url(query))
-    
+
     guard case .failure(let error as ValidationError) = result else {
       return XCTFail("Expected failure with ValidationError")
     }
     XCTAssertEqual(error, .invalidRequestUriMethod)
   }
 }
-
-

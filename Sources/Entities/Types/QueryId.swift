@@ -16,22 +16,22 @@
 import Foundation
 
 public struct QueryId: Hashable, Codable, Sendable {
-  
+
   public let value: String
-  
+
   public init(value: String) throws {
     self.value = try DCQLId.ensureValid(value)
   }
-  
+
   public var description: String {
     return value
   }
-  
+
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(value)
   }
-  
+
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let decodedValue = try container.decode(String.self)

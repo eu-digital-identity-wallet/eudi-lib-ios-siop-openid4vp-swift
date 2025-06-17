@@ -24,7 +24,7 @@ public enum ValidatedRequestData: Sendable {
   case idToken(request: IdTokenRequest)
   case vpToken(request: VpTokenRequest)
   case idAndVpToken(request: IdAndVpTokenRequest)
-  
+
   public var transactionData: [String]? {
     switch self {
     case .idToken:
@@ -35,7 +35,7 @@ public enum ValidatedRequestData: Sendable {
       return request.transactionData
     }
   }
-  
+
   public var responseMode: ResponseMode? {
     switch self {
     case .idToken(let request):
@@ -46,7 +46,7 @@ public enum ValidatedRequestData: Sendable {
       request.responseMode
     }
   }
-  
+
   public var nonce: String? {
     switch self {
     case .idToken(let request):
@@ -57,7 +57,7 @@ public enum ValidatedRequestData: Sendable {
       request.nonce
     }
   }
-  
+
   public var state: String? {
     switch self {
     case .idToken(let request):
@@ -68,7 +68,7 @@ public enum ValidatedRequestData: Sendable {
       request.state
     }
   }
-  
+
   public var clientId: VerifierId {
     switch self {
     case .idToken(let request):
@@ -79,7 +79,7 @@ public enum ValidatedRequestData: Sendable {
       request.client.id
     }
   }
-  
+
   public func clientMetaData() async -> ClientMetaData.Validated? {
     let source = switch self {
     case .idToken(let request):
@@ -89,7 +89,7 @@ public enum ValidatedRequestData: Sendable {
     case .idAndVpToken(let request):
       request.clientMetaDataSource
     }
-    
+
     switch source {
     case .passByValue(let metadata):
       return try? await ClientMetaDataValidator().validate(
