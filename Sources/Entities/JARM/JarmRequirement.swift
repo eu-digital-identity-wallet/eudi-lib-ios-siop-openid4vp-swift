@@ -30,7 +30,7 @@ import JOSESwift
 //
 //  This enum is `indirect` to allow recursive nesting in `signedAndEncrypted`.
 //
-public indirect enum JarmRequirement {
+public indirect enum JarmRequirement: Sendable {
   
   /// Client requires JARM signed response using the `responseSigningAlg` signing algorithm
   case signed(responseSigningAlg: JWSAlgorithm)

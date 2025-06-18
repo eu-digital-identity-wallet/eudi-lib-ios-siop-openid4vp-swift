@@ -64,7 +64,10 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     } catch {
       let dispatchDetails: ErrorDispatchDetails? = switch walletConfiguration.errorDispatchPolicy {
       case .allClients:
-        optionalDispatchDetails(fetchedRequest: fetchedRequest)
+        optionalDispatchDetails(
+          config: walletConfiguration,
+          fetchedRequest: fetchedRequest
+        )
       case .onlyAuthenticatedClients:
         nil
       }
@@ -77,7 +80,10 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     guard let clientMetaData = authorizedRequest.requestObject.clientMetaData else {
       return .invalidResolution(
         error: ValidationError.invalidClientMetadata,
-        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+        dispatchDetails: optionalDispatchDetails(
+          config: walletConfiguration,
+          fetchedRequest: fetchedRequest
+        )
       )
     }
 
@@ -90,14 +96,20 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     } catch {
       return .invalidResolution(
         error: ValidationError.invalidClientMetadata,
-        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+        dispatchDetails: optionalDispatchDetails(
+          config: walletConfiguration,
+          fetchedRequest: fetchedRequest
+        )
       )
     }
 
     guard let validatedClientMetaData = validatedClientMetaData else {
       return .invalidResolution(
         error: ValidationError.invalidClientMetadata,
-        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+        dispatchDetails: optionalDispatchDetails(
+          config: walletConfiguration,
+          fetchedRequest: fetchedRequest
+        )
       )
     }
 
@@ -107,14 +119,20 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     else {
       return .invalidResolution(
         error: ValidationError.missingResponseType,
-        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+        dispatchDetails: optionalDispatchDetails(
+          config: walletConfiguration,
+          fetchedRequest: fetchedRequest
+        )
       )
     }
 
     guard let nonce = authorizedRequest.requestObject.nonce else {
       return .invalidResolution(
         error: ValidationError.missingNonce,
-        dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
+        dispatchDetails: optionalDispatchDetails(
+          config: walletConfiguration,
+          fetchedRequest: fetchedRequest
+        )
       )
     }
 
@@ -131,7 +149,10 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     } catch {
       return .invalidResolution(
         error: ValidationError.validationError(error.localizedDescription),
-        dispatchDetails: optionalDispatchDetails(requestObject: authorizedRequest.requestObject)
+        dispatchDetails: optionalDispatchDetails(
+          config: walletConfiguration,
+          requestObject: authorizedRequest.requestObject
+        )
       )
     }
 
@@ -262,11 +283,15 @@ internal extension AuthorizationRequestResolver {
    * Creates an invalid resolution for errors that manifested while trying to authenticate a Client.
    */
   func optionalDispatchDetails(
+    config: SiopOpenId4VPConfiguration,
     fetchedRequest: FetchedRequest
   ) -> ErrorDispatchDetails? {
     switch fetchedRequest {
     case .plain(let requestObject):
-      return optionalDispatchDetails(requestObject: requestObject)
+      return optionalDispatchDetails(
+        config: config,
+        requestObject: requestObject
+      )
     case .jwtSecured(let clientId, let jwt):
       guard
         let jws = try? JWS(compactSerialization: jwt),
@@ -292,13 +317,15 @@ internal extension AuthorizationRequestResolver {
         responseMode: responseMode,
         nonce: jws.claimValue(forKey: "nonce") as? String,
         state: jws.claimValue(forKey: "state") as? String,
-        clientId: try? VerifierId.parse(clientId: clientId).get(),
-        jarmSpec: nil
+        clientId: try? VerifierId.parse(clientId: clientId).get()
       )
     }
   }
 
-  func optionalDispatchDetails(requestObject: UnvalidatedRequestObject) -> ErrorDispatchDetails? {
+  func optionalDispatchDetails(
+    config: SiopOpenId4VPConfiguration,
+    requestObject: UnvalidatedRequestObject
+  ) -> ErrorDispatchDetails? {
     guard let responseMode = requestObject.validatedResponseMode else {
       return nil
     }
@@ -316,8 +343,7 @@ internal extension AuthorizationRequestResolver {
           case .failure:
             return nil
           }
-        },
-        jarmSpec: nil
+        }
       )
     } else {
       nil
@@ -337,7 +363,8 @@ internal extension AuthorizationRequestResolver {
       jarmSpec: try? JarmSpec(
         clientMetaData: clientMetaData,
         walletOpenId4VPConfig: config
-      )
+      ),
+      jarmRequirement: config.jarmRequirement(validated: clientMetaData)
     )
   }
 }
