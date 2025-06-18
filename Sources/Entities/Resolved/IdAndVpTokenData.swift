@@ -19,17 +19,18 @@ import PresentationExchange
 extension ResolvedRequestData {
   /// A structure representing the data related to ID token and verifiable presentation (VP) token.
   public struct IdAndVpTokenData: Sendable {
-    let idTokenType: IdTokenType
-    let presentationQuery: PresentationQuery
-    let presentationDefinition: PresentationDefinition
-    let clientMetaData: ClientMetaData.Validated?
-    let client: Client
-    let nonce: String
-    let responseMode: ResponseMode?
-    let state: String?
-    let scope: Scope?
-    let vpFormats: VpFormats
-    let transactionData: [TransactionData]?
+    public let idTokenType: IdTokenType
+    public let presentationQuery: PresentationQuery
+    public let presentationDefinition: PresentationDefinition
+    public let clientMetaData: ClientMetaData.Validated?
+    public let client: Client
+    public let nonce: String
+    public let responseMode: ResponseMode?
+    public let state: String?
+    public let scope: Scope?
+    public let vpFormats: VpFormats
+    public let transactionData: [TransactionData]?
+    public let jarmRequirement: JarmRequirement?
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -40,6 +41,9 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state.
     ///   - scope: The scope.
+    ///   - vpFormats: Vp Formats
+    ///   - transactionData: Transaction data
+    ///   - jarmRequirement: JARM
     public init(
       idTokenType: IdTokenType,
       presentationQuery: PresentationQuery,
@@ -51,7 +55,8 @@ extension ResolvedRequestData {
       state: String?,
       scope: Scope?,
       vpFormats: VpFormats,
-      transactionData: [TransactionData]? = nil
+      transactionData: [TransactionData]? = nil,
+      jarmRequirement: JarmRequirement? = nil
     ) {
       self.idTokenType = idTokenType
       self.presentationQuery = presentationQuery
@@ -64,6 +69,7 @@ extension ResolvedRequestData {
       self.scope = scope
       self.vpFormats = vpFormats
       self.transactionData = transactionData
+      self.jarmRequirement = jarmRequirement
     }
   }
 }

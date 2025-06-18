@@ -255,6 +255,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     validatedAuthorizationRequest: ValidatedRequestData
   ) async throws -> ResolvedRequestData {
     try await .init(
+      walletConfiguration: config,
       vpConfiguration: config.vpConfiguration,
       validatedClientMetaData: validatedClientMetaData,
       presentationDefinitionResolver: PresentationDefinitionResolver(
@@ -360,10 +361,6 @@ internal extension AuthorizationRequestResolver {
       nonce: validatedRequestObject.nonce,
       state: validatedRequestObject.state,
       clientId: validatedRequestObject.clientId,
-      jarmSpec: try? JarmSpec(
-        clientMetaData: clientMetaData,
-        walletOpenId4VPConfig: config
-      ),
       jarmRequirement: config.jarmRequirement(validated: clientMetaData)
     )
   }

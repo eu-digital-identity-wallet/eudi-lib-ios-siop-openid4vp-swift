@@ -76,7 +76,7 @@ public extension JarmConfiguration {
       }
       
     case .notSupported:
-      return nil
+      return .noRequirement
     }
   }
 }

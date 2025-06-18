@@ -47,5 +47,7 @@ public indirect enum JarmRequirement: Sendable {
     signed: JarmRequirement,
     encrypted: JarmRequirement
   )
+  
+  case noRequirement
 }
 

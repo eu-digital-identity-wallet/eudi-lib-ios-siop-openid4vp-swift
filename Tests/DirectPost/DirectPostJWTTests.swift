@@ -344,7 +344,8 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: Constants.testNonce,
         responseMode: Constants.testDirectPostJwtResponseMode,
         state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope
+        scope: Constants.testScope,
+        jarmRequirement: .noRequirement
       )
     )
 
@@ -403,7 +404,14 @@ final class DirectPostJWTTests: DiXCTest {
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .signing(
+        keyPair: .init(
+          privateKey: privateKey!,
+          publicJWK: try! WebKeySet(jwks: [rsaJWK]).keys.first!
+        ),
+        ttl: .zero
+      )
     )
 
     // Generate a direct post authorisation response
@@ -480,7 +488,8 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: Constants.testNonce,
         responseMode: Constants.testDirectPostJwtResponseMode,
         state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope
+        scope: Constants.testScope,
+        jarmRequirement: .signed(responseSigningAlg: .init(.ES256))
       )
     )
 
@@ -563,7 +572,8 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .notSupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1387,7 +1397,8 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: "0S6_WzA2Mj",
         responseMode: .directPostJWT(responseURI: URL(string: "https://respond.here")!),
         state: "state",
-        vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
+        vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
+        jarmRequirement: .signed(responseSigningAlg: .init(.ES256))
       ))
 
     let submission: PresentationSubmission = .init(

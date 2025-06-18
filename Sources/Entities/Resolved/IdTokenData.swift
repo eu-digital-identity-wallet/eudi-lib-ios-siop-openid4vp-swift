@@ -25,6 +25,7 @@ extension ResolvedRequestData {
     public let responseMode: ResponseMode?
     public let state: String?
     public let scope: Scope?
+    public let jarmRequirement: JarmRequirement?
 
     /// Initializes the `IdTokenData` structure with the provided values.
     /// - Parameters:
@@ -35,6 +36,7 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state.
     ///   - scope: The scope.
+    ///   - jarmRequirement: JARM
     public init(
       idTokenType: IdTokenType,
       clientMetaData: ClientMetaData.Validated?,
@@ -42,7 +44,8 @@ extension ResolvedRequestData {
       nonce: String,
       responseMode: ResponseMode?,
       state: String?,
-      scope: Scope?
+      scope: Scope?,
+      jarmRequirement: JarmRequirement?
     ) {
       self.idTokenType = idTokenType
       self.clientMetaData = clientMetaData
@@ -51,6 +54,7 @@ extension ResolvedRequestData {
       self.responseMode = responseMode
       self.state = state
       self.scope = scope
+      self.jarmRequirement = jarmRequirement
     }
   }
 }

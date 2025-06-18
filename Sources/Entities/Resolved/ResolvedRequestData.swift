@@ -73,6 +73,7 @@ public extension ResolvedRequestData {
   ///   - presentationDefinitionResolver: The resolver for presentation definition.
   ///   - validatedAuthorizationRequest: The validated SiopOpenId4VPRequest.
   init(
+    walletConfiguration: SiopOpenId4VPConfiguration,
     vpConfiguration: VPConfiguration,
     validatedClientMetaData: ClientMetaData.Validated,
     presentationDefinitionResolver: PresentationDefinitionResolver,
@@ -87,7 +88,8 @@ public extension ResolvedRequestData {
         nonce: request.nonce,
         responseMode: request.responseMode,
         state: request.state,
-        scope: request.scope
+        scope: request.scope,
+        jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
       ))
     case .vpToken(let request):
       let common = VpFormats.common(
@@ -118,7 +120,8 @@ public extension ResolvedRequestData {
               transactionData: request.transactionData,
               vpConfiguration: vpConfiguration,
               presentationQuery: presentationQuery
-            )
+            ),
+            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
           )
         )
       case .dcqlQuery(let dcql):
@@ -137,7 +140,8 @@ public extension ResolvedRequestData {
               transactionData: request.transactionData,
               vpConfiguration: vpConfiguration,
               presentationQuery: presentationQuery
-            )
+            ),
+            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
           )
         )
       default: throw ValidationError.validationError("Only presentation definition supported for now")
@@ -191,7 +195,8 @@ public extension ResolvedRequestData {
               transactionData: request.transactionData,
               vpConfiguration: vpConfiguration,
               presentationQuery: presentationQuery
-            )
+            ),
+            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
           )
         )
       default: throw ValidationError.validationError("Only presentation definition supported for now")

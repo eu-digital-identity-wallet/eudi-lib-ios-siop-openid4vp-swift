@@ -77,7 +77,7 @@ public actor AuthorisationService: AuthorisationServiceType {
       )
       return try result.get()
 
-    case .directPostJwt(let url, let data, let jarmSpec):
+    case .directPostJwt(let url, let data, let jarmSpec, let jarmRequirement):
       // Handle invalid request case
       if case .invalidRequest(let error, _, let state, _) = data {
         let payload: [String: Any] = [

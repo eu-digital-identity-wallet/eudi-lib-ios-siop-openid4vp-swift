@@ -37,7 +37,8 @@ final class DirectPostTests: DiXCTest {
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope
+        scope: TestsConstants.testScope,
+        jarmRequirement: .noRequirement
       )
     )
 
@@ -71,7 +72,8 @@ final class DirectPostTests: DiXCTest {
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope
+        scope: TestsConstants.testScope,
+        jarmRequirement: .noRequirement
       )
     )
 
