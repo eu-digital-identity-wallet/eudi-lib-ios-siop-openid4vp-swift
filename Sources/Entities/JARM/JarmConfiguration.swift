@@ -66,9 +66,9 @@ public indirect enum JarmConfiguration: Sendable {
   
   public struct SigningKeyPair : Sendable{
     public let privateKey: SecKey
-    public let publicJWK: JWK
+    public let publicJWK: WebKeySet.Key
     
-    public init(privateKey: SecKey, publicJWK: JWK) {
+    public init(privateKey: SecKey, publicJWK: WebKeySet.Key) {
       self.privateKey = privateKey
       self.publicJWK = publicJWK
     }
