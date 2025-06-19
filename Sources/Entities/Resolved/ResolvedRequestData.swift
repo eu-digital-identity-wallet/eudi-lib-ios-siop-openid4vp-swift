@@ -144,7 +144,29 @@ public extension ResolvedRequestData {
             jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
           )
         )
-      default: throw ValidationError.validationError("Only presentation definition supported for now")
+      case .byScope(let scope):
+        let presentationQuery: PresentationQuery = try Self.lookupKnownQueries(
+          scope: scope,
+          vpConfiguration: vpConfiguration
+        )
+
+        self = .vpToken(
+          request: .init(
+            presentationQuery: presentationQuery,
+            clientMetaData: validatedClientMetaData,
+            client: request.client,
+            nonce: request.nonce,
+            responseMode: request.responseMode,
+            state: request.state,
+            vpFormats: common,
+            transactionData: try Self.parseTransactionData(
+              transactionData: request.transactionData,
+              vpConfiguration: vpConfiguration,
+              presentationQuery: presentationQuery
+            ),
+            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
+          )
+        )
       }
     case .idAndVpToken(request: let request):
       let common = VpFormats.common(
@@ -199,9 +221,50 @@ public extension ResolvedRequestData {
             jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
           )
         )
-      default: throw ValidationError.validationError("Only presentation definition supported for now")
+      case .byScope(let scope):
+        let presentationQuery: PresentationQuery = try Self.lookupKnownQueries(
+          scope: scope,
+          vpConfiguration: vpConfiguration
+        )
+
+        self = .vpToken(
+          request: .init(
+            presentationQuery: presentationQuery,
+            clientMetaData: validatedClientMetaData,
+            client: request.client,
+            nonce: request.nonce,
+            responseMode: request.responseMode,
+            state: request.state,
+            vpFormats: common,
+            transactionData: try Self.parseTransactionData(
+              transactionData: request.transactionData,
+              vpConfiguration: vpConfiguration,
+              presentationQuery: presentationQuery
+            ),
+            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
+          )
+        )
       }
     }
+  }
+  
+  private static func lookupKnownQueries(
+    scope: Scope,
+    vpConfiguration: VPConfiguration
+  ) throws -> PresentationQuery {
+    let scopes = scopeItems(from: scope)
+    for item in scopes {
+      if let definition = vpConfiguration.knownPresentationDefinitionsPerScope[item] {
+        return PresentationQuery.byPresentationDefinition(definition)
+      }
+    }
+
+    for item in scopes {
+      if let dcql = vpConfiguration.knownDCQLQueriesPerScope[item] {
+        return PresentationQuery.byDigitalCredentialsQuery(dcql)
+      }
+    }
+    throw ResolvedAuthorisationError.invalidQueryDataForScope(scope)
   }
 
   var legalName: String? {
