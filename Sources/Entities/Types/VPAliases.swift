@@ -19,3 +19,15 @@ public typealias JWTURI = String
 public typealias JWTString = String
 public typealias Nonce = String
 public typealias Scope = String
+
+public let SCOPE_SEPARATOR = " " // or whatever your separator is
+
+public func scopeItems(from value: Scope) -> [Scope] {
+  if value.isEmpty {
+    return []
+  } else {
+    return value
+      .split(separator: Character(SCOPE_SEPARATOR))
+      .map { Scope($0.trimmingCharacters(in: .whitespacesAndNewlines)) }
+  }
+}
