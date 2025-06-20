@@ -89,7 +89,9 @@ public extension ResolvedRequestData {
         responseMode: request.responseMode,
         state: request.state,
         scope: request.scope,
-        jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
+        jarmRequirement: walletConfiguration.jarmRequirement(
+          validated: validatedClientMetaData
+        )
       ))
     case .vpToken(let request):
       let common = VpFormats.common(
@@ -105,7 +107,9 @@ public extension ResolvedRequestData {
           throw ResolvedAuthorisationError.invalidPresentationDefinitionData
         }
         
-        let presentationQuery: PresentationQuery = .byPresentationDefinition(presentationDefinition)
+        let presentationQuery: PresentationQuery = .byPresentationDefinition(
+          presentationDefinition
+        )
         
         self = .vpToken(
           request: .init(
@@ -121,7 +125,9 @@ public extension ResolvedRequestData {
               vpConfiguration: vpConfiguration,
               presentationQuery: presentationQuery
             ),
-            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
+            jarmRequirement: walletConfiguration.jarmRequirement(
+              validated: validatedClientMetaData
+            )
           )
         )
       case .dcqlQuery(let dcql):
@@ -141,7 +147,9 @@ public extension ResolvedRequestData {
               vpConfiguration: vpConfiguration,
               presentationQuery: presentationQuery
             ),
-            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
+            jarmRequirement: walletConfiguration.jarmRequirement(
+              validated: validatedClientMetaData
+            )
           )
         )
       case .byScope(let scope):
