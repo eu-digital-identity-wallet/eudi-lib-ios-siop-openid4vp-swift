@@ -163,7 +163,7 @@ internal actor ClientAuthenticator {
         .first(where: { $0.scheme == scheme.scheme })?
         .redirectUri
 
-      guard url == configUrl else {
+      guard url.host(percentEncoded: true) == configUrl?.host(percentEncoded: true) else {
         throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
       }
 
