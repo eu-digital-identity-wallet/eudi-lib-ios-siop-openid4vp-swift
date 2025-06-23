@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Foundation
+@preconcurrency import Foundation
 import JOSESwift
 
 //
@@ -33,7 +33,11 @@ import JOSESwift
 public indirect enum JarmRequirement: Sendable {
   
   /// Client requires JARM signed response using the `responseSigningAlg` signing algorithm
-  case signed(responseSigningAlg: JWSAlgorithm)
+  case signed(
+    responseSigningAlg: JWSAlgorithm,
+    privateKey: SecKey,
+    webKeySet: WebKeySet
+  )
   
   /// Client requires JARM encrypted response using the given encryption parameters
   case encrypted(
