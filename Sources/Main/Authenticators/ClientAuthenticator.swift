@@ -153,7 +153,8 @@ internal actor ClientAuthenticator {
         legalName: client.legalName
       )
     case .redirectUri:
-      guard let url = URL(string: clientId) else {
+		let urlValue = String(clientId.suffix(from: clientId.index(clientId.startIndex, offsetBy: ClientIdScheme.redirectUri.rawValue.count+1)))
+      guard let url = URL(string: urlValue) else {
         throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
       }
 
