@@ -40,7 +40,7 @@ public extension JarmConfiguration {
     validated clientMetadata: ClientMetaData.Validated
   ) -> JarmRequirement? {
     switch self {
-    case .signing(_, _):
+    case .signing(_):
       guard let alg = clientMetadata.authorizationSignedResponseAlg else {
         return nil
       }

@@ -21,8 +21,7 @@ public indirect enum JarmConfiguration: Sendable {
   
   /// The wallet supports only signed authorization responses.
   case signing(
-    keyPair: SigningKeyPair,
-    ttl: TimeInterval = 600.0
+    keyPair: SigningKeyPair
   )
   
   /// The wallet supports only encrypted authorization responses.
@@ -78,7 +77,7 @@ public indirect enum JarmConfiguration: Sendable {
   
   public var signingConfig: JarmConfiguration? {
     switch self {
-    case .signing(let keyPair, let ttl):
+    case .signing(let keyPair):
       return self
     case .signingAndEncryption(let signing, _):
       return signing
