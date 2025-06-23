@@ -39,7 +39,7 @@ public indirect enum JarmRequirement: Sendable {
   case encrypted(
     responseEncryptionAlg: JWEAlgorithm,
     responseEncryptionEnc: EncryptionMethod,
-    clientKey: WebKeySet.Key
+    clientKey: WebKeySet
   )
   
   /// Client requires JARM signed and (then) encrypted response

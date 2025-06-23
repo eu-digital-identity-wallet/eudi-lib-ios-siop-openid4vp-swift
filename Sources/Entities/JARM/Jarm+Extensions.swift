@@ -50,7 +50,7 @@ public extension JarmConfiguration {
       guard
         let alg = clientMetadata.authorizationEncryptedResponseAlg,
         let enc = clientMetadata.authorizationEncryptedResponseEnc,
-        let key = clientMetadata.jwkSet?.keys.first(where: { $0.kty == "RSA" || $0.kty == "EC" })
+        let key = clientMetadata.jwkSet
       else {
         return nil
       }
