@@ -153,7 +153,7 @@ public extension ResolvedRequestData {
           )
         )
       case .byScope(let scope):
-        let presentationQuery: PresentationQuery = try Self.lookupKnownQueries(
+        let presentationQuery: PresentationQuery = try Self.lookupConfiguredQueries(
           scope: scope,
           vpConfiguration: vpConfiguration
         )
@@ -230,7 +230,7 @@ public extension ResolvedRequestData {
           )
         )
       case .byScope(let scope):
-        let presentationQuery: PresentationQuery = try Self.lookupKnownQueries(
+        let presentationQuery: PresentationQuery = try Self.lookupConfiguredQueries(
           scope: scope,
           vpConfiguration: vpConfiguration
         )
@@ -256,7 +256,7 @@ public extension ResolvedRequestData {
     }
   }
   
-  private static func lookupKnownQueries(
+  private static func lookupConfiguredQueries(
     scope: Scope,
     vpConfiguration: VPConfiguration
   ) throws -> PresentationQuery {
