@@ -408,7 +408,7 @@ final class DirectPostJWTTests: DiXCTest {
       jarmConfiguration: .signing(
         keyPair: .init(
           privateKey: privateKey!,
-          publicJWK: try! WebKeySet(jwks: [rsaJWK]).keys.first!
+          webKeySet: try! WebKeySet(jwks: [rsaJWK])
         ),
         ttl: .zero
       )
