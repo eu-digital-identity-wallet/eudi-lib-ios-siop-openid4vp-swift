@@ -74,8 +74,7 @@ public extension JarmConfiguration {
       default:
         return nil
       }
-      
-    case .notSupported:
+    case .noConfiguration:
       return .noRequirement
     }
   }

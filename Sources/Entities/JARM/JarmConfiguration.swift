@@ -36,8 +36,8 @@ public indirect enum JarmConfiguration: Sendable {
     encryption: JarmConfiguration
   )
   
-  /// The wallet does not support JARM responses.
-  case notSupported
+  /// The wallet does not configure JARM responses.
+  case noConfiguration
   
   // MARK: - Subtypes for Composition
   
