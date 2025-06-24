@@ -1476,9 +1476,9 @@ final class DirectPostJWTTests: DiXCTest {
         vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
         jarmRequirement: .signedAndEncrypted(
           signed: .signed(
-            responseSigningAlg: .init(.ES256),
-            privateKey: ecPrivateKey,
-            webKeySet: try! .init(jwk: ecPublicJwk)
+            responseSigningAlg: .init(.RS256),
+            privateKey: rsaPrivateKey!,
+            webKeySet: try! .init(jwk: rsaJWK)
           ),
           encrypted: .encrypted(
             responseEncryptionAlg: .init(.ECDH_ES),
