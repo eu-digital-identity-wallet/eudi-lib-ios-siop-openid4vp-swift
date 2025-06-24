@@ -43,12 +43,12 @@ public indirect enum JARMConfiguration: Sendable {
     public let supportedMethods: [EncryptionMethod]
 
     public init(supportedAlgorithms: [JWEAlgorithm], supportedMethods: [EncryptionMethod]) throws {
-      if !supportedAlgorithms.isEmpty {
+      if supportedAlgorithms.isEmpty {
         throw ValidationError.validationError(
           "At least one encryption algorithm must be provided"
         )
       }
-      if !supportedMethods.isEmpty {
+      if supportedMethods.isEmpty {
         throw ValidationError.validationError(
           "At least one encryption method must be provided"
         )
@@ -100,8 +100,41 @@ public indirect enum JARMConfiguration: Sendable {
       ),
       encryption: .encryption(
         .init(
-          supportedAlgorithms: [],
-          supportedMethods: []
+          supportedAlgorithms: [
+            .init(.RSA1_5),
+            .init(.RSA_OAEP),
+            .init(.RSA_OAEP_256),
+            .init(.RSA_OAEP_384),
+            .init(.RSA_OAEP_512),
+            .init(.A128KW),
+            .init(.A192KW),
+            .init(.A256KW),
+            .init(.DIR),
+            .init(.ECDH_ES),
+            .init(.ECDH_ES_A128KW),
+            .init(.ECDH_ES_A192KW),
+            .init(.ECDH_ES_A256KW),
+            .init(.ECDH_1PU),
+            .init(.ECDH_1PU_A128KW),
+            .init(.ECDH_1PU_A192KW),
+            .init(.ECDH_1PU_A256KW),
+            .init(.A128GCMKW),
+            .init(.A192GCMKW),
+            .init(.A256GCMKW),
+            .init(.PBES2_HS256_A128KW),
+            .init(.PBES2_HS384_A192KW),
+            .init(.PBES2_HS512_A256KW),
+          ],
+          supportedMethods: [
+            .init(.A128CBC_HS256),
+            .init(.A128CBC_HS256),
+            .init(.A192CBC_HS384),
+            .init(.A256CBC_HS512),
+            .init(.A128GCM),
+            .init(.A192GCM),
+            .init(.A256GCM),
+            .init(.XC20P)
+          ]
         )
       )
     )
