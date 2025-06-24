@@ -24,8 +24,7 @@ public enum AuthorizationResponse: Sendable {
   case directPostJwt(
     url: URL,
     data: AuthorizationResponsePayload,
-    jarmSpec: JarmSpec,
-    jarmRequirement: JarmRequirement
+    jarmRequirement: JARMRequirement
   )
 
   /// A query authorization response.
@@ -35,8 +34,7 @@ public enum AuthorizationResponse: Sendable {
   case queryJwt(
     url: URL,
     data: AuthorizationResponsePayload,
-    jarmSpec: JarmSpec,
-    jarmRequirement: JarmRequirement
+    jarmRequirement: JARMRequirement
   )
 
   /// A fragment authorization response.
@@ -46,8 +44,7 @@ public enum AuthorizationResponse: Sendable {
   case fragmentJwt(
     url: URL,
     data: AuthorizationResponsePayload,
-    jarmSpec: JarmSpec,
-    jarmRequirement: JarmRequirement
+    jarmRequirement: JARMRequirement
   )
 
   case invalidRequest(
@@ -156,19 +153,12 @@ private extension AuthorizationResponse {
     payload: AuthorizationResponsePayload,
     clientMetaData: ClientMetaData.Validated?,
     walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
-    jarmRequirment: JarmRequirement?
+    jarmRequirment: JARMRequirement?
   ) throws -> AuthorizationResponse {
     guard let responseMode = responseMode else {
       throw AuthorizationError.invalidResponseMode
     }
-
-    func jarmSpec() throws -> JarmSpec {
-      try JarmSpec(
-        clientMetaData: clientMetaData,
-        walletOpenId4VPConfig: walletOpenId4VPConfig
-      )
-    }
-
+    
     guard let jarmRequirment = jarmRequirment else {
       throw ValidationError.invalidJarmRequirement
     }
@@ -180,7 +170,6 @@ private extension AuthorizationResponse {
       return .directPostJwt(
         url: responseURI,
         data: payload,
-        jarmSpec: try jarmSpec(),
         jarmRequirement: jarmRequirment
       )
     case .query(let responseURI):

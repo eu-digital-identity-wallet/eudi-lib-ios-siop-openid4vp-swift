@@ -74,7 +74,6 @@ internal extension AuthorizationRequestError {
       return .directPostJwt(
         url: responseURI,
         data: payload,
-        jarmSpec: jarmSpec,
         jarmRequirement: jarmRequirement
       )
     default:

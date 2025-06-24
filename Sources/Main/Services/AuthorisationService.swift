@@ -58,7 +58,6 @@ public actor AuthorisationService: AuthorisationServiceType {
   ) async throws -> (String, Bool) {
     switch response {
     case .directPost(let url, let data):
-
       let payload = setupDirectPostPayload(
         payload: data,
         key: Constants.presentationSubmissionKey,
@@ -77,7 +76,7 @@ public actor AuthorisationService: AuthorisationServiceType {
       )
       return try result.get()
 
-    case .directPostJwt(let url, let data, let jarmSpec, let jarmRequirement):
+    case .directPostJwt(let url, let data, let jarmRequirement):
       // Handle invalid request case
       if case .invalidRequest(let error, _, let state, _) = data {
         let payload: [String: Any] = [
@@ -101,7 +100,7 @@ public actor AuthorisationService: AuthorisationServiceType {
 
       let encryptor: ResponseSignerEncryptor = .init()
       let joseResponse = try await encryptor.signEncryptResponse(
-        spec: jarmSpec,
+        requirement: jarmRequirement,
         data: data
       )
 

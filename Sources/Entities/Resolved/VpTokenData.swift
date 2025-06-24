@@ -26,7 +26,7 @@ extension ResolvedRequestData {
     public let state: String?
     public let vpFormats: VpFormats
     public let transactionData: [TransactionData]?
-    public let jarmRequirement: JarmRequirement?
+    public let jarmRequirement: JARMRequirement?
     
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///
@@ -49,7 +49,7 @@ extension ResolvedRequestData {
       state: String?,
       vpFormats: VpFormats,
       transactionData: [TransactionData]? = nil,
-      jarmRequirement: JarmRequirement?
+      jarmRequirement: JARMRequirement?
     ) {
       self.presentationQuery = presentationQuery
       self.clientMetaData = clientMetaData

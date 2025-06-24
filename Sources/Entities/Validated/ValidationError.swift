@@ -40,7 +40,6 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case negativeConsent
   case clientIdMismatch(String?, String?)
   case invalidClientId
-  case invalidJarmOption
   case invalidJarmClientMetadata
   case invalidWalletConfiguration
   case unsupportedAlgorithm(String?)
@@ -109,8 +108,6 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".clientIdMismatch \(String(describing: lhs)) \(String(describing: rhs))"
     case .invalidClientId:
       return ".invalidClientId"
-    case .invalidJarmOption:
-      return ".invalidJarmOption"
     case .invalidJarmClientMetadata:
       return ".invalidJarmClientMetadata"
     case .invalidWalletConfiguration:

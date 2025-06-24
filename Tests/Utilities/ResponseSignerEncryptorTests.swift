@@ -68,16 +68,16 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let jarmSpec: JarmSpec = .resolution(
-      holderId: UUID().uuidString,
-      jarmOption: .signedResponse(
-        responseSigningAlg: alg,
-        signingKeySet: wallet.signingKeySet,
-        signingKey: wallet.signingKey
-      )
+    let requirement: JARMRequirement = .signed(
+      responseSigningAlg: alg,
+      privateKey: wallet.signingKey,
+      webKeySet: wallet.signingKeySet
     )
 
-    let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
+    let response = try await responseSignerEncryptor.signEncryptResponse(
+      requirement: requirement,
+      data: mockResponsePayload
+    )
 
     XCTAssert(response.isValidJWT())
 
@@ -116,16 +116,16 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     ])
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let jarmSpec: JarmSpec = .resolution(
-      holderId: UUID().uuidString,
-      jarmOption: .encryptedResponse(
-        responseSigningAlg: alg,
-        responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
-        signingKeySet: keySet
-      )
+    let requirement: JARMRequirement = .encrypted(
+      responseEncryptionAlg: alg,
+      responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
+      clientKey: keySet
     )
-
-    let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
+    
+    let response = try await responseSignerEncryptor.signEncryptResponse(
+      requirement: requirement,
+      data: mockResponsePayload
+    )
 
     XCTAssert(response.isValidJWT())
   }
@@ -171,28 +171,28 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       )
     )
 
-    let encrypted: JarmOption = .encryptedResponse(
-      responseSigningAlg: encryptionAlg,
+    let encrypted: JARMRequirement = .encrypted(
+      responseEncryptionAlg: encryptionAlg,
       responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
-      signingKeySet: wallet.signingKeySet
+      clientKey: wallet.signingKeySet
     )
 
-    let signed: JarmOption = .signedResponse(
+    let signed: JARMRequirement = .signed(
       responseSigningAlg: signingAlg,
-      signingKeySet: wallet.signingKeySet,
-      signingKey: wallet.signingKey
+      privateKey: wallet.signingKey,
+      webKeySet: wallet.signingKeySet
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let jarmSpec: JarmSpec = .resolution(
-      holderId: UUID().uuidString,
-      jarmOption: .signedAndEncryptedResponse(
-        signed: signed,
-        encrypted: encrypted
-      )
+    let requirement: JARMRequirement = .signedAndEncrypted(
+      signed: signed,
+      encrypted: encrypted
     )
-
-    let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
+    
+    let response = try await responseSignerEncryptor.signEncryptResponse(
+      requirement: requirement,
+      data: mockResponsePayload
+    )
 
     XCTAssert(response.isValidJWT())
 
@@ -231,16 +231,16 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     ])
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let jarmSpec: JarmSpec = .resolution(
-      holderId: UUID().uuidString,
-      jarmOption: .encryptedResponse(
-        responseSigningAlg: alg,
-        responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
-        signingKeySet: keySet
-      )
+    let requirement: JARMRequirement = .encrypted(
+      responseEncryptionAlg: alg,
+      responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
+      clientKey: keySet
     )
-
-    let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
+    
+    let response = try await responseSignerEncryptor.signEncryptResponse(
+      requirement: requirement,
+      data: mockResponsePayload
+    )
 
     let encryptedJwe = try JWE(compactSerialization: response)
 
@@ -300,28 +300,28 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       )
     )
 
-    let encrypted: JarmOption = .encryptedResponse(
-      responseSigningAlg: encryptionAlg,
+    let encrypted: JARMRequirement = .encrypted(
+      responseEncryptionAlg: encryptionAlg,
       responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
-      signingKeySet: wallet.signingKeySet
+      clientKey: wallet.signingKeySet
     )
 
-    let signed: JarmOption = .signedResponse(
+    let signed: JARMRequirement = .signed(
       responseSigningAlg: signingAlg,
-      signingKeySet: wallet.signingKeySet,
-      signingKey: wallet.signingKey
+      privateKey: wallet.signingKey,
+      webKeySet: wallet.signingKeySet
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let jarmSpec: JarmSpec = .resolution(
-      holderId: UUID().uuidString,
-      jarmOption: .signedAndEncryptedResponse(
-        signed: signed,
-        encrypted: encrypted
-      )
+    let requirement: JARMRequirement = .signedAndEncrypted(
+      signed: signed,
+      encrypted: encrypted
     )
-
-    let response = try await responseSignerEncryptor.signEncryptResponse(spec: jarmSpec, data: mockResponsePayload)
+    
+    let response = try await responseSignerEncryptor.signEncryptResponse(
+      requirement: requirement,
+      data: mockResponsePayload
+    )
 
     // Decrypt payload
     let jwe = try JWE(compactSerialization: response)

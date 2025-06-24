@@ -25,7 +25,7 @@ extension ResolvedRequestData {
     public let responseMode: ResponseMode?
     public let state: String?
     public let scope: Scope?
-    public let jarmRequirement: JarmRequirement?
+    public let jarmRequirement: JARMRequirement?
 
     /// Initializes the `IdTokenData` structure with the provided values.
     /// - Parameters:
@@ -45,7 +45,7 @@ extension ResolvedRequestData {
       responseMode: ResponseMode?,
       state: String?,
       scope: Scope?,
-      jarmRequirement: JarmRequirement?
+      jarmRequirement: JARMRequirement?
     ) {
       self.idTokenType = idTokenType
       self.clientMetaData = clientMetaData

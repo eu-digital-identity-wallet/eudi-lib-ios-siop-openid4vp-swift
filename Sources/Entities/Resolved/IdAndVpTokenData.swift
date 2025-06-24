@@ -30,7 +30,7 @@ extension ResolvedRequestData {
     public let scope: Scope?
     public let vpFormats: VpFormats
     public let transactionData: [TransactionData]?
-    public let jarmRequirement: JarmRequirement?
+    public let jarmRequirement: JARMRequirement?
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -56,7 +56,7 @@ extension ResolvedRequestData {
       scope: Scope?,
       vpFormats: VpFormats,
       transactionData: [TransactionData]? = nil,
-      jarmRequirement: JarmRequirement? = nil
+      jarmRequirement: JARMRequirement? = nil
     ) {
       self.idTokenType = idTokenType
       self.presentationQuery = presentationQuery

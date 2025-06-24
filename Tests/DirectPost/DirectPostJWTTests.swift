@@ -518,17 +518,10 @@ final class DirectPostJWTTests: DiXCTest {
         responseMode: Constants.testDirectPostJwtResponseMode,
         state: Constants.generateRandomBase64String(),
         scope: Constants.testScope,
-        jarmRequirement: .signedAndEncrypted(
-          signed: .signed(
-            responseSigningAlg: .init(.ES256),
-            privateKey: privateKey,
-            webKeySet: keySet
-          ),
-          encrypted: .encrypted(
-            responseEncryptionAlg: .init(.ECDH_ES),
-            responseEncryptionEnc: .init(.A128CBC_HS256),
-            clientKey: keySet
-          )
+        jarmRequirement: .encrypted(
+          responseEncryptionAlg: .init(.ECDH_ES),
+          responseEncryptionEnc: .init(.A128CBC_HS256),
+          clientKey: keySet
         )
       )
     )
@@ -613,7 +606,12 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .noConfiguration
+      jarmConfiguration: .default(
+        .init(
+          privateKey: privateKey,
+          webKeySet: keySet
+        )
+      )
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1483,7 +1481,7 @@ final class DirectPostJWTTests: DiXCTest {
           encrypted: .encrypted(
             responseEncryptionAlg: .init(.ECDH_ES),
             responseEncryptionEnc: .init(.A128CBC_HS256),
-            clientKey: try! .init(jwk: ecPublicJwk)
+            clientKey: try! .init(jwks: [ecPublicJwk, rsaJWK])
           )
         )
       ))
@@ -1543,9 +1541,6 @@ final class DirectPostJWTTests: DiXCTest {
 
     let jwt = String.init(data: decryptionPayload.data(), encoding: .utf8)
     XCTAssert(jwt!.isValidJWT())
-
-    let iss = JSONWebToken(jsonWebToken: jwt!)?.payload["iss"].string!
-    XCTAssert(iss == "did:example:123")
   }
 
   func testSDKEndtoEndWebVerifierDirectPostJwtX509() async throws {

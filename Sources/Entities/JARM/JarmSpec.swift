@@ -18,27 +18,3 @@ import Foundation
 public enum JarmSpec: Sendable {
   case resolution(holderId: String, jarmOption: JarmOption)
 }
-
-public extension JarmSpec {
-  init(
-    clientMetaData: ClientMetaData.Validated?,
-    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
-  ) throws {
-
-    guard let clientMetaData = clientMetaData else {
-      throw ValidationError.invalidJarmClientMetadata
-    }
-
-    guard let walletOpenId4VPConfig = walletOpenId4VPConfig else {
-      throw ValidationError.invalidWalletConfiguration
-    }
-
-    self = .resolution(
-      holderId: walletOpenId4VPConfig.decentralizedIdentifier.stringValue,
-      jarmOption: try .init(
-        clientMetaData: clientMetaData,
-        walletOpenId4VPConfig: walletOpenId4VPConfig
-      )
-    )
-  }
-}
