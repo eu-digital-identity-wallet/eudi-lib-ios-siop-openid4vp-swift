@@ -42,7 +42,18 @@ final class JWTDecoderTests: XCTestCase {
       "state": "xyz",
       "id_token_type": "subject_signed",
       "supported_algorithm": "ES256",
-      "transaction_data": ["txn1", "txn2"]
+      "transaction_data": ["txn1", "txn2"],
+      "verifier_attestations": [
+        [
+          "format": "jwt",
+          "data": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...abc123",
+          "credential_ids": ["id_card"]
+        ],
+        [
+          "format": "jwt",
+          "data": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...xyz456"
+        ]
+      ]
     ]
 
     let payloadData = try! JSONSerialization.data(withJSONObject: payload)
@@ -77,5 +88,16 @@ final class JWTDecoderTests: XCTestCase {
     XCTAssertEqual(result.idTokenType, "subject_signed")
     XCTAssertEqual(result.supportedAlgorithm, "ES256")
     XCTAssertEqual(result.transactionData, ["txn1", "txn2"])
+    XCTAssertEqual(result.verifierAttestations?.count, 2)
+
+    let first = result.verifierAttestations?[0]
+    XCTAssertEqual(first?["format"].string, "jwt")
+    XCTAssertEqual(first?["data"].string, "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...abc123")
+    XCTAssertEqual(first?["credential_ids"].arrayValue.map { $0.string! }, ["id_card"])
+
+    let second = result.verifierAttestations?[1]
+    XCTAssertEqual(second?["format"].string, "jwt")
+    XCTAssertEqual(second?["data"].string, "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...xyz456")
+    XCTAssertNil(second?["credential_ids"].array)  
   }
 }

@@ -19,38 +19,50 @@ extension ResolvedRequestData {
   /// A structure representing the data related to the ID token.
   public struct IdTokenData: Sendable {
     public let idTokenType: IdTokenType
+    public let presentationQuery: PresentationQuery
     public let clientMetaData: ClientMetaData.Validated?
     public let client: Client
     public let nonce: String
     public let responseMode: ResponseMode?
     public let state: String?
     public let scope: Scope?
+    public let transactionData: [TransactionData]?
+    public let verifierAttestations: [VerifierAttestation]?
 
     /// Initializes the `IdTokenData` structure with the provided values.
     /// - Parameters:
     ///   - idTokenType: The type of the ID token.
+    ///   - presentationDefinition: The presentation definition.
     ///   - clientMetaData: The client metadata.
     ///   - clientId: The client ID.
     ///   - nonce: The nonce.
     ///   - responseMode: The response mode.
     ///   - state: The state.
     ///   - scope: The scope.
+    ///   - transactionData: Optional list of transcation data
+    ///   - verifierAttestations: Optional list of verifierAttestations
     public init(
       idTokenType: IdTokenType,
+      presentationQuery: PresentationQuery,
       clientMetaData: ClientMetaData.Validated?,
       client: Client,
       nonce: String,
       responseMode: ResponseMode?,
       state: String?,
-      scope: Scope?
+      scope: Scope?,
+      transactionData: [TransactionData]? = nil,
+      verifierAttestations: [VerifierAttestation]? = nil
     ) {
       self.idTokenType = idTokenType
+      self.presentationQuery = presentationQuery
       self.clientMetaData = clientMetaData
       self.client = client
       self.nonce = nonce
       self.responseMode = responseMode
       self.state = state
       self.scope = scope
+      self.transactionData = transactionData
+      self.verifierAttestations = verifierAttestations
     }
   }
 }

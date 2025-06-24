@@ -339,6 +339,9 @@ final class DirectPostJWTTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
+        presentationQuery: .byPresentationDefinition(.init(
+          id: "dummy-id",
+          inputDescriptors: [])),
         clientMetaData: metaData,
         client: Constants.testClient,
         nonce: Constants.testNonce,
@@ -475,6 +478,9 @@ final class DirectPostJWTTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
+        presentationQuery: .byPresentationDefinition(.init(
+          id: "dummy-id",
+          inputDescriptors: [])),
         clientMetaData: metaData,
         client: Constants.testClient,
         nonce: Constants.testNonce,

@@ -37,7 +37,7 @@ private let config: SiopOpenId4VPConfiguration = .init(
   jarConfiguration: .noEncryptionOption,
   vpConfiguration: VPConfiguration.default()
 )
-final class VerifierAttestaionTestsTests: XCTestCase {
+final class VerifierAttestationIssuerTests: XCTestCase {
 
   override func setUpWithError() throws {
   }
@@ -133,7 +133,7 @@ final class VerifierAttestaionTestsTests: XCTestCase {
   }
 }
 
-private extension VerifierAttestaionTestsTests {
+private extension VerifierAttestationIssuerTests {
 
   func verifierAttestationWalletConfiguration(
     privateKey: SecKey,
