@@ -83,7 +83,13 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope,
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      session: SiopOpenId4VPConfiguration.walletSession
+      session: SiopOpenId4VPConfiguration.walletSession,
+      jarmConfiguration: .default(
+        .init(
+          privateKey: signingKey,
+          webKeySet: signingKeySet
+        )
+      )
     )
 
     XCTAssertEqual(walletOpenId4VPConfiguration.subjectSyntaxTypesSupported, subjectSyntaxTypesSupported)

@@ -49,7 +49,7 @@ final class JOSETests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: try KeyController.generateRSAPrivateKey(),
+      signingKey: privateKey!,
       signingKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -61,7 +61,13 @@ final class JOSETests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: []
+      vpFormatsSupported: [],
+      jarmConfiguration: .default(
+        .init(
+          privateKey: privateKey!,
+          webKeySet: keySet
+        )
+      )
     )
 
     let unvalidatedRequest = UnvalidatedRequest.make(

@@ -93,7 +93,13 @@ final class SiopOpenID4VPTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default(
+        .init(
+          privateKey: privateKey,
+          webKeySet: keySet
+        )
+      )
     )
   }
 
@@ -150,7 +156,13 @@ final class SiopOpenID4VPTests: DiXCTest {
         ])],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default(
+        .init(
+          privateKey: privateKey,
+          webKeySet: keySet
+        )
+      )
     )
   }
 

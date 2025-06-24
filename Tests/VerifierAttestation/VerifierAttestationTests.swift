@@ -19,6 +19,7 @@ import JOSESwift
 
 @testable import SiopOpenID4VP
 
+private let topPrivateKey = try! KeyController.generateRSAPrivateKey()
 private let config: SiopOpenId4VPConfiguration = .init(
   subjectSyntaxTypesSupported: [
     .decentralizedIdentifier,
@@ -28,14 +29,20 @@ private let config: SiopOpenId4VPConfiguration = .init(
   decentralizedIdentifier: try! .init(
     rawValue: "did:example:123"
   ),
-  signingKey: try! KeyController.generateRSAPrivateKey(),
+  signingKey: topPrivateKey,
   signingKeySet: .init(keys: []),
   supportedClientIdSchemes: [
     .x509SanDns(trust: { _ in true })
   ],
   vpFormatsSupported: [],
   jarConfiguration: .noEncryptionOption,
-  vpConfiguration: VPConfiguration.default()
+  vpConfiguration: VPConfiguration.default(),
+  jarmConfiguration: .default(
+    .init(
+      privateKey: topPrivateKey,
+      webKeySet: .init(keys: [])
+    )
+  )
 )
 
 final class VerifierAttestaionTestsTests: XCTestCase {
@@ -173,7 +180,13 @@ private extension VerifierAttestaionTestsTests {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default(
+        .init(
+          privateKey: privateKey,
+          webKeySet: keySet
+        )
+      )
     )
   }
 

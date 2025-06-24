@@ -69,7 +69,13 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default(
+        .init(
+          privateKey: privateKey,
+          webKeySet: keySet
+        )
+      )
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -186,7 +192,13 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default(
+        .init(
+          privateKey: privateKey,
+          webKeySet: keySet
+        )
+      )
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -304,7 +316,13 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default(
+        .init(
+          privateKey: privateKey,
+          webKeySet: keySet
+        )
+      )
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
