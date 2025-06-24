@@ -153,7 +153,8 @@ internal actor ClientAuthenticator {
         legalName: client.legalName
       )
     case .redirectUri:
-		let urlValue = String(clientId.suffix(from: clientId.index(clientId.startIndex, offsetBy: ClientIdScheme.redirectUri.rawValue.count+1)))
+	  // remove prefix from clientId
+	  let urlValue = String(clientId.suffix(from: clientId.index(clientId.startIndex, offsetBy: ClientIdScheme.redirectUri.rawValue.count+1)))
       guard let url = URL(string: urlValue) else {
         throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
       }
@@ -164,7 +165,7 @@ internal actor ClientAuthenticator {
         .redirectUri
 
       guard url.host(percentEncoded: true) == configUrl?.host(percentEncoded: true) else {
-        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
+        throw ValidationError.validationError("Client id host must be the host uri for redirectUri scheme")
       }
 
       return .redirectUri(
