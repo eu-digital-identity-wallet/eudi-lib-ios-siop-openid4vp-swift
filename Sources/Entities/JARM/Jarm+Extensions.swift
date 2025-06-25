@@ -58,6 +58,15 @@ public extension JARMConfiguration {
       else {
         return nil
       }
+      
+      if !encrypted.supportedAlgorithms.contains(alg) {
+        return nil
+      }
+      
+      if !encrypted.supportedMethods.contains(enc) {
+        return nil
+      }
+      
       return .encrypted(
         responseEncryptionAlg: alg,
         responseEncryptionEnc: EncryptionMethod(name: enc.name),
