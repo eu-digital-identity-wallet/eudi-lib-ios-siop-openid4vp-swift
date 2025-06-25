@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
   name: "SiopOpenID4VP",
-  platforms: [.iOS(.v16), .macOS(.v14)],
+  platforms: [.iOS(.v14), .macOS(.v12)],
   products: [
     .library(
       name: "SiopOpenID4VP",

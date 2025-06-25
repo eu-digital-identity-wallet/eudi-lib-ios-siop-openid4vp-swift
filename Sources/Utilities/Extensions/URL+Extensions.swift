@@ -15,7 +15,7 @@
  */
 import Foundation
 
-internal extension URL {
+package extension URL {
   /// Checks whether a given string is a valid URL with a host and supported scheme.
   static func isValid(_ urlString: String) -> Bool {
     guard let url = URL(string: urlString),
@@ -23,5 +23,13 @@ internal extension URL {
       return false
     }
     return true
+  }
+  
+  /// Returns the host component of the URL, optionally removing percent encoding.
+  func host(includePercentEncoding: Bool) -> String? {
+    guard let host = self.host else {
+      return nil
+    }
+    return includePercentEncoding ? host : host.removingPercentEncoding
   }
 }

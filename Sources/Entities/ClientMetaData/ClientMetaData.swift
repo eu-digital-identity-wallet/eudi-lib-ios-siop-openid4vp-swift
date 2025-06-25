@@ -191,14 +191,14 @@ public extension ClientMetaData {
     public let vpFormats: VpFormats
 
     public init(
-      jwkSet: WebKeySet?,
-      idTokenJWSAlg: JWSAlgorithm?,
-      idTokenJWEAlg: JWEAlgorithm?,
-      idTokenJWEEnc: JOSEEncryptionMethod?,
+      jwkSet: WebKeySet? = nil,
+      idTokenJWSAlg: JWSAlgorithm? = nil,
+      idTokenJWEAlg: JWEAlgorithm? = nil,
+      idTokenJWEEnc: JOSEEncryptionMethod? = nil,
       subjectSyntaxTypesSupported: [SubjectSyntaxType],
-      authorizationSignedResponseAlg: JWSAlgorithm?,
-      authorizationEncryptedResponseAlg: JWEAlgorithm?,
-      authorizationEncryptedResponseEnc: JOSEEncryptionMethod?,
+      authorizationSignedResponseAlg: JWSAlgorithm? = nil,
+      authorizationEncryptedResponseAlg: JWEAlgorithm? = nil,
+      authorizationEncryptedResponseEnc: JOSEEncryptionMethod? = nil,
       vpFormats: VpFormats
     ) {
       self.jwkSet = jwkSet

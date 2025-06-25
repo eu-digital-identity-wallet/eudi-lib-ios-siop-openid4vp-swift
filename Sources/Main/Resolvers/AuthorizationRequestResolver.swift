@@ -75,33 +75,38 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
     }
 
     let validatedClientMetaData: ClientMetaData.Validated?
-
     let clientMetaData = authorizedRequest.requestObject.clientMetaData
-	// If clientMetaData is nil, we assume the client does not provide any metadata.
-	if let clientMetaData {
-		do {
-		validatedClientMetaData = try await validateClientMetaData(
-			validator: clientMetaDataValidator,
-			clientMetaData: clientMetaData
-		)
-		} catch {
-		return .invalidResolution(
-			error: ValidationError.invalidClientMetadata,
-			dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
-		)
-		}
-	} else {
-	  validatedClientMetaData = ClientMetaData.Validated(jwkSet: nil, idTokenJWSAlg: nil, idTokenJWEAlg: nil,
-	   idTokenJWEEnc: nil, subjectSyntaxTypesSupported: [.jwkThumbprint, .decentralizedIdentifier], authorizationSignedResponseAlg: nil, authorizationEncryptedResponseAlg: nil, 
-	   authorizationEncryptedResponseEnc: nil, vpFormats: try! .default())
-	}
+    
+    // If clientMetaData is nil, we assume the client does not provide any metadata.
+    if let clientMetaData {
+      do {
+        validatedClientMetaData = try await validateClientMetaData(
+          validator: clientMetaDataValidator,
+          clientMetaData: clientMetaData
+        )
+      } catch {
+        return .invalidResolution(
+          error: ValidationError.invalidClientMetadata,
+          dispatchDetails: optionalDispatchDetails(
+            fetchedRequest: fetchedRequest
+          )
+        )
+      }
+    } else {
+      validatedClientMetaData = ClientMetaData.Validated(
+        subjectSyntaxTypesSupported: [.jwkThumbprint, .decentralizedIdentifier],
+        vpFormats: try! .default()
+      )
+    }
 
-	guard let validatedClientMetaData = validatedClientMetaData else {
-		return .invalidResolution(
-			error: ValidationError.invalidClientMetadata,
-			dispatchDetails: optionalDispatchDetails(fetchedRequest: fetchedRequest)
-		)
-	}
+    guard let validatedClientMetaData = validatedClientMetaData else {
+      return .invalidResolution(
+        error: ValidationError.invalidClientMetadata,
+        dispatchDetails: optionalDispatchDetails(
+          fetchedRequest: fetchedRequest
+        )
+      )
+    }
 
     guard
       let unvalidatedResponseType = authorizedRequest.requestObject.responseType,
