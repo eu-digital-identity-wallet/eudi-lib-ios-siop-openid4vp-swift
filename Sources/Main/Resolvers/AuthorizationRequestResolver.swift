@@ -77,29 +77,29 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       )
     }
 
-    guard let clientMetaData = authorizedRequest.requestObject.clientMetaData else {
-      return .invalidResolution(
-        error: ValidationError.invalidClientMetadata,
-        dispatchDetails: optionalDispatchDetails(
-          config: walletConfiguration,
-          fetchedRequest: fetchedRequest
-        )
-      )
-    }
-
     let validatedClientMetaData: ClientMetaData.Validated?
-    do {
-      validatedClientMetaData = try await validateClientMetaData(
-        validator: clientMetaDataValidator,
-        clientMetaData: clientMetaData
-      )
-    } catch {
-      return .invalidResolution(
-        error: ValidationError.invalidClientMetadata,
-        dispatchDetails: optionalDispatchDetails(
-          config: walletConfiguration,
-          fetchedRequest: fetchedRequest
+    let clientMetaData = authorizedRequest.requestObject.clientMetaData
+    
+    // If clientMetaData is nil, we assume the client does not provide any metadata.
+    if let clientMetaData {
+      do {
+        validatedClientMetaData = try await validateClientMetaData(
+          validator: clientMetaDataValidator,
+          clientMetaData: clientMetaData
         )
+      } catch {
+        return .invalidResolution(
+          error: ValidationError.invalidClientMetadata,
+          dispatchDetails: optionalDispatchDetails(
+            config: walletConfiguration,
+            fetchedRequest: fetchedRequest
+          )
+        )
+      }
+    } else {
+      validatedClientMetaData = ClientMetaData.Validated(
+        subjectSyntaxTypesSupported: [.jwkThumbprint, .decentralizedIdentifier],
+        vpFormats: try! .default()
       )
     }
 

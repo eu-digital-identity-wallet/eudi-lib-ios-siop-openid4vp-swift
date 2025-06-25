@@ -19,8 +19,8 @@ public enum ResolvedRequestData: Sendable {
   case idToken(request: IdTokenData)
   case vpToken(request: VpTokenData)
   case idAndVpToken(request: IdAndVpTokenData)
-  
-  var presentationDefinition: PresentationDefinition? {
+
+  public var presentationDefinition: PresentationDefinition? {
     switch self {
     case .vpToken(let request):
       switch request.presentationQuery {
@@ -35,8 +35,8 @@ public enum ResolvedRequestData: Sendable {
       return nil
     }
   }
-  
-  var dcql: DCQL? {
+
+  public var dcql: DCQL? {
     switch self {
     case .vpToken(let request):
       switch request.presentationQuery {
@@ -51,8 +51,8 @@ public enum ResolvedRequestData: Sendable {
       return nil
     }
   }
-  
-  var client: Client {
+
+  public var client: Client {
     switch self {
     case .vpToken(let request):
       return request.client
