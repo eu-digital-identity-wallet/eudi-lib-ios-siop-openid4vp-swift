@@ -135,7 +135,7 @@ final class DirectPostTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -242,7 +242,7 @@ final class DirectPostTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(

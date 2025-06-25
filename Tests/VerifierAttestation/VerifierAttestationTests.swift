@@ -30,7 +30,7 @@ private let config: SiopOpenId4VPConfiguration = .init(
     rawValue: "did:example:123"
   ),
   signingKey: topPrivateKey,
-  signingKeySet: .init(keys: []),
+  publicWebKeySet: .init(keys: []),
   supportedClientIdSchemes: [
     .x509SanDns(trust: { _ in true })
   ],
@@ -171,7 +171,7 @@ private extension VerifierAttestaionTestsTests {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .verifierAttestation(
           trust: verifier,

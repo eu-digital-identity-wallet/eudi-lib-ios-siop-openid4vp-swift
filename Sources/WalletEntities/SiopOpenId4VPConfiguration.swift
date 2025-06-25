@@ -22,7 +22,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let idTokenTTL: TimeInterval
   public let presentationDefinitionUriSupported: Bool
   public let signingKey: SecKey
-  public let signingKeySet: WebKeySet
+  public let publicWebKeySet: WebKeySet
   public let supportedClientIdSchemes: [SupportedClientIdScheme]
   public let vpFormatsSupported: [ClaimFormat]
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition]
@@ -39,7 +39,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     idTokenTTL: TimeInterval = 600.0,
     presentationDefinitionUriSupported: Bool = false,
     signingKey: SecKey,
-    signingKeySet: WebKeySet,
+    publicWebKeySet: WebKeySet,
     supportedClientIdSchemes: [SupportedClientIdScheme],
     vpFormatsSupported: [ClaimFormat],
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
@@ -55,7 +55,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     self.idTokenTTL = idTokenTTL
     self.presentationDefinitionUriSupported = presentationDefinitionUriSupported
     self.signingKey = signingKey
-    self.signingKeySet = signingKeySet
+    self.publicWebKeySet = publicWebKeySet
     self.supportedClientIdSchemes = supportedClientIdSchemes
     self.vpFormatsSupported = vpFormatsSupported
     self.knownPresentationDefinitionsPerScope = knownPresentationDefinitionsPerScope
@@ -73,7 +73,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     idTokenTTL = 600.0
     presentationDefinitionUriSupported = false
     signingKey = try KeyController.generateRSAPrivateKey()
-    signingKeySet = WebKeySet(keys: [])
+    publicWebKeySet = WebKeySet(keys: [])
     supportedClientIdSchemes = []
     vpFormatsSupported = []
     knownPresentationDefinitionsPerScope = [:]

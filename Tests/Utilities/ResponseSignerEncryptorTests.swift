@@ -54,7 +54,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
@@ -71,7 +71,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let requirement: JARMRequirement = .signed(
       responseSigningAlg: alg,
       privateKey: wallet.signingKey,
-      webKeySet: wallet.signingKeySet
+      webKeySet: wallet.publicWebKeySet
     )
 
     let response = try await responseSignerEncryptor.signEncryptResponse(
@@ -158,7 +158,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
@@ -174,13 +174,13 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let encrypted: JARMRequirement = .encrypted(
       responseEncryptionAlg: encryptionAlg,
       responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
-      clientKey: wallet.signingKeySet
+      clientKey: wallet.publicWebKeySet
     )
 
     let signed: JARMRequirement = .signed(
       responseSigningAlg: signingAlg,
       privateKey: wallet.signingKey,
-      webKeySet: wallet.signingKeySet
+      webKeySet: wallet.publicWebKeySet
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
@@ -287,7 +287,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: rsaPrivateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
@@ -303,13 +303,13 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let encrypted: JARMRequirement = .encrypted(
       responseEncryptionAlg: encryptionAlg,
       responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
-      clientKey: wallet.signingKeySet
+      clientKey: wallet.publicWebKeySet
     )
 
     let signed: JARMRequirement = .signed(
       responseSigningAlg: signingAlg,
       privateKey: wallet.signingKey,
-      webKeySet: wallet.signingKeySet
+      webKeySet: wallet.publicWebKeySet
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()

@@ -40,7 +40,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
     ))
 
     let walletConfig = await validator.walletOpenId4VPConfig!
-    let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
+    let algorithm = SignatureAlgorithm(rawValue: walletConfig.publicWebKeySet.keys.first!.alg!)!
 
     let clientId = "Verifier"
     let scheme = "pre-registered"
@@ -78,7 +78,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
     ))
 
     let walletConfig = await validator.walletOpenId4VPConfig!
-    let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
+    let algorithm = SignatureAlgorithm(rawValue: walletConfig.publicWebKeySet.keys.first!.alg!)!
 
     let clientId = "Verifier"
     let scheme = "pre-registered"
@@ -117,7 +117,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
     ))
 
     let walletConfig = await validator.walletOpenId4VPConfig!
-    let algorithm = SignatureAlgorithm(rawValue: walletConfig.signingKeySet.keys.first!.alg!)!
+    let algorithm = SignatureAlgorithm(rawValue: walletConfig.publicWebKeySet.keys.first!.alg!)!
 
     let clientId = "Verifier"
     let scheme = "did"
@@ -173,7 +173,7 @@ private extension JarJwtSignatureValidatorTests {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           "Verifier": .init(
@@ -221,7 +221,7 @@ private extension JarJwtSignatureValidatorTests {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           "Verifier": .init(

@@ -45,7 +45,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -158,7 +158,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .redirectUri(clientId: URL(string: TestsConstants.testClientId)!),
         .x509SanDns(trust: { _ in
@@ -265,7 +265,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -396,7 +396,7 @@ final class DirectPostJWTTests: DiXCTest {
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
         signingKey: privateKey!,
-        signingKeySet: TestsConstants.webKeySet,
+        publicWebKeySet: TestsConstants.webKeySet,
         supportedClientIdSchemes: [],
         vpFormatsSupported: [],
         jarmConfiguration: .default(
@@ -424,7 +424,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: try KeyController.generateRSAPrivateKey(),
-      signingKeySet: TestsConstants.webKeySet,
+      publicWebKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
@@ -496,7 +496,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
@@ -592,7 +592,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -717,7 +717,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: rsaPrivateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -841,7 +841,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -964,7 +964,7 @@ final class DirectPostJWTTests: DiXCTest {
         rawValue: "did:example:123"
       ),
       signingKey: rsaPrivateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -1093,7 +1093,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: rsaPrivateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -1232,7 +1232,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -1349,7 +1349,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -1512,7 +1512,7 @@ final class DirectPostJWTTests: DiXCTest {
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try .init(rawValue: "did:example:123"),
         signingKey: rsaPrivateKey!,
-        signingKeySet: rsaKeySet,
+        publicWebKeySet: rsaKeySet,
         supportedClientIdSchemes: [],
         vpFormatsSupported: [],
         jarmConfiguration: .default(
@@ -1581,7 +1581,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -1692,7 +1692,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -1787,7 +1787,7 @@ final class DirectPostJWTTests: DiXCTest {
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try .init(rawValue: "did:example:123"),
         signingKey: privateKey,
-        signingKeySet: keySet,
+        publicWebKeySet: keySet,
         supportedClientIdSchemes: [
           .x509SanDns(trust: chainVerifier)
         ],

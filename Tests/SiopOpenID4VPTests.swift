@@ -48,7 +48,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           "verifier-backend.eudiw.dev": .init(
@@ -131,7 +131,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           clientId: .init(

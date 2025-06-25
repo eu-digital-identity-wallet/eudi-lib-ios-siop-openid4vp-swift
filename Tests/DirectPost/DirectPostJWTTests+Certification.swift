@@ -63,7 +63,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -186,7 +186,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
@@ -310,7 +310,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
