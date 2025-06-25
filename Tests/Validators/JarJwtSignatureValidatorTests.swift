@@ -186,12 +186,7 @@ private extension JarJwtSignatureValidatorTests {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(
-        .init(
-          privateKey: privateKey,
-          webKeySet: keySet
-        )
-      )
+      jarmConfiguration: .default()
     )
   }
 
@@ -234,12 +229,7 @@ private extension JarJwtSignatureValidatorTests {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(
-        .init(
-          privateKey: privateKey,
-          webKeySet: keySet
-        )
-      )
+      jarmConfiguration: .default()
     )
   }
 

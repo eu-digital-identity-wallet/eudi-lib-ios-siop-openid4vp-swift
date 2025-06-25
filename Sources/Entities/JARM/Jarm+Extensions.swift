@@ -28,6 +28,7 @@ public extension SiopOpenId4VPConfiguration {
       return nil
     }
     return jarmConfiguration.jarmRequirement(
+      config: self,
       validated: clientMetadata
     )
   }
@@ -37,17 +38,18 @@ public extension JARMConfiguration {
   
   /// Computes a `JarmRequirement` from this configuration and the client's validated metadata.
   func jarmRequirement(
+    config: SiopOpenId4VPConfiguration,
     validated clientMetadata: ClientMetaData.Validated
   ) -> JARMRequirement? {
     switch self {
-    case .signing(let keyPair):
+    case .signing:
       guard let alg = clientMetadata.authorizationSignedResponseAlg else {
         return nil
       }
       return .signed(
         responseSigningAlg: alg,
-        privateKey: keyPair.privateKey,
-        webKeySet: keyPair.webKeySet
+        privateKey: config.signingKey,
+        webKeySet: config.publicWebKeySet
       )
       
     case .encryption(let encrypted):
@@ -74,8 +76,14 @@ public extension JARMConfiguration {
       )
       
     case .signingAndEncryption(let signingConfig, let encryptionConfig):
-      let signingRequirement = signingConfig.jarmRequirement(validated: clientMetadata)
-      let encryptionRequirement = encryptionConfig.jarmRequirement(validated: clientMetadata)
+      let signingRequirement = signingConfig.jarmRequirement(
+        config: config,
+        validated: clientMetadata
+      )
+      let encryptionRequirement = encryptionConfig.jarmRequirement(
+        config: config,
+        validated: clientMetadata
+      )
       
       switch (signingRequirement, encryptionRequirement) {
       case let (.some(signed), .some(encrypted)):

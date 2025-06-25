@@ -59,12 +59,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(
-        .init(
-          privateKey: privateKey,
-          webKeySet: keySet
-        )
-      )
+      jarmConfiguration: .default()
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
@@ -163,12 +158,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(
-        .init(
-          privateKey: privateKey,
-          webKeySet: keySet
-        )
-      )
+      jarmConfiguration: .default()
     )
 
     let encrypted: JARMRequirement = .encrypted(
@@ -292,12 +282,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(
-        .init(
-          privateKey: rsaPrivateKey,
-          webKeySet: keySet
-        )
-      )
+      jarmConfiguration: .default()
     )
 
     let encrypted: JARMRequirement = .encrypted(

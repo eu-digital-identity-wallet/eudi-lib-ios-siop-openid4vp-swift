@@ -149,12 +149,7 @@ final class DirectPostTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(
-        .init(
-          privateKey: privateKey,
-          webKeySet: keySet
-        )
-      )
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -259,12 +254,7 @@ final class DirectPostTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(
-        .init(
-          privateKey: privateKey,
-          webKeySet: keySet
-        )
-      )
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)

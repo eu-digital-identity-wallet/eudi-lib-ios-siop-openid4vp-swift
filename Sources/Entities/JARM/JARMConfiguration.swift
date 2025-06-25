@@ -20,9 +20,7 @@
 public indirect enum JARMConfiguration: Sendable {
 
   /// The wallet supports only signed authorization responses.
-  case signing(
-    keyPair: SigningKeyPair
-  )
+  case signing
 
   /// The wallet supports only encrypted authorization responses.
   case encryption(Encryption)
@@ -59,16 +57,6 @@ public indirect enum JARMConfiguration: Sendable {
     }
   }
 
-  public struct SigningKeyPair : Sendable{
-    public let privateKey: SecKey
-    public let webKeySet: WebKeySet
-
-    public init(privateKey: SecKey, webKeySet: WebKeySet) {
-      self.privateKey = privateKey
-      self.webKeySet = webKeySet
-    }
-  }
-
   // MARK: - Helper Accessors
 
   public var signingConfig: JARMConfiguration? {
@@ -93,11 +81,9 @@ public indirect enum JARMConfiguration: Sendable {
     }
   }
   
-  public static func `default`(_ keyPair: SigningKeyPair) -> JARMConfiguration {
+  public static func `default`() -> JARMConfiguration {
     try! .signingAndEncryption(
-      signing: .signing(
-        keyPair: keyPair
-      ),
+      signing: .signing,
       encryption: .encryption(
         .init(
           supportedAlgorithms: [

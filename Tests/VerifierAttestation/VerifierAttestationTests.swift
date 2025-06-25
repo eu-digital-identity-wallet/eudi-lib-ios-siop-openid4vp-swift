@@ -37,12 +37,7 @@ private let config: SiopOpenId4VPConfiguration = .init(
   vpFormatsSupported: [],
   jarConfiguration: .noEncryptionOption,
   vpConfiguration: VPConfiguration.default(),
-  jarmConfiguration: .default(
-    .init(
-      privateKey: topPrivateKey,
-      webKeySet: .init(keys: [])
-    )
-  )
+  jarmConfiguration: .default()
 )
 
 final class VerifierAttestaionTestsTests: XCTestCase {
@@ -181,12 +176,7 @@ private extension VerifierAttestaionTestsTests {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(
-        .init(
-          privateKey: privateKey,
-          webKeySet: keySet
-        )
-      )
+      jarmConfiguration: .default()
     )
   }
 
