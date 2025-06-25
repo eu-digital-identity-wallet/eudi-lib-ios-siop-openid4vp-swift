@@ -107,3 +107,39 @@ class ExtensionTests: XCTestCase {
     }
   }
 }
+
+class URLHostTests: XCTestCase {
+  
+  func testBasicHost() {
+    let url = URL(string: "https://example.com")!
+     
+    XCTAssertEqual(url.host(includePercentEncoding: true), "example.com")
+    XCTAssertEqual(url.host(includePercentEncoding: false), "example.com")
+  }
+  
+  func testPunyHost() {
+    let url = URL(string: "https://exämple.com")!
+    
+    XCTAssertEqual(url.host(includePercentEncoding: true), "xn--exmple-cua.com")
+    XCTAssertEqual(url.host(includePercentEncoding: false), "xn--exmple-cua.com")
+  }
+  
+  func testPercentEncodedPathNotAffectingHost() {
+    let url = URL(string: "http://example.com/cameralife/2025-06%20Hello%20world/")!
+    XCTAssertEqual(url.host(includePercentEncoding: true), "example.com")
+    XCTAssertEqual(url.host(includePercentEncoding: false), "example.com")
+  }
+  
+  func testInvalidURL() {
+    let url = URL(string: "not a valid url")
+    XCTAssertNil(url?.host(includePercentEncoding: true))
+    XCTAssertNil(url?.host(includePercentEncoding: false))
+  }
+  
+  func testURLWithNoHost() {
+    // Relative path only, no host
+    let url = URL(string: "/local/path/file.html")!
+    XCTAssertNil(url.host(includePercentEncoding: true))
+    XCTAssertNil(url.host(includePercentEncoding: false))
+  }
+}
