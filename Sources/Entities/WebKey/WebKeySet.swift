@@ -17,7 +17,7 @@ import Foundation
 import JOSESwift
 import SwiftyJSON
 
-public struct WebKeySet: Codable, Equatable {
+public struct WebKeySet: Codable, Equatable, Sendable {
   public let keys: [Key]
 
   public init(keys: [Key]) {
@@ -26,7 +26,7 @@ public struct WebKeySet: Codable, Equatable {
 
   public init(_ json: JSON) throws {
     guard let keys = json["keys"].array else {
-      throw ValidatedAuthorizationError.invalidJWTWebKeySet
+      throw ValidationError.invalidJWTWebKeySet
     }
     self.keys = try WebKeySet.transformToKey(keys)
   }
@@ -36,27 +36,27 @@ public struct WebKeySet: Codable, Equatable {
       let keySet = try? JSON(json.convertToDictionary() ?? [:]),
       let keys = keySet["keys"].array
     else {
-      throw ValidatedAuthorizationError.invalidJWTWebKeySet
+      throw ValidationError.invalidJWTWebKeySet
     }
     self.keys = try WebKeySet.transformToKey(keys)
   }
 }
 
 public extension WebKeySet {
-  struct Key: Codable, Equatable, Hashable {
+  struct Key: Codable, Equatable, Hashable, Sendable {
 
     public let kty: String
     public let use: String?
     public let kid: String?
     public let iat: Int64?
-    
+
     public let crv: String?
     public let x: String?
     public let y: String?
-    
+
     public let exponent: String?
     public let modulus: String?
-    
+
     public let alg: String?
 
     /// Coding keys for encoding and decoding the structure.
@@ -65,14 +65,14 @@ public extension WebKeySet {
       case use
       case kid
       case iat
-      
+
       case crv
       case x
       case y
-      
+
       case exponent = "e"
       case modulus = "n"
-      
+
       case alg
     }
 
@@ -122,43 +122,43 @@ fileprivate extension WebKeySet {
       WebKeySet.Key(
         kty: try key.getValue(
           for: "kty",
-          error: ValidatedAuthorizationError.validationError("key set key \"kty\" not found")
+          error: ValidationError.validationError("key set key \"kty\" not found")
         ),
         use: try? key.getValue(
           for: "use",
-          error: ValidatedAuthorizationError.validationError("key set key  \"use\" not found")
+          error: ValidationError.validationError("key set key  \"use\" not found")
         ),
         kid: try? key.getValue(
           for: "kid",
-          error: ValidatedAuthorizationError.validationError("key set key  \"kid\" not found")
+          error: ValidationError.validationError("key set key  \"kid\" not found")
         ),
         iat: try? key.getValue(
           for: "iat",
-          error: ValidatedAuthorizationError.validationError("key set key  \"iat\" not found")
+          error: ValidationError.validationError("key set key  \"iat\" not found")
         ),
         crv: try? key.getValue(
           for: "crv",
-          error: ValidatedAuthorizationError.validationError("key set key  \"crv\" not found")
+          error: ValidationError.validationError("key set key  \"crv\" not found")
         ),
         x: try? key.getValue(
           for: "x",
-          error: ValidatedAuthorizationError.validationError("key set key  \"x\" not found")
+          error: ValidationError.validationError("key set key  \"x\" not found")
         ),
         y: try? key.getValue(
           for: "y",
-          error: ValidatedAuthorizationError.validationError("key set key  \"y\" not found")
+          error: ValidationError.validationError("key set key  \"y\" not found")
         ),
         exponent: try? key.getValue(
           for: "e",
-          error: ValidatedAuthorizationError.validationError("key set key  \"x\" not found")
+          error: ValidationError.validationError("key set key  \"x\" not found")
         ),
         modulus: try? key.getValue(
           for: "n",
-          error: ValidatedAuthorizationError.validationError("key set key  \"x\" not found")
+          error: ValidationError.validationError("key set key  \"x\" not found")
         ),
         alg: try? key.getValue(
           for: "alg",
-          error: ValidatedAuthorizationError.validationError("key set key  \"y\" not found")
+          error: ValidationError.validationError("key set key  \"y\" not found")
         )
       )
     }
@@ -171,7 +171,7 @@ public extension WebKeySet {
       [JSON(jwk.toDictionary())]
     )
   }
-  
+
   init(jwks: [JWK]) throws {
     self.keys = try WebKeySet.transformToKey(jwks.map {
       try JSON($0.toDictionary())
