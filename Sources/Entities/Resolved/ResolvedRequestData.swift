@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import Foundation
+import SwiftyJSON
 
 public enum ResolvedRequestData: Sendable {
   case idToken(request: IdTokenData)
@@ -79,10 +80,17 @@ public extension ResolvedRequestData {
     presentationDefinitionResolver: PresentationDefinitionResolver,
     validatedAuthorizationRequest: ValidatedRequestData
   ) async throws {
+
     switch validatedAuthorizationRequest {
     case .idToken(let request):
+      let (presentationQuery, _) = try await Self.resolvePresentationQuery(
+        from: request.querySource,
+        presentationDefinitionResolver: presentationDefinitionResolver
+      )
+
       self = .idToken(request: .init(
         idTokenType: request.idTokenType,
+        presentationQuery: presentationQuery,
         clientMetaData: validatedClientMetaData,
         client: request.client,
         nonce: request.nonce,
@@ -91,167 +99,99 @@ public extension ResolvedRequestData {
         scope: request.scope,
         jarmRequirement: walletConfiguration.jarmRequirement(
           validated: validatedClientMetaData
+        ),
+        transactionData: try Self.parseTransactionData(
+          transactionData: request.transactionData,
+          vpConfiguration: vpConfiguration,
+          presentationQuery: presentationQuery),
+        verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
+          request.verifierAttestations,
+          presentationQuery: presentationQuery)
+      ))
+
+    case .vpToken(let request):
+      let commonFormats = VpFormats.common(request.vpFormats, vpConfiguration.vpFormats) ?? request.vpFormats
+      let (presentationQuery, _) = try await Self.resolvePresentationQuery(
+        from: request.querySource,
+        presentationDefinitionResolver: presentationDefinitionResolver
+      )
+
+      self = .vpToken(request: .init(
+        presentationQuery: presentationQuery,
+        clientMetaData: validatedClientMetaData,
+        client: request.client,
+        nonce: request.nonce,
+        responseMode: request.responseMode,
+        state: request.state,
+        vpFormats: commonFormats,
+        jarmRequirement: walletConfiguration.jarmRequirement(
+          validated: validatedClientMetaData
+        ),
+        transactionData: try Self.parseTransactionData(
+          transactionData: request.transactionData,
+          vpConfiguration: vpConfiguration,
+          presentationQuery: presentationQuery),
+        verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
+          request.verifierAttestations,
+          presentationQuery: presentationQuery
         )
       ))
-    case .vpToken(let request):
-      let common = VpFormats.common(
-        request.vpFormats,
-        vpConfiguration.vpFormats
-      ) ?? request.vpFormats
-      
+
+    case .idAndVpToken(let request):
+      let commonFormats = VpFormats.common(request.vpFormats, vpConfiguration.vpFormats) ?? request.vpFormats
+      let (presentationQuery, definition) = try await Self.resolvePresentationQuery(
+        from: request.querySource,
+        presentationDefinitionResolver: presentationDefinitionResolver
+      )
+
       switch request.querySource {
-      case .byPresentationDefinitionSource(let source):
-        guard
-          let presentationDefinition = try? await presentationDefinitionResolver.resolve(source: source).get()
-        else {
+      case .byPresentationDefinitionSource:
+        guard let definition else {
           throw ResolvedAuthorisationError.invalidPresentationDefinitionData
         }
-        
-        let presentationQuery: PresentationQuery = .byPresentationDefinition(
-          presentationDefinition
-        )
-        
-        self = .vpToken(
-          request: .init(
-            presentationQuery: presentationQuery,
-            clientMetaData: validatedClientMetaData,
-            client: request.client,
-            nonce: request.nonce,
-            responseMode: request.responseMode,
-            state: request.state,
-            vpFormats: common,
-            transactionData: try Self.parseTransactionData(
-              transactionData: request.transactionData,
-              vpConfiguration: vpConfiguration,
-              presentationQuery: presentationQuery
-            ),
-            jarmRequirement: walletConfiguration.jarmRequirement(
-              validated: validatedClientMetaData
-            )
-          )
-        )
-      case .dcqlQuery(let dcql):
-        let presentationQuery: PresentationQuery = .byDigitalCredentialsQuery(dcql)
-        
-        self = .vpToken(
-          request: .init(
-            presentationQuery: presentationQuery,
-            clientMetaData: validatedClientMetaData,
-            client: request.client,
-            nonce: request.nonce,
-            responseMode: request.responseMode,
-            state: request.state,
-            vpFormats: common,
-            transactionData: try Self.parseTransactionData(
-              transactionData: request.transactionData,
-              vpConfiguration: vpConfiguration,
-              presentationQuery: presentationQuery
-            ),
-            jarmRequirement: walletConfiguration.jarmRequirement(
-              validated: validatedClientMetaData
-            )
-          )
-        )
-      case .byScope(let scope):
-        let presentationQuery: PresentationQuery = try Self.lookupConfiguredQueries(
-          scope: scope,
-          vpConfiguration: vpConfiguration
-        )
-        
-        self = .vpToken(
-          request: .init(
-            presentationQuery: presentationQuery,
-            clientMetaData: validatedClientMetaData,
-            client: request.client,
-            nonce: request.nonce,
-            responseMode: request.responseMode,
-            state: request.state,
-            vpFormats: common,
-            transactionData: try Self.parseTransactionData(
-              transactionData: request.transactionData,
-              vpConfiguration: vpConfiguration,
-              presentationQuery: presentationQuery
-            ),
-            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
-          )
-        )
-      }
-    case .idAndVpToken(request: let request):
-      let common = VpFormats.common(
-        request.vpFormats,
-        vpConfiguration.vpFormats
-      ) ?? request.vpFormats
-      
-      switch request.querySource {
-      case .byPresentationDefinitionSource(let source):
-        guard
-          let presentationDefinition = try? await presentationDefinitionResolver.resolve(source: source).get()
-        else {
-          throw ResolvedAuthorisationError.invalidPresentationDefinitionData
-        }
-        
-        let presentationQuery: PresentationQuery = .byPresentationDefinition(presentationDefinition)
-        
         self = .idAndVpToken(request: .init(
           idTokenType: request.idTokenType,
           presentationQuery: presentationQuery,
-          presentationDefinition: presentationDefinition,
+          presentationDefinition: definition,
           clientMetaData: validatedClientMetaData,
           client: request.client,
           nonce: request.nonce,
           responseMode: request.responseMode,
           state: request.state,
           scope: request.scope,
-          vpFormats: common,
+          vpFormats: commonFormats,
           transactionData: try Self.parseTransactionData(
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
+            presentationQuery: presentationQuery),
+          verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
+            request.verifierAttestations,
             presentationQuery: presentationQuery
           )
         ))
-      case .dcqlQuery(let dcql):
-        let presentationQuery: PresentationQuery = .byDigitalCredentialsQuery(dcql)
-        
-        self = .vpToken(
-          request: .init(
-            presentationQuery: presentationQuery,
-            clientMetaData: validatedClientMetaData,
-            client: request.client,
-            nonce: request.nonce,
-            responseMode: request.responseMode,
-            state: request.state,
-            vpFormats: common,
-            transactionData: try Self.parseTransactionData(
-              transactionData: request.transactionData,
-              vpConfiguration: vpConfiguration,
-              presentationQuery: presentationQuery
-            ),
-            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
+      case .dcqlQuery:
+        self = .vpToken(request: .init(
+          presentationQuery: presentationQuery,
+          clientMetaData: validatedClientMetaData,
+          client: request.client,
+          nonce: request.nonce,
+          responseMode: request.responseMode,
+          state: request.state,
+          vpFormats: commonFormats,
+          jarmRequirement: walletConfiguration.jarmRequirement(
+            validated: validatedClientMetaData
+          ),
+          transactionData: try Self.parseTransactionData(
+            transactionData: request.transactionData,
+            vpConfiguration: vpConfiguration,
+            presentationQuery: presentationQuery),
+          verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
+            request.verifierAttestations,
+            presentationQuery: presentationQuery
           )
-        )
-      case .byScope(let scope):
-        let presentationQuery: PresentationQuery = try Self.lookupConfiguredQueries(
-          scope: scope,
-          vpConfiguration: vpConfiguration
-        )
-        
-        self = .vpToken(
-          request: .init(
-            presentationQuery: presentationQuery,
-            clientMetaData: validatedClientMetaData,
-            client: request.client,
-            nonce: request.nonce,
-            responseMode: request.responseMode,
-            state: request.state,
-            vpFormats: common,
-            transactionData: try Self.parseTransactionData(
-              transactionData: request.transactionData,
-              vpConfiguration: vpConfiguration,
-              presentationQuery: presentationQuery
-            ),
-            jarmRequirement: walletConfiguration.jarmRequirement(validated: validatedClientMetaData)
-          )
-        )
+        ))
+      default:
+        throw ValidationError.validationError("Query source by scope is not supported for now")
       }
     }
   }
@@ -287,6 +227,28 @@ public extension ResolvedRequestData {
 }
 
 private extension ResolvedRequestData {
+  
+  static func resolvePresentationQuery(
+    from source: QuerySource,
+    presentationDefinitionResolver: PresentationDefinitionResolver
+  ) async throws -> (PresentationQuery, PresentationDefinition?) {
+    switch source {
+    case .byPresentationDefinitionSource(let source):
+      guard
+        let presentationDefinition = try? await presentationDefinitionResolver.resolve(source: source).get()
+      else {
+        throw ResolvedAuthorisationError.invalidPresentationDefinitionData
+      }
+      return (.byPresentationDefinition(presentationDefinition), presentationDefinition)
+      
+    case .dcqlQuery(let dcql):
+      return (.byDigitalCredentialsQuery(dcql), nil)
+      
+    default:
+      throw ValidationError.validationError("Query source by scope is not supported for now")
+    }
+  }
+  
   static func parseTransactionData(
     transactionData: [String]?,
     vpConfiguration: VPConfiguration,

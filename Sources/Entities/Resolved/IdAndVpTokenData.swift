@@ -31,6 +31,7 @@ extension ResolvedRequestData {
     public let vpFormats: VpFormats
     public let transactionData: [TransactionData]?
     public let jarmRequirement: JARMRequirement?
+    public let verifierAttestations: [VerifierAttestation]?
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -42,7 +43,8 @@ extension ResolvedRequestData {
     ///   - state: The state.
     ///   - scope: The scope.
     ///   - vpFormats: Vp Formats
-    ///   - transactionData: Transaction data
+    ///   - transactionData: Optional list of transcation data
+    ///   - verifierAttestations: Optional list of verifierAttestations
     ///   - jarmRequirement: JARM
     public init(
       idTokenType: IdTokenType,
@@ -56,6 +58,7 @@ extension ResolvedRequestData {
       scope: Scope?,
       vpFormats: VpFormats,
       transactionData: [TransactionData]? = nil,
+      verifierAttestations: [VerifierAttestation]? = nil,
       jarmRequirement: JARMRequirement? = nil
     ) {
       self.idTokenType = idTokenType
@@ -69,6 +72,7 @@ extension ResolvedRequestData {
       self.scope = scope
       self.vpFormats = vpFormats
       self.transactionData = transactionData
+      self.verifierAttestations = verifierAttestations
       self.jarmRequirement = jarmRequirement
     }
   }

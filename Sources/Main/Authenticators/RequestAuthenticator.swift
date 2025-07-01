@@ -53,6 +53,7 @@ internal struct JWTDecoder {
 
     let pd = json["presentation_definition"].dictionaryObject?.toJSONString() ?? json["presentation_definition"].string
     let transactionData = json["transaction_data"].arrayObject as? [String]
+    let verifierAttestations = json["verifier_attestations"].arrayValue
 
     return UnvalidatedRequestObject(
       responseType: json["response_type"].string,
@@ -74,7 +75,8 @@ internal struct JWTDecoder {
       state: json["state"].string,
       idTokenType: json["id_token_type"].string,
       supportedAlgorithm: json["supported_algorithm"].string,
-      transactionData: transactionData
+      transactionData: transactionData,
+      verifierAttestations: verifierAttestations
     )
   }
 }
@@ -144,7 +146,10 @@ internal actor RequestAuthenticator {
       responseMode: requestObject.validResponseMode,
       state: requestObject.state,
       vpFormats: formats.values.isEmpty ? try VpFormats.default() : formats,
-      transactionData: requestObject.transactionData
+      transactionData: requestObject.transactionData,
+      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
+        try VerifierAttestation.from(json: json)
+      })
     ))
   }
 
@@ -154,7 +159,13 @@ internal actor RequestAuthenticator {
     nonce: String,
     requestObject: UnvalidatedRequestObject
   ) throws -> ValidatedRequestData {
-    .idToken(request: .init(
+    
+    let querySource = try parseQuerySource(
+      requestObject: requestObject
+    )
+    
+    return .idToken(request: .init(
+      querySource: querySource,
       idTokenType: try .init(authorizationRequestData: requestObject),
       clientMetaDataSource: nil,
       clientId: clientId,
@@ -162,7 +173,11 @@ internal actor RequestAuthenticator {
       nonce: nonce,
       scope: requestObject.scope,
       responseMode: try? .init(authorizationRequestData: requestObject),
-      state: requestObject.state
+      state: requestObject.state,
+      transactionData: requestObject.transactionData,
+      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
+        try VerifierAttestation.from(json: json)
+      })
     ))
   }
 
@@ -189,7 +204,10 @@ internal actor RequestAuthenticator {
       requestUriMethod: .init(method: requestObject.requestUriMethod),
       state: requestObject.state,
       vpFormats: formats.values.isEmpty ? try VpFormats.default() : formats,
-      transactionData: requestObject.transactionData
+      transactionData: requestObject.transactionData,
+      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
+        try VerifierAttestation.from(json: json)
+      })
     ))
   }
 

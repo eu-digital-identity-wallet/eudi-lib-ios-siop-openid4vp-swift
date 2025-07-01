@@ -58,6 +58,8 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case nonDispatchable(ValidationError)
   case invalidJarmRequirement
   
+  case invalidVerifierAttestationFormat
+  case invalidVerifierAttestationCredentialIds
 
   public var errorDescription: String? {
     switch self {
@@ -143,6 +145,10 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".nonDispatchable \(error.localizedDescription)"
     case .invalidJarmRequirement:
       return ".invalidJarmRequirement"
+    case .invalidVerifierAttestationFormat:
+      return ".invalidVerifierAttestationFormat"
+    case .invalidVerifierAttestationCredentialIds:
+      return ".invalidVerifierAttestationCredentialIds"
     }
   }
 }

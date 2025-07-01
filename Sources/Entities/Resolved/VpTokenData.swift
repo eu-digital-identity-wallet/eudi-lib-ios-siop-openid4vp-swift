@@ -28,6 +28,8 @@ extension ResolvedRequestData {
     public let transactionData: [TransactionData]?
     public let jarmRequirement: JARMRequirement?
     
+    public let verifierAttestations: [VerifierAttestation]?
+
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///
     /// - Parameters:
@@ -38,8 +40,9 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state value.
     ///   - vpFormats: Vp Formats
-    ///   - transactionData: Transaction data
     ///   - jarmRequirement: JARM
+    ///   - transactionData: Optional list of transcation data
+    ///   - verifierAttestations: Optional list of verifierAttestations
     public init(
       presentationQuery: PresentationQuery,
       clientMetaData: ClientMetaData.Validated?,
@@ -48,8 +51,9 @@ extension ResolvedRequestData {
       responseMode: ResponseMode?,
       state: String?,
       vpFormats: VpFormats,
+      jarmRequirement: JARMRequirement?,
       transactionData: [TransactionData]? = nil,
-      jarmRequirement: JARMRequirement?
+      verifierAttestations: [VerifierAttestation]? = nil
     ) {
       self.presentationQuery = presentationQuery
       self.clientMetaData = clientMetaData
@@ -60,6 +64,7 @@ extension ResolvedRequestData {
       self.vpFormats = vpFormats
       self.transactionData = transactionData
       self.jarmRequirement = jarmRequirement
+      self.verifierAttestations = verifierAttestations
     }
   }
 }

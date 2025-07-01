@@ -38,6 +38,25 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     let state = "testState"
     let scope = "// Replace with an instance of `Scope`"
 
+    let credentialId = try! QueryId(value: "id_card")
+
+    let attest1 = VerifierAttestation(
+      format: "jwt",
+      data: JSON("eyJhbGciOiJFUzI1...EF0RBtvPClL71TWHlIQ"),
+      credentialIds: [ credentialId ]
+    )
+
+    let attest2 = VerifierAttestation(
+      format: "json",
+      data: JSON([
+        "verifier": "Acme Corp",
+        "policy": ["retention": "30 days"]
+      ]),
+      credentialIds: nil
+    )
+
+    let attestations = [ attest1, attest2 ]
+
     let tokenData = ResolvedRequestData.IdAndVpTokenData(
       idTokenType: idTokenType,
       presentationQuery: .byPresentationDefinition(presentationDefinition),
@@ -48,7 +67,8 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       responseMode: responseMode,
       state: state,
       scope: scope,
-      vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
+      vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
+      verifierAttestations: attestations
     )
 
     XCTAssertEqual(tokenData.idTokenType, idTokenType)
@@ -56,6 +76,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     XCTAssertEqual(tokenData.nonce, nonce)
     XCTAssertEqual(tokenData.state, state)
     XCTAssertEqual(tokenData.scope, scope)
+    XCTAssertEqual(tokenData.verifierAttestations, attestations)
   }
 
   func testWalletOpenId4VPConfigurationInitialization() throws {

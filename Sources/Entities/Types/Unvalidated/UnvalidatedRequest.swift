@@ -104,6 +104,10 @@ internal struct QueryHelper {
   func jsonArray(_ name: String) -> [String]? {
     json(name)?.array?.compactMap { $0.string }
   }
+  
+  func jsonArrayObject(_ name: String) -> [JSON]? {
+    json(name)?.array
+  }
 
   func requestUriMethod() throws -> RequestUriMethod? {
     guard let raw = string("request_uri_method")?.lowercased() else { return nil }
@@ -131,7 +135,8 @@ internal struct QueryHelper {
       responseMode: string("response_mode"),
       state: string("state"),
       idTokenType: string("id_token_type"),
-      transactionData: jsonArray(Constants.TRANSACTION_DATA)
+      transactionData: jsonArray(Constants.TRANSACTION_DATA),
+      verifierAttestations: jsonArrayObject(Constants.VERIFIER_ATTESTATIONS)
     )
   }
 

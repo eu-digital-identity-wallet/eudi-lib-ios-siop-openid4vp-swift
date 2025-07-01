@@ -41,6 +41,7 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
   public let idTokenType: String?
   public let supportedAlgorithm: String?
   public let transactionData: [String]?
+  public let verifierAttestations: [JSON]?
 
   enum CodingKeys: String, CodingKey {
     case responseType = "response_type"
@@ -63,6 +64,7 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     case requestUriMethod = "request_uri_method"
     case supportedAlgorithm = "supported_algorithm"
     case transactionData = "transaction_data"
+    case verifierAttestations = "verifier_attestations"
   }
 
   public init(
@@ -85,7 +87,8 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     state: String? = nil,
     idTokenType: String? = nil,
     supportedAlgorithm: String? = nil,
-    transactionData: [String]? = nil
+    transactionData: [String]? = nil,
+    verifierAttestations: [JSON]? = nil
   ) {
     self.responseType = responseType
     self.responseUri = responseUri
@@ -107,6 +110,7 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     self.idTokenType = idTokenType
     self.supportedAlgorithm = supportedAlgorithm
     self.transactionData = transactionData
+    self.verifierAttestations = verifierAttestations
   }
 
   public init(from decoder: Decoder) throws {
@@ -138,6 +142,7 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     supportedAlgorithm = try? container.decode(String.self, forKey: .supportedAlgorithm)
 
     transactionData = try? container.decode([String].self, forKey: .transactionData)
+    verifierAttestations = try? container.decode([JSON].self, forKey: .verifierAttestations)
   }
 
   public func encode(to encoder: Encoder) throws {
@@ -169,6 +174,7 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
 
     try? container.encode(supportedAlgorithm, forKey: .supportedAlgorithm)
     try? container.encode(transactionData, forKey: .transactionData)
+    try? container.encode(verifierAttestations, forKey: .verifierAttestations)
   }
 }
 
@@ -211,6 +217,11 @@ public extension UnvalidatedRequestObject {
       for: "transaction_data",
       from: url
     )?.compactMap { $0.string }
+
+    verifierAttestations = JsonHelper.jsonArray(
+      for: "verifier_attestations",
+      from: url
+    )
   }
 }
 
