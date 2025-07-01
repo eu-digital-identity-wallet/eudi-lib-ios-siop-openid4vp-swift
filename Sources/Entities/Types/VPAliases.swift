@@ -20,7 +20,7 @@ public typealias JWTString = String
 public typealias Nonce = String
 public typealias Scope = String
 
-public let SCOPE_SEPARATOR = " " // or whatever your separator is
+public let SCOPE_SEPARATOR = " "
 
 public func scopeItems(from value: Scope) -> [Scope] {
   if value.isEmpty {
