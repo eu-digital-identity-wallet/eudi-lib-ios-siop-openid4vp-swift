@@ -17,6 +17,7 @@ import Foundation
 
 extension ValidatedRequestData {
   public struct IdTokenRequest: Sendable {
+    let querySource: QuerySource
     let idTokenType: IdTokenType
     let clientMetaDataSource: ClientMetaDataSource?
     let clientId: String
@@ -25,8 +26,11 @@ extension ValidatedRequestData {
     let scope: Scope?
     let responseMode: ResponseMode?
     let state: String?
+    let transactionData: [String]?
+    let verifierAttestations: [VerifierAttestation]?
 
     public init(
+      querySource: QuerySource,
       idTokenType: IdTokenType,
       clientMetaDataSource: ClientMetaDataSource?,
       clientId: String,
@@ -34,8 +38,11 @@ extension ValidatedRequestData {
       nonce: String,
       scope: Scope?,
       responseMode: ResponseMode?,
-      state: String?
+      state: String?,
+      transactionData: [String]?,
+      verifierAttestations: [VerifierAttestation]?
     ) {
+      self.querySource = querySource
       self.idTokenType = idTokenType
       self.clientMetaDataSource = clientMetaDataSource
       self.clientId = clientId
@@ -44,6 +51,8 @@ extension ValidatedRequestData {
       self.scope = scope
       self.responseMode = responseMode
       self.state = state
+      self.transactionData = transactionData
+      self.verifierAttestations = verifierAttestations
     }
   }
 }

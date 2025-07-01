@@ -30,6 +30,7 @@ extension ResolvedRequestData {
     let scope: Scope?
     let vpFormats: VpFormats
     let transactionData: [TransactionData]?
+    let verifierAttestations: [VerifierAttestation]?
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -40,6 +41,8 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state.
     ///   - scope: The scope.
+    ///   - transactionData: Optional list of transcation data
+    ///   - verifierAttestations: Optional list of verifierAttestations
     public init(
       idTokenType: IdTokenType,
       presentationQuery: PresentationQuery,
@@ -51,7 +54,8 @@ extension ResolvedRequestData {
       state: String?,
       scope: Scope?,
       vpFormats: VpFormats,
-      transactionData: [TransactionData]? = nil
+      transactionData: [TransactionData]? = nil,
+      verifierAttestations: [VerifierAttestation]? = nil
     ) {
       self.idTokenType = idTokenType
       self.presentationQuery = presentationQuery
@@ -64,6 +68,7 @@ extension ResolvedRequestData {
       self.scope = scope
       self.vpFormats = vpFormats
       self.transactionData = transactionData
+      self.verifierAttestations = verifierAttestations
     }
   }
 }

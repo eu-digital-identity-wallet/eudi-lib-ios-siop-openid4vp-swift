@@ -29,6 +29,7 @@ public struct Constants {
   public static let CLIENT_ID_SCHEME = "client_id_scheme"
   public static let PRESENTATION_DEFINITION = "presentation_definition"
   public static let DCQL_QUERY = "dcql_query"
+  public static let VERIFIER_ATTESTATIONS = "verifier_attestations"
   public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
   public static let REQUEST_URI_METHOD = "request_url_method"
   public static let CLIENT_METADATA = "client_metadata"

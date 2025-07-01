@@ -15,6 +15,7 @@
  */
 import Foundation
 import PresentationExchange
+import SwiftyJSON
 
 extension ValidatedRequestData {
   public struct VpTokenRequest: Sendable {
@@ -28,6 +29,7 @@ extension ValidatedRequestData {
     let state: String?
     let vpFormats: VpFormats
     let transactionData: [String]?
+    let verifierAttestations: [VerifierAttestation]?
 
     public init(
       querySource: QuerySource,
@@ -39,7 +41,8 @@ extension ValidatedRequestData {
       requestUriMethod: RequestUriMethod,
       state: String?,
       vpFormats: VpFormats,
-      transactionData: [String]?
+      transactionData: [String]?,
+      verifierAttestations: [VerifierAttestation]?
     ) {
       self.querySource = querySource
       self.clientMetaDataSource = clientMetaDataSource
@@ -51,6 +54,7 @@ extension ValidatedRequestData {
       self.state = state
       self.vpFormats = vpFormats
       self.transactionData = transactionData
+      self.verifierAttestations = verifierAttestations
     }
   }
 }

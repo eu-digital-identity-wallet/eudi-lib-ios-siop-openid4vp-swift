@@ -25,17 +25,6 @@ public enum ValidatedRequestData: Sendable {
   case vpToken(request: VpTokenRequest)
   case idAndVpToken(request: IdAndVpTokenRequest)
 
-  public var transactionData: [String]? {
-    switch self {
-    case .idToken:
-      return nil
-    case .vpToken(let request):
-      return request.transactionData
-    case .idAndVpToken(let request):
-      return request.transactionData
-    }
-  }
-
   public var responseMode: ResponseMode? {
     switch self {
     case .idToken(let request):
