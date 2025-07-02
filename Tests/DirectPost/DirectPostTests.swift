@@ -40,7 +40,8 @@ final class DirectPostTests: DiXCTest {
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope
+        scope: TestsConstants.testScope,
+        jarmRequirement: .noRequirement
       )
     )
 
@@ -77,7 +78,8 @@ final class DirectPostTests: DiXCTest {
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope
+        scope: TestsConstants.testScope,
+        jarmRequirement: .noRequirement
       )
     )
 
@@ -139,7 +141,7 @@ final class DirectPostTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -152,7 +154,8 @@ final class DirectPostTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -240,7 +243,7 @@ final class DirectPostTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -256,7 +259,8 @@ final class DirectPostTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)

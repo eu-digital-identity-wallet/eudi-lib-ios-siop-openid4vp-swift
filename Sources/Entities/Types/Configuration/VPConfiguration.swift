@@ -18,6 +18,7 @@ import Foundation
 public struct VPConfiguration: Sendable {
   public let presentationDefinitionUriSupported: Bool = true
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
+  public let knownDCQLQueriesPerScope: [String: DCQL] = [:]
   public let vpFormats: VpFormats
   public let supportedTransactionDataTypes: [SupportedTransactionDataType]
 

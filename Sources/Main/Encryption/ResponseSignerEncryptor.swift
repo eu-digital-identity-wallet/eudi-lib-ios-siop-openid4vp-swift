@@ -19,52 +19,43 @@ import JOSESwift
 internal actor ResponseSignerEncryptor {
 
   func signEncryptResponse(
-    spec: JarmSpec,
+    requirement: JARMRequirement,
     data: AuthorizationResponsePayload
   ) throws -> String {
-    switch spec {
-    case .resolution(
-      holderId: let holderId,
-      jarmOption: let jarmOption
-    ):
-      switch jarmOption {
-      case .signedResponse(
-        responseSigningAlg: let responseSigningAlg,
-        signingKeySet: let signingKeySet,
-        signingKey: let signingKey
-      ):
-        return try sign(
-          holderId: holderId,
-          responseSigningAlg: responseSigningAlg,
-          signingKeySet: signingKeySet,
-          signingKey: signingKey,
-          data: data
-        ).compactSerializedString
-
-      case .encryptedResponse(
-        responseSigningAlg: let responseSigningAlg,
-        responseEncryptionEnc: let responseEncryptionEnc,
-        signingKeySet: let signingKeySet
-      ):
-        return try encrypt(
-          holderId: holderId,
-          responseSigningAlg: responseSigningAlg,
-          responseEncryptionEnc: responseEncryptionEnc,
-          signingKeySet: signingKeySet,
-          data: data
-        ).compactSerializedString
-
-      case .signedAndEncryptedResponse(
-        signed: let signed,
-        encrypted: let encrypted
-      ):
-        return try signAndEncrypt(
-          holderId: holderId,
-          signed: signed,
-          encrypted: encrypted,
-          data: data
-        ).compactSerializedString
-      }
+    switch requirement {
+    case .signed(
+      let responseSigningAlg,
+      let privateKey,
+      let webKeySet
+    ): return try sign(
+      responseSigningAlg: responseSigningAlg,
+      signingKeySet: webKeySet,
+      signingKey: privateKey,
+      data: data
+    ).compactSerializedString
+      
+    case .encrypted(
+      let responseEncryptionAlg,
+      let responseEncryptionEnc,
+      let clientKey
+    ): return try encrypt(
+      responseEncryptionAlg: responseEncryptionAlg,
+      responseEncryptionEnc: responseEncryptionEnc,
+      signingKeySet: clientKey,
+      data: data
+    ).compactSerializedString
+      
+    case .signedAndEncrypted(
+      let signed,
+      let encrypted
+    ): return try signAndEncrypt(
+      signed: signed,
+      encrypted: encrypted,
+      data: data
+    ).compactSerializedString
+      
+    case .noRequirement:
+      throw ValidationError.invalidJarmRequirement
     }
   }
 }
@@ -72,29 +63,25 @@ internal actor ResponseSignerEncryptor {
 private extension ResponseSignerEncryptor {
 
   func sign(
-    holderId: String,
-    option: JarmOption,
+    requirement: JARMRequirement,
     data: AuthorizationResponsePayload
   ) throws -> JWS {
-    switch option {
-    case .signedResponse(
-      responseSigningAlg: let responseSigningAlg,
-      signingKeySet: let signingKeySet,
-      signingKey: let signingKey
-    ):
-      return try sign(
-        holderId: holderId,
-        responseSigningAlg: responseSigningAlg,
-        signingKeySet: signingKeySet,
-        signingKey: signingKey,
-        data: data
-      )
-    default: throw ValidationError.invalidJarmOption
+    switch requirement {
+    case .signed(
+      let responseSigningAlg,
+      let signingKey,
+      let signingKeySet
+    ): return try sign(
+      responseSigningAlg: responseSigningAlg,
+      signingKeySet: signingKeySet,
+      signingKey: signingKey,
+      data: data
+    )
+    default: throw ValidationError.invalidJarmRequirement
     }
   }
 
   func sign(
-    holderId: String,
     responseSigningAlg: JWSAlgorithm,
     signingKeySet: WebKeySet,
     signingKey: SecKey,
@@ -118,7 +105,6 @@ private extension ResponseSignerEncryptor {
       payload: Payload(data
         .toDictionary()
         .merging([
-          JWTClaimNames.issuer: holderId,
           JWTClaimNames.issuedAt: Int(Date().timeIntervalSince1970.rounded())
         ], uniquingKeysWith: { _, new in
           new
@@ -130,21 +116,20 @@ private extension ResponseSignerEncryptor {
   }
 
   func encrypt(
-    holderId: String,
-    responseSigningAlg: JWEAlgorithm,
+    responseEncryptionAlg: JWEAlgorithm,
     responseEncryptionEnc: JOSEEncryptionMethod,
     signingKeySet: WebKeySet,
     data: AuthorizationResponsePayload
   ) throws -> JWE {
 
     let keyAndEncryptor = try keyAndEncryptor(
-      jweAlgorithm: responseSigningAlg,
+      jweAlgorithm: responseEncryptionAlg,
       encryptionMethod: responseEncryptionEnc,
       keySet: signingKeySet
     )
 
     let parameters: [String: Any?] = [
-      "alg": responseSigningAlg.name,
+      "alg": responseEncryptionAlg.name,
       "enc": responseEncryptionEnc.name,
       "kid": keyAndEncryptor.key.kid,
       "apv": data.nonce.base64urlEncode,
@@ -164,17 +149,16 @@ private extension ResponseSignerEncryptor {
   }
 
   func signAndEncrypt(
-    holderId: String,
-    signed: JarmOption,
-    encrypted: JarmOption,
+    signed: JARMRequirement,
+    encrypted: JARMRequirement,
     data: AuthorizationResponsePayload
   ) throws -> JWE {
-    let signedJwt = try sign(holderId: holderId, option: signed, data: data)
+    let signedJwt = try sign(requirement: signed, data: data)
     switch encrypted {
-    case .encryptedResponse(
-      responseSigningAlg: let responseSigningAlg,
-      responseEncryptionEnc: let responseEncryptionEnc,
-      signingKeySet: let signingKeySet
+    case .encrypted(
+      let responseSigningAlg,
+      let responseEncryptionEnc,
+      let signingKeySet
     ):
       let keyAndEncryptor = try keyAndEncryptor(
         jweAlgorithm: responseSigningAlg,
@@ -196,7 +180,10 @@ private extension ResponseSignerEncryptor {
         payload: Payload(signedJwt.compactSerializedData),
         encrypter: keyAndEncryptor.encrypter
       )
-    default: throw ValidationError.validationError("Unable to retrieve encrypted from  JarmOption")
+    default:
+      throw ValidationError.validationError(
+        "Unable to retrieve encrypted from  JARMRequirement"
+      )
     }
   }
 

@@ -40,10 +40,10 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case negativeConsent
   case clientIdMismatch(String?, String?)
   case invalidClientId
-  case invalidJarmOption
   case invalidJarmClientMetadata
   case invalidWalletConfiguration
   case unsupportedAlgorithm(String?)
+  case unsupportedMethod(String?)
   case invalidSigningKey
   case emptyValue
   case multipleQuerySources
@@ -56,6 +56,8 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case missingResponseType
   case missingNonce
   case nonDispatchable(ValidationError)
+  case invalidJarmRequirement
+  
   case invalidVerifierAttestationFormat
   case invalidVerifierAttestationCredentialIds
 
@@ -109,14 +111,14 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".clientIdMismatch \(String(describing: lhs)) \(String(describing: rhs))"
     case .invalidClientId:
       return ".invalidClientId"
-    case .invalidJarmOption:
-      return ".invalidJarmOption"
     case .invalidJarmClientMetadata:
       return ".invalidJarmClientMetadata"
     case .invalidWalletConfiguration:
       return ".invalidWalletConfiguration"
     case .unsupportedAlgorithm(let algorithm):
       return "unsupportedAlgorithm \(algorithm ?? "-")"
+    case .unsupportedMethod(let method):
+      return "unsupportedMethod \(method ?? "-")"
     case .invalidSigningKey:
       return ".invalidSigningKey"
     case .emptyValue:
@@ -141,6 +143,8 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".missingNonce"
     case .nonDispatchable(let error):
       return ".nonDispatchable \(error.localizedDescription)"
+    case .invalidJarmRequirement:
+      return ".invalidJarmRequirement"
     case .invalidVerifierAttestationFormat:
       return ".invalidVerifierAttestationFormat"
     case .invalidVerifierAttestationCredentialIds:

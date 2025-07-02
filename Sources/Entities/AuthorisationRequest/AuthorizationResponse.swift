@@ -21,19 +21,31 @@ public enum AuthorizationResponse: Sendable {
   case directPost(url: URL, data: AuthorizationResponsePayload)
 
   /// A direct POST JWT authorization response.
-  case directPostJwt(url: URL, data: AuthorizationResponsePayload, jarmSpec: JarmSpec)
+  case directPostJwt(
+    url: URL,
+    data: AuthorizationResponsePayload,
+    jarmRequirement: JARMRequirement
+  )
 
   /// A query authorization response.
   case query(url: URL, data: AuthorizationResponsePayload)
 
   /// A query JWT authorization response.
-  case queryJwt(url: URL, data: AuthorizationResponsePayload, jarmSpec: JarmSpec)
+  case queryJwt(
+    url: URL,
+    data: AuthorizationResponsePayload,
+    jarmRequirement: JARMRequirement
+  )
 
   /// A fragment authorization response.
   case fragment(url: URL, data: AuthorizationResponsePayload)
 
   /// A fragment JWT authorization response.
-  case fragmentJwt(url: URL, data: AuthorizationResponsePayload, jarmSpec: JarmSpec)
+  case fragmentJwt(
+    url: URL,
+    data: AuthorizationResponsePayload,
+    jarmRequirement: JARMRequirement
+  )
 
   case invalidRequest(
     error: AuthorizationRequestError,
@@ -70,7 +82,8 @@ public extension AuthorizationResponse {
           responseMode: request.responseMode,
           payload: payload,
           clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig
+          walletOpenId4VPConfig: walletOpenId4VPConfig,
+          jarmRequirment: request.jarmRequirement
         )
       default: throw AuthorizationError.unsupportedResolution
       }
@@ -88,7 +101,8 @@ public extension AuthorizationResponse {
           responseMode: request.responseMode,
           payload: payload,
           clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig
+          walletOpenId4VPConfig: walletOpenId4VPConfig,
+          jarmRequirment: request.jarmRequirement
         )
       default: throw AuthorizationError.unsupportedResolution
       }
@@ -105,7 +119,8 @@ public extension AuthorizationResponse {
           responseMode: request.responseMode,
           payload: payload,
           clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig
+          walletOpenId4VPConfig: walletOpenId4VPConfig,
+          jarmRequirment: request.jarmRequirement
         )
       case .idAndVpToken:
         throw AuthorizationError.unsupportedResolution
@@ -118,7 +133,8 @@ public extension AuthorizationResponse {
           responseMode: request.responseMode,
           payload: payload,
           clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig
+          walletOpenId4VPConfig: walletOpenId4VPConfig,
+          jarmRequirment: request.jarmRequirement
         )
       }
     }
@@ -136,24 +152,26 @@ private extension AuthorizationResponse {
     responseMode: ResponseMode?,
     payload: AuthorizationResponsePayload,
     clientMetaData: ClientMetaData.Validated?,
-    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
+    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
+    jarmRequirment: JARMRequirement?
   ) throws -> AuthorizationResponse {
     guard let responseMode = responseMode else {
       throw AuthorizationError.invalidResponseMode
     }
-
-    func jarmSpec() throws -> JarmSpec {
-      try JarmSpec(
-        clientMetaData: clientMetaData,
-        walletOpenId4VPConfig: walletOpenId4VPConfig
-      )
+    
+    guard let jarmRequirment = jarmRequirment else {
+      throw ValidationError.invalidJarmRequirement
     }
-
+    
     switch responseMode {
     case .directPost(let responseURI):
       return .directPost(url: responseURI, data: payload)
     case .directPostJWT(let responseURI):
-      return .directPostJwt(url: responseURI, data: payload, jarmSpec: try jarmSpec())
+      return .directPostJwt(
+        url: responseURI,
+        data: payload,
+        jarmRequirement: jarmRequirment
+      )
     case .query(let responseURI):
       return .query(url: responseURI, data: payload)
     case .fragment(let responseURI):

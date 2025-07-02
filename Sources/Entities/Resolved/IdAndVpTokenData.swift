@@ -19,18 +19,19 @@ import PresentationExchange
 extension ResolvedRequestData {
   /// A structure representing the data related to ID token and verifiable presentation (VP) token.
   public struct IdAndVpTokenData: Sendable {
-    let idTokenType: IdTokenType
-    let presentationQuery: PresentationQuery
-    let presentationDefinition: PresentationDefinition
-    let clientMetaData: ClientMetaData.Validated?
-    let client: Client
-    let nonce: String
-    let responseMode: ResponseMode?
-    let state: String?
-    let scope: Scope?
-    let vpFormats: VpFormats
-    let transactionData: [TransactionData]?
-    let verifierAttestations: [VerifierAttestation]?
+    public let idTokenType: IdTokenType
+    public let presentationQuery: PresentationQuery
+    public let presentationDefinition: PresentationDefinition
+    public let clientMetaData: ClientMetaData.Validated?
+    public let client: Client
+    public let nonce: String
+    public let responseMode: ResponseMode?
+    public let state: String?
+    public let scope: Scope?
+    public let vpFormats: VpFormats
+    public let transactionData: [TransactionData]?
+    public let jarmRequirement: JARMRequirement?
+    public let verifierAttestations: [VerifierAttestation]?
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -41,8 +42,10 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state.
     ///   - scope: The scope.
+    ///   - vpFormats: Vp Formats
     ///   - transactionData: Optional list of transcation data
     ///   - verifierAttestations: Optional list of verifierAttestations
+    ///   - jarmRequirement: JARM
     public init(
       idTokenType: IdTokenType,
       presentationQuery: PresentationQuery,
@@ -55,7 +58,8 @@ extension ResolvedRequestData {
       scope: Scope?,
       vpFormats: VpFormats,
       transactionData: [TransactionData]? = nil,
-      verifierAttestations: [VerifierAttestation]? = nil
+      verifierAttestations: [VerifierAttestation]? = nil,
+      jarmRequirement: JARMRequirement? = nil
     ) {
       self.idTokenType = idTokenType
       self.presentationQuery = presentationQuery
@@ -69,6 +73,7 @@ extension ResolvedRequestData {
       self.vpFormats = vpFormats
       self.transactionData = transactionData
       self.verifierAttestations = verifierAttestations
+      self.jarmRequirement = jarmRequirement
     }
   }
 }
