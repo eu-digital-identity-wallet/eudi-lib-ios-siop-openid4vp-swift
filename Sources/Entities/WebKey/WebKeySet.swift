@@ -46,8 +46,8 @@ public extension WebKeySet {
   struct Key: Codable, Equatable, Hashable, Sendable {
 
     public let kty: String
-    public let use: String
-    public let kid: String
+    public let use: String?
+    public let kid: String?
     public let iat: Int64?
 
     public let crv: String?
@@ -78,8 +78,8 @@ public extension WebKeySet {
 
     public init(
       kty: String,
-      use: String,
-      kid: String,
+      use: String?,
+      kid: String?,
       iat: Int64?,
       crv: String?,
       x: String?,
@@ -124,15 +124,15 @@ fileprivate extension WebKeySet {
           for: "kty",
           error: ValidationError.validationError("key set key \"kty\" not found")
         ),
-        use: try key.getValue(
+        use: try? key.getValue(
           for: "use",
           error: ValidationError.validationError("key set key  \"use\" not found")
         ),
-        kid: try key.getValue(
+        kid: try? key.getValue(
           for: "kid",
           error: ValidationError.validationError("key set key  \"kid\" not found")
         ),
-        iat: try key.getValue(
+        iat: try? key.getValue(
           for: "iat",
           error: ValidationError.validationError("key set key  \"iat\" not found")
         ),

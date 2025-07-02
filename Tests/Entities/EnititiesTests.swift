@@ -424,6 +424,31 @@ class WalletMetaDataTests: XCTestCase {
     XCTAssertEqual(json["response_types_supported"].arrayValue.map { $0.stringValue }, ["vp_token", "id_token"])
     XCTAssertEqual(json["response_modes_supported"].arrayValue.map { $0.stringValue }, ["direct_post", "direct_post.jwt"])
   }
+
+  func testWebKeySetInitializationFromJSONString() throws {
+    let jsonString = """
+      {
+        "keys": [
+          {
+            "kty": "EC",
+            "crv": "P-256",
+            "x": "f83OJ3D2xF4iF42R-9DKM4TZpx4xq7se5OUzJ57Jv1g",
+            "y": "x_FEzRu9iwjJHnA8sfxfCVXovE3KcdK1WlWpeRcd3WA",
+            "alg": "ES256"
+          }
+       ]
+    }
+    """
+    let webKeySet = try WebKeySet(jsonString)
+    XCTAssertEqual(webKeySet.keys.count, 1)
+
+    let key = webKeySet.keys[0]
+    XCTAssertEqual(key.kty, "EC")
+    XCTAssertEqual(key.crv, "P-256")
+    XCTAssertEqual(key.x, "f83OJ3D2xF4iF42R-9DKM4TZpx4xq7se5OUzJ57Jv1g")
+    XCTAssertEqual(key.y, "x_FEzRu9iwjJHnA8sfxfCVXovE3KcdK1WlWpeRcd3WA")
+    XCTAssertEqual(key.alg, "ES256")
+  }  
 }
 
 final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
