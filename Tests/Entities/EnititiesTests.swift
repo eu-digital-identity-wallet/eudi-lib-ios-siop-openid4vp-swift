@@ -421,7 +421,7 @@ class WalletMetaDataTests: XCTestCase {
     XCTAssertEqual(webKeySet.keys.count, 1)
 
     let key = webKeySet.keys[0)
-    XCTAssertEqual(key.kty, "EC)
+    XCTAssertEqual(key.kty, "EC")
     XCTAssertEqual(key.crv, "P-256")
     XCTAssertEqual(key.x, "f83OJ3D2xF4iF42R-9DKM4TZpx4xq7se5OUzJ57Jv1g")
     XCTAssertEqual(key.y, "x_FEzRu9iwjJHnA8sfxfCVXovE3KcdK1WlWpeRcd3WA")
