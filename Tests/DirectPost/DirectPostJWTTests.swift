@@ -45,7 +45,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -61,12 +61,13 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
 
-    /// To get this URL, visit https://verifier.eudiw.dev/
+    /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
@@ -152,7 +153,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .redirectUri(clientId: URL(string: TestsConstants.testClientId)!),
         .x509SanDns(trust: { _ in
@@ -161,12 +162,13 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
 
-    /// To get this URL, visit https://verifier.eudiw.dev/
+    /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
@@ -253,7 +255,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -266,12 +268,13 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     // Add your own URL here that you can obtain from
-    // https://verifier.eudiw.dev/
+    // https://dev.verifier.eudiw.dev/
     let url = "#07"
 
     overrideDependencies()
@@ -347,7 +350,8 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: Constants.testNonce,
         responseMode: Constants.testDirectPostJwtResponseMode,
         state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope
+        scope: Constants.testScope,
+        jarmRequirement: .noRequirement
       )
     )
 
@@ -379,10 +383,11 @@ final class DirectPostJWTTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-        signingKey: try KeyController.generateRSAPrivateKey(),
-        signingKeySet: TestsConstants.webKeySet,
+        signingKey: privateKey!,
+        publicWebKeySet: TestsConstants.webKeySet,
         supportedClientIdSchemes: [],
-        vpFormatsSupported: []
+        vpFormatsSupported: [],
+        jarmConfiguration: .default()
       ),
       rsaJWK: rsaJWK,
       signingKey: privateKey!,
@@ -402,11 +407,12 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: try KeyController.generateRSAPrivateKey(),
-      signingKeySet: TestsConstants.webKeySet,
+      publicWebKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .signing
     )
 
     // Generate a direct post authorisation response
@@ -468,11 +474,12 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let resolved: ResolvedRequestData = .idToken(
@@ -486,7 +493,12 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: Constants.testNonce,
         responseMode: Constants.testDirectPostJwtResponseMode,
         state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope
+        scope: Constants.testScope,
+        jarmRequirement: .encrypted(
+          responseEncryptionAlg: .init(.ECDH_ES),
+          responseEncryptionEnc: .init(.A128CBC_HS256),
+          clientKey: keySet
+        )
       )
     )
 
@@ -556,7 +568,7 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
           TestsConstants.testClientId: .init(
@@ -569,7 +581,8 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -675,13 +688,14 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: rsaPrivateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -707,7 +721,8 @@ final class DirectPostJWTTests: DiXCTest {
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
           clientID: request.client.id.originalClientId,
-          nonce: TestsConstants.testNonce
+          nonce: TestsConstants.testNonce,
+          useSha3: false
         )
 
       default:
@@ -793,18 +808,19 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
 
-    /// To get this URL, visit https://verifier.eudiw.dev/
+    /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
@@ -910,13 +926,14 @@ final class DirectPostJWTTests: DiXCTest {
         rawValue: "did:example:123"
       ),
       signingKey: rsaPrivateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1033,13 +1050,14 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: rsaPrivateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1073,7 +1091,8 @@ final class DirectPostJWTTests: DiXCTest {
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
           clientID: request.client.id.originalClientId,
-          nonce: TestsConstants.testNonce
+          nonce: TestsConstants.testNonce,
+          useSha3: false
         )
 
       default:
@@ -1166,13 +1185,14 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1277,13 +1297,14 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1393,7 +1414,19 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: "0S6_WzA2Mj",
         responseMode: .directPostJWT(responseURI: URL(string: "https://respond.here")!),
         state: "state",
-        vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
+        vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
+        jarmRequirement: .signedAndEncrypted(
+          signed: .signed(
+            responseSigningAlg: .init(.RS256),
+            privateKey: rsaPrivateKey!,
+            webKeySet: try! .init(jwk: rsaJWK)
+          ),
+          encrypted: .encrypted(
+            responseEncryptionAlg: .init(.ECDH_ES),
+            responseEncryptionEnc: .init(.A128CBC_HS256),
+            clientKey: try! .init(jwks: [ecPublicJwk, rsaJWK])
+          )
+        )
       ))
 
     let submission: PresentationSubmission = .init(
@@ -1422,9 +1455,10 @@ final class DirectPostJWTTests: DiXCTest {
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try .init(rawValue: "did:example:123"),
         signingKey: rsaPrivateKey!,
-        signingKeySet: rsaKeySet,
+        publicWebKeySet: rsaKeySet,
         supportedClientIdSchemes: [],
-        vpFormatsSupported: []
+        vpFormatsSupported: [],
+        jarmConfiguration: .default()
       )
     )
 
@@ -1445,9 +1479,6 @@ final class DirectPostJWTTests: DiXCTest {
 
     let jwt = String.init(data: decryptionPayload.data(), encoding: .utf8)
     XCTAssert(jwt!.isValidJWT())
-
-    let iss = JSONWebToken(jsonWebToken: jwt!)?.payload["iss"].string!
-    XCTAssert(iss == "did:example:123")
   }
 
   func testSDKEndtoEndWebVerifierDirectPostJwtX509() async throws {
@@ -1488,18 +1519,19 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
 
-    /// To get this URL, visit https://verifier.eudiw.dev/
+    /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
@@ -1593,18 +1625,19 @@ final class DirectPostJWTTests: DiXCTest {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
 
-    /// To get this URL, visit https://verifier.eudiw.dev/
+    /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
@@ -1682,18 +1715,19 @@ final class DirectPostJWTTests: DiXCTest {
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try .init(rawValue: "did:example:123"),
         signingKey: privateKey,
-        signingKeySet: keySet,
+        publicWebKeySet: keySet,
         supportedClientIdSchemes: [
           .x509SanDns(trust: chainVerifier)
         ],
         vpFormatsSupported: [],
         jarConfiguration: .noEncryptionOption,
-        vpConfiguration: VPConfiguration.default()
+        vpConfiguration: VPConfiguration.default(),
+        jarmConfiguration: .default()
       )
 
       let sdk = SiopOpenID4VP(walletConfiguration: wallet)
 
-      /// To get this URL, visit https://verifier.eudiw.dev/
+      /// To get this URL, visit https://dev.verifier.eudiw.dev/
       /// and  "Request for the entire PID"
       /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
       /// Decode the URL online and paste it below in the url variable

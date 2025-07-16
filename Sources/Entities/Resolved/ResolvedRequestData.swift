@@ -66,7 +66,7 @@ public enum ResolvedRequestData: Sendable {
 }
 
 public extension ResolvedRequestData {
-
+  
   /// Initializes a `ResolvedRequestData` instance with the provided parameters.
   ///
   /// - Parameters:
@@ -74,6 +74,7 @@ public extension ResolvedRequestData {
   ///   - presentationDefinitionResolver: The resolver for presentation definition.
   ///   - validatedAuthorizationRequest: The validated SiopOpenId4VPRequest.
   init(
+    walletConfiguration: SiopOpenId4VPConfiguration,
     vpConfiguration: VPConfiguration,
     validatedClientMetaData: ClientMetaData.Validated,
     presentationDefinitionResolver: PresentationDefinitionResolver,
@@ -96,6 +97,9 @@ public extension ResolvedRequestData {
         responseMode: request.responseMode,
         state: request.state,
         scope: request.scope,
+        jarmRequirement: walletConfiguration.jarmRequirement(
+          validated: validatedClientMetaData
+        ),
         transactionData: try Self.parseTransactionData(
           transactionData: request.transactionData,
           vpConfiguration: vpConfiguration,
@@ -120,6 +124,9 @@ public extension ResolvedRequestData {
         responseMode: request.responseMode,
         state: request.state,
         vpFormats: commonFormats,
+        jarmRequirement: walletConfiguration.jarmRequirement(
+          validated: validatedClientMetaData
+        ),
         transactionData: try Self.parseTransactionData(
           transactionData: request.transactionData,
           vpConfiguration: vpConfiguration,
@@ -171,6 +178,9 @@ public extension ResolvedRequestData {
           responseMode: request.responseMode,
           state: request.state,
           vpFormats: commonFormats,
+          jarmRequirement: walletConfiguration.jarmRequirement(
+            validated: validatedClientMetaData
+          ),
           transactionData: try Self.parseTransactionData(
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
@@ -185,7 +195,25 @@ public extension ResolvedRequestData {
       }
     }
   }
-
+  
+  private static func lookupConfiguredQueries(
+    scope: Scope,
+    vpConfiguration: VPConfiguration
+  ) throws -> PresentationQuery {
+    let scopes = scopeItems(from: scope)
+    if let definition = scopes
+      .compactMap({ vpConfiguration.knownPresentationDefinitionsPerScope[$0] })
+      .first {
+      return .byPresentationDefinition(definition)
+    } else if let dcql = scopes
+      .compactMap({ vpConfiguration.knownDCQLQueriesPerScope[$0] })
+      .first {
+      return .byDigitalCredentialsQuery(dcql)
+    } else {
+      throw ResolvedAuthorisationError.invalidQueryDataForScope(scope)
+    }
+  }
+  
   var legalName: String? {
     switch self {
     case .idToken(let request):
@@ -228,7 +256,7 @@ private extension ResolvedRequestData {
   ) throws -> [TransactionData]? {
     /// If there is no transactionData in the request, return nil.
     guard let data = transactionData else { return nil }
-
+    
     /// For each item in data, attempt to parse and unwrap it.
     return try data.compactMap { item in
       try TransactionData.parse(

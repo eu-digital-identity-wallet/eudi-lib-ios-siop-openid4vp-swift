@@ -19,6 +19,7 @@ import JOSESwift
 
 @testable import SiopOpenID4VP
 
+private let topPrivateKey = try! KeyController.generateRSAPrivateKey()
 private let config: SiopOpenId4VPConfiguration = .init(
   subjectSyntaxTypesSupported: [
     .decentralizedIdentifier,
@@ -28,14 +29,15 @@ private let config: SiopOpenId4VPConfiguration = .init(
   decentralizedIdentifier: try! .init(
     rawValue: "did:example:123"
   ),
-  signingKey: try! KeyController.generateRSAPrivateKey(),
-  signingKeySet: .init(keys: []),
+  signingKey: topPrivateKey,
+  publicWebKeySet: .init(keys: []),
   supportedClientIdSchemes: [
     .x509SanDns(trust: { _ in true })
   ],
   vpFormatsSupported: [],
   jarConfiguration: .noEncryptionOption,
-  vpConfiguration: VPConfiguration.default()
+  vpConfiguration: VPConfiguration.default(),
+  jarmConfiguration: .default()
 )
 final class VerifierAttestationIssuerTests: XCTestCase {
 
@@ -163,7 +165,7 @@ private extension VerifierAttestationIssuerTests {
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       signingKey: privateKey,
-      signingKeySet: keySet,
+      publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .verifierAttestation(
           trust: verifier,
@@ -172,7 +174,8 @@ private extension VerifierAttestationIssuerTests {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default()
+      vpConfiguration: VPConfiguration.default(),
+      jarmConfiguration: .default()
     )
   }
 

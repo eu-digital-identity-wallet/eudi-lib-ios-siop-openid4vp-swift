@@ -64,13 +64,16 @@ internal extension AuthorizationRequestError {
     case .directPost(let responseURI):
       return .directPost(url: responseURI, data: payload)
     case .directPostJWT(let responseURI):
-      guard let jarmSpec = details.jarmSpec else {
+      guard
+        let jarmRequirement = details.jarmRequirement
+      else {
         return nil
       }
+      
       return .directPostJwt(
         url: responseURI,
         data: payload,
-        jarmSpec: jarmSpec
+        jarmRequirement: jarmRequirement
       )
     default:
       return nil

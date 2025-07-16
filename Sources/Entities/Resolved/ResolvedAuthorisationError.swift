@@ -20,6 +20,7 @@ public enum ResolvedAuthorisationError: LocalizedError {
   case invalidClientData
   case invalidPresentationDefinitionData
   case unsupportedResponseType(String)
+  case invalidQueryDataForScope(Scope)
 
   /// A computed property that returns a localized description of the error.
   public var errorDescription: String? {
@@ -30,6 +31,8 @@ public enum ResolvedAuthorisationError: LocalizedError {
       return ".invalidPresentationDefinitionData"
     case .unsupportedResponseType(let type):
       return ".unsupportedResponseType \(type)"
+    case .invalidQueryDataForScope:
+      return ".invalidQueryData"
     }
   }
 }
