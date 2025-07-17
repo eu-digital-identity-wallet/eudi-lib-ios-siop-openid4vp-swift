@@ -111,22 +111,7 @@ internal actor ClientAuthenticator {
         clientId: clientId
       )
     case .redirectUri:
-      guard let url = URL(string: verifierId.originalClientId) else {
-        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
-      }
-
-      let configUrl = config?
-        .supportedClientIdSchemes
-        .first(where: { $0.scheme == scheme.scheme })?
-        .redirectUri
-
-      guard url == configUrl else {
-        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
-      }
-
-      return .redirectUri(
-        clientId: url
-      )
+      return .redirectUri
     }
   }
 
@@ -153,24 +138,8 @@ internal actor ClientAuthenticator {
         legalName: client.legalName
       )
     case .redirectUri:
-	  // remove prefix from clientId
-	  let urlValue = String(clientId.suffix(from: clientId.index(clientId.startIndex, offsetBy: ClientIdScheme.redirectUri.rawValue.count+1)))
-      guard let url = URL(string: urlValue) else {
-        throw ValidationError.validationError("Client id must be uri for redirectUri scheme")
-      }
-
-      let configUrl = config?
-        .supportedClientIdSchemes
-        .first(where: { $0.scheme == scheme.scheme })?
-        .redirectUri
-
-      guard url.host(includePercentEncoding: true) == configUrl?.host(includePercentEncoding: true) else {
-        throw ValidationError.validationError("Client id host must be the host uri for redirectUri scheme")
-      }
-
-      return .redirectUri(
-        clientId: url
-      )
+      return .redirectUri
+      
     default:
       throw ValidationError.validationError("Scheme \(scheme) not supported")
     }

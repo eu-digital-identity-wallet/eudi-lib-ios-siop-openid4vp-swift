@@ -155,7 +155,7 @@ final class DirectPostJWTTests: DiXCTest {
       signingKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .redirectUri(clientId: URL(string: TestsConstants.testClientId)!),
+        .redirectUri,
         .x509SanDns(trust: { _ in
           true
         })

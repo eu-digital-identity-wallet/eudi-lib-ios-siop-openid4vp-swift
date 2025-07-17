@@ -59,15 +59,7 @@ public enum SupportedClientIdScheme: @unchecked Sendable {
     }
   }
 
-  var redirectUri: URL? {
-    switch self {
-    case .redirectUri(let clientId):
-      return clientId
-    default:
-      return nil
-    }
-  }
-  case redirectUri(clientId: URL)
+  case redirectUri
   case preregistered(clients: [OriginalClientId: PreregisteredClient])
   case x509SanUri(trust: CertificateTrust)
   case x509SanDns(trust: CertificateTrust)

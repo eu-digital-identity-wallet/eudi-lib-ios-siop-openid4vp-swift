@@ -22,7 +22,7 @@ public enum Client: Sendable {
     clientId: OriginalClientId,
     legalName: String
   )
-  case redirectUri(clientId: URL)
+  case redirectUri
   case x509SanDns(
     clientId: OriginalClientId,
     certificate: Certificate
@@ -50,10 +50,9 @@ public enum Client: Sendable {
         scheme: .preRegistered,
         originalClientId: clientId
       )
-    case .redirectUri(let clientId):
+    case .redirectUri:
       return .init(
-        scheme: .redirectUri,
-        originalClientId: clientId.absoluteString
+        scheme: .redirectUri
       )
     case .x509SanDns(let clientId, _):
       return .init(
