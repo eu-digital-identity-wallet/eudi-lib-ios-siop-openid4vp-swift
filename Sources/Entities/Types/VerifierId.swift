@@ -17,6 +17,14 @@ public struct VerifierId: Sendable {
   public let scheme: ClientIdScheme
   public let originalClientId: OriginalClientId
 
+  public init(
+    scheme: ClientIdScheme,
+    originalClientId: OriginalClientId = ""
+  ) {
+    self.scheme = scheme
+    self.originalClientId = originalClientId
+  }
+  
   public var clientId: OriginalClientId {
     let prefix: String? = {
       switch scheme {
@@ -39,6 +47,7 @@ public struct VerifierId: Sendable {
       result.append(OpenId4VPSpec.clientIdSchemeSeparator)
     }
     result.append(originalClientId)
+    
     return result
   }
 

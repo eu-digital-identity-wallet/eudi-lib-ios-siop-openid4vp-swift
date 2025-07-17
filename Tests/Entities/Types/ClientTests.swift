@@ -29,12 +29,10 @@ class ClientTests: XCTestCase {
   }
 
   func testClientIdRedirectUri() throws {
-    let url = URL(string: "https://openid4vp.com")!
-    let client = Client.redirectUri(clientId: url)
+    let client = Client.redirectUri
     let id = client.id
 
     XCTAssertEqual(id.scheme, .redirectUri)
-    XCTAssertEqual(id.originalClientId, url.absoluteString)
   }
 
   func testLegalNamePreRegistered() {
@@ -44,8 +42,7 @@ class ClientTests: XCTestCase {
   }
 
   func testLegalNameRedirectUri() {
-    let client = Client.redirectUri(clientId: URL(string: "https://openid4vp.com")!)
-
+    let client = Client.redirectUri
     XCTAssertNil(client.legalName)
   }
 }
