@@ -159,23 +159,31 @@ private extension AuthorizationResponse {
       throw AuthorizationError.invalidResponseMode
     }
     
-    guard let jarmRequirment = jarmRequirment else {
-      throw ValidationError.invalidJarmRequirement
-    }
-    
     switch responseMode {
     case .directPost(let responseURI):
-      return .directPost(url: responseURI, data: payload)
+      return .directPost(
+        url: responseURI,
+        data: payload
+      )
     case .directPostJWT(let responseURI):
+      guard let jarmRequirment = jarmRequirment else {
+        throw ValidationError.invalidJarmRequirement
+      }
       return .directPostJwt(
         url: responseURI,
         data: payload,
         jarmRequirement: jarmRequirment
       )
     case .query(let responseURI):
-      return .query(url: responseURI, data: payload)
+      return .query(
+        url: responseURI,
+        data: payload
+      )
     case .fragment(let responseURI):
-      return .fragment(url: responseURI, data: payload)
+      return .fragment(
+        url: responseURI,
+        data: payload
+      )
     case .none:
       throw AuthorizationError.invalidResponseMode
     }
