@@ -26,7 +26,7 @@ final class VerifierAttestationTests: XCTestCase {
     let id = try QueryId(value: "cred1")
     let jsonData = JSON(["someKey": "someValue"])
 
-    let attestation = VerifierAttestation(
+    let attestation = VerifierInfo(
       format: "jwt",
       data: jsonData,
       credentialIds: [id]
@@ -39,7 +39,7 @@ final class VerifierAttestationTests: XCTestCase {
 
   func testInitWithNoCredentialIdsShouldDefaultToNil() throws {
     let jsonData = JSON(["payload": "xyz"])
-    let attestation = VerifierAttestation(format: "jwt", data: jsonData)
+    let attestation = VerifierInfo(format: "jwt", data: jsonData)
 
     XCTAssertNil(attestation.credentialIds)
   }
@@ -51,7 +51,7 @@ final class VerifierAttestationTests: XCTestCase {
       "credentialIds": ["id1", "id2"]
     ]
 
-    let attestation = try VerifierAttestation.from(json: rawJSON)
+    let attestation = try VerifierInfo.from(json: rawJSON)
 
     XCTAssertEqual(attestation.format, "jwt")
     XCTAssertEqual(attestation.data["payload"].stringValue, "abc")
@@ -63,7 +63,7 @@ final class VerifierAttestationTests: XCTestCase {
       "data": ["payload": "xyz"]
     ]
 
-    XCTAssertThrowsError(try VerifierAttestation.from(json: rawJSON)) { error in
+    XCTAssertThrowsError(try VerifierInfo.from(json: rawJSON)) { error in
       guard
         let validationError = error as? ValidationError
       else {
@@ -82,20 +82,20 @@ final class VerifierAttestationTests: XCTestCase {
       "credentialIds": [""]
     ]
 
-    XCTAssertThrowsError(try VerifierAttestation.from(json: rawJSON))
+    XCTAssertThrowsError(try VerifierInfo.from(json: rawJSON))
   }
 
   func testCodableRoundTrip() throws {
     let id1 = try QueryId(value: "credX")
     let json = JSON(["meta": "info"])
 
-    let original = VerifierAttestation(format: "jwt", data: json, credentialIds: [id1])
+    let original = VerifierInfo(format: "jwt", data: json, credentialIds: [id1])
 
     let encoder = JSONEncoder()
     let decoder = JSONDecoder()
 
     let encoded = try encoder.encode(original)
-    let decoded = try decoder.decode(VerifierAttestation.self, from: encoded)
+    let decoded = try decoder.decode(VerifierInfo.self, from: encoded)
 
     XCTAssertEqual(decoded, original)
   }
@@ -110,7 +110,7 @@ final class VerifierAttestationTests: XCTestCase {
       format: format
     )
 
-    let attestation = VerifierAttestation(
+    let attestation = VerifierInfo(
       format: "jwt",
       data: JSON(["some": "value"]),
       credentialIds: [queryId]
@@ -119,7 +119,7 @@ final class VerifierAttestationTests: XCTestCase {
     let dcql = try DCQL(credentials: [credential])
     let query = PresentationQuery.byDigitalCredentialsQuery(dcql)
 
-    let result = try VerifierAttestation.validatedVerifierAttestations(
+    let result = try VerifierInfo.validatedVerifierInfo(
       [attestation],
       presentationQuery: query
     )
@@ -140,7 +140,7 @@ final class VerifierAttestationTests: XCTestCase {
       try DCQL(credentials: [credential])
     )
 
-    let result = try VerifierAttestation.validatedVerifierAttestations(
+    let result = try VerifierInfo.validatedVerifierInfo(
       nil,
       presentationQuery: query
     )
@@ -154,7 +154,7 @@ final class VerifierAttestationTests: XCTestCase {
       format: try Format(format: "jwt")
     )
 
-    let attestation = VerifierAttestation(
+    let attestation = VerifierInfo(
       format: "jwt",
       data: JSON(["key": "value"]),
       credentialIds: nil // applies to all
@@ -164,7 +164,7 @@ final class VerifierAttestationTests: XCTestCase {
       try DCQL(credentials: [credential])
     )
 
-    let result = try VerifierAttestation.validatedVerifierAttestations(
+    let result = try VerifierInfo.validatedVerifierInfo(
       [attestation],
       presentationQuery: query
     )
@@ -181,7 +181,7 @@ final class VerifierAttestationTests: XCTestCase {
       format: try Format(format: "jwt")
     )
 
-    let attestation = VerifierAttestation(
+    let attestation = VerifierInfo(
       format: "jwt",
       data: JSON(["field": "value"]),
       credentialIds: [invalidId]
@@ -192,20 +192,20 @@ final class VerifierAttestationTests: XCTestCase {
     )
 
     XCTAssertThrowsError(
-      try VerifierAttestation.validatedVerifierAttestations([attestation], presentationQuery: query)
+      try VerifierInfo.validatedVerifierInfo([attestation], presentationQuery: query)
     ) { error in
       XCTAssertEqual(error as? ValidationError, .invalidVerifierAttestationCredentialIds)
     }
   }
 
   func testByPresentationDefinitionShouldReturnNil() throws {
-    let attestation = VerifierAttestation(
+    let attestation = VerifierInfo(
       format: "ldp",
       data: JSON(["k": "v"]),
       credentialIds: nil
     )
 
-    let result = try VerifierAttestation.validatedVerifierAttestations(
+    let result = try VerifierInfo.validatedVerifierInfo(
       [attestation],
       presentationQuery: .byPresentationDefinition(.init(
         id: "dummy-id",
