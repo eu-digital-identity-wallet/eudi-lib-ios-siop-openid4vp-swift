@@ -136,7 +136,7 @@ internal struct QueryHelper {
       state: string("state"),
       idTokenType: string("id_token_type"),
       transactionData: jsonArray(Constants.TRANSACTION_DATA),
-      verifierAttestations: jsonArrayObject(Constants.VERIFIER_ATTESTATIONS)
+      verifierInfo: jsonArrayObject(Constants.VERIFIER_INFO)
     )
   }
 
