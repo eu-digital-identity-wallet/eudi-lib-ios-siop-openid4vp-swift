@@ -16,7 +16,7 @@
 import Foundation
 @preconcurrency import SwiftyJSON
 
-public struct VpFormatsTO: Codable, Equatable, Sendable {
+public struct VpFormatsSupportedTO: Codable, Equatable, Sendable {
   public let vcSdJwt: VcSdJwtTO?
   public let jwtVp: JwtVpTO?
   public let ldpVp: LdpVpTO?
@@ -94,7 +94,7 @@ public struct LdpVpTO: Codable, Equatable, Sendable {
   }
 }
 
-public enum VpFormat: Equatable, Sendable {
+public enum VpFormatSupported: Equatable, Sendable {
 
   case sdJwtVc(
     sdJwtAlgorithms: [JWSAlgorithm],
@@ -109,7 +109,7 @@ public enum VpFormat: Equatable, Sendable {
   public static func createSdJwtVc(
     sdJwtAlgorithms: [JWSAlgorithm],
     kbJwtAlgorithms: [JWSAlgorithm]
-  ) throws -> VpFormat {
+  ) throws -> VpFormatSupported {
 
     guard !sdJwtAlgorithms.isEmpty else {
       throw ValidationError.validationError("SD-JWT algorithms cannot be empty")
@@ -123,7 +123,7 @@ public enum VpFormat: Equatable, Sendable {
 
   public static func createMsoMdoc(
     algorithms: [JWSAlgorithm]
-  ) throws -> VpFormat {
+  ) throws -> VpFormatSupported {
 
     guard !algorithms.isEmpty else {
       throw ValidationError.validationError("MSO MDOC algorithms cannot be empty")
@@ -135,7 +135,7 @@ public enum VpFormat: Equatable, Sendable {
   }
 }
 
-public extension VpFormat {
+public extension VpFormatSupported {
   func formatName() -> FormatName {
     switch self {
     case .msoMdoc:
@@ -157,13 +157,13 @@ public extension VpFormat {
   }
 }
 
-public struct VpFormats: Equatable, Sendable {
+public struct VpFormatsSupported: Equatable, Sendable {
 
-  static let vpFormats = "vp_formats"
-  public let values: [VpFormat]
+  static let vpFormatsSupported = "vp_formats_supported"
+  public let values: [VpFormatSupported]
 
-  public static func `default`() throws -> VpFormats {
-    try VpFormats(values: [
+  public static func `default`() throws -> VpFormatsSupported {
+    try VpFormatsSupported(values: [
       .sdJwtVc(
         sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
         kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
@@ -174,8 +174,8 @@ public struct VpFormats: Equatable, Sendable {
     ])
   }
 
-  public static func empty() throws -> VpFormats {
-    try VpFormats(values: [])
+  public static func empty() throws -> VpFormatsSupported {
+    try VpFormatsSupported(values: [])
   }
 
   public init?(jsonString: String?) throws {
@@ -191,30 +191,30 @@ public struct VpFormats: Equatable, Sendable {
       return nil
     }
 
-    let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormats]
-    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsTO.self) {
+    let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormatsSupported]
+    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsSupportedTO.self) {
       try? self.init(from: formats)
     } else {
       return nil
     }
   }
 
-  public init(formats: VpFormat...) throws {
+  public init(formats: VpFormatSupported...) throws {
     self.values = formats
-    try VpFormats.ensureUniquePerFormat(formats: formats)
+    try VpFormatsSupported.ensureUniquePerFormat(formats: formats)
   }
 
-  public init(values: [VpFormat]) throws {
+  public init(values: [VpFormatSupported]) throws {
     self.values = values
-    try VpFormats.ensureUniquePerFormat(formats: values)
+    try VpFormatsSupported.ensureUniquePerFormat(formats: values)
   }
 
-  func contains(_ format: VpFormat) -> Bool {
+  func contains(_ format: VpFormatSupported) -> Bool {
     return values.contains(where: { $0 == format })
   }
 
-  public static func common(_ this: VpFormats, _ that: VpFormats) -> VpFormats? {
-    var commonFormats: [VpFormat] = []
+  public static func common(_ this: VpFormatsSupported, _ that: VpFormatsSupported) -> VpFormatsSupported? {
+    var commonFormats: [VpFormatSupported] = []
 
     for format in this.values {
       if that.contains(format) {
@@ -224,10 +224,10 @@ public struct VpFormats: Equatable, Sendable {
 
     return commonFormats.isEmpty ?
     nil :
-    try? VpFormats(values: commonFormats)
+    try? VpFormatsSupported(values: commonFormats)
   }
 
-  private static func ensureUniquePerFormat(formats: [VpFormat]) throws {
+  private static func ensureUniquePerFormat(formats: [VpFormatSupported]) throws {
     let groupedFormats = Dictionary(grouping: formats) { $0.formatName() }
 
     for (formatName, instances) in groupedFormats {
@@ -240,22 +240,22 @@ public struct VpFormats: Equatable, Sendable {
   }
 }
 
-public extension VpFormats {
+public extension VpFormatsSupported {
 
-  // New initializer that accepts a VpFormatsTO object
-  init?(from to: VpFormatsTO?) throws {
+  // New initializer that accepts a VpFormatsSupportedTO object
+  init?(from to: VpFormatsSupportedTO?) throws {
 
     guard let to = to else {
       return nil
     }
 
-    var formats: [VpFormat] = []
+    var formats: [VpFormatSupported] = []
 
     if let vcSdJwt = to.vcSdJwt {
       let sdJwtAlgorithms = vcSdJwt.sdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
       let kbJwtAlgorithms = vcSdJwt.kdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
 
-      let sdJwtVcFormat = VpFormat.sdJwtVc(
+      let sdJwtVcFormat = VpFormatSupported.sdJwtVc(
         sdJwtAlgorithms: sdJwtAlgorithms,
         kbJwtAlgorithms: kbJwtAlgorithms
       )
@@ -264,33 +264,33 @@ public extension VpFormats {
 
     if let msoMdoc = to.msoMdoc {
       let algorithms = msoMdoc.algorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
-      let msoMdocFormat = VpFormat.msoMdoc(
+      let msoMdocFormat = VpFormatSupported.msoMdoc(
         algorithms: algorithms
       )
       formats.append(msoMdocFormat)
     }
 
     if let jwtVp = to.jwtVp {
-      let jwtVpFormat = VpFormat.jwtVp(algorithms: jwtVp.alg)
+      let jwtVpFormat = VpFormatSupported.jwtVp(algorithms: jwtVp.alg)
       formats.append(jwtVpFormat)
     }
 
     if let ldpVp = to.ldpVp {
-      let ldpVpFormat = VpFormat.ldpVp(proofTypes: ldpVp.proofType)
+      let ldpVpFormat = VpFormatSupported.ldpVp(proofTypes: ldpVp.proofType)
       formats.append(ldpVpFormat)
     }
 
     try self.init(values: formats)
   }
 
-  // New initializer that accepts an array of VpFormatsTO objects
-  init?(from tos: [VpFormatsTO]?) throws {
+  // New initializer that accepts an array of VpFormatsSupportedTO objects
+  init?(from tos: [VpFormatsSupportedTO]?) throws {
 
     guard let tos = tos else {
       return nil
     }
 
-    var formats: [VpFormat] = []
+    var formats: [VpFormatSupported] = []
 
     for to in tos {
       // Convert VcSdJwtTO if it exists
@@ -298,7 +298,7 @@ public extension VpFormats {
         let sdJwtAlgorithms = vcSdJwt.sdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
         let kbJwtAlgorithms = vcSdJwt.kdJwtAlgorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
 
-        let sdJwtVcFormat = VpFormat.sdJwtVc(
+        let sdJwtVcFormat = VpFormatSupported.sdJwtVc(
           sdJwtAlgorithms: sdJwtAlgorithms,
           kbJwtAlgorithms: kbJwtAlgorithms
         )
@@ -308,7 +308,7 @@ public extension VpFormats {
       // Add msoMdoc if it exists
       if let msoMdoc = to.msoMdoc {
         let algorithms = msoMdoc.algorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
-        let msoMdocFormat = VpFormat.msoMdoc(
+        let msoMdocFormat = VpFormatSupported.msoMdoc(
           algorithms: algorithms
         )
         formats.append(msoMdocFormat)
@@ -316,13 +316,13 @@ public extension VpFormats {
 
       // Convert JwtVpTO if it exists
       if let jwtVp = to.jwtVp {
-        let jwtVpFormat = VpFormat.jwtVp(algorithms: jwtVp.alg)
+        let jwtVpFormat = VpFormatSupported.jwtVp(algorithms: jwtVp.alg)
         formats.append(jwtVpFormat)
       }
 
       // Convert LdpVpTO if it exists
       if let ldpVp = to.ldpVp {
-        let ldpVpFormat = VpFormat.ldpVp(proofTypes: ldpVp.proofType)
+        let ldpVpFormat = VpFormatSupported.ldpVp(proofTypes: ldpVp.proofType)
         formats.append(ldpVpFormat)
       }
     }
@@ -343,12 +343,12 @@ public extension VpFormats {
       }
     }
 
-    return JSON([Self.vpFormats: mergedFormats])
+    return JSON([Self.vpFormatsSupported: mergedFormats])
   }
 }
 
-// Extend VpFormat to convert to JSON
-extension VpFormat {
+// Extend VpFormatSupported to convert to JSON
+extension VpFormatSupported {
   func toJSON() -> JSON {
     switch self {
     case .sdJwtVc(let sdJwtAlgorithms, let kbJwtAlgorithms):

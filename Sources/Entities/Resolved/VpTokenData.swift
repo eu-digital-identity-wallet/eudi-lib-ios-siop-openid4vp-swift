@@ -24,7 +24,7 @@ extension ResolvedRequestData {
     public let nonce: String
     public let responseMode: ResponseMode?
     public let state: String?
-    public let vpFormats: VpFormats
+    public let vpFormatsSupported: VpFormatsSupported
     public let transactionData: [TransactionData]?
     public let jarmRequirement: JARMRequirement?
     
@@ -39,7 +39,7 @@ extension ResolvedRequestData {
     ///   - nonce: The nonce value.
     ///   - responseMode: The response mode.
     ///   - state: The state value.
-    ///   - vpFormats: Vp Formats
+    ///   - vpFormatsSupported: Vp Formats
     ///   - jarmRequirement: JARM
     ///   - transactionData: Optional list of transcation data
     ///   - verifierAttestations: Optional list of verifierAttestations
@@ -50,7 +50,7 @@ extension ResolvedRequestData {
       nonce: String,
       responseMode: ResponseMode?,
       state: String?,
-      vpFormats: VpFormats,
+      vpFormatsSupported: VpFormatsSupported,
       jarmRequirement: JARMRequirement?,
       transactionData: [TransactionData]? = nil,
       verifierAttestations: [VerifierAttestation]? = nil
@@ -61,7 +61,7 @@ extension ResolvedRequestData {
       self.nonce = nonce
       self.responseMode = responseMode
       self.state = state
-      self.vpFormats = vpFormats
+      self.vpFormatsSupported = vpFormatsSupported
       self.transactionData = transactionData
       self.jarmRequirement = jarmRequirement
       self.verifierAttestations = verifierAttestations

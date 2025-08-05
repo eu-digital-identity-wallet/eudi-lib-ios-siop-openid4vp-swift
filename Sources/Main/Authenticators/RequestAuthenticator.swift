@@ -130,7 +130,7 @@ internal actor RequestAuthenticator {
     requestObject: UnvalidatedRequestObject,
     clientMetaData: ClientMetaData.Validated
   ) throws -> ValidatedRequestData {
-    let formats: VpFormats = clientMetaData.vpFormats
+    let formats: VpFormatsSupported = clientMetaData.vpFormatsSupported
     let querySource = try parseQuerySource(
       requestObject: requestObject
     )
@@ -145,7 +145,7 @@ internal actor RequestAuthenticator {
       scope: requestObject.scope,
       responseMode: requestObject.validResponseMode,
       state: requestObject.state,
-      vpFormats: formats.values.isEmpty ? try VpFormats.default() : formats,
+      vpFormatsSupported: formats.values.isEmpty ? try VpFormatsSupported.default() : formats,
       transactionData: requestObject.transactionData,
       verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
         try VerifierAttestation.from(json: json)
@@ -189,7 +189,7 @@ internal actor RequestAuthenticator {
     requestObject: UnvalidatedRequestObject,
     clientMetaData: ClientMetaData.Validated
   ) throws -> ValidatedRequestData {
-    let formats: VpFormats = clientMetaData.vpFormats
+    let formats: VpFormatsSupported = clientMetaData.vpFormatsSupported
     let querySource = try parseQuerySource(
       requestObject: requestObject
     )
@@ -203,7 +203,7 @@ internal actor RequestAuthenticator {
       responseMode: requestObject.validResponseMode,
       requestUriMethod: .init(method: requestObject.requestUriMethod),
       state: requestObject.state,
-      vpFormats: formats.values.isEmpty ? try VpFormats.default() : formats,
+      vpFormatsSupported: formats.values.isEmpty ? try VpFormatsSupported.default() : formats,
       transactionData: requestObject.transactionData,
       verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
         try VerifierAttestation.from(json: json)
