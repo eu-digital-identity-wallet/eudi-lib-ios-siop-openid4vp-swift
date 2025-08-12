@@ -39,118 +39,143 @@ public struct CredentialQuery: Codable, Equatable, Sendable {
     case meta
     case claims
     case claimSets = "claim_sets"
+    case multiple
+    case trustedAuthorities = "trusted_authorities"
+    case requireCryptographicHolderBinding = "require_cryptographic_holder_binding"
   }
-
+  
   public let id: QueryId
   public let format: Format
-  public let meta: JSON?
+  public let meta: JSON
   public let claims: [ClaimsQuery]?
   public let claimSets: [ClaimSet]?
-
+  public let multiple: Bool?
+  public let trustedAuthorities: [TrustedAuthority]?
+  public let requireCryptographicHolderBinding: Bool?
+  
   public init(
     id: QueryId,
     format: Format,
-    meta: JSON? = nil,
+    meta: JSON,
     claims: [ClaimsQuery]? = nil,
-    claimSets: [ClaimSet]? = nil
-  ) {
+    claimSets: [ClaimSet]? = nil,
+    multiple: Bool? = nil,
+    trustedAuthorities: [TrustedAuthority]? = nil,
+    requireCryptographicHolderBinding: Bool? = nil
+  ) throws {
+    
+    if let trustedAuthorities = trustedAuthorities {
+      guard trustedAuthorities.isEmpty == false else {
+        throw ValidationError.validationError("Empty TrustedAuthorities")
+      }
+    }
+    
     self.id = id
     self.format = format
     self.meta = meta
     self.claims = claims
     self.claimSets = claimSets
+    self.multiple = multiple
+    self.trustedAuthorities = trustedAuthorities
+    self.requireCryptographicHolderBinding = requireCryptographicHolderBinding
   }
-
+  
   public static func sdJwtVc(
     id: QueryId,
     sdJwtVcMeta: DCQLMetaSdJwtVcExtensions? = nil,
     claims: [ClaimsQuery]? = nil,
-    claimSets: [ClaimSet]? = nil
+    claimSets: [ClaimSet]? = nil,
+    multiple: Bool? = nil,
+    trustedAuthorities: [TrustedAuthority]? = nil,
+    requireCryptographicHolderBinding: Bool? = nil
   ) throws -> CredentialQuery {
-    var json: JSON?
-    if let jsonData = try? JSONEncoder().encode(sdJwtVcMeta) {
-      json = JSON(jsonData)
-    }
-    return CredentialQuery(
+    
+    let jsonData = try JSONEncoder().encode(sdJwtVcMeta)
+    let json = JSON(jsonData)
+    
+    return try CredentialQuery(
       id: id,
       format: try Format.SdJwtVc(),
       meta: json,
       claims: claims,
-      claimSets: claimSets
+      claimSets: claimSets,
+      multiple: multiple,
+      trustedAuthorities: trustedAuthorities,
+      requireCryptographicHolderBinding: requireCryptographicHolderBinding
     )
   }
-
+  
   public static func mdoc(
     id: QueryId,
     msoMdocMeta: DCQLMetaMsoMdocExtensions? = nil,
     claims: [ClaimsQuery]? = nil,
-    claimSets: [ClaimSet]? = nil
+    claimSets: [ClaimSet]? = nil,
+    multiple: Bool? = nil,
+    trustedAuthorities: [TrustedAuthority]? = nil,
+    requireCryptographicHolderBinding: Bool? = nil
   ) throws -> CredentialQuery {
-
-    var json: JSON?
-    if let jsonData = try? JSONEncoder().encode(msoMdocMeta) {
-      json = JSON(jsonData)
-    }
-
-    return CredentialQuery(
+    
+    let jsonData = try JSONEncoder().encode(msoMdocMeta)
+    let json = JSON(jsonData)
+    
+    return try CredentialQuery(
       id: id,
       format: try Format.MsoMdoc(),
       meta: json,
       claims: claims,
-      claimSets: claimSets
+      claimSets: claimSets,
+      multiple: multiple,
+      trustedAuthorities: trustedAuthorities,
+      requireCryptographicHolderBinding: requireCryptographicHolderBinding
     )
   }
 }
 
 public struct CredentialSetQuery: Codable, Equatable, Sendable {
-
-  public static let defaultRequiredValue: Bool? = true
-
+  
+  public static let defaultRequiredValue: Bool = true
+  
   public let options: [CredentialSet]
-  public let required: Bool?
-  public let purpose: JSON?
-
+  public let required: Bool
+  
   enum CodingKeys: String, CodingKey {
-    case options, required, purpose
+    case options, required
   }
-
+  
   public init(
     options: [CredentialSet],
-    required: Bool? = CredentialSetQuery.defaultRequiredValue,
-    purpose: JSON? = nil
+    required: Bool = CredentialSetQuery.defaultRequiredValue
   ) throws {
     for credentialSet in options {
       guard !credentialSet.isEmpty else { throw DCQLError.emptyCredentialSet }
     }
     self.options = options
     self.required = required
-    self.purpose = purpose
   }
-
+  
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     self.options = try container.decode([CredentialSet].self, forKey: .options)
-    self.required = try container.decodeIfPresent(Bool.self, forKey: .required) ?? Self.defaultRequiredValue
-    self.purpose = try container.decodeIfPresent(JSON.self, forKey: .purpose)
+    self.required = try container.decode(Bool.self, forKey: .required)
   }
 }
 
 public struct ClaimId: Codable, Hashable, Sendable {
   public let id: String
-
+  
   enum CodingKeys: String, CodingKey {
     case id
   }
-
+  
   public init(_ id: String) throws {
     try ClaimId.ensureValid(id)
     self.id = id
   }
-
+  
   public static func ensureValid(_ value: String) throws {
     try DCQLId.ensureValid(value)
   }
-
+  
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let id = try container.decode(String.self)
@@ -160,34 +185,34 @@ public struct ClaimId: Codable, Hashable, Sendable {
 }
 
 internal struct DCQLId {
-
+  
   @discardableResult
   static func ensureValid(_ value: String) throws -> String {
     guard !value.isEmpty else {
       throw ValidationError.emptyValue
     }
-
+    
     let regex = "^[a-zA-Z0-9_-]+$"
     let predicate: NSPredicate = .init(format: "SELF MATCHES %@", regex)
-
+    
     guard predicate.evaluate(with: value) else {
       throw ValidationError.invalidFormat
     }
-
+    
     return value
   }
 }
 
 public struct DCQL: Codable, Equatable, Sendable {
-
+  
   public let credentials: Credentials
   public let credentialSets: CredentialSets?
-
+  
   enum CodingKeys: String, CodingKey {
     case credentials
     case credentialSets = "credential_sets"
   }
-
+  
   public init(
     credentials: Credentials,
     credentialSets: CredentialSets? = nil
@@ -195,41 +220,45 @@ public struct DCQL: Codable, Equatable, Sendable {
     let uniqueIds = try credentials.ensureValid()
     if let credentialSets = credentialSets {
       try credentialSets.ensureValid(knownIds: uniqueIds)
+      try credentialSets.ensureKnownIds(credentials)
     }
-
+    
     try credentials.ensureFormatsValid()
-
+    try credentials.ensureValid()
+    
     self.credentials = credentials
     self.credentialSets = credentialSets
   }
-
+  
   init(from json: JSON) throws {
-
+    
     let credentialsData = try json[OpenId4VPSpec.DCQL_CREDENTIALS].rawData()
     let credentials = try JSONDecoder().decode(Credentials.self, from: credentialsData)
-
+    
     var credentialSets: CredentialSets?
     if json[OpenId4VPSpec.DCQL_CREDENTIAL_SETS].exists() {
       let credentialSetsData = try json[OpenId4VPSpec.DCQL_CREDENTIAL_SETS].rawData()
       credentialSets = try JSONDecoder().decode(CredentialSets.self, from: credentialSetsData)
     }
-
+    
     try self.init(credentials: credentials, credentialSets: credentialSets)
   }
 }
 
 public extension Credentials {
+  
+  @discardableResult
   func ensureValid() throws -> CredentialSet {
     guard !isEmpty else { throw DCQLError.emptyCredentials }
     return try ensureUniqueIds()
   }
-
+  
   func ensureUniqueIds() throws -> CredentialSet {
     let uniqueIds = Set(map { $0.id })
     guard uniqueIds.count == count else { throw DCQLError.duplicateQueryId }
     return uniqueIds
   }
-
+  
   func ensureFormatsValid() throws {
     try self.forEach { credentialQuery in
       let credentialQueryFormat = credentialQuery.format
@@ -265,14 +294,14 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
   public let path: ClaimPath
   public let values: [String]?
   public let intentToRetain: Bool?
-
+  
   enum CodingKeys: String, CodingKey {
     case id
     case path
     case values
     case intentToRetain = "intent_to_retain"
   }
-
+  
   public init(
     id: ClaimId?,
     path: ClaimPath,
@@ -284,25 +313,25 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
     self.values = values
     self.intentToRetain = intentToRetain
   }
-
+  
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
-
+    
     self.id = try container.decodeIfPresent(ClaimId.self, forKey: .id)
     self.path = try container.decode(ClaimPath.self, forKey: .path)
     self.values = try container.decodeIfPresent([String].self, forKey: .values)
     self.intentToRetain = try container.decodeIfPresent(Bool.self, forKey: .intentToRetain)
   }
-
+  
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
-
+    
     try container.encodeIfPresent(id, forKey: .id)
     try container.encodeIfPresent(values, forKey: .values)
     try container.encodeIfPresent(path, forKey: .path)
     try container.encodeIfPresent(intentToRetain, forKey: .intentToRetain)
   }
-
+  
   public static func sdJwtVc(
     id: ClaimId? = nil,
     path: ClaimPath,
@@ -314,7 +343,7 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
       values: values
     ).ensureNotMsoMdoc()
   }
-
+  
   public static func mdoc(
     id: ClaimId? = nil,
     values: [String]? = nil,
@@ -329,7 +358,7 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
       intentToRetain: intentToRetain
     ).ensureMsoMdoc()
   }
-
+  
   public static func mdoc(
     id: ClaimId? = nil,
     values: [String]? = nil,
@@ -346,14 +375,14 @@ public struct ClaimsQuery: Codable, Equatable, Sendable {
 }
 
 extension ClaimsQuery {
-
+  
   func ensureMsoMdoc() throws -> ClaimsQuery {
     if path.value.count != 2 {
       throw DCQLError.error(
         "Claim paths for mso mdoc based must have exactly two elements"
       )
     }
-
+    
     let claimsSatisfy = path.value.allSatisfy { element in
       switch element {
       case .claim:
@@ -369,7 +398,7 @@ extension ClaimsQuery {
     }
     return self
   }
-
+  
   func ensureNotMsoMdoc() throws -> ClaimsQuery {
     if intentToRetain != nil {
       throw DCQLError.error(
@@ -383,41 +412,106 @@ extension ClaimsQuery {
 // MARK: - Extensions
 
 public struct DCQLMetaSdJwtVcExtensions: Codable {
-
-  public let vctValues: [String]?
-
+  
+  public let vctValues: [String]
+  
   enum CodingKeys: String, CodingKey {
     case vctValues = "vct_values"
+  }
+  
+  public init(vctValues: [String]) throws {
+    guard vctValues.isEmpty == false else {
+      throw ValidationError.validationError("Empty VctValues")
+    }
+    self.vctValues = vctValues
   }
 }
 
 public struct DCQLMetaMsoMdocExtensions: Encodable {
-
-  public let doctypeValue: MsoMdocDocType?
-
+  
+  public let doctypeValue: MsoMdocDocType
+  
   enum CodingKeys: String, CodingKey {
     case doctypeValue = "doctype_value"
   }
-
+  
   public func encode(to encoder: Encoder) throws {
     var container = encoder.container(keyedBy: CodingKeys.self)
-    if let doctypeValue = doctypeValue {
-      try container.encode(doctypeValue.value, forKey: .doctypeValue)
-    }
+    try container.encode(doctypeValue.value, forKey: .doctypeValue)
   }
 }
 
 public struct MsoMdocDocType: CustomStringConvertible {
   public let value: String
-
+  
   public init(value: String) throws {
     guard !value.isEmpty else {
       throw DCQLError.emptyDocType
     }
     self.value = value
   }
-
+  
   public var description: String {
     return value
+  }
+}
+
+public extension Array where Element == CredentialQuery {
+  /// Collects all known query IDs from the credential list.
+  /// Assumes `CredentialQuery` exposes an `id: QueryId`.
+  var ids: Set<QueryId> {
+    Set(self.map { $0.id })
+  }
+}
+
+public extension Set where Element == QueryId {
+  /// Returns the IDs in this credential set that are not known by `credentials`.
+  func unknownIds(in credentials: Credentials) -> [QueryId] {
+    Array(self.subtracting(credentials.ids))
+  }
+}
+
+public extension Array where Element == CredentialSetQuery {
+  /**
+   Ensures that all the credential set queries (`self`) have options that reference IDs
+   known by the given `credentials`.
+   
+   - Parameter credentials: The credentials against which the credential set queries will be checked.
+   - Returns: `self` (to allow fluent chaining, mirroring Kotlin's `apply`).
+   - Throws: ``CredentialSetsValidationError/invalidOptions(message:)`` if any option references unknown IDs.
+   */
+  @discardableResult
+  func ensureKnownIds(_ credentials: Credentials) throws -> Self {
+    
+    var violations: [Int: [(optionIndex: Int, unknownIds: [QueryId])]] = [:]
+    
+    for (setIndex, query) in self.enumerated() {
+      var invalids: [(optionIndex: Int, unknownIds: [QueryId])] = []
+      
+      for (optionIndex, optionSet) in query.options.enumerated() {
+        let unknown = optionSet.unknownIds(in: credentials)
+        if !unknown.isEmpty {
+          invalids.append((optionIndex: optionIndex, unknownIds: unknown))
+        }
+      }
+      
+      if !invalids.isEmpty {
+        violations[setIndex] = invalids
+      }
+    }
+    
+    guard violations.isEmpty else {
+      var message = "The following credential set queries have invalid options:\n"
+      for (setIndex, invalids) in violations.sorted(by: { $0.key < $1.key }) {
+        message += "[\(setIndex)]:\n"
+        for entry in invalids {
+          message += "[\(entry.optionIndex)]:\n"
+          message += "  Unknown credential query ids: \(entry.unknownIds)\n"
+        }
+      }
+      throw ValidationError.validationError("invalidOptions \(message)")
+    }
+    
+    return self
   }
 }

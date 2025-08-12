@@ -216,14 +216,13 @@ final class DCQLParseTests: XCTestCase {
       ],
       "credential_sets": [
         {
-          "purpose": "Identification",
+          "required": false,
           "options": [
             [ "mdl-id" ],
             [ "photo_card-id" ]
           ]
         },
         {
-          "purpose": "Proof of address",
           "required": false,
           "options": [
             [ "mdl-address" ],
@@ -596,7 +595,7 @@ final class DCQLParseTests: XCTestCase {
       ],
       "credential_sets": [
         {
-          "purpose": "Identification",
+          "required": false,
           "options": [
             [ "pid" ],
             [ "other_pid" ],
@@ -604,7 +603,6 @@ final class DCQLParseTests: XCTestCase {
           ]
         },
         {
-          "purpose": "Show your rewards card",
           "required": false,
           "options": [
             [ "nice_to_have" ]
@@ -679,14 +677,13 @@ final class DCQLParseTests: XCTestCase {
             [.init(value: "other_pid")],
             [.init(value: "pid_reduced_cred_1"), .init(value: "pid_reduced_cred_2")]
           ],
-          purpose: .init("Identification")
+          required: false
         ),
         .init(
           options: [
             [.init(value: "nice_to_have")]
           ],
-          required: false,
-          purpose: .init("Show your rewards card")
+          required: false
         )
       ]
     )
@@ -782,14 +779,13 @@ final class DCQLParseTests: XCTestCase {
       ],
       "credential_sets": [
         {
-          "purpose": "Identification",
+          "required": false,
           "options": [
             [ "mdl-id" ],
             [ "photo_card-id" ]
           ]
         },
         {
-          "purpose": "Proof of address",
           "required": false,
           "options": [
             [ "mdl-address" ],
@@ -907,15 +903,14 @@ final class DCQLParseTests: XCTestCase {
             [.init(value: "mdl-id")],
             [.init(value: "photo_card-id")]
           ],
-          purpose: .init("Identification")
+          required: false
         ),
         .init(
           options: [
             [.init(value: "mdl-address")],
             [.init(value: "photo_card-address")]
           ],
-          required: false,
-          purpose: .init("Proof of address")
+          required: false
         )
       ]
     )

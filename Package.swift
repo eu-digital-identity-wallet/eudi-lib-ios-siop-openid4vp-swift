@@ -22,11 +22,11 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/apple/swift-certificates.git",
-      .upToNextMajor(from: "1.0.0")
+      .upToNextMajor(from: "1.12.0")
     ),
     .package(
       url: "https://github.com/apple/swift-asn1.git",
-      .upToNextMajor(from: "1.0.0")
+      .upToNextMajor(from: "1.4.0")
     ),
     .package(
       url: "https://github.com/niscy-eudiw/BlueECC.git",
@@ -34,7 +34,7 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/krzyzanowskim/CryptoSwift.git",
-      from: "1.8.4"
+      from: "1.9.0"
     )
   ],
   targets: [
