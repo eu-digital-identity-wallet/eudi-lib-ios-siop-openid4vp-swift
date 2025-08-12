@@ -257,8 +257,8 @@ final class VpFormatsTests: XCTestCase {
     )
     let json = format.toJSON()
 
-    XCTAssertEqual(json["vc+sd-jwt"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
-    XCTAssertEqual(json["vc+sd-jwt"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["dc+sd-jwt"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["dc+sd-jwt"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
   }
 
   func testVpFormatsToJSON() throws {
@@ -275,7 +275,7 @@ final class VpFormatsTests: XCTestCase {
     let jsonString = """
     {
        "vp_formats": {
-              "vc+sd-jwt": {
+              "dc+sd-jwt": {
                   "sd-jwt_alg_values": [
                       "ES256"
                   ],
