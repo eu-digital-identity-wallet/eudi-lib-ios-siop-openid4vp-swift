@@ -460,7 +460,7 @@ final class DirectPostJWTTests: DiXCTest {
       subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
       authorizationEncryptedResponseAlg: "ECDH-ES",
       authorizationEncryptedResponseEnc: "A128CBC-HS256", // was: A256GCM"
-      vpFormats: TestsConstants.testVpFormatsTO()
+      vpFormatsSupported: TestsConstants.testVpFormatsSupportedTO()
     )
 
     let validator = ClientMetaDataValidator()
@@ -1414,7 +1414,7 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: "0S6_WzA2Mj",
         responseMode: .directPostJWT(responseURI: URL(string: "https://respond.here")!),
         state: "state",
-        vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
+        vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!,
         jarmRequirement: .signedAndEncrypted(
           signed: .signed(
             responseSigningAlg: .init(.RS256),

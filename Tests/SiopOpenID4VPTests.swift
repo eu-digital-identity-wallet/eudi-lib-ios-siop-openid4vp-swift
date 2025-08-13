@@ -269,7 +269,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       let resolved = request.resolved
       switch resolved {
       case .idAndVpToken(let request):
-        XCTAssertEqual(request.clientMetaData!.vpFormats.values.first!, VpFormat.sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)]))
+        XCTAssertEqual(request.clientMetaData!.vpFormatsSupported.values.first!, VpFormatSupported.sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)]))
         XCTAssert(true)
       default:
         XCTAssert(false, "Unexpected case")

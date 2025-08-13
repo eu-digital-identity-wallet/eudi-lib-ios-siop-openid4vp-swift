@@ -44,7 +44,7 @@ internal actor ClientMetaDataValidator {
       throw ValidationError.validationError("authorizationEncryptedResponseAlg does not exist, authorizationEncryptedResponseEnc exists, both should exist")
     }
 
-    let formats = try? VpFormats(from: clientMetaData.vpFormats)
+    let formats = try? VpFormatsSupported(from: clientMetaData.vpFormatsSupported)
     let validated = await ClientMetaData.Validated(
       jwkSet: try extractKeySet(clientMetaData: clientMetaData),
       idTokenJWSAlg: idTokenJWSAlg,
@@ -54,7 +54,7 @@ internal actor ClientMetaDataValidator {
       authorizationSignedResponseAlg: parseOptionJWSAlgorithm(algorithm: clientMetaData.authorizationSignedResponseAlg),
       authorizationEncryptedResponseAlg: parseOptionJWEAlgorithm(algorithm: clientMetaData.authorizationEncryptedResponseAlg),
       authorizationEncryptedResponseEnc: .init(optionalSupportedName: clientMetaData.authorizationEncryptedResponseEnc),
-      vpFormats: try (formats ?? VpFormats.empty())
+      vpFormatsSupported: try (formats ?? VpFormatsSupported.empty())
     )
 
     return validated
