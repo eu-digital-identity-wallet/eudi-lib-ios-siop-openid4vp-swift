@@ -62,7 +62,6 @@ final class JOSETests: DiXCTest {
         ])
       ],
       vpFormatsSupported: [],
-      jarmConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 

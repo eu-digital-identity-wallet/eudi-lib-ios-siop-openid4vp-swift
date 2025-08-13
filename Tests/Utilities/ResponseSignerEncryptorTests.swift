@@ -30,7 +30,6 @@ final class ResponseSignerEncryptorTests: DiXCTest {
 
   func testSignResponseUsingWalletConfiguration() async throws {
 
-    /*
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
 
@@ -59,19 +58,19 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      vpConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let requirement: JARMRequirement = .encrypted(
-      responseEncryptionAlg: alg,
-      responseEncryptionEnc: <#T##EncryptionMethod#>,
-      clientKey: <#T##WebKeySet#>
+    let specification = ResponseEncryptionSpecification(
+      responseEncryptionAlg: .init(.ECDH_ES),
+      responseEncryptionEnc: .init(.A128GCM),
+      clientKey: keySet
     )
 
     let response = try await responseSignerEncryptor.signEncryptResponse(
-      requirement: requirement,
+      responseEncryptionSpecification: specification,
       data: mockResponsePayload
     )
 
@@ -91,7 +90,6 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let message = String(data: payload.data(), encoding: .utf8)!
 
     XCTAssert(message.isValidJSONString)
-     */
   }
 
   func testRSAEncryptResponseWithoutWalletCongiguration() async throws {
@@ -113,14 +111,14 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     ])
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let requirement: JARMRequirement = .encrypted(
+    let responseEncryptionSpecification = ResponseEncryptionSpecification(
       responseEncryptionAlg: alg,
       responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
       clientKey: keySet
     )
     
     let response = try await responseSignerEncryptor.signEncryptResponse(
-      requirement: requirement,
+      responseEncryptionSpecification: responseEncryptionSpecification,
       data: mockResponsePayload
     )
 
@@ -160,21 +158,24 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
-    let encrypted: JARMRequirement = .encrypted(
+    let encrypted = ResponseEncryptionSpecification(
       responseEncryptionAlg: encryptionAlg,
       responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
       clientKey: wallet.publicWebKeySet
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let requirement: JARMRequirement = encrypted
+    let responseEncryptionSpecification = ResponseEncryptionSpecification(
+      responseEncryptionAlg: encryptionAlg,
+      responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
+      clientKey: keySet
+    )
     
     let response = try await responseSignerEncryptor.signEncryptResponse(
-      requirement: requirement,
+      responseEncryptionSpecification: responseEncryptionSpecification,
       data: mockResponsePayload
     )
 
@@ -215,14 +216,14 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     ])
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let requirement: JARMRequirement = .encrypted(
+    let responseEncryptionSpecification = ResponseEncryptionSpecification(
       responseEncryptionAlg: alg,
       responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
       clientKey: keySet
     )
     
     let response = try await responseSignerEncryptor.signEncryptResponse(
-      requirement: requirement,
+      responseEncryptionSpecification: responseEncryptionSpecification,
       data: mockResponsePayload
     )
 
@@ -276,21 +277,19 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
-    let encrypted: JARMRequirement = .encrypted(
+    let responseEncryptionSpecification = ResponseEncryptionSpecification(
       responseEncryptionAlg: encryptionAlg,
       responseEncryptionEnc: JOSEEncryptionMethod(.A128CBC_HS256),
-      clientKey: wallet.publicWebKeySet
+      clientKey: keySet
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let requirement: JARMRequirement = encrypted
     
     let response = try await responseSignerEncryptor.signEncryptResponse(
-      requirement: requirement,
+      responseEncryptionSpecification: responseEncryptionSpecification,
       data: mockResponsePayload
     )
 

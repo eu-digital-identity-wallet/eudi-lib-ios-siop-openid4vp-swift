@@ -24,7 +24,7 @@ public enum AuthorizationResponse: Sendable {
   case directPostJwt(
     url: URL,
     data: AuthorizationResponsePayload,
-    jarmRequirement: JARMRequirement
+    responseEncryptionSpecification: ResponseEncryptionSpecification
   )
 
   /// A query authorization response.
@@ -34,7 +34,7 @@ public enum AuthorizationResponse: Sendable {
   case queryJwt(
     url: URL,
     data: AuthorizationResponsePayload,
-    jarmRequirement: JARMRequirement
+    responseEncryptionSpecification: ResponseEncryptionSpecification
   )
 
   /// A fragment authorization response.
@@ -44,7 +44,7 @@ public enum AuthorizationResponse: Sendable {
   case fragmentJwt(
     url: URL,
     data: AuthorizationResponsePayload,
-    jarmRequirement: JARMRequirement
+    responseEncryptionSpecification: ResponseEncryptionSpecification
   )
 
   case invalidRequest(
@@ -83,7 +83,7 @@ public extension AuthorizationResponse {
           payload: payload,
           clientMetaData: request.clientMetaData,
           walletOpenId4VPConfig: walletOpenId4VPConfig,
-          jarmRequirment: request.jarmRequirement
+          responseEncryptionSpecification: request.responseEncryptionSpecification
         )
       default: throw AuthorizationError.unsupportedResolution
       }
@@ -102,7 +102,7 @@ public extension AuthorizationResponse {
           payload: payload,
           clientMetaData: request.clientMetaData,
           walletOpenId4VPConfig: walletOpenId4VPConfig,
-          jarmRequirment: request.jarmRequirement
+          responseEncryptionSpecification: request.responseEncryptionSpecification
         )
       default: throw AuthorizationError.unsupportedResolution
       }
@@ -120,7 +120,7 @@ public extension AuthorizationResponse {
           payload: payload,
           clientMetaData: request.clientMetaData,
           walletOpenId4VPConfig: walletOpenId4VPConfig,
-          jarmRequirment: request.jarmRequirement
+          responseEncryptionSpecification: request.responseEncryptionSpecification
         )
       case .idAndVpToken:
         throw AuthorizationError.unsupportedResolution
@@ -134,7 +134,7 @@ public extension AuthorizationResponse {
           payload: payload,
           clientMetaData: request.clientMetaData,
           walletOpenId4VPConfig: walletOpenId4VPConfig,
-          jarmRequirment: request.jarmRequirement
+          responseEncryptionSpecification: request.responseEncryptionSpecification
         )
       }
     }
@@ -153,7 +153,7 @@ private extension AuthorizationResponse {
     payload: AuthorizationResponsePayload,
     clientMetaData: ClientMetaData.Validated?,
     walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
-    jarmRequirment: JARMRequirement?
+    responseEncryptionSpecification: ResponseEncryptionSpecification?
   ) throws -> AuthorizationResponse {
     guard let responseMode = responseMode else {
       throw AuthorizationError.invalidResponseMode
@@ -166,13 +166,13 @@ private extension AuthorizationResponse {
         data: payload
       )
     case .directPostJWT(let responseURI):
-      guard let jarmRequirment = jarmRequirment else {
+      guard let responseEncryptionSpecification = responseEncryptionSpecification else {
         throw ValidationError.invalidJarmRequirement
       }
       return .directPostJwt(
         url: responseURI,
         data: payload,
-        jarmRequirement: jarmRequirment
+        responseEncryptionSpecification: responseEncryptionSpecification
       )
     case .query(let responseURI):
       return .query(

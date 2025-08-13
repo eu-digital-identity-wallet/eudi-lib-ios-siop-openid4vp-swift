@@ -30,7 +30,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let vpConfiguration: VPConfiguration
   public let errorDispatchPolicy: ErrorDispatchPolicy
   public let session: Networking
-  public let jarmConfiguration: JARMConfiguration
   public let responseEncryptionConfiguration: ResponseEncryptionConfiguration
   
   public init(
@@ -45,10 +44,9 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     vpFormatsSupported: [ClaimFormat],
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
     jarConfiguration: JARConfiguration = .noEncryptionOption,
-    vpConfiguration: VPConfiguration = VPConfiguration.default(),
+    vpConfiguration: VPConfiguration = .default(),
     errorDispatchPolicy: ErrorDispatchPolicy = .onlyAuthenticatedClients,
     session: Networking = Self.walletSession,
-    jarmConfiguration: JARMConfiguration,
     responseEncryptionConfiguration: ResponseEncryptionConfiguration
   ) {
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
@@ -65,7 +63,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     self.vpConfiguration = vpConfiguration
     self.errorDispatchPolicy = errorDispatchPolicy
     self.session = session
-    self.jarmConfiguration = jarmConfiguration
     self.responseEncryptionConfiguration = responseEncryptionConfiguration
   }
 
@@ -81,10 +78,9 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     vpFormatsSupported = []
     knownPresentationDefinitionsPerScope = [:]
     jarConfiguration = .noEncryptionOption
-    vpConfiguration = VPConfiguration.default()
+    vpConfiguration = .default()
     errorDispatchPolicy = .onlyAuthenticatedClients
     session = URLSession.shared
-    jarmConfiguration = .noConfiguration
     responseEncryptionConfiguration = .unsupported
   }
 

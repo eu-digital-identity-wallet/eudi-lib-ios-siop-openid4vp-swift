@@ -107,9 +107,8 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       vpFormatsSupported: vpFormatsSupported,
       knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope,
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
+      vpConfiguration: .default(),
       session: SiopOpenId4VPConfiguration.walletSession,
-      jarmConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 

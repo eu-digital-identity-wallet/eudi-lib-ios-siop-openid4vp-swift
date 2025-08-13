@@ -45,7 +45,7 @@ final class DirectPostTests: DiXCTest {
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
         scope: TestsConstants.testScope,
-        jarmRequirement: .noRequirement
+        responseEncryptionSpecification: nil
       )
     )
 
@@ -87,7 +87,7 @@ final class DirectPostTests: DiXCTest {
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
         scope: TestsConstants.testScope,
-        jarmRequirement: .noRequirement
+        responseEncryptionSpecification: nil
       )
     )
 
@@ -162,8 +162,7 @@ final class DirectPostTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -268,8 +267,7 @@ final class DirectPostTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 

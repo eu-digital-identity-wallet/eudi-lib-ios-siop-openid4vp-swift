@@ -97,9 +97,7 @@ public extension ResolvedRequestData {
         responseMode: request.responseMode,
         state: request.state,
         scope: request.scope,
-        jarmRequirement: walletConfiguration.jarmRequirement(
-          validated: validatedClientMetaData
-        ),
+        responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
         transactionData: try Self.parseTransactionData(
           transactionData: request.transactionData,
           vpConfiguration: vpConfiguration,
@@ -124,9 +122,7 @@ public extension ResolvedRequestData {
         responseMode: request.responseMode,
         state: request.state,
         vpFormats: commonFormats,
-        jarmRequirement: walletConfiguration.jarmRequirement(
-          validated: validatedClientMetaData
-        ),
+        responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
         transactionData: try Self.parseTransactionData(
           transactionData: request.transactionData,
           vpConfiguration: vpConfiguration,
@@ -178,13 +174,12 @@ public extension ResolvedRequestData {
           responseMode: request.responseMode,
           state: request.state,
           vpFormats: commonFormats,
-          jarmRequirement: walletConfiguration.jarmRequirement(
-            validated: validatedClientMetaData
-          ),
+          responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
           transactionData: try Self.parseTransactionData(
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
-            presentationQuery: presentationQuery),
+            presentationQuery: presentationQuery
+          ),
           verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
             request.verifierAttestations,
             presentationQuery: presentationQuery

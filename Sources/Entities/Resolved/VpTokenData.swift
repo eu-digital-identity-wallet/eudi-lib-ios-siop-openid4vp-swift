@@ -26,7 +26,7 @@ extension ResolvedRequestData {
     public let state: String?
     public let vpFormats: VpFormats
     public let transactionData: [TransactionData]?
-    public let jarmRequirement: JARMRequirement?
+    public let responseEncryptionSpecification: ResponseEncryptionSpecification?
     
     public let verifierAttestations: [VerifierAttestation]?
 
@@ -40,7 +40,7 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state value.
     ///   - vpFormats: Vp Formats
-    ///   - jarmRequirement: JARM
+    ///   - responseEncryptionSpecification: Encryption specification
     ///   - transactionData: Optional list of transcation data
     ///   - verifierAttestations: Optional list of verifierAttestations
     public init(
@@ -51,7 +51,7 @@ extension ResolvedRequestData {
       responseMode: ResponseMode?,
       state: String?,
       vpFormats: VpFormats,
-      jarmRequirement: JARMRequirement?,
+      responseEncryptionSpecification: ResponseEncryptionSpecification?,
       transactionData: [TransactionData]? = nil,
       verifierAttestations: [VerifierAttestation]? = nil
     ) {
@@ -63,7 +63,7 @@ extension ResolvedRequestData {
       self.state = state
       self.vpFormats = vpFormats
       self.transactionData = transactionData
-      self.jarmRequirement = jarmRequirement
+      self.responseEncryptionSpecification = responseEncryptionSpecification
       self.verifierAttestations = verifierAttestations
     }
   }

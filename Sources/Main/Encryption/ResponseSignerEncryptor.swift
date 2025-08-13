@@ -19,24 +19,15 @@ import JOSESwift
 internal actor ResponseSignerEncryptor {
 
   func signEncryptResponse(
-    requirement: JARMRequirement,
+    responseEncryptionSpecification: ResponseEncryptionSpecification,
     data: AuthorizationResponsePayload
   ) throws -> String {
-    switch requirement {
-    case .encrypted(
-      let responseEncryptionAlg,
-      let responseEncryptionEnc,
-      let clientKey
-    ): return try encrypt(
-      responseEncryptionAlg: responseEncryptionAlg,
-      responseEncryptionEnc: responseEncryptionEnc,
-      signingKeySet: clientKey,
+    return try encrypt(
+      responseEncryptionAlg: responseEncryptionSpecification.responseEncryptionAlg,
+      responseEncryptionEnc: responseEncryptionSpecification.responseEncryptionEnc,
+      signingKeySet: responseEncryptionSpecification.clientKey,
       data: data
     ).compactSerializedString
-      
-    case .noRequirement:
-      throw ValidationError.invalidJarmRequirement
-    }
   }
 }
 

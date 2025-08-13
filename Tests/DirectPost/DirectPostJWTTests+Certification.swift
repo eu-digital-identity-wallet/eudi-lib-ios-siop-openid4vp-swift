@@ -69,8 +69,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -188,8 +187,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -308,8 +306,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 

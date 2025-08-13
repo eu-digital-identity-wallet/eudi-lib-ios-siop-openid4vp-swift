@@ -57,7 +57,7 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case missingNonce
   case nonDispatchable(ValidationError)
   case invalidJarmRequirement
-  
+  case invalidResponseEncryptionSpecification
   case invalidVerifierAttestationFormat
   case invalidVerifierAttestationCredentialIds
 
@@ -149,6 +149,8 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".invalidVerifierAttestationFormat"
     case .invalidVerifierAttestationCredentialIds:
       return ".invalidVerifierAttestationCredentialIds"
+    case .invalidResponseEncryptionSpecification:
+      return ".invalidResponseEncryptionSpecification"
     }
   }
 }

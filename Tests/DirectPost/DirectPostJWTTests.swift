@@ -61,8 +61,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -163,8 +162,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -270,8 +268,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -358,7 +355,7 @@ final class DirectPostJWTTests: DiXCTest {
         responseMode: Constants.testDirectPostJwtResponseMode,
         state: Constants.generateRandomBase64String(),
         scope: Constants.testScope,
-        jarmRequirement: .noRequirement
+        responseEncryptionSpecification: nil
       )
     )
 
@@ -394,7 +391,7 @@ final class DirectPostJWTTests: DiXCTest {
         publicWebKeySet: TestsConstants.webKeySet,
         supportedClientIdSchemes: [],
         vpFormatsSupported: [],
-        jarmConfiguration: .default(),
+        vpConfiguration: .default(),
         responseEncryptionConfiguration: .unsupported
       ),
       rsaJWK: rsaJWK,
@@ -419,8 +416,7 @@ final class DirectPostJWTTests: DiXCTest {
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .noConfiguration,
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -489,8 +485,7 @@ final class DirectPostJWTTests: DiXCTest {
       supportedClientIdSchemes: [],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -506,7 +501,7 @@ final class DirectPostJWTTests: DiXCTest {
         responseMode: Constants.testDirectPostJwtResponseMode,
         state: Constants.generateRandomBase64String(),
         scope: Constants.testScope,
-        jarmRequirement: .encrypted(
+        responseEncryptionSpecification: .init(
           responseEncryptionAlg: .init(.ECDH_ES),
           responseEncryptionEnc: .init(.A128CBC_HS256),
           clientKey: keySet
@@ -593,8 +588,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -707,8 +701,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -828,8 +821,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -947,8 +939,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -1072,8 +1063,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -1208,8 +1198,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -1321,8 +1310,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -1438,7 +1426,7 @@ final class DirectPostJWTTests: DiXCTest {
         responseMode: .directPostJWT(responseURI: URL(string: "https://respond.here")!),
         state: "state",
         vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
-        jarmRequirement: .encrypted(
+        responseEncryptionSpecification: .init(
           responseEncryptionAlg: .init(.ECDH_ES),
           responseEncryptionEnc: .init(.A128CBC_HS256),
           clientKey: try! .init(jwks: [ecPublicJwk, rsaJWK])
@@ -1475,7 +1463,7 @@ final class DirectPostJWTTests: DiXCTest {
         publicWebKeySet: rsaKeySet,
         supportedClientIdSchemes: [],
         vpFormatsSupported: [],
-        jarmConfiguration: .default(),
+        vpConfiguration: .default(),
         responseEncryptionConfiguration: .unsupported
       )
     )
@@ -1543,8 +1531,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
     )
 
@@ -1650,11 +1637,10 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default(),
+      vpConfiguration: .default(),
       responseEncryptionConfiguration: .supported(
         supportedAlgorithms: [.init(.ECDH_ES)],
-        supportedMethods: [EncryptionMethod.init(.A128GCM)]
+        supportedMethods: [.init(.A128GCM)]
       )
     )
 
@@ -1665,7 +1651,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2FfQzx8S1Pi3iA3PPogLKorYFYnJeMtzhw59gtQUGc9IEG_vWBjESPrMPuH_J_sjAlUaz_KAGDFWUg_sCsDSipJA&request_uri_method=get"
+    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2FB6himwxY7kl44ISNp5qKBELHX9YlTjI_KKGGEpEKiyTZRQiBI0xSqaKlxe0dxGXvE3K0bk55Jxyb9PBWkHPu8A&request_uri_method=get"
 
     overrideDependencies()
     let result = await sdk.authorize(
@@ -1680,7 +1666,7 @@ final class DirectPostJWTTests: DiXCTest {
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): .generic(TestsConstants.cbor)
+          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
         ])
       )
 
@@ -1744,8 +1730,7 @@ final class DirectPostJWTTests: DiXCTest {
         ],
         vpFormatsSupported: [],
         jarConfiguration: .noEncryptionOption,
-        vpConfiguration: VPConfiguration.default(),
-        jarmConfiguration: .default(),
+        vpConfiguration: .default(),
         responseEncryptionConfiguration: .unsupported
       )
 

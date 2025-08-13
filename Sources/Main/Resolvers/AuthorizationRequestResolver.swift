@@ -374,7 +374,7 @@ internal extension AuthorizationRequestResolver {
       nonce: validatedRequestObject.nonce,
       state: validatedRequestObject.state,
       clientId: validatedRequestObject.clientId,
-      jarmRequirement: config.jarmRequirement(validated: clientMetaData)
+      responseEncryptionSpecification: clientMetaData?.responseEncryptionSpecification
     )
   }
 }

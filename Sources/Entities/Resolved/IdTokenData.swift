@@ -26,7 +26,7 @@ extension ResolvedRequestData {
     public let responseMode: ResponseMode?
     public let state: String?
     public let scope: Scope?
-    public let jarmRequirement: JARMRequirement?
+    public let responseEncryptionSpecification: ResponseEncryptionSpecification?
     public let transactionData: [TransactionData]?
     public let verifierAttestations: [VerifierAttestation]?
 
@@ -40,7 +40,7 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state.
     ///   - scope: The scope.
-    ///   - jarmRequirement: JARM
+    ///   - responseEncryptionSpecification: Encryption specification
     ///   - transactionData: Optional list of transcation data
     ///   - verifierAttestations: Optional list of verifierAttestations
     public init(
@@ -52,7 +52,7 @@ extension ResolvedRequestData {
       responseMode: ResponseMode?,
       state: String?,
       scope: Scope?,
-      jarmRequirement: JARMRequirement?,
+      responseEncryptionSpecification: ResponseEncryptionSpecification?,
       transactionData: [TransactionData]? = nil,
       verifierAttestations: [VerifierAttestation]? = nil
     ) {
@@ -64,7 +64,7 @@ extension ResolvedRequestData {
       self.responseMode = responseMode
       self.state = state
       self.scope = scope
-      self.jarmRequirement = jarmRequirement
+      self.responseEncryptionSpecification = responseEncryptionSpecification
       self.transactionData = transactionData
       self.verifierAttestations = verifierAttestations
     }
