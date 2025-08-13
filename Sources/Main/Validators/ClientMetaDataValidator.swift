@@ -19,13 +19,19 @@ import SwiftyJSON
 internal actor ClientMetaDataValidator {
 
   @discardableResult
-  func validate(clientMetaData: ClientMetaData?) async throws -> ClientMetaData.Validated? {
+  func validate(
+    clientMetaData: ClientMetaData?,
+    responseMode: ResponseMode?,
+    responseEncryptionConfiguration: ResponseEncryptionConfiguration
+  ) async throws -> ClientMetaData.Validated? {
 
     guard let clientMetaData = clientMetaData else {
       return nil
     }
 
-    let idTokenJWSAlg: JWSAlgorithm? = parseOptionJWSAlgorithm(algorithm: clientMetaData.idTokenSignedResponseAlg)
+    let idTokenJWSAlg: JWSAlgorithm? = parseOptionJWSAlgorithm(
+      algorithm: clientMetaData.idTokenSignedResponseAlg
+    )
 
     let idTokenJWEAlg: JWEAlgorithm? = .init(
       optionalName: clientMetaData.idTokenEncryptedResponseAlg
@@ -37,24 +43,26 @@ internal actor ClientMetaDataValidator {
 
     let subjectSyntaxTypesSupported: [SubjectSyntaxType] = clientMetaData.subjectSyntaxTypesSupported.compactMap { SubjectSyntaxType(rawValue: $0) }
 
-    if !clientMetaData.authorizationEncryptedResponseAlg.isNilOrEmpty && clientMetaData.authorizationEncryptedResponseEnc.isNilOrEmpty {
-      throw ValidationError.validationError("authorizationEncryptedResponseAlg exists, authorizationEncryptedResponseEnc does not exist, both should exist")
-
-    } else if clientMetaData.authorizationEncryptedResponseAlg.isNilOrEmpty && !clientMetaData.authorizationEncryptedResponseEnc.isNilOrEmpty {
-      throw ValidationError.validationError("authorizationEncryptedResponseAlg does not exist, authorizationEncryptedResponseEnc exists, both should exist")
-    }
-
+    let keySet = try? await extractKeySet(clientMetaData: clientMetaData)
+    let supported = try responseEncryptionMethodsSupported(
+      unvalidated: clientMetaData
+    )
+    let responseEncryptionSpecification = try responseEncryptionSpecification(
+      responseMode: responseMode,
+      verifierSupportedEncryptionMethods: supported,
+      keySet: keySet,
+      responseEncryptionConfiguration: responseEncryptionConfiguration
+    )
+    
     let formats = try? VpFormats(from: clientMetaData.vpFormats)
-    let validated = await ClientMetaData.Validated(
-      jwkSet: try extractKeySet(clientMetaData: clientMetaData),
+    let validated = ClientMetaData.Validated(
+      jwkSet: keySet,
       idTokenJWSAlg: idTokenJWSAlg,
       idTokenJWEAlg: idTokenJWEAlg,
       idTokenJWEEnc: idTokenJWEEnc,
       subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
-      authorizationSignedResponseAlg: parseOptionJWSAlgorithm(algorithm: clientMetaData.authorizationSignedResponseAlg),
-      authorizationEncryptedResponseAlg: parseOptionJWEAlgorithm(algorithm: clientMetaData.authorizationEncryptedResponseAlg),
-      authorizationEncryptedResponseEnc: .init(optionalSupportedName: clientMetaData.authorizationEncryptedResponseEnc),
-      vpFormats: try (formats ?? VpFormats.empty())
+      vpFormats: try (formats ?? VpFormats.empty()),
+      responseEncryptionSpecification: responseEncryptionSpecification
     )
 
     return validated
@@ -63,6 +71,122 @@ internal actor ClientMetaDataValidator {
 
 private extension ClientMetaDataValidator {
 
+  func responseEncryptionSpecification(
+    responseMode: ResponseMode?,
+    verifierSupportedEncryptionMethods: [EncryptionMethod]?,
+    keySet: WebKeySet?,
+    responseEncryptionConfiguration: ResponseEncryptionConfiguration
+  ) throws -> ResponseEncryptionSpecification? {
+    if let responseMode {
+      if !responseMode.requiresEncryption() {
+        if verifierSupportedEncryptionMethods != nil {
+          return nil
+        } else {
+          throw ValidationError.validationError(
+            "\(RESPONSE_ENCRYPTION_METHODS_SUPPORTED) must not be provided when encryption is not required"
+          )
+        }
+      } else {
+        if let keySet = keySet {
+          let verifierCandidateEncryptionKeys = keySet.keys
+            .filter { key in
+              !(key.kid?.isEmpty ?? true) && !(key.alg?.isEmpty ?? true)
+          }
+          return try createResponseEncryptionSpecification(
+            walletConfiguration: responseEncryptionConfiguration,
+            verifierCandidateEncryptionKeys: WebKeySet(
+              keys: verifierCandidateEncryptionKeys
+            ),
+            verifierSupportedEncryptionMethods: verifierSupportedEncryptionMethods ?? [EncryptionMethod.parse(RESPONSE_ENCRYPTION_METHODS_SUPPORTED_DEFAULT)]
+          )
+        } else {
+          throw ValidationError.validationError(
+            "\(JWKS) must be provided when encryption is required"
+          )
+        }
+      }
+    } else {
+      return nil
+    }
+  }
+  
+  private func createResponseEncryptionSpecification(
+    walletConfiguration: ResponseEncryptionConfiguration,
+    verifierCandidateEncryptionKeys: WebKeySet,
+    verifierSupportedEncryptionMethods: [EncryptionMethod]
+  ) throws -> ResponseEncryptionSpecification {
+    
+    guard !verifierCandidateEncryptionKeys.keys.isEmpty else {
+      throw ValidationError.validationError(
+        "No encryption JWKs were advertised by the Verifier in his Client Metadata"
+      )
+    }
+    
+    guard !verifierSupportedEncryptionMethods.isEmpty else {
+      throw ValidationError.validationError(
+        "No encryption methods were advertised by the Verifier in his Client Metadata"
+      )
+    }
+    
+    guard let encryptionMethod = walletConfiguration.supportedMethods.first(where: {
+      verifierSupportedEncryptionMethods.contains($0)
+    }) else {
+      throw ValidationError.validationError(
+        "Wallet doesn't support any of the encryption methods supported by Verifier"
+      )
+    }
+    
+    switch walletConfiguration {
+    case .supported(
+      let supportedAlgorithms,
+      let supportedMethods
+    ):
+      guard let (encryptionAlgorithm, encryptionKey) = walletConfiguration.supportedAlgorithms.compactMap({ supportedAlgorithm -> (JWEAlgorithm, WebKeySet.Key)? in
+        if let encryptionKey = verifierCandidateEncryptionKeys.keys.first(where: { key in
+          supportedAlgorithm.name == key.alg
+          }) {
+              return (supportedAlgorithm, encryptionKey)
+          } else {
+              return nil
+          }
+      }).first else {
+        throw ValidationError.validationError(
+          "Wallet doesn't support any of the encryption algorithms supported by verifier"
+        )
+      }
+
+      return ResponseEncryptionSpecification(
+        responseEncryptionAlg: encryptionAlgorithm,
+        responseEncryptionEnc: encryptionMethod,
+        clientKey: WebKeySet(
+          keys: [encryptionKey]
+        )
+      )
+    case .unsupported:
+      throw ValidationError.validationError(
+        "Wallet doesn't support encrypting authorization responses"
+      )
+    }
+  }
+  
+  func responseEncryptionMethodsSupported(
+    unvalidated: ClientMetaData
+  ) throws -> [EncryptionMethod]? {
+      
+    let methods: [EncryptionMethod]? = unvalidated.responseEncryptionMethodsSupported?.map {
+      .parse($0)
+    }
+      
+    if let methods = methods {
+      if methods.isEmpty {
+        throw ValidationError.validationError(
+          "\(RESPONSE_ENCRYPTION_METHODS_SUPPORTED) must not be empty"
+        )
+      }
+    }
+    return methods
+  }
+  
   func parseOptionJWSAlgorithm(algorithm: String?) -> JWSAlgorithm? {
     guard let algorithm = algorithm else { return nil }
     return .init(

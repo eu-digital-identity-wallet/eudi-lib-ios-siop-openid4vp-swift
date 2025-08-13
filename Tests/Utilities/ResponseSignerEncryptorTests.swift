@@ -30,6 +30,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
 
   func testSignResponseUsingWalletConfiguration() async throws {
 
+    /*
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
 
@@ -63,10 +64,10 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     )
 
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let requirement: JARMRequirement = .signed(
-      responseSigningAlg: alg,
-      privateKey: wallet.signingKey,
-      webKeySet: wallet.publicWebKeySet
+    let requirement: JARMRequirement = .encrypted(
+      responseEncryptionAlg: alg,
+      responseEncryptionEnc: <#T##EncryptionMethod#>,
+      clientKey: <#T##WebKeySet#>
     )
 
     let response = try await responseSignerEncryptor.signEncryptResponse(
@@ -90,6 +91,7 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let message = String(data: payload.data(), encoding: .utf8)!
 
     XCTAssert(message.isValidJSONString)
+     */
   }
 
   func testRSAEncryptResponseWithoutWalletCongiguration() async throws {
@@ -158,7 +160,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let encrypted: JARMRequirement = .encrypted(
@@ -167,17 +170,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       clientKey: wallet.publicWebKeySet
     )
 
-    let signed: JARMRequirement = .signed(
-      responseSigningAlg: signingAlg,
-      privateKey: wallet.signingKey,
-      webKeySet: wallet.publicWebKeySet
-    )
-
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let requirement: JARMRequirement = .signedAndEncrypted(
-      signed: signed,
-      encrypted: encrypted
-    )
+    let requirement: JARMRequirement = encrypted
     
     let response = try await responseSignerEncryptor.signEncryptResponse(
       requirement: requirement,
@@ -282,7 +276,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let encrypted: JARMRequirement = .encrypted(
@@ -291,17 +286,8 @@ final class ResponseSignerEncryptorTests: DiXCTest {
       clientKey: wallet.publicWebKeySet
     )
 
-    let signed: JARMRequirement = .signed(
-      responseSigningAlg: signingAlg,
-      privateKey: wallet.signingKey,
-      webKeySet: wallet.publicWebKeySet
-    )
-
     let responseSignerEncryptor = ResponseSignerEncryptor()
-    let requirement: JARMRequirement = .signedAndEncrypted(
-      signed: signed,
-      encrypted: encrypted
-    )
+    let requirement: JARMRequirement = encrypted
     
     let response = try await responseSignerEncryptor.signEncryptResponse(
       requirement: requirement,

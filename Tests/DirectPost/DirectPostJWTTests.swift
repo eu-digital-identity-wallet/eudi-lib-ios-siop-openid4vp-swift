@@ -62,7 +62,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -163,7 +164,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -269,7 +271,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -336,7 +339,11 @@ final class DirectPostJWTTests: DiXCTest {
   func testPostDirectPostJwtAuthorisationResponseGivenValidResolutionAndNegativeConsent() async throws {
 
     let validator = ClientMetaDataValidator()
-    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
+    let metaData = try await validator.validate(
+      clientMetaData: Constants.testClientMetaData(),
+      responseMode: nil,
+      responseEncryptionConfiguration: .unsupported
+    )
 
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
@@ -387,7 +394,8 @@ final class DirectPostJWTTests: DiXCTest {
         publicWebKeySet: TestsConstants.webKeySet,
         supportedClientIdSchemes: [],
         vpFormatsSupported: [],
-        jarmConfiguration: .default()
+        jarmConfiguration: .default(),
+        responseEncryptionConfiguration: .unsupported
       ),
       rsaJWK: rsaJWK,
       signingKey: privateKey!,
@@ -412,7 +420,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .signing
+      jarmConfiguration: .noConfiguration,
+      responseEncryptionConfiguration: .unsupported
     )
 
     // Generate a direct post authorisation response
@@ -458,13 +467,15 @@ final class DirectPostJWTTests: DiXCTest {
       idTokenEncryptedResponseAlg: "RS256",
       idTokenEncryptedResponseEnc: "A128CBC-HS256",
       subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
-      authorizationEncryptedResponseAlg: "ECDH-ES",
-      authorizationEncryptedResponseEnc: "A128CBC-HS256", // was: A256GCM"
       vpFormats: TestsConstants.testVpFormatsTO()
     )
 
     let validator = ClientMetaDataValidator()
-    let metaData = try await validator.validate(clientMetaData: clientMetaData)
+    let metaData = try await validator.validate(
+      clientMetaData: clientMetaData,
+      responseMode: nil,
+      responseEncryptionConfiguration: .unsupported
+    )
 
     let wallet: SiopOpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
@@ -479,7 +490,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let resolved: ResolvedRequestData = .idToken(
@@ -582,7 +594,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -695,7 +708,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -815,7 +829,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -933,7 +948,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1057,7 +1073,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1192,7 +1209,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1304,7 +1322,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1396,7 +1415,11 @@ final class DirectPostJWTTests: DiXCTest {
 
     let validator = ClientMetaDataValidator()
 
-    guard let validatedClientMetaData = try? await validator.validate(clientMetaData: clientMetaData) else {
+    guard let validatedClientMetaData = try? await validator.validate(
+      clientMetaData: clientMetaData,
+      responseMode: nil,
+      responseEncryptionConfiguration: .unsupported
+    ) else {
       XCTAssert(false, "Invalid client metadata")
       return
     }
@@ -1415,19 +1438,13 @@ final class DirectPostJWTTests: DiXCTest {
         responseMode: .directPostJWT(responseURI: URL(string: "https://respond.here")!),
         state: "state",
         vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
-        jarmRequirement: .signedAndEncrypted(
-          signed: .signed(
-            responseSigningAlg: .init(.RS256),
-            privateKey: rsaPrivateKey!,
-            webKeySet: try! .init(jwk: rsaJWK)
-          ),
-          encrypted: .encrypted(
-            responseEncryptionAlg: .init(.ECDH_ES),
-            responseEncryptionEnc: .init(.A128CBC_HS256),
-            clientKey: try! .init(jwks: [ecPublicJwk, rsaJWK])
-          )
+        jarmRequirement: .encrypted(
+          responseEncryptionAlg: .init(.ECDH_ES),
+          responseEncryptionEnc: .init(.A128CBC_HS256),
+          clientKey: try! .init(jwks: [ecPublicJwk, rsaJWK])
         )
-      ))
+      )
+    )
 
     let submission: PresentationSubmission = .init(
       id: "psId",
@@ -1458,7 +1475,8 @@ final class DirectPostJWTTests: DiXCTest {
         publicWebKeySet: rsaKeySet,
         supportedClientIdSchemes: [],
         vpFormatsSupported: [],
-        jarmConfiguration: .default()
+        jarmConfiguration: .default(),
+        responseEncryptionConfiguration: .unsupported
       )
     )
 
@@ -1526,7 +1544,8 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1632,7 +1651,11 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .supported(
+        supportedAlgorithms: [.init(.ECDH_ES)],
+        supportedMethods: [EncryptionMethod.init(.A128GCM)]
+      )
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1642,7 +1665,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "#10"
+    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2FfQzx8S1Pi3iA3PPogLKorYFYnJeMtzhw59gtQUGc9IEG_vWBjESPrMPuH_J_sjAlUaz_KAGDFWUg_sCsDSipJA&request_uri_method=get"
 
     overrideDependencies()
     let result = await sdk.authorize(
@@ -1722,7 +1745,8 @@ final class DirectPostJWTTests: DiXCTest {
         vpFormatsSupported: [],
         jarConfiguration: .noEncryptionOption,
         vpConfiguration: VPConfiguration.default(),
-        jarmConfiguration: .default()
+        jarmConfiguration: .default(),
+        responseEncryptionConfiguration: .unsupported
       )
 
       let sdk = SiopOpenID4VP(walletConfiguration: wallet)

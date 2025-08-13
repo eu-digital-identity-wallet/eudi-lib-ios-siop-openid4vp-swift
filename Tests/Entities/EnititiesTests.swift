@@ -27,7 +27,11 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
 
     let metaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
     let validator = ClientMetaDataValidator()
-    let validatedClientMetaData = try? await validator.validate(clientMetaData: metaData)
+    let validatedClientMetaData = try? await validator.validate(
+      clientMetaData: metaData,
+      responseMode: nil,
+      responseEncryptionConfiguration: .unsupported
+    )
 
     let idTokenType: IdTokenType = .attesterSigned
     let presentationDefinition = PresentationExchange.Constants.presentationDefinitionPreview()
@@ -105,7 +109,8 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
       session: SiopOpenId4VPConfiguration.walletSession,
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     XCTAssertEqual(walletOpenId4VPConfiguration.subjectSyntaxTypesSupported, subjectSyntaxTypesSupported)

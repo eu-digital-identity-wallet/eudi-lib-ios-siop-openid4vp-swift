@@ -13,29 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@preconcurrency import Foundation
-import JOSESwift
+import Foundation
 
-//
-//
-//  Represents the client's requirements for JWT Secured Authorization Response Mode (JARM)
-//  as defined in OpenID Connect. This enum models whether the response should be signed,
-//  encrypted, or both (signed then encrypted).
-//
-//  - `encrypted`:  Requires an encrypted JARM response using a specified `JWEAlgorithm`,
-//                  `EncryptionMethod`, and the client's public key (`JWK`).
-//
-//  This enum is `indirect` to allow recursive nesting in `signedAndEncrypted`.
-//
-public indirect enum JARMRequirement: Sendable {
+public struct ResponseEncryptionSpecification: Equatable, Sendable {
   
-  /// Client requires JARM encrypted response using the given encryption parameters
-  case encrypted(
+  public let responseEncryptionAlg: JWEAlgorithm
+  public let responseEncryptionEnc: EncryptionMethod
+  public let clientKey: WebKeySet
+  
+  public init(
     responseEncryptionAlg: JWEAlgorithm,
     responseEncryptionEnc: EncryptionMethod,
     clientKey: WebKeySet
-  )
-  
-  case noRequirement
+  ) {
+    self.responseEncryptionAlg = responseEncryptionAlg
+    self.responseEncryptionEnc = responseEncryptionEnc
+    self.clientKey = clientKey
+  }
 }
 

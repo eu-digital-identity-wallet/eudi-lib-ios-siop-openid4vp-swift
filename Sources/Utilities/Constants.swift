@@ -56,9 +56,6 @@ public struct Constants {
       idTokenEncryptedResponseAlg: "RS256",
       idTokenEncryptedResponseEnc: "A128CBC-HS256",
       subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
-      authorizationSignedResponseAlg: "RS256",
-      authorizationEncryptedResponseAlg: "RSA-OAEP-256",
-      authorizationEncryptedResponseEnc: "A128CBC-HS256",
       vpFormats: nil
     )
   }

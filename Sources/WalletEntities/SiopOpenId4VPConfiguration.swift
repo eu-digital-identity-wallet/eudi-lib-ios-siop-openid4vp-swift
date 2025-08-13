@@ -31,7 +31,8 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let errorDispatchPolicy: ErrorDispatchPolicy
   public let session: Networking
   public let jarmConfiguration: JARMConfiguration
-
+  public let responseEncryptionConfiguration: ResponseEncryptionConfiguration
+  
   public init(
     subjectSyntaxTypesSupported: [SubjectSyntaxType],
     preferredSubjectSyntaxType: SubjectSyntaxType,
@@ -47,7 +48,8 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     vpConfiguration: VPConfiguration = VPConfiguration.default(),
     errorDispatchPolicy: ErrorDispatchPolicy = .onlyAuthenticatedClients,
     session: Networking = Self.walletSession,
-    jarmConfiguration: JARMConfiguration
+    jarmConfiguration: JARMConfiguration,
+    responseEncryptionConfiguration: ResponseEncryptionConfiguration
   ) {
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
     self.preferredSubjectSyntaxType = preferredSubjectSyntaxType
@@ -64,6 +66,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     self.errorDispatchPolicy = errorDispatchPolicy
     self.session = session
     self.jarmConfiguration = jarmConfiguration
+    self.responseEncryptionConfiguration = responseEncryptionConfiguration
   }
 
   internal init() throws {
@@ -82,6 +85,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     errorDispatchPolicy = .onlyAuthenticatedClients
     session = URLSession.shared
     jarmConfiguration = .noConfiguration
+    responseEncryptionConfiguration = .unsupported
   }
 
   public static let walletSession: Networking = {

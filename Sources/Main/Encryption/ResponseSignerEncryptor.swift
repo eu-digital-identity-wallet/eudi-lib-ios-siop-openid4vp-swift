@@ -23,17 +23,6 @@ internal actor ResponseSignerEncryptor {
     data: AuthorizationResponsePayload
   ) throws -> String {
     switch requirement {
-    case .signed(
-      let responseSigningAlg,
-      let privateKey,
-      let webKeySet
-    ): return try sign(
-      responseSigningAlg: responseSigningAlg,
-      signingKeySet: webKeySet,
-      signingKey: privateKey,
-      data: data
-    ).compactSerializedString
-      
     case .encrypted(
       let responseEncryptionAlg,
       let responseEncryptionEnc,
@@ -45,15 +34,6 @@ internal actor ResponseSignerEncryptor {
       data: data
     ).compactSerializedString
       
-    case .signedAndEncrypted(
-      let signed,
-      let encrypted
-    ): return try signAndEncrypt(
-      signed: signed,
-      encrypted: encrypted,
-      data: data
-    ).compactSerializedString
-      
     case .noRequirement:
       throw ValidationError.invalidJarmRequirement
     }
@@ -61,59 +41,6 @@ internal actor ResponseSignerEncryptor {
 }
 
 private extension ResponseSignerEncryptor {
-
-  func sign(
-    requirement: JARMRequirement,
-    data: AuthorizationResponsePayload
-  ) throws -> JWS {
-    switch requirement {
-    case .signed(
-      let responseSigningAlg,
-      let signingKey,
-      let signingKeySet
-    ): return try sign(
-      responseSigningAlg: responseSigningAlg,
-      signingKeySet: signingKeySet,
-      signingKey: signingKey,
-      data: data
-    )
-    default: throw ValidationError.invalidJarmRequirement
-    }
-  }
-
-  func sign(
-    responseSigningAlg: JWSAlgorithm,
-    signingKeySet: WebKeySet,
-    signingKey: SecKey,
-    data: AuthorizationResponsePayload
-  ) throws -> JWS {
-    guard let signatureAlgorithm = SignatureAlgorithm(rawValue: responseSigningAlg.name) else {
-      throw ValidationError.unsupportedAlgorithm(responseSigningAlg.name)
-    }
-
-    let keyAndSigner = try self.keyAndSigner(
-      jwsAlgorithm: signatureAlgorithm,
-      keySet: signingKeySet,
-      signingKey: signingKey
-    )
-
-    return try JWS(
-      header: JWSHeader(parameters: [
-        "alg": signatureAlgorithm.rawValue,
-        "kid": keyAndSigner.key.kid
-      ]),
-      payload: Payload(data
-        .toDictionary()
-        .merging([
-          JWTClaimNames.issuedAt: Int(Date().timeIntervalSince1970.rounded())
-        ], uniquingKeysWith: { _, new in
-          new
-        })
-          .toThrowingJSONData()
-      ),
-      signer: keyAndSigner.signer
-    )
-  }
 
   func encrypt(
     responseEncryptionAlg: JWEAlgorithm,
@@ -146,67 +73,6 @@ private extension ResponseSignerEncryptor {
       encrypter: keyAndEncryptor.encrypter
     )
     return jwe
-  }
-
-  func signAndEncrypt(
-    signed: JARMRequirement,
-    encrypted: JARMRequirement,
-    data: AuthorizationResponsePayload
-  ) throws -> JWE {
-    let signedJwt = try sign(requirement: signed, data: data)
-    switch encrypted {
-    case .encrypted(
-      let responseSigningAlg,
-      let responseEncryptionEnc,
-      let signingKeySet
-    ):
-      let keyAndEncryptor = try keyAndEncryptor(
-        jweAlgorithm: responseSigningAlg,
-        encryptionMethod: responseEncryptionEnc,
-        keySet: signingKeySet
-      )
-
-      let parameters: [String: Any?] = [
-        "alg": responseSigningAlg.name,
-        "enc": responseEncryptionEnc.name,
-        "kid": keyAndEncryptor.key.kid,
-        "apv": data.nonce.base64urlEncode,
-        "apu": data.apu
-      ].filter { $0.value != nil }
-      let header = try JWEHeader(parameters: parameters as [String: Any])
-
-      return try JWE(
-        header: header,
-        payload: Payload(signedJwt.compactSerializedData),
-        encrypter: keyAndEncryptor.encrypter
-      )
-    default:
-      throw ValidationError.validationError(
-        "Unable to retrieve encrypted from  JARMRequirement"
-      )
-    }
-  }
-
-  func keyAndSigner(
-    jwsAlgorithm: SignatureAlgorithm,
-    keySet: WebKeySet,
-    signingKey: SecKey
-  ) throws -> (key: WebKeySet.Key, signer: Signer) {
-    let key = try keySet.keys.first { key in
-      key.alg == jwsAlgorithm.rawValue
-    } ?? { throw ValidationError.invalidJWTWebKeySet }()
-
-    guard let alg = key.alg, let signatureAlgorithm = SignatureAlgorithm(rawValue: alg) else {
-      throw ValidationError.unsupportedAlgorithm(key.alg ?? "")
-    }
-
-    guard let signer = Signer(
-      signatureAlgorithm: signatureAlgorithm,
-      key: signingKey
-    ) else {
-      throw ValidationError.invalidSigningKey
-    }
-    return (key, signer)
   }
 
   func keyAndEncryptor(

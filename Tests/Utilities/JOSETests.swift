@@ -62,7 +62,8 @@ final class JOSETests: DiXCTest {
         ])
       ],
       vpFormatsSupported: [],
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let unvalidatedRequest = UnvalidatedRequest.make(

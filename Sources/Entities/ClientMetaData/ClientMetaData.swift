@@ -27,11 +27,9 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
   public let idTokenEncryptedResponseAlg: String?
   public let idTokenEncryptedResponseEnc: String?
   public let subjectSyntaxTypesSupported: [String]
-  public let authorizationSignedResponseAlg: String?
-  public let authorizationEncryptedResponseAlg: String?
-  public let authorizationEncryptedResponseEnc: String?
   public let vpFormats: VpFormatsTO?
-
+  public let responseEncryptionMethodsSupported: [String]?
+  
   /// Coding keys for encoding and decoding the structure.
   enum CodingKeys: String, CodingKey {
     case jwks = "jwks"
@@ -39,10 +37,8 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
     case idTokenEncryptedResponseAlg = "id_token_encrypted_response_alg"
     case idTokenEncryptedResponseEnc = "id_token_encrypted_response_enc"
     case subjectSyntaxTypesSupported = "subject_syntax_types_supported"
-    case authorizationSignedResponseAlg = "authorization_signed_response_alg"
-    case authorizationEncryptedResponseAlg = "authorization_encrypted_response_alg"
-    case authorizationEncryptedResponseEnc = "authorization_encrypted_response_enc"
     case vpFormats = "vp_formats"
+    case responseEncryptionMethodsSupported = "encrypted_response_enc_values_supported"
   }
 
   /// Initializes a `ClientMetaData` instance with the provided values.
@@ -52,26 +48,24 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
   ///   - idTokenEncryptedResponseAlg: The ID token encrypted response algorithm.
   ///   - idTokenEncryptedResponseEnc: The ID token encrypted response encryption.
   ///   - subjectSyntaxTypesSupported: The subject syntax types supported.
+  ///   - vpFormats: The Verifiable Presentation formats supported.
+  ///   - responseEncryptionMethodsSupported: The list of supported response encryption methods.
   public init(
     jwks: String? = nil,
     idTokenSignedResponseAlg: String? = nil,
     idTokenEncryptedResponseAlg: String?,
     idTokenEncryptedResponseEnc: String?,
     subjectSyntaxTypesSupported: [String],
-    authorizationSignedResponseAlg: String? = nil,
-    authorizationEncryptedResponseAlg: String?,
-    authorizationEncryptedResponseEnc: String?,
-    vpFormats: VpFormatsTO?
+    vpFormats: VpFormatsTO?,
+    responseEncryptionMethodsSupported: [String]? = nil
   ) {
     self.jwks = jwks
     self.idTokenSignedResponseAlg = idTokenSignedResponseAlg
     self.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg
     self.idTokenEncryptedResponseEnc = idTokenEncryptedResponseEnc
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
-    self.authorizationSignedResponseAlg = authorizationSignedResponseAlg
-    self.authorizationEncryptedResponseAlg = authorizationEncryptedResponseAlg
-    self.authorizationEncryptedResponseEnc = authorizationEncryptedResponseEnc
     self.vpFormats = vpFormats
+    self.responseEncryptionMethodsSupported = responseEncryptionMethodsSupported
   }
 
   /// Initializes a `ClientMetaData` instance with the provided JSON object representing metadata.
@@ -101,27 +95,17 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
       error: ValidationError.invalidClientMetadata
     )) ?? []
 
-    self.authorizationSignedResponseAlg = try? dictionaryObject.getValue(
-      for: "authorization_signed_response_alg",
-      error: ValidationError.invalidClientMetadata
-    )
-
-    self.authorizationEncryptedResponseAlg = try? dictionaryObject.getValue(
-      for: "authorization_encrypted_response_alg",
-      error: ValidationError.invalidClientMetadata
-    )
-
-    self.authorizationEncryptedResponseEnc = try? dictionaryObject.getValue(
-      for: "authorization_encrypted_response_enc",
-      error: ValidationError.invalidClientMetadata
-    )
-
     let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormats]
     if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsTO.self) {
       self.vpFormats = formats
     } else {
       self.vpFormats = nil
     }
+    
+    self.responseEncryptionMethodsSupported = try? dictionaryObject.getValue(
+      for: RESPONSE_ENCRYPTION_METHODS_SUPPORTED,
+      error: ValidationError.invalidClientMetadata
+    )
   }
 
   /// Initializes a `ClientMetaData` instance with the provided metadata string.
@@ -153,27 +137,17 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
       error: ValidationError.invalidClientMetadata
     )) ?? []
 
-    self.authorizationSignedResponseAlg = try? metaData.getValue(
-      for: "authorization_signed_response_alg",
-      error: ValidationError.invalidClientMetadata
-    )
-
-    self.authorizationEncryptedResponseAlg = try? metaData.getValue(
-      for: "authorization_encrypted_response_alg",
-      error: ValidationError.invalidClientMetadata
-    )
-
-    self.authorizationEncryptedResponseEnc = try? metaData.getValue(
-      for: "authorization_encrypted_response_enc",
-      error: ValidationError.invalidClientMetadata
-    )
-
     let vpFormatsDictionary: JSON = JSON(metaData)[Self.vpFormats]
     if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsTO.self) {
       self.vpFormats = formats
     } else {
       self.vpFormats = nil
     }
+    
+    self.responseEncryptionMethodsSupported = try? metaData.getValue(
+      for: RESPONSE_ENCRYPTION_METHODS_SUPPORTED,
+      error: ValidationError.invalidClientMetadata
+    )
   }
 }
 
@@ -189,6 +163,7 @@ public extension ClientMetaData {
     public let authorizationEncryptedResponseAlg: JWEAlgorithm?
     public let authorizationEncryptedResponseEnc: JOSEEncryptionMethod?
     public let vpFormats: VpFormats
+    public let responseEncryptionSpecification: ResponseEncryptionSpecification?
 
     public init(
       jwkSet: WebKeySet? = nil,
@@ -199,7 +174,8 @@ public extension ClientMetaData {
       authorizationSignedResponseAlg: JWSAlgorithm? = nil,
       authorizationEncryptedResponseAlg: JWEAlgorithm? = nil,
       authorizationEncryptedResponseEnc: JOSEEncryptionMethod? = nil,
-      vpFormats: VpFormats
+      vpFormats: VpFormats,
+      responseEncryptionSpecification: ResponseEncryptionSpecification? = nil
     ) {
       self.jwkSet = jwkSet
       self.idTokenJWSAlg = idTokenJWSAlg
@@ -210,6 +186,7 @@ public extension ClientMetaData {
       self.authorizationEncryptedResponseAlg = authorizationEncryptedResponseAlg
       self.authorizationEncryptedResponseEnc = authorizationEncryptedResponseEnc
       self.vpFormats = vpFormats
+      self.responseEncryptionSpecification = responseEncryptionSpecification
     }
   }
 }

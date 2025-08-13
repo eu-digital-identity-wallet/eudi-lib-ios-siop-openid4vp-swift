@@ -31,9 +31,6 @@ struct TestsConstants {
       idTokenEncryptedResponseAlg: ".idTokenEncryptedResponseAlg",
       idTokenEncryptedResponseEnc: ".idTokenEncryptedResponseEnc",
       subjectSyntaxTypesSupported: [],
-      authorizationSignedResponseAlg: ".authorizationSignedResponseAlg",
-      authorizationEncryptedResponseAlg: ".authorizationEncryptedResponseAlg",
-      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc",
       vpFormats: Self.testVpFormatsTO()
     )
   }

@@ -42,16 +42,6 @@ public extension JARMConfiguration {
     validated clientMetadata: ClientMetaData.Validated
   ) -> JARMRequirement? {
     switch self {
-    case .signing:
-      guard let alg = clientMetadata.authorizationSignedResponseAlg else {
-        return nil
-      }
-      return .signed(
-        responseSigningAlg: alg,
-        privateKey: config.signingKey,
-        webKeySet: config.publicWebKeySet
-      )
-      
     case .encryption(let encrypted):
       guard
         let alg = clientMetadata.authorizationEncryptedResponseAlg,
@@ -71,30 +61,11 @@ public extension JARMConfiguration {
       
       return .encrypted(
         responseEncryptionAlg: alg,
-        responseEncryptionEnc: EncryptionMethod(name: enc.name),
+        responseEncryptionEnc: .init(
+          name: enc.name
+        ),
         clientKey: key
       )
-      
-    case .signingAndEncryption(let signingConfig, let encryptionConfig):
-      let signingRequirement = signingConfig.jarmRequirement(
-        config: config,
-        validated: clientMetadata
-      )
-      let encryptionRequirement = encryptionConfig.jarmRequirement(
-        config: config,
-        validated: clientMetadata
-      )
-      
-      switch (signingRequirement, encryptionRequirement) {
-      case let (.some(signed), .some(encrypted)):
-        return .signedAndEncrypted(signed: signed, encrypted: encrypted)
-      case let (.some(signed), nil):
-        return signed
-      case let (nil, .some(encrypted)):
-        return encrypted
-      default:
-        return nil
-      }
     case .noConfiguration:
       return .noRequirement
     }

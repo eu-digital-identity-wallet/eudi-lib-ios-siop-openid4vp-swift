@@ -26,7 +26,11 @@ final class DirectPostTests: DiXCTest {
   func testValidDirectPostAuthorisationResponseGivenValidResolutionAndConsent() async throws {
 
     let validator = ClientMetaDataValidator()
-    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
+    let metaData = try await validator.validate(
+      clientMetaData: Constants.testClientMetaData(),
+      responseMode: nil,
+      responseEncryptionConfiguration: .unsupported
+    )
 
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
@@ -64,7 +68,11 @@ final class DirectPostTests: DiXCTest {
   func testExpectedErrorGivenValidResolutionAndNegaticeConsent() async throws {
 
     let validator = ClientMetaDataValidator()
-    let metaData = try await validator.validate(clientMetaData: Constants.testClientMetaData())
+    let metaData = try await validator.validate(
+      clientMetaData: Constants.testClientMetaData(),
+      responseMode: nil,
+      responseEncryptionConfiguration: .unsupported
+    )
 
     // Obtain an id token resolution
     let resolved: ResolvedRequestData = .idToken(
@@ -155,7 +163,8 @@ final class DirectPostTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -260,7 +269,8 @@ final class DirectPostTests: DiXCTest {
       vpFormatsSupported: [],
       jarConfiguration: .encryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      jarmConfiguration: .default(),
+      responseEncryptionConfiguration: .unsupported
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)

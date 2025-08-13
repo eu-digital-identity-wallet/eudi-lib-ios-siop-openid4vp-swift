@@ -73,7 +73,6 @@ public func walletMetaData(
   return json
 }
 
-// Constants (these should be declared at the top level)
 private let REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED = "request_object_signing_alg_values_supported"
 private let AUTHORIZATION_SIGNING_ALG_VALUES_SUPPORTED = "authorization_signing_alg_values_supported"
 private let AUTHORIZATION_ENCRYPTION_ALG_VALUES_SUPPORTED = "authorization_encryption_alg_values_supported"
@@ -83,8 +82,11 @@ private let CLIENT_ID_SCHEMES_SUPPORTED = "client_id_schemes_supported"
 private let VP_FORMATS_SUPPORTED = "vp_formats_supported"
 private let RESPONSE_TYPES_SUPPORTED = "response_types_supported"
 private let RESPONSE_MODES_SUPPORTED = "response_modes_supported"
-private let JWKS = "jwks"
+internal let JWKS = "jwks"
 private let CONTENT_TYPE_JWT = "JWT"
+
+internal let RESPONSE_ENCRYPTION_METHODS_SUPPORTED: String = "encrypted_response_enc_values_supported"
+internal let RESPONSE_ENCRYPTION_METHODS_SUPPORTED_DEFAULT: String = "A128GCM"
 
 private extension JWKSet {
   func toJSON() -> JSON? {
