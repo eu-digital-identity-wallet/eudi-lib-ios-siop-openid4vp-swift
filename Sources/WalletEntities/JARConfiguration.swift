@@ -17,12 +17,12 @@ import Foundation
 import JOSESwift
 
 public struct JARConfiguration: Sendable {
-  public let supportedAlgorithms: [JWSAlgorithm]
+  public let supportedAlgorithms: [JWEAlgorithm]
   public let supportedRequestUriMethods: SupportedRequestUriMethod
 
   /// Initializer with validation to ensure supportedAlgorithms is not empty
   public init(
-    supportedAlgorithms: [JWSAlgorithm],
+    supportedAlgorithms: [JWEAlgorithm],
     supportedRequestUriMethods: SupportedRequestUriMethod
   ) {
     precondition(!supportedAlgorithms.isEmpty, "JAR signing algorithms cannot be empty")
@@ -33,8 +33,8 @@ public struct JARConfiguration: Sendable {
   /// Default JAR configuration with trusted algorithms ES256
   public static let encryptionOption: JARConfiguration = .init(
     supportedAlgorithms: [
-      JWSAlgorithm(
-        .ES256
+      JWEAlgorithm(
+        .ECDH_ES
       )
     ],
     supportedRequestUriMethods: .encryptionOption
@@ -42,8 +42,8 @@ public struct JARConfiguration: Sendable {
 
   public static let noEncryptionOption: JARConfiguration = .init(
     supportedAlgorithms: [
-      JWSAlgorithm(
-        .ES256
+      JWEAlgorithm(
+        .ECDH_ES
       )
     ],
     supportedRequestUriMethods: .noEncryptionOption
