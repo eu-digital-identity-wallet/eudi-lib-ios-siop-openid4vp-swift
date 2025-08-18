@@ -29,7 +29,7 @@ extension ValidatedRequestData {
     let state: String?
     let vpFormatsSupported: VpFormatsSupported
     let transactionData: [String]?
-    let verifierAttestations: [VerifierAttestation]?
+    let verifierInfo: [VerifierInfo]?
 
     public init(
       idTokenType: IdTokenType,
@@ -43,7 +43,7 @@ extension ValidatedRequestData {
       state: String?,
       vpFormatsSupported: VpFormatsSupported,
       transactionData: [String]?,
-      verifierAttestations: [VerifierAttestation]?
+      verifierInfo: [VerifierInfo]?
     ) {
       self.idTokenType = idTokenType
       self.querySource = querySource
@@ -56,7 +56,7 @@ extension ValidatedRequestData {
       self.state = state
       self.vpFormatsSupported = vpFormatsSupported
       self.transactionData = transactionData
-      self.verifierAttestations = verifierAttestations
+      self.verifierInfo = verifierInfo
     }
   }
 }

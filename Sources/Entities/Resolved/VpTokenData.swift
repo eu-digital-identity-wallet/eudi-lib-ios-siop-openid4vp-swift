@@ -28,7 +28,7 @@ extension ResolvedRequestData {
     public let transactionData: [TransactionData]?
     public let responseEncryptionSpecification: ResponseEncryptionSpecification?
     
-    public let verifierAttestations: [VerifierAttestation]?
+    public let verifierInfo: [VerifierInfo]?
 
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///
@@ -42,7 +42,7 @@ extension ResolvedRequestData {
     ///   - vpFormatsSupported: Vp Formats
     ///   - responseEncryptionSpecification: Encryption specification
     ///   - transactionData: Optional list of transcation data
-    ///   - verifierAttestations: Optional list of verifierAttestations
+    ///   - verifierInfo: Optional list of verifierInfo
     public init(
       presentationQuery: PresentationQuery,
       clientMetaData: ClientMetaData.Validated?,
@@ -53,7 +53,7 @@ extension ResolvedRequestData {
       vpFormatsSupported: VpFormatsSupported,
       responseEncryptionSpecification: ResponseEncryptionSpecification?,
       transactionData: [TransactionData]? = nil,
-      verifierAttestations: [VerifierAttestation]? = nil
+      verifierInfo: [VerifierInfo]? = nil
     ) {
       self.presentationQuery = presentationQuery
       self.clientMetaData = clientMetaData
@@ -63,8 +63,8 @@ extension ResolvedRequestData {
       self.state = state
       self.vpFormatsSupported = vpFormatsSupported
       self.transactionData = transactionData
+      self.verifierInfo = verifierInfo
       self.responseEncryptionSpecification = responseEncryptionSpecification
-      self.verifierAttestations = verifierAttestations
     }
   }
 }

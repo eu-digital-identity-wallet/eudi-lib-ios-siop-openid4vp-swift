@@ -30,8 +30,8 @@ extension ResolvedRequestData {
     public let scope: Scope?
     public let vpFormatsSupported: VpFormatsSupported
     public let transactionData: [TransactionData]?
+    public let verifierInfo: [VerifierInfo]?
     public let responseEncryptionSpecification: ResponseEncryptionSpecification?
-    public let verifierAttestations: [VerifierAttestation]?
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
@@ -44,7 +44,7 @@ extension ResolvedRequestData {
     ///   - scope: The scope.
     ///   - vpFormatsSupported: Vp Formats
     ///   - transactionData: Optional list of transcation data
-    ///   - verifierAttestations: Optional list of verifierAttestations
+    ///   - verifierInfo: Optional list of verifierInfo
     ///   - responseEncryptionSpecification: Encryption specification
     public init(
       idTokenType: IdTokenType,
@@ -58,7 +58,7 @@ extension ResolvedRequestData {
       scope: Scope?,
       vpFormatsSupported: VpFormatsSupported,
       transactionData: [TransactionData]? = nil,
-      verifierAttestations: [VerifierAttestation]? = nil,
+      verifierInfo: [VerifierInfo]? = nil,
       responseEncryptionSpecification: ResponseEncryptionSpecification? = nil
     ) {
       self.idTokenType = idTokenType
@@ -72,7 +72,7 @@ extension ResolvedRequestData {
       self.scope = scope
       self.vpFormatsSupported = vpFormatsSupported
       self.transactionData = transactionData
-      self.verifierAttestations = verifierAttestations
+      self.verifierInfo = verifierInfo
       self.responseEncryptionSpecification = responseEncryptionSpecification
     }
   }

@@ -44,13 +44,13 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
 
     let credentialId = try! QueryId(value: "id_card")
 
-    let attest1 = VerifierAttestation(
+    let attest1 = VerifierInfo(
       format: "jwt",
       data: JSON("eyJhbGciOiJFUzI1...EF0RBtvPClL71TWHlIQ"),
       credentialIds: [ credentialId ]
     )
 
-    let attest2 = VerifierAttestation(
+    let attest2 = VerifierInfo(
       format: "json",
       data: JSON([
         "verifier": "Acme Corp",
@@ -72,7 +72,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       state: state,
       scope: scope,
       vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!,
-      verifierAttestations: attestations
+      verifierInfo: attestations
     )
 
     XCTAssertEqual(tokenData.idTokenType, idTokenType)
@@ -80,7 +80,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     XCTAssertEqual(tokenData.nonce, nonce)
     XCTAssertEqual(tokenData.state, state)
     XCTAssertEqual(tokenData.scope, scope)
-    XCTAssertEqual(tokenData.verifierAttestations, attestations)
+    XCTAssertEqual(tokenData.verifierInfo, attestations)
   }
 
   func testWalletOpenId4VPConfigurationInitialization() throws {

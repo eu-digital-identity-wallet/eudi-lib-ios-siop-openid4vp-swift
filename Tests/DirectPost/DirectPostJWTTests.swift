@@ -1637,7 +1637,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2F__DO_W8mpOPmTkG5DBo9sjbISls3zzcDx-Ic3Z7rJ-kXb0PqVRTkwpF1ci1NpnhDTubcHDX4trwJDhHRDOQgug&request_uri_method=get"
+    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2FwV3RVSac150EePusmA_Z47ZyuQAxtCWq-UYvOl3mcreS-ulDvh625Y14fX_9TxuLB6nKA9xBryUauRzp4u2elA&request_uri_method=get"
 
     overrideDependencies()
     let result = await sdk.authorize(

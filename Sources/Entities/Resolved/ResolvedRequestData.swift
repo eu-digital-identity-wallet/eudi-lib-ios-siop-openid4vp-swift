@@ -102,8 +102,8 @@ public extension ResolvedRequestData {
           transactionData: request.transactionData,
           vpConfiguration: vpConfiguration,
           presentationQuery: presentationQuery),
-        verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
-          request.verifierAttestations,
+        verifierInfo: try VerifierInfo.validatedVerifierInfo(
+          request.verifierInfo,
           presentationQuery: presentationQuery)
       ))
 
@@ -127,8 +127,8 @@ public extension ResolvedRequestData {
           transactionData: request.transactionData,
           vpConfiguration: vpConfiguration,
           presentationQuery: presentationQuery),
-        verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
-          request.verifierAttestations,
+        verifierInfo: try VerifierInfo.validatedVerifierInfo(
+          request.verifierInfo,
           presentationQuery: presentationQuery
         )
       ))
@@ -160,8 +160,8 @@ public extension ResolvedRequestData {
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
             presentationQuery: presentationQuery),
-          verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
-            request.verifierAttestations,
+          verifierInfo: try VerifierInfo.validatedVerifierInfo(
+            request.verifierInfo,
             presentationQuery: presentationQuery
           )
         ))
@@ -174,14 +174,13 @@ public extension ResolvedRequestData {
           responseMode: request.responseMode,
           state: request.state,
           vpFormatsSupported: commonFormats,
-          responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
-          transactionData: try Self.parseTransactionData(
+          responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification, transactionData: try Self.parseTransactionData(
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
             presentationQuery: presentationQuery
           ),
-          verifierAttestations: try VerifierAttestation.validatedVerifierAttestations(
-            request.verifierAttestations,
+          verifierInfo: try VerifierInfo.validatedVerifierInfo(
+            request.verifierInfo,
             presentationQuery: presentationQuery
           )
         ))
