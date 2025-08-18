@@ -25,6 +25,14 @@ public enum ResponseEncryptionConfiguration: Sendable {
 }
 
 public extension ResponseEncryptionConfiguration {
+  
+  static func `default`() -> ResponseEncryptionConfiguration {
+    .supported(
+      supportedAlgorithms: [.init(.ECDH_ES)],
+      supportedMethods: [.init(.A128GCM)]
+    )
+  }
+  
   var supportedMethods: [EncryptionMethod] {
     switch self {
     case .supported(_, let methods):
