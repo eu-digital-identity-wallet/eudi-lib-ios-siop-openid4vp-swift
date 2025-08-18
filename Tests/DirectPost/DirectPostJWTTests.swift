@@ -429,7 +429,7 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .default()
     )
     
     let resolved: ResolvedRequestData = .idToken(
