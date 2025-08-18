@@ -53,7 +53,7 @@ internal struct JWTDecoder {
 
     let pd = json["presentation_definition"].dictionaryObject?.toJSONString() ?? json["presentation_definition"].string
     let transactionData = json["transaction_data"].arrayObject as? [String]
-    let verifierAttestations = json["verifier_attestations"].arrayValue
+    let verifierInfo = json["verifier_info"].arrayValue
 
     return UnvalidatedRequestObject(
       responseType: json["response_type"].string,
@@ -76,7 +76,7 @@ internal struct JWTDecoder {
       idTokenType: json["id_token_type"].string,
       supportedAlgorithm: json["supported_algorithm"].string,
       transactionData: transactionData,
-      verifierAttestations: verifierAttestations
+      verifierInfo: verifierInfo
     )
   }
 }
@@ -147,8 +147,8 @@ internal actor RequestAuthenticator {
       state: requestObject.state,
       vpFormatsSupported: formats.values.isEmpty ? try VpFormatsSupported.default() : formats,
       transactionData: requestObject.transactionData,
-      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
-        try VerifierAttestation.from(json: json)
+      verifierInfo:  try requestObject.verifierInfo?.map({ json in
+        try VerifierInfo.from(json: json)
       })
     ))
   }
@@ -175,8 +175,8 @@ internal actor RequestAuthenticator {
       responseMode: try? .init(authorizationRequestData: requestObject),
       state: requestObject.state,
       transactionData: requestObject.transactionData,
-      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
-        try VerifierAttestation.from(json: json)
+      verifierInfo:  try requestObject.verifierInfo?.map({ json in
+        try VerifierInfo.from(json: json)
       })
     ))
   }
@@ -205,8 +205,8 @@ internal actor RequestAuthenticator {
       state: requestObject.state,
       vpFormatsSupported: formats.values.isEmpty ? try VpFormatsSupported.default() : formats,
       transactionData: requestObject.transactionData,
-      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
-        try VerifierAttestation.from(json: json)
+      verifierInfo:  try requestObject.verifierInfo?.map({ json in
+        try VerifierInfo.from(json: json)
       })
     ))
   }

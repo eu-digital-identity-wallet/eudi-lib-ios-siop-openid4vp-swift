@@ -131,7 +131,7 @@ final class UnvalidatedRequestTests: XCTestCase {
     XCTAssertEqual(error, .invalidRequestUriMethod)
   }
 
-  func testPlainRequest_withVerifierAttestations_successfullyParses() {
+  func testPlainRequest_withVerifierInfo_successfullyParses() {
     let query = [
       "client_id=abc123",
       "response_type=code",
@@ -140,7 +140,7 @@ final class UnvalidatedRequestTests: XCTestCase {
       "presentation_definition=\(encodeJSON(["input": "something"]))",
       "dcql_query=\(encodeJSON(["query": "foo"]))",
       "transaction_data=\(encodeJSON(["tx1", "tx2"]))",
-      "verifier_attestations=\(encodeJSON([["foo": "bar"]]))"
+      "verifier_info=\(encodeJSON([["foo": "bar"]]))"
     ].joined(separator: "&")
 
     let result = UnvalidatedRequest.make(from: url(query))
@@ -152,9 +152,9 @@ final class UnvalidatedRequestTests: XCTestCase {
       XCTAssertEqual(object.scope, "openid")
       XCTAssertEqual(object.nonce, "xyz")
       XCTAssertEqual(object.transactionData, ["tx1", "tx2"])
-      XCTAssertEqual(object.verifierAttestations?.first?["foo"].stringValue, "bar")
+      XCTAssertEqual(object.verifierInfo?.first?["foo"].stringValue, "bar")
     default:
-      XCTFail("Expected plain request with verifier_attestations to succeed")
+      XCTFail("Expected plain request with verifier_info to succeed")
     }
   }
 }

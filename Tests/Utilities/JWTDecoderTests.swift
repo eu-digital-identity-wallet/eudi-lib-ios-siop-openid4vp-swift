@@ -43,7 +43,7 @@ final class JWTDecoderTests: XCTestCase {
       "id_token_type": "subject_signed",
       "supported_algorithm": "ES256",
       "transaction_data": ["txn1", "txn2"],
-      "verifier_attestations": [
+      "verifier_info": [
         [
           "format": "jwt",
           "data": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...abc123",
@@ -88,14 +88,14 @@ final class JWTDecoderTests: XCTestCase {
     XCTAssertEqual(result.idTokenType, "subject_signed")
     XCTAssertEqual(result.supportedAlgorithm, "ES256")
     XCTAssertEqual(result.transactionData, ["txn1", "txn2"])
-    XCTAssertEqual(result.verifierAttestations?.count, 2)
+    XCTAssertEqual(result.verifierInfo?.count, 2)
 
-    let first = result.verifierAttestations?[0]
+    let first = result.verifierInfo?[0]
     XCTAssertEqual(first?["format"].string, "jwt")
     XCTAssertEqual(first?["data"].string, "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...abc123")
     XCTAssertEqual(first?["credential_ids"].arrayValue.map { $0.string! }, ["id_card"])
 
-    let second = result.verifierAttestations?[1]
+    let second = result.verifierInfo?[1]
     XCTAssertEqual(second?["format"].string, "jwt")
     XCTAssertEqual(second?["data"].string, "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...xyz456")
     XCTAssertNil(second?["credential_ids"].array)  
