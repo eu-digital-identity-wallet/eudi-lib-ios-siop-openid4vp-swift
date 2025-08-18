@@ -20,16 +20,16 @@ import SwiftyJSON
 /// A structure representing client metadata.
 public struct ClientMetaData: Codable, Equatable, Sendable {
 
-  static let vpFormats = "vp_formats"
+  static let vpFormatsSupported = "vp_formats_supported"
 
   public let jwks: String?
   public let idTokenSignedResponseAlg: String?
   public let idTokenEncryptedResponseAlg: String?
   public let idTokenEncryptedResponseEnc: String?
   public let subjectSyntaxTypesSupported: [String]
-  public let vpFormats: VpFormatsTO?
+  public let vpFormatsSupported: VpFormatsSupportedTO?
   public let responseEncryptionMethodsSupported: [String]?
-  
+
   /// Coding keys for encoding and decoding the structure.
   enum CodingKeys: String, CodingKey {
     case jwks = "jwks"
@@ -37,7 +37,7 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
     case idTokenEncryptedResponseAlg = "id_token_encrypted_response_alg"
     case idTokenEncryptedResponseEnc = "id_token_encrypted_response_enc"
     case subjectSyntaxTypesSupported = "subject_syntax_types_supported"
-    case vpFormats = "vp_formats"
+    case vpFormatsSupported = "vp_formats_supported"
     case responseEncryptionMethodsSupported = "encrypted_response_enc_values_supported"
   }
 
@@ -56,7 +56,7 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
     idTokenEncryptedResponseAlg: String?,
     idTokenEncryptedResponseEnc: String?,
     subjectSyntaxTypesSupported: [String],
-    vpFormats: VpFormatsTO?,
+    vpFormatsSupported: VpFormatsSupportedTO?,
     responseEncryptionMethodsSupported: [String]? = nil
   ) {
     self.jwks = jwks
@@ -64,7 +64,7 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
     self.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg
     self.idTokenEncryptedResponseEnc = idTokenEncryptedResponseEnc
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
-    self.vpFormats = vpFormats
+    self.vpFormatsSupported = vpFormatsSupported
     self.responseEncryptionMethodsSupported = responseEncryptionMethodsSupported
   }
 
@@ -95,11 +95,11 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
       error: ValidationError.invalidClientMetadata
     )) ?? []
 
-    let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormats]
-    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsTO.self) {
-      self.vpFormats = formats
+    let vpFormatsDictionary: JSON = JSON(dictionaryObject)[Self.vpFormatsSupported]
+    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsSupportedTO.self) {
+      self.vpFormatsSupported = formats
     } else {
-      self.vpFormats = nil
+      self.vpFormatsSupported = nil
     }
     
     self.responseEncryptionMethodsSupported = try? dictionaryObject.getValue(
@@ -137,11 +137,11 @@ public struct ClientMetaData: Codable, Equatable, Sendable {
       error: ValidationError.invalidClientMetadata
     )) ?? []
 
-    let vpFormatsDictionary: JSON = JSON(metaData)[Self.vpFormats]
-    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsTO.self) {
-      self.vpFormats = formats
+    let vpFormatsDictionary: JSON = JSON(metaData)[Self.vpFormatsSupported]
+    if let formats = try? vpFormatsDictionary.decoded(as: VpFormatsSupportedTO.self) {
+      self.vpFormatsSupported = formats
     } else {
-      self.vpFormats = nil
+      self.vpFormatsSupported = nil
     }
     
     self.responseEncryptionMethodsSupported = try? metaData.getValue(
@@ -162,7 +162,7 @@ public extension ClientMetaData {
     public let authorizationSignedResponseAlg: JWSAlgorithm?
     public let authorizationEncryptedResponseAlg: JWEAlgorithm?
     public let authorizationEncryptedResponseEnc: JOSEEncryptionMethod?
-    public let vpFormats: VpFormats
+    public let vpFormatsSupported: VpFormatsSupported
     public let responseEncryptionSpecification: ResponseEncryptionSpecification?
 
     public init(
@@ -174,7 +174,7 @@ public extension ClientMetaData {
       authorizationSignedResponseAlg: JWSAlgorithm? = nil,
       authorizationEncryptedResponseAlg: JWEAlgorithm? = nil,
       authorizationEncryptedResponseEnc: JOSEEncryptionMethod? = nil,
-      vpFormats: VpFormats,
+      vpFormatsSupported: VpFormatsSupported,
       responseEncryptionSpecification: ResponseEncryptionSpecification? = nil
     ) {
       self.jwkSet = jwkSet
@@ -185,7 +185,7 @@ public extension ClientMetaData {
       self.authorizationSignedResponseAlg = authorizationSignedResponseAlg
       self.authorizationEncryptedResponseAlg = authorizationEncryptedResponseAlg
       self.authorizationEncryptedResponseEnc = authorizationEncryptedResponseEnc
-      self.vpFormats = vpFormats
+      self.vpFormatsSupported = vpFormatsSupported
       self.responseEncryptionSpecification = responseEncryptionSpecification
     }
   }

@@ -32,7 +32,7 @@ public func walletMetaData(
     cfg.vpConfiguration.presentationDefinitionUriSupported
   )
 
-  json[VP_FORMATS_SUPPORTED] = cfg.vpConfiguration.vpFormats.toJSON()["vp_formats"]
+  json[VP_FORMATS_SUPPORTED] = cfg.vpConfiguration.vpFormatsSupported.toJSON()["vp_formats_supported"]
   json[CLIENT_ID_SCHEMES_SUPPORTED] = JSON(
     cfg.supportedClientIdSchemes.map { $0.name }
   )

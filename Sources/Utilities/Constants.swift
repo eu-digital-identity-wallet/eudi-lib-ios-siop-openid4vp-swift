@@ -56,7 +56,7 @@ public struct Constants {
       idTokenEncryptedResponseAlg: "RS256",
       idTokenEncryptedResponseEnc: "A128CBC-HS256",
       subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
-      vpFormats: nil
+      vpFormatsSupported: nil
     )
   }
 

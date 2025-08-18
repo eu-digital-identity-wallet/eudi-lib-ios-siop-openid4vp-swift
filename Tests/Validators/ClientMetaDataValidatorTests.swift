@@ -42,7 +42,7 @@ final class ClientMetaDataValidatorTests: XCTestCase {
         idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
         idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
         subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
-        vpFormats: TestsConstants.testVpFormatsTO()
+        vpFormatsSupported: TestsConstants.testVpFormatsSupportedTO()
       ), responseMode: nil, responseEncryptionConfiguration: .unsupported)!
 
       XCTAssertEqual(response.jwkSet?.keys.first?.kty, TestsConstants.webKeySet.keys.first?.kty)
@@ -62,7 +62,7 @@ final class ClientMetaDataValidatorTests: XCTestCase {
         idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
         idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
         subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
-        vpFormats: TestsConstants.testVpFormatsTO()
+        vpFormatsSupported: TestsConstants.testVpFormatsSupportedTO()
       ), responseMode: nil, responseEncryptionConfiguration: .unsupported)!
 
       XCTAssertEqual(response.jwkSet?.keys.first, TestsConstants.webKeySet.keys.first)
@@ -80,7 +80,7 @@ final class ClientMetaDataValidatorTests: XCTestCase {
       idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
       idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
       subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
-      vpFormats: TestsConstants.testVpFormatsTO()
+      vpFormatsSupported: TestsConstants.testVpFormatsSupportedTO()
     ), responseMode: nil, responseEncryptionConfiguration: .unsupported)!
 
     XCTAssertNotNil(response.jwkSet?.keys.first)

@@ -463,7 +463,7 @@ final class DirectPostJWTTests: DiXCTest {
       idTokenEncryptedResponseAlg: "RS256",
       idTokenEncryptedResponseEnc: "A128CBC-HS256",
       subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
-      vpFormats: TestsConstants.testVpFormatsTO()
+      vpFormatsSupported: TestsConstants.testVpFormatsSupportedTO()
     )
 
     let validator = ClientMetaDataValidator()
@@ -1425,7 +1425,7 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: "0S6_WzA2Mj",
         responseMode: .directPostJWT(responseURI: URL(string: "https://respond.here")!),
         state: "state",
-        vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
+        vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!,
         responseEncryptionSpecification: .init(
           responseEncryptionAlg: .init(.ECDH_ES),
           responseEncryptionEnc: .init(.A128CBC_HS256),
@@ -1651,7 +1651,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2FB6himwxY7kl44ISNp5qKBELHX9YlTjI_KKGGEpEKiyTZRQiBI0xSqaKlxe0dxGXvE3K0bk55Jxyb9PBWkHPu8A&request_uri_method=get"
+    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2F9xJsn7TwjwBB1s1zbSSDkw8rpOCiDg4TEWwooFsQ3CD99uPV4J6Cx8F_YqOMqTRA3oJgmJCOXUKO8ZN455lrlw&request_uri_method=get"
 
     overrideDependencies()
     let result = await sdk.authorize(
