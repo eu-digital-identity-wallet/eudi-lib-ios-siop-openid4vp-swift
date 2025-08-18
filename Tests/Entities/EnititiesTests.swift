@@ -67,8 +67,8 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       responseMode: responseMode,
       state: state,
       scope: scope,
-      vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!,
-      verifierInfo: attestations
+      vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!,
+      verifierAttestations: attestations
     )
 
     XCTAssertEqual(tokenData.idTokenType, idTokenType)
@@ -212,30 +212,30 @@ class VerifierFormPostTests: XCTestCase {
   }
 }
 
-final class VpFormatsTests: XCTestCase {
+final class VpFormatsSupportedTests: XCTestCase {
 
   func testInitWithValidValues() throws {
-    let sdJwtFormat = VpFormat.sdJwtVc(
+    let sdJwtFormat = VpFormatSupported.sdJwtVc(
       sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
       kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
     )
-    let jwtVpFormat = VpFormat.jwtVp(algorithms: ["RS256"])
-    let ldpVpFormat = VpFormat.ldpVp(proofTypes: ["ProofType1"])
-    let msoMdocFormat = VpFormat.msoMdoc(algorithms: [JWSAlgorithm(.ES256)])
+    let jwtVpFormat = VpFormatSupported.jwtVp(algorithms: ["RS256"])
+    let ldpVpFormat = VpFormatSupported.ldpVp(proofTypes: ["ProofType1"])
+    let msoMdocFormat = VpFormatSupported.msoMdoc(algorithms: [JWSAlgorithm(.ES256)])
 
-    let vpFormats = try VpFormats(values: [sdJwtFormat, jwtVpFormat, ldpVpFormat, msoMdocFormat])
+    let vpFormatsSupported = try VpFormatsSupported(values: [sdJwtFormat, jwtVpFormat, ldpVpFormat, msoMdocFormat])
 
-    XCTAssertEqual(vpFormats.values.count, 4)
-    XCTAssertTrue(vpFormats.contains(sdJwtFormat))
-    XCTAssertTrue(vpFormats.contains(jwtVpFormat))
-    XCTAssertTrue(vpFormats.contains(ldpVpFormat))
-    XCTAssertTrue(vpFormats.contains(msoMdocFormat))
+    XCTAssertEqual(vpFormatsSupported.values.count, 4)
+    XCTAssertTrue(vpFormatsSupported.contains(sdJwtFormat))
+    XCTAssertTrue(vpFormatsSupported.contains(jwtVpFormat))
+    XCTAssertTrue(vpFormatsSupported.contains(ldpVpFormat))
+    XCTAssertTrue(vpFormatsSupported.contains(msoMdocFormat))
   }
 
   func testInitWithDuplicateFormatsThrowsError() {
-    let format = VpFormat.jwtVp(algorithms: ["RS256"])
+    let format = VpFormatSupported.jwtVp(algorithms: ["RS256"])
 
-    XCTAssertThrowsError(try VpFormats(values: [format, format])) { error in
+    XCTAssertThrowsError(try VpFormatsSupported(values: [format, format])) { error in
       guard let validationError = error as? ValidationError else {
         return XCTFail("Unexpected error type")
       }
@@ -244,14 +244,14 @@ final class VpFormatsTests: XCTestCase {
   }
 
   func testFormatNames() {
-    XCTAssertEqual(VpFormat.msoMdoc(algorithms: []).formatName(), .MSO_MDOC)
-    XCTAssertEqual(VpFormat.sdJwtVc(sdJwtAlgorithms: [], kbJwtAlgorithms: []).formatName(), .SD_JWT_VC)
-    XCTAssertEqual(VpFormat.jwtVp(algorithms: []).formatName(), .JWT_VP)
-    XCTAssertEqual(VpFormat.ldpVp(proofTypes: []).formatName(), .LDP_VP)
+    XCTAssertEqual(VpFormatSupported.msoMdoc(algorithms: []).formatName(), .MSO_MDOC)
+    XCTAssertEqual(VpFormatSupported.sdJwtVc(sdJwtAlgorithms: [], kbJwtAlgorithms: []).formatName(), .SD_JWT_VC)
+    XCTAssertEqual(VpFormatSupported.jwtVp(algorithms: []).formatName(), .JWT_VP)
+    XCTAssertEqual(VpFormatSupported.ldpVp(proofTypes: []).formatName(), .LDP_VP)
   }
 
   func testVpFormatToJSON() {
-    let format = VpFormat.sdJwtVc(
+    let format = VpFormatSupported.sdJwtVc(
       sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
       kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
     )
@@ -262,19 +262,19 @@ final class VpFormatsTests: XCTestCase {
   }
 
   func testVpFormatsToJSON() throws {
-    let sdJwtFormat = VpFormat.sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)])
-    let jwtVpFormat = VpFormat.jwtVp(algorithms: ["RS256"])
-    let vpFormats = try VpFormats(values: [sdJwtFormat, jwtVpFormat])
+    let sdJwtFormat = VpFormatSupported.sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)])
+    let jwtVpFormat = VpFormatSupported.jwtVp(algorithms: ["RS256"])
+    let vpFormatsSupported = try VpFormatsSupported(values: [sdJwtFormat, jwtVpFormat])
 
-    let json = vpFormats.toJSON()
+    let json = vpFormatsSupported.toJSON()
 
-    XCTAssertEqual(json["vp_formats"].dictionaryValue.count, 2)
+    XCTAssertEqual(json["vp_formats_supported"].dictionaryValue.count, 2)
   }
 
   func testVpFormatsFromJson() throws {
     let jsonString = """
     {
-       "vp_formats": {
+       "vp_formats_supported": {
               "vc+sd-jwt": {
                   "sd-jwt_alg_values": [
                       "ES256"
@@ -292,116 +292,116 @@ final class VpFormatsTests: XCTestCase {
     }
     """
 
-    let vpFormats = try VpFormats(jsonString: jsonString)
+    let vpFormatsSupported = try VpFormatsSupported(jsonString: jsonString)
 
-    XCTAssertEqual(vpFormats?.values.count, 2)
+    XCTAssertEqual(vpFormatsSupported?.values.count, 2)
   }
 
-  func testVpFormatEquatable() {
-    let format1 = VpFormat.jwtVp(algorithms: ["RS256"])
-    let format2 = VpFormat.jwtVp(algorithms: ["RS256"])
+  func testVpFormatSupportedEquatable() {
+    let format1 = VpFormatSupported.jwtVp(algorithms: ["RS256"])
+    let format2 = VpFormatSupported.jwtVp(algorithms: ["RS256"])
 
     XCTAssertEqual(format1, format2)
   }
 
-  func testVpFormatInequality() {
-    let format1 = VpFormat.jwtVp(algorithms: ["RS256"])
-    let format2 = VpFormat.jwtVp(algorithms: ["ES256"])
+  func testVpFormatSupportedInequality() {
+    let format1 = VpFormatSupported.jwtVp(algorithms: ["RS256"])
+    let format2 = VpFormatSupported.jwtVp(algorithms: ["ES256"])
 
     XCTAssertNotEqual(format1, format2)
   }
 
-  // MARK: - Test Empty VpFormats Creation
+  // MARK: - Test Empty VpFormatsSupported Creation
 
-  func testVpFormatsEmptyCreation() throws {
-    let emptyFormats = try VpFormats.empty()
+  func testVpFormatsSupportedEmptyCreation() throws {
+    let emptyFormats = try VpFormatsSupported.empty()
 
     XCTAssertEqual(emptyFormats.values.count, 0)
   }
 
-  func testVpFormatsDefaultCreation() throws {
-    let defaultFormats = try VpFormats.default()
+  func testVpFormatsSupportedDefaultCreation() throws {
+    let defaultFormats = try VpFormatsSupported.default()
 
     XCTAssertEqual(defaultFormats.values.count, 2)
     XCTAssertEqual(defaultFormats.values.first?.formatName(), .SD_JWT_VC)
   }
 
-  func testVpFormatsInitFromTO() throws {
-    let to = VpFormatsTO(
+  func testVpFormatsSupportedInitFromTO() throws {
+    let to = VpFormatsSupportedTO(
       vcSdJwt: VcSdJwtTO(sdJwtAlgorithms: ["ES256"], kdJwtAlgorithms: ["ES256"]),
       jwtVp: JwtVpTO(alg: ["RS256"]),
       ldpVp: LdpVpTO(proofType: ["ProofType"]),
       msoMdoc: MsoMdocTO(algorithms: ["ES256"])
     )
 
-    let vpFormats = try VpFormats(from: to)
+    let vpFormatsSupported = try VpFormatsSupported(from: to)
 
-    XCTAssertEqual(vpFormats?.values.count, 4)
-    XCTAssertTrue(vpFormats?.contains(.jwtVp(algorithms: ["RS256"])) ?? false)
-    XCTAssertTrue(vpFormats?.contains(.msoMdoc(algorithms: [.init(.ES256)])) ?? false)
+    XCTAssertEqual(vpFormatsSupported?.values.count, 4)
+    XCTAssertTrue(vpFormatsSupported?.contains(.jwtVp(algorithms: ["RS256"])) ?? false)
+    XCTAssertTrue(vpFormatsSupported?.contains(.msoMdoc(algorithms: [.init(.ES256)])) ?? false)
   }
 
-  func testVpFormatsIntersectWithCommonElements() throws {
-    let format1 = VpFormat.sdJwtVc(
+  func testVpFormatsSupportedIntersectWithCommonElements() throws {
+    let format1 = VpFormatSupported.sdJwtVc(
       sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
       kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
     )
 
-    let format2 = VpFormat.jwtVp(algorithms: ["RS256"])
+    let format2 = VpFormatSupported.jwtVp(algorithms: ["RS256"])
 
-    let vpFormats1 = try VpFormats(values: [format1, format2])
-    let vpFormats2 = try VpFormats(values: [format1])
+    let vpFormatsSupported1 = try VpFormatsSupported(values: [format1, format2])
+    let vpFormatsSupported2 = try VpFormatsSupported(values: [format1])
 
-    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    let intersection = VpFormatsSupported.common(vpFormatsSupported1, vpFormatsSupported2)
 
     XCTAssertNotNil(intersection)
     XCTAssertEqual(intersection?.values.count, 1)
     XCTAssertTrue(intersection?.contains(format1) ?? false)
   }
 
-  func testVpFormatsIntersectWithNoCommonElements() throws {
-    let vpFormats1 = try VpFormats(values: [
+  func testVpFormatsSupportedIntersectWithNoCommonElements() throws {
+    let vpFormatsSupported1 = try VpFormatsSupported(values: [
       .sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)])
     ])
 
-    let vpFormats2 = try VpFormats(values: [
+    let vpFormatsSupported2 = try VpFormatsSupported(values: [
       .jwtVp(algorithms: ["RS256"])
     ])
 
-    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    let intersection = VpFormatsSupported.common(vpFormatsSupported1, vpFormatsSupported2)
 
     XCTAssertNil(intersection)
   }
 
-  func testVpFormatsIntersectWithIdenticalFormats() throws {
-    let format = VpFormat.ldpVp(proofTypes: ["ProofType1"])
+  func testVpFormatsSupportedIntersectWithIdenticalFormats() throws {
+    let format = VpFormatSupported.ldpVp(proofTypes: ["ProofType1"])
 
-    let vpFormats1 = try VpFormats(values: [format])
-    let vpFormats2 = try VpFormats(values: [format])
+    let vpFormatsSupported1 = try VpFormatsSupported(values: [format])
+    let vpFormatsSupported2 = try VpFormatsSupported(values: [format])
 
-    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    let intersection = VpFormatsSupported.common(vpFormatsSupported1, vpFormatsSupported2)
 
     XCTAssertNotNil(intersection)
     XCTAssertEqual(intersection?.values.count, 1)
     XCTAssertTrue(intersection?.contains(format) ?? false)
   }
 
-  func testVpFormatsIntersectWithEmptySet() throws {
-    let vpFormats1 = try VpFormats(values: [])
-    let vpFormats2 = try VpFormats(values: [
+  func testVpFormatsSupportedIntersectWithEmptySet() throws {
+    let vpFormatsSupported1 = try VpFormatsSupported(values: [])
+    let vpFormatsSupported2 = try VpFormatsSupported(values: [
       .jwtVp(algorithms: ["RS256"])
     ])
 
-    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    let intersection = VpFormatsSupported.common(vpFormatsSupported1, vpFormatsSupported2)
 
     XCTAssertNil(intersection)
   }
 
-  func testVpFormatsIntersectWithBothEmpty() throws {
-    let vpFormats1 = try VpFormats(values: [])
-    let vpFormats2 = try VpFormats(values: [])
+  func testVpFormatsSupportedIntersectWithBothEmpty() throws {
+    let vpFormatsSupported1 = try VpFormatsSupported(values: [])
+    let vpFormatsSupported2 = try VpFormatsSupported(values: [])
 
-    let intersection = VpFormats.common(vpFormats1, vpFormats2)
+    let intersection = VpFormatsSupported.common(vpFormatsSupported1, vpFormatsSupported2)
 
     XCTAssertNil(intersection)
   }

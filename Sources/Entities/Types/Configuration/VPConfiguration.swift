@@ -19,12 +19,12 @@ public struct VPConfiguration: Sendable {
   public let presentationDefinitionUriSupported: Bool = true
   public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
   public let knownDCQLQueriesPerScope: [String: DCQL] = [:]
-  public let vpFormats: VpFormats
+  public let vpFormatsSupported: VpFormatsSupported
   public let supportedTransactionDataTypes: [SupportedTransactionDataType]
 
   public static func `default`() -> VPConfiguration {
     try! .init(
-      vpFormats: .init(
+      vpFormatsSupported: .init(
         values: [
           .sdJwtVc(
             sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
@@ -45,10 +45,10 @@ public struct VPConfiguration: Sendable {
   public init(
     presentationDefinitionUriSupported: Bool = true,
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
-    vpFormats: VpFormats,
+    vpFormatsSupported: VpFormatsSupported,
     supportedTransactionDataTypes: [SupportedTransactionDataType]
   ) {
-    self.vpFormats = vpFormats
+    self.vpFormatsSupported = vpFormatsSupported
     self.supportedTransactionDataTypes = supportedTransactionDataTypes
   }
 }

@@ -110,7 +110,7 @@ public extension ResolvedRequestData {
       ))
 
     case .vpToken(let request):
-      let commonFormats = VpFormats.common(request.vpFormats, vpConfiguration.vpFormats) ?? request.vpFormats
+      let commonFormats = VpFormatsSupported.common(request.vpFormatsSupported, vpConfiguration.vpFormatsSupported) ?? request.vpFormatsSupported
       let (presentationQuery, _) = try await Self.resolvePresentationQuery(
         from: request.querySource,
         presentationDefinitionResolver: presentationDefinitionResolver
@@ -123,7 +123,7 @@ public extension ResolvedRequestData {
         nonce: request.nonce,
         responseMode: request.responseMode,
         state: request.state,
-        vpFormats: commonFormats,
+        vpFormatsSupported: commonFormats,
         jarmRequirement: walletConfiguration.jarmRequirement(
           validated: validatedClientMetaData
         ),
@@ -138,7 +138,7 @@ public extension ResolvedRequestData {
       ))
 
     case .idAndVpToken(let request):
-      let commonFormats = VpFormats.common(request.vpFormats, vpConfiguration.vpFormats) ?? request.vpFormats
+      let commonFormats = VpFormatsSupported.common(request.vpFormatsSupported, vpConfiguration.vpFormatsSupported) ?? request.vpFormatsSupported
       let (presentationQuery, definition) = try await Self.resolvePresentationQuery(
         from: request.querySource,
         presentationDefinitionResolver: presentationDefinitionResolver
@@ -159,7 +159,7 @@ public extension ResolvedRequestData {
           responseMode: request.responseMode,
           state: request.state,
           scope: request.scope,
-          vpFormats: commonFormats,
+          vpFormatsSupported: commonFormats,
           transactionData: try Self.parseTransactionData(
             transactionData: request.transactionData,
             vpConfiguration: vpConfiguration,
@@ -177,7 +177,7 @@ public extension ResolvedRequestData {
           nonce: request.nonce,
           responseMode: request.responseMode,
           state: request.state,
-          vpFormats: commonFormats,
+          vpFormatsSupported: commonFormats,
           jarmRequirement: walletConfiguration.jarmRequirement(
             validated: validatedClientMetaData
           ),

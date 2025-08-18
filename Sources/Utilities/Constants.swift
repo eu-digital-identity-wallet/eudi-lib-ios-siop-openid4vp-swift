@@ -59,7 +59,7 @@ public struct Constants {
       authorizationSignedResponseAlg: "RS256",
       authorizationEncryptedResponseAlg: "RSA-OAEP-256",
       authorizationEncryptedResponseEnc: "A128CBC-HS256",
-      vpFormats: nil
+      vpFormatsSupported: nil
     )
   }
 
