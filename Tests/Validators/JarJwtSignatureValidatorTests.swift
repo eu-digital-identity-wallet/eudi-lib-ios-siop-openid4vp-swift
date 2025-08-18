@@ -59,7 +59,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
       ].toThrowingJSONData()),
       signer: Signer(
         signatureAlgorithm: algorithm,
-        key: walletConfig.signingKey
+        key: walletConfig.privateKey
       )!
     )
 
@@ -93,7 +93,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
       ].toThrowingJSONData()),
       signer: Signer(
         signatureAlgorithm: algorithm,
-        key: walletConfig.signingKey
+        key: walletConfig.privateKey
       )!
     )
 
@@ -132,7 +132,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
       ].toThrowingJSONData()),
       signer: Signer(
         signatureAlgorithm: algorithm,
-        key: walletConfig.signingKey
+        key: walletConfig.privateKey
       )!
     )
 
@@ -172,7 +172,7 @@ private extension JarJwtSignatureValidatorTests {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -183,7 +183,7 @@ private extension JarJwtSignatureValidatorTests {
             jwkSetSource: .passByValue(webKeys: .init(keys: keySet.keys))
           )
         ])],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
       responseEncryptionConfiguration: .unsupported
@@ -215,7 +215,7 @@ private extension JarJwtSignatureValidatorTests {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -226,7 +226,7 @@ private extension JarJwtSignatureValidatorTests {
             jwkSetSource: .passByValue(webKeys: .init(keys: keySet.keys))
           )
         ])],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
       responseEncryptionConfiguration: .unsupported

@@ -47,7 +47,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -91,7 +91,7 @@ final class SiopOpenID4VPTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
       responseEncryptionConfiguration: .unsupported
@@ -125,7 +125,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -149,7 +149,7 @@ final class SiopOpenID4VPTests: DiXCTest {
             ]))
           )
         ])],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
       responseEncryptionConfiguration: .unsupported

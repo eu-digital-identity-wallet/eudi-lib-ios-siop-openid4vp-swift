@@ -101,7 +101,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       decentralizedIdentifier: decentralizedIdentifier,
       idTokenTTL: idTokenTTL,
       presentationDefinitionUriSupported: presentationDefinitionUriSupported,
-      signingKey: signingKey,
+      privateKey: signingKey,
       publicWebKeySet: signingKeySet,
       supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,

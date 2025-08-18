@@ -44,7 +44,7 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case invalidWalletConfiguration
   case unsupportedAlgorithm(String?)
   case unsupportedMethod(String?)
-  case invalidSigningKey
+  case invalidKey
   case emptyValue
   case multipleQuerySources
   case invalidQuerySource
@@ -119,8 +119,8 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
       return "unsupportedAlgorithm \(algorithm ?? "-")"
     case .unsupportedMethod(let method):
       return "unsupportedMethod \(method ?? "-")"
-    case .invalidSigningKey:
-      return ".invalidSigningKey"
+    case .invalidKey:
+      return ".invalidKey"
     case .emptyValue:
       return ".emptyValue"
     case .multipleQuerySources:

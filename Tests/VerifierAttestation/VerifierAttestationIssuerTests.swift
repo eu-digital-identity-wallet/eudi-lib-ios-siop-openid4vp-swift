@@ -29,12 +29,12 @@ private let config: SiopOpenId4VPConfiguration = .init(
   decentralizedIdentifier: try! .init(
     rawValue: "did:example:123"
   ),
-  signingKey: topPrivateKey,
+  privateKey: topPrivateKey,
   publicWebKeySet: .init(keys: []),
   supportedClientIdSchemes: [
     .x509SanDns(trust: { _ in true })
   ],
-  vpFormatsSupported: [],
+  vpFormatsSupported: ClaimFormat.default(),
   jarConfiguration: .noEncryptionOption,
   vpConfiguration: VPConfiguration.default(),
   responseEncryptionConfiguration: .unsupported
@@ -164,7 +164,7 @@ private extension VerifierAttestationIssuerTests {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .verifierAttestation(
@@ -172,7 +172,7 @@ private extension VerifierAttestationIssuerTests {
           clockSkew: 15.0
         )
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
       responseEncryptionConfiguration: .unsupported

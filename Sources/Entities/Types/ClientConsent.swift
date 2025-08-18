@@ -32,7 +32,6 @@ public enum ClientConsent {
    In response to an OpenId4VPAuthorization where the wallet has claims that fulfill Verifier's presentation definition
     - Parameters:
      - vpToken the vp_token to be included in the authorization response
-     - presentationSubmission the presentation submission to be included in the authorization response
     */
   case vpToken(
     vpContent: VpContent
@@ -43,7 +42,6 @@ public enum ClientConsent {
     - Parameters:
      - idToken The id_token produced by the wallet
      - vpToken the vp_token to be included in the authorization response
-     - presentationSubmission the presentation submission to be included in the authorization response
     */
   case idAndVPToken(
     idToken: JWTString,

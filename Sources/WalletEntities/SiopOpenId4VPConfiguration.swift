@@ -21,7 +21,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let decentralizedIdentifier: DecentralizedIdentifier
   public let idTokenTTL: TimeInterval
   public let presentationDefinitionUriSupported: Bool
-  public let signingKey: SecKey
+  public let privateKey: SecKey
   public let publicWebKeySet: WebKeySet
   public let supportedClientIdSchemes: [SupportedClientIdScheme]
   public let vpFormatsSupported: [ClaimFormat]
@@ -38,10 +38,10 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     decentralizedIdentifier: DecentralizedIdentifier,
     idTokenTTL: TimeInterval = 600.0,
     presentationDefinitionUriSupported: Bool = false,
-    signingKey: SecKey,
+    privateKey: SecKey,
     publicWebKeySet: WebKeySet,
     supportedClientIdSchemes: [SupportedClientIdScheme],
-    vpFormatsSupported: [ClaimFormat],
+    vpFormatsSupported: [ClaimFormat] = ClaimFormat.default(),
     knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
     jarConfiguration: JARConfiguration = .noEncryptionOption,
     vpConfiguration: VPConfiguration = .default(),
@@ -54,7 +54,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     self.decentralizedIdentifier = decentralizedIdentifier
     self.idTokenTTL = idTokenTTL
     self.presentationDefinitionUriSupported = presentationDefinitionUriSupported
-    self.signingKey = signingKey
+    self.privateKey = privateKey
     self.publicWebKeySet = publicWebKeySet
     self.supportedClientIdSchemes = supportedClientIdSchemes
     self.vpFormatsSupported = vpFormatsSupported
@@ -72,7 +72,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     decentralizedIdentifier = try DecentralizedIdentifier(rawValue: "did:example:123|did:example:456")
     idTokenTTL = 600.0
     presentationDefinitionUriSupported = false
-    signingKey = try KeyController.generateRSAPrivateKey()
+    privateKey = try KeyController.generateRSAPrivateKey()
     publicWebKeySet = WebKeySet(keys: [])
     supportedClientIdSchemes = []
     vpFormatsSupported = []

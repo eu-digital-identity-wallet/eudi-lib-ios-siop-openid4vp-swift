@@ -49,7 +49,7 @@ final class JOSETests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey!,
+      privateKey: privateKey!,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -61,7 +61,7 @@ final class JOSETests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       responseEncryptionConfiguration: .unsupported
     )
 

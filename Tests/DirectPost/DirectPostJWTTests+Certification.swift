@@ -62,12 +62,12 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -180,12 +180,12 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -299,12 +299,12 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported

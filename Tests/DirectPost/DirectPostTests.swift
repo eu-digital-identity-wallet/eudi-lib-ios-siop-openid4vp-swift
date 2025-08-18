@@ -148,7 +148,7 @@ final class DirectPostTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -160,7 +160,7 @@ final class DirectPostTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .encryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -250,7 +250,7 @@ final class DirectPostTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -265,7 +265,7 @@ final class DirectPostTests: DiXCTest {
           return true
         })
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .encryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported

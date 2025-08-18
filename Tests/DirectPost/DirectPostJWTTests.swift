@@ -44,7 +44,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -59,10 +59,13 @@ final class DirectPostJWTTests: DiXCTest {
           true
         })
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .supported(
+        supportedAlgorithms: [.init(.ECDH_ES)],
+        supportedMethods: [.init(.A128GCM)]
+      )
     )
 
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -83,28 +86,11 @@ final class DirectPostJWTTests: DiXCTest {
 
     switch result {
     case .jwt(request: let request):
-      let presentationDefinition = try?  XCTUnwrap(
-        request.presentationDefinition,
-        "Unable to resolve presentation definition"
-      )
-
-      XCTAssertNotNil(presentationDefinition)
-
-      guard let presentationDefinition = presentationDefinition else {
-        XCTAssert(false, "Presentation definition expected")
-        return
-      }
-
       // Obtain consent
-      let submission = TestsConstants.presentationSubmission(presentationDefinition)
-      let verifiablePresentations: [VerifiablePresentation] = [
-        .generic(TestsConstants.cbor)
-      ]
       let consent: ClientConsent = .vpToken(
-        vpContent: .presentationExchange(
-          verifiablePresentations: verifiablePresentations,
-          presentationSubmission: submission
-        )
+        vpContent: .dcql(verifiablePresentations: [
+          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+        ])
       )
 
       // Generate a direct post authorisation response
@@ -152,7 +138,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .redirectUri,
@@ -160,7 +146,7 @@ final class DirectPostJWTTests: DiXCTest {
           true
         })
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .encryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -254,7 +240,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -266,7 +252,7 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -387,10 +373,10 @@ final class DirectPostJWTTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-        signingKey: privateKey!,
+        privateKey: privateKey!,
         publicWebKeySet: TestsConstants.webKeySet,
         supportedClientIdSchemes: [],
-        vpFormatsSupported: [],
+        vpFormatsSupported: ClaimFormat.default(),
         vpConfiguration: .default(),
         responseEncryptionConfiguration: .unsupported
       ),
@@ -411,10 +397,10 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: try KeyController.generateRSAPrivateKey(),
+      privateKey: try KeyController.generateRSAPrivateKey(),
       publicWebKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -480,10 +466,10 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -574,7 +560,7 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -586,7 +572,7 @@ final class DirectPostJWTTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -694,12 +680,12 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: rsaPrivateKey,
+      privateKey: rsaPrivateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -814,12 +800,12 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .encryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -932,12 +918,12 @@ final class DirectPostJWTTests: DiXCTest {
       decentralizedIdentifier: try .init(
         rawValue: "did:example:123"
       ),
-      signingKey: rsaPrivateKey,
+      privateKey: rsaPrivateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -1056,12 +1042,12 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: rsaPrivateKey,
+      privateKey: rsaPrivateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -1191,12 +1177,12 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -1303,12 +1289,12 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -1459,10 +1445,10 @@ final class DirectPostJWTTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-        signingKey: rsaPrivateKey!,
+        privateKey: rsaPrivateKey!,
         publicWebKeySet: rsaKeySet,
         supportedClientIdSchemes: [],
-        vpFormatsSupported: [],
+        vpFormatsSupported: ClaimFormat.default(),
         vpConfiguration: .default(),
         responseEncryptionConfiguration: .unsupported
       )
@@ -1524,12 +1510,12 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .unsupported
@@ -1630,12 +1616,12 @@ final class DirectPostJWTTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .x509SanDns(trust: chainVerifier)
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
       responseEncryptionConfiguration: .supported(
@@ -1651,7 +1637,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2F9xJsn7TwjwBB1s1zbSSDkw8rpOCiDg4TEWwooFsQ3CD99uPV4J6Cx8F_YqOMqTRA3oJgmJCOXUKO8ZN455lrlw&request_uri_method=get"
+    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2F__DO_W8mpOPmTkG5DBo9sjbISls3zzcDx-Ic3Z7rJ-kXb0PqVRTkwpF1ci1NpnhDTubcHDX4trwJDhHRDOQgug&request_uri_method=get"
 
     overrideDependencies()
     let result = await sdk.authorize(
@@ -1723,12 +1709,12 @@ final class DirectPostJWTTests: DiXCTest {
         ],
         preferredSubjectSyntaxType: .jwkThumbprint,
         decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-        signingKey: privateKey,
+        privateKey: privateKey,
         publicWebKeySet: keySet,
         supportedClientIdSchemes: [
           .x509SanDns(trust: chainVerifier)
         ],
-        vpFormatsSupported: [],
+        vpFormatsSupported: ClaimFormat.default(),
         jarConfiguration: .noEncryptionOption,
         vpConfiguration: .default(),
         responseEncryptionConfiguration: .unsupported
