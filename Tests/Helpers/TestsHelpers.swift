@@ -80,28 +80,17 @@ class TestsHelpers {
       "response_mode": "direct_post.jwt",
       "nonce": nonce,
       "transaction_data": transactionData,
-      "presentation_definition": [
-        "id": TestsConstants.testPresentationId,
-        "input_descriptors": [
+      "dcql_query": [
+        "credentials": [
           [
-            "id": "wa_driver_license",
-            "name": "Washington State Business License",
-            "purpose": "We can only allow licensed Washington State business representatives into the WA Business Conference",
-            "constraints": [
-              "fields": [
-                [
-                  "path": [
-                    "$.credentialSubject.dateOfBirth",
-                    "$.credentialSubject.dob",
-                    "$.vc.credentialSubject.dateOfBirth",
-                    "$.vc.credentialSubject.dob"
-                  ]
-                ]
+            "id": "query_0",
+              "format": "mso_mdoc",
+              "meta": [
+                "doctype_value": "eu.europa.ec.eudi.pid.1"
               ]
-            ]
           ]
         ]
-      ]
+      ],
     ] as JSON
 
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody.object, options: [])
@@ -128,28 +117,17 @@ class TestsHelpers {
       "type": "vp_token",
       "response_mode": "direct_post.jwt",
       "nonce": nonce,
-      "presentation_definition": [
-        "id": TestsConstants.testPresentationId,
-        "input_descriptors": [
+      "dcql_query": [
+        "credentials": [
           [
-            "id": "wa_driver_license",
-            "name": "Washington State Business License",
-            "purpose": "We can only allow licensed Washington State business representatives into the WA Business Conference",
-            "constraints": [
-              "fields": [
-                [
-                  "path": [
-                    "$.credentialSubject.dateOfBirth",
-                    "$.credentialSubject.dob",
-                    "$.vc.credentialSubject.dateOfBirth",
-                    "$.vc.credentialSubject.dob"
-                  ]
-                ]
+            "id": "query_0",
+              "format": "mso_mdoc",
+              "meta": [
+                "doctype_value": "eu.europa.ec.eudi.pid.1"
               ]
-            ]
           ]
         ]
-      ]
+      ],
     ] as [String: Any]
 
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody, options: [])

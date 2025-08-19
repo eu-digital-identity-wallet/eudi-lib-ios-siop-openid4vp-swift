@@ -549,23 +549,16 @@ final class DirectPostJWTTests: DiXCTest {
     
     switch result {
     case .jwt(request: let request):
-      let resolved = request
-      
       // Obtain consent
-      let submission = TestsConstants.testPresentationSubmission
-      let verifiablePresentations: [VerifiablePresentation] = [
-        .generic(TestsConstants.cbor)
-      ]
       let consent: ClientConsent = .vpToken(
-        vpContent: .presentationExchange(
-          verifiablePresentations: verifiablePresentations,
-          presentationSubmission: submission
-        )
+        vpContent: .dcql(verifiablePresentations: [
+          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+        ])
       )
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: resolved,
+        resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -645,7 +638,7 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -680,20 +673,15 @@ final class DirectPostJWTTests: DiXCTest {
       }
       
       // Obtain consent
-      let submission = TestsConstants.testPresentationSubmissionSdJwt
-      let verifiablePresentations: [VerifiablePresentation] = [
-        .generic(presentation!)
-      ]
       let consent: ClientConsent = .vpToken(
-        vpContent: .presentationExchange(
-          verifiablePresentations: verifiablePresentations,
-          presentationSubmission: submission
-        )
+        vpContent: .dcql(verifiablePresentations: [
+          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+        ])
       )
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: resolved,
+        resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -866,7 +854,7 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -883,23 +871,16 @@ final class DirectPostJWTTests: DiXCTest {
     
     switch result {
     case .jwt(let request):
-      let resolved = request
-      
       // Obtain consent
-      let submission = TestsConstants.testPresentationSubmission
-      let verifiablePresentations: [VerifiablePresentation] = [
-        .generic(TestsConstants.cbor)
-      ]
       let consent: ClientConsent = .vpToken(
-        vpContent: .presentationExchange(
-          verifiablePresentations: verifiablePresentations,
-          presentationSubmission: submission
-        )
+        vpContent: .dcql(verifiablePresentations: [
+          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+        ])
       )
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: resolved,
+        resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -990,7 +971,7 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1033,20 +1014,15 @@ final class DirectPostJWTTests: DiXCTest {
       }
       
       // Obtain consent
-      let submission = TestsConstants.testPresentationSubmissionSdJwt
-      let verifiablePresentations: [VerifiablePresentation] = [
-        .generic(presentation!)
-      ]
       let consent: ClientConsent = .vpToken(
-        vpContent: .presentationExchange(
-          verifiablePresentations: verifiablePresentations,
-          presentationSubmission: submission
-        )
+        vpContent: .dcql(verifiablePresentations: [
+          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+        ])
       )
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: resolved,
+        resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -1125,7 +1101,7 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -1142,23 +1118,16 @@ final class DirectPostJWTTests: DiXCTest {
     
     switch result {
     case .jwt(let request):
-      let resolved = request
-      
       // Obtain consent
-      let submission = TestsConstants.testPresentationSubmission
-      let verifiablePresentations: [VerifiablePresentation] = [
-        .generic(TestsConstants.cbor)
-      ]
       let consent: ClientConsent = .vpToken(
-        vpContent: .presentationExchange(
-          verifiablePresentations: verifiablePresentations,
-          presentationSubmission: submission
-        )
+        vpContent: .dcql(verifiablePresentations: [
+          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+        ])
       )
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: resolved,
+        resolvedRequest: request,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -1237,7 +1206,7 @@ final class DirectPostJWTTests: DiXCTest {
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .default()
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
