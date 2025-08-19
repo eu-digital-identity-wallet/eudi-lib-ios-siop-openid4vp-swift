@@ -126,13 +126,6 @@ public enum AuthorizationResponsePayload: Encodable, Sendable {
       _
      ):
        switch vpContent {
-       case .presentationExchange(
-        let verifiablePresentations,
-        let presentationSubmission
-       ):
-         try container.encode(presentationSubmission, forKey: .presentationSubmission)
-         try container.encode(VpToken(verifiablePresentations: verifiablePresentations), forKey: .vpToken)
-         try container.encode(state, forKey: .state)
        case .dcql(let verifiablePresentations):
          try container.encode(state, forKey: .state)
          try container.encode(VpContent .encodeDCQLQuery(verifiablePresentations), forKey: .vpToken)

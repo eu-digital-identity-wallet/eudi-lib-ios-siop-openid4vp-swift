@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 public enum PresentationQuery: Sendable {
-  case byPresentationDefinition(PresentationDefinition)
   case byDigitalCredentialsQuery(DCQL)
 }

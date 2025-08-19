@@ -271,9 +271,6 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       walletConfiguration: config,
       vpConfiguration: config.vpConfiguration,
       validatedClientMetaData: validatedClientMetaData,
-      presentationDefinitionResolver: PresentationDefinitionResolver(
-        fetcher: Fetcher(session: config.session)
-      ),
       validatedAuthorizationRequest: validatedAuthorizationRequest
     )
   }

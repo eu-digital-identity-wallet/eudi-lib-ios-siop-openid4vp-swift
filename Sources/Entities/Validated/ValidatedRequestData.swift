@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 import JOSESwift
 import X509
 import SwiftyJSON

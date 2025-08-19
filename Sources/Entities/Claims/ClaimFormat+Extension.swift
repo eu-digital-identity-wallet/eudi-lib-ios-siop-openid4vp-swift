@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
-import PresentationExchange
+import Foundation
+
+public enum ClaimFormat: Equatable, Sendable {
+  case msoMdoc
+  case jwtType(JWTType)
+  case ldpType(LDPType)
+
+  public enum JWTType: Sendable {
+    case jwt
+    case jwt_vc
+    case jwt_vp
+  }
+
+  public enum LDPType: Sendable {
+    case ldp
+    case ldp_vc
+    case ldp_vp
+  }
+}
 
 public extension ClaimFormat {
   

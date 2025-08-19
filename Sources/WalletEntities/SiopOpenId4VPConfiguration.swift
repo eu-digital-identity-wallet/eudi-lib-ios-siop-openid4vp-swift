@@ -25,7 +25,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let publicWebKeySet: WebKeySet
   public let supportedClientIdSchemes: [SupportedClientIdScheme]
   public let vpFormatsSupported: [ClaimFormat]
-  public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition]
   public let jarConfiguration: JARConfiguration
   public let vpConfiguration: VPConfiguration
   public let errorDispatchPolicy: ErrorDispatchPolicy
@@ -42,7 +41,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     publicWebKeySet: WebKeySet,
     supportedClientIdSchemes: [SupportedClientIdScheme],
     vpFormatsSupported: [ClaimFormat] = ClaimFormat.default(),
-    knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
     jarConfiguration: JARConfiguration = .noEncryptionOption,
     vpConfiguration: VPConfiguration = .default(),
     errorDispatchPolicy: ErrorDispatchPolicy = .onlyAuthenticatedClients,
@@ -58,7 +56,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     self.publicWebKeySet = publicWebKeySet
     self.supportedClientIdSchemes = supportedClientIdSchemes
     self.vpFormatsSupported = vpFormatsSupported
-    self.knownPresentationDefinitionsPerScope = knownPresentationDefinitionsPerScope
     self.jarConfiguration = jarConfiguration
     self.vpConfiguration = vpConfiguration
     self.errorDispatchPolicy = errorDispatchPolicy
@@ -76,7 +73,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     publicWebKeySet = WebKeySet(keys: [])
     supportedClientIdSchemes = []
     vpFormatsSupported = []
-    knownPresentationDefinitionsPerScope = [:]
     jarConfiguration = .noEncryptionOption
     vpConfiguration = .default()
     errorDispatchPolicy = .onlyAuthenticatedClients

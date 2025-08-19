@@ -36,9 +36,14 @@ final class DirectPostTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        presentationQuery: .byPresentationDefinition(.init(
-          id: "dummy-id",
-          inputDescriptors: [])),
+        presentationQuery:  .byDigitalCredentialsQuery(
+          try! .init(credentials: [
+            .init(
+              id: .init(value: "query_0"),
+              format: .init(format: "sd-jwt")
+            )
+          ])
+        ),
         clientMetaData: metaData,
         client: Constants.testClient,
         nonce: TestsConstants.testNonce,
@@ -78,9 +83,14 @@ final class DirectPostTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        presentationQuery: .byPresentationDefinition(.init(
-          id: "dummy-id",
-          inputDescriptors: [])),
+        presentationQuery:  .byDigitalCredentialsQuery(
+          try! .init(credentials: [
+            .init(
+              id: .init(value: "query_0"),
+              format: .init(format: "sd-jwt")
+            )
+          ])
+        ),
         clientMetaData: metaData,
         client: Constants.testClient,
         nonce: TestsConstants.testNonce,

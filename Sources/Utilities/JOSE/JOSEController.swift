@@ -16,7 +16,6 @@
 import Foundation
 import Security
 import JOSESwift
-import PresentationExchange
 
 public struct HolderInfo: Codable {
   public let email: String

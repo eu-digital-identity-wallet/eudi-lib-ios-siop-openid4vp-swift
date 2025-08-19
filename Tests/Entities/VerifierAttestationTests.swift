@@ -197,21 +197,4 @@ final class VerifierAttestationTests: XCTestCase {
       XCTAssertEqual(error as? ValidationError, .invalidVerifierAttestationCredentialIds)
     }
   }
-
-  func testByPresentationDefinitionShouldReturnNil() throws {
-    let attestation = VerifierInfo(
-      format: "ldp",
-      data: JSON(["k": "v"]),
-      credentialIds: nil
-    )
-
-    let result = try VerifierInfo.validatedVerifierInfo(
-      [attestation],
-      presentationQuery: .byPresentationDefinition(.init(
-        id: "dummy-id",
-        inputDescriptors: []))
-    )
-
-    XCTAssertNil(result)
-  }
 }

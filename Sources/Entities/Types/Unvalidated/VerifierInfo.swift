@@ -73,10 +73,7 @@ public extension VerifierInfo {
           }
         }
       }
-      
       return attestations
-    case .byPresentationDefinition(_):
-      return nil
     }
   }
 }

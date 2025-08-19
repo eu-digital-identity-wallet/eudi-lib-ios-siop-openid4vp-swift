@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 extension ResolvedRequestData {
   /// A structure representing the data related to ID token and verifiable presentation (VP) token.
   public struct IdAndVpTokenData: Sendable {
     public let idTokenType: IdTokenType
     public let presentationQuery: PresentationQuery
-    public let presentationDefinition: PresentationDefinition
     public let clientMetaData: ClientMetaData.Validated?
     public let client: Client
     public let nonce: String
@@ -36,7 +34,7 @@ extension ResolvedRequestData {
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
     ///   - idTokenType: The type of the ID token.
-    ///   - presentationDefinition: The presentation definition.
+    ///   - presentationQuery: The presentation query.
     ///   - clientMetaData: The client metadata.
     ///   - nonce: The nonce.
     ///   - responseMode: The response mode.
@@ -49,7 +47,6 @@ extension ResolvedRequestData {
     public init(
       idTokenType: IdTokenType,
       presentationQuery: PresentationQuery,
-      presentationDefinition: PresentationDefinition,
       clientMetaData: ClientMetaData.Validated?,
       client: Client,
       nonce: String,
@@ -63,7 +60,6 @@ extension ResolvedRequestData {
     ) {
       self.idTokenType = idTokenType
       self.presentationQuery = presentationQuery
-      self.presentationDefinition = presentationDefinition
       self.clientMetaData = clientMetaData
       self.client = client
       self.nonce = nonce

@@ -57,8 +57,6 @@ public struct TransactionData: Codable, Sendable {
   ) -> Result<TransactionData, Error> {
     Result {
       let ids: [String] = switch presentationQuery {
-      case .byPresentationDefinition(let presentationDefinition):
-        presentationDefinition.inputDescriptors.map { $0.id }
       case .byDigitalCredentialsQuery(let dcql):
         dcql.credentials.map { $0.id.value }
       }

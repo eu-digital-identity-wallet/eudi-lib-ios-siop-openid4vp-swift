@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 extension ResolvedRequestData {
   public struct VpTokenData: Sendable {

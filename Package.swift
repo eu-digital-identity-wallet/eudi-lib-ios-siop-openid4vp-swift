@@ -17,10 +17,6 @@ let package = Package(
       from: "3.0.0"
     ),
     .package(
-      url: "https://github.com/eu-digital-identity-wallet/eudi-lib-ios-presentation-exchange-swift.git",
-      .upToNextMajor(from: "0.4.0")
-    ),
-    .package(
       url: "https://github.com/apple/swift-certificates.git",
       .upToNextMajor(from: "1.0.0")
     ),
@@ -35,7 +31,11 @@ let package = Package(
     .package(
       url: "https://github.com/krzyzanowskim/CryptoSwift.git",
       from: "1.8.4"
-    )
+    ),
+    .package(
+      url: "https://github.com/SwiftyJSON/SwiftyJSON.git",
+      from: "5.0.1"
+    ),
   ],
   targets: [
     .target(
@@ -44,10 +44,6 @@ let package = Package(
         .product(
           name: "JOSESwift",
           package: "JOSESwift"
-        ),
-        .product(
-          name: "PresentationExchange",
-          package: "eudi-lib-ios-presentation-exchange-swift"
         ),
         .product(
           name: "X509",
@@ -60,7 +56,11 @@ let package = Package(
         .product(
           name: "CryptorECC",
           package: "BlueECC"
-        )
+        ),
+        .product(
+          name: "SwiftyJSON",
+          package: "SwiftyJSON"
+        ),
       ],
       path: "Sources",
       resources: [
@@ -76,13 +76,13 @@ let package = Package(
           package: "JOSESwift"
         ),
         .product(
-          name: "PresentationExchange",
-          package: "eudi-lib-ios-presentation-exchange-swift"
-        ),
-        .product(
           name: "CryptoSwift",
           package: "CryptoSwift"
-        )
+        ),
+        .product(
+          name: "SwiftyJSON",
+          package: "SwiftyJSON"
+        ),
       ],
       path: "Tests"
     )

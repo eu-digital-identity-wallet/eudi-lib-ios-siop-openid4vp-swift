@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 import CryptoKit
 import CryptoSwift
 import JOSESwift
@@ -48,31 +47,6 @@ struct TestsConstants {
       vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!
     )
   }
-  
-  public static let testPresentationId = "32f54163-7166-48f1-93d8-ff217bdb0653"
-  public static let testPresentationSubmission: PresentationSubmission = .init(
-    id: "028b39fd-33b6-46a1-8887-2ef654771d7f",
-    definitionID: TestsConstants.testPresentationId,
-    descriptorMap: [
-      .init(
-        id: "wa_driver_license",
-        format: "mso_mdoc",
-        path: "$"
-      )
-    ]
-  )
-  
-  public static let testPresentationSubmissionSdJwt: PresentationSubmission = .init(
-    id: "028b39fd-33b6-46a1-8887-2ef654771d7f",
-    definitionID: TestsConstants.testPresentationId,
-    descriptorMap: [
-      .init(
-        id: "wa_driver_license",
-        format: "dc+sd-jwt",
-        path: "$"
-      )
-    ]
-  )
   
   public static let testClientId = "dev.verifier-backend.eudiw.dev"
   public static let clientId = "x509_san_dns:\(Self.testClientId)"
@@ -128,34 +102,6 @@ struct TestsConstants {
   static let sampleValidClientMetaData = #"{"jwks":{"keys":[{"kty":"RSA", "e":"AQAB", "use":"sig", "kid":"a4e1bbe6-26e8-480b-a364-f43497894453", "iat":1683559586, "n":"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew"}]},"id_token_signed_response_alg":"value_id_token_signed_response_alg","id_token_encrypted_response_alg":"value_id_token_encrypted_response_alg","id_token_encrypted_response_enc":"value_id_token_encrypted_response_enc","subject_syntax_types_supported":["value_subject_syntax_types_supported"]}"#
   
   static let sampleValidJWKS = #"{"keys":[{"kty":"RSA", "e":"AQAB", "use":"sig", "kid":"9556a7a5-bb4f-4354-9208-74789528d1c7", "iat":1691595131, "n":"087NDoY9u7QUYAd-hjzx0B7k5_jofB1-wgRWGpFtpFmBkWMPCHtH72E240xkEO_nrgyEPJvh5-K6V--9MHevBCw1ihR-GtiCK4LEtY6alTWJx90yFEwiwHqVTzWpGDZSyRb3QGgjSgqWlYeIHkro58EykYyVCXr9m5PuyiM1Uekt6PXAZdWYFBeT8v1bjwe8knVEayC7U5eVkScabGcGGUWRFeOVbkS6vR18PCJ8nokHQipISpgD2pdD29Vn39Aped3hd7tdVJj-C7qZwIuAEUeRzxXeKdLRxmZvj_oX_Q39XzNVpMVO8IQSrKvqPKvQUNABboxb24L7pK1b9F0S4w"}]}"#
-  
-  static let testClaimsBankAndPassport = [
-    Claim(
-      id: "samplePassport",
-      format: "ldp",
-      jsonObject: [
-        "credentialSchema":
-          [
-            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
-          ],
-        "credentialSubject":
-          [
-            "birth_date": "1974-11-11"
-          ]
-      ]
-    ),
-    Claim(
-      id: "sampleBankAccount",
-      format: "jwt",
-      jsonObject: [
-        "issuer": "did:example:123",
-        "credentialSchema":
-          [
-            "id": "https://bank-standards.example.com/fullaccountroute.json"
-          ]
-      ]
-    )
-  ]
   
   // MARK: - Client meta data by value, Presentation definition by reference
   
@@ -390,28 +336,6 @@ struct TestsConstants {
     return "https://verifier-backend.eudiw.dev/wallet/public-keys.json"
   }
   
-  static let presentationDefinition = PresentationDefinition(
-    id: UUID().uuidString,
-    inputDescriptors: [
-      .init(
-        id: "cred1",
-        name: nil,
-        purpose: nil,
-        formatContainer: nil,
-        constraints: .init(fields: []),
-        groups: nil
-      ),
-      .init(
-        id: "cred2",
-        name: nil,
-        purpose: nil,
-        formatContainer: nil,
-        constraints: .init(fields: []),
-        groups: nil
-      )
-    ]
-  )
-  
   static let signedResponseAlg = "RS256"
   static let encryptedResponseAlg = "RSA-OAEP-256"
   static let encryptedResponseEnc = "A128CBC-HS256"
@@ -480,24 +404,6 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
       bytes = (0 ..< 16).map { _ in UInt8.random(in: UInt8.min ... UInt8.max) }
     }
     return Data(bytes).base64URLEncodedString()
-  }
-  
-  static func presentationSubmission(_ presentationDefinition: PresentationDefinition) -> PresentationSubmission {
-    .init(
-      id: UUID().uuidString,
-      definitionID: presentationDefinition.id,
-      descriptorMap:
-        presentationDefinition.inputDescriptors.filter {
-          $0.formatContainer?.formats.contains(
-            where: { $0["designation"].string?.lowercased() == "mso_mdoc"
-            }) ?? false
-        }.map { DescriptorMap(
-          id: $0.id,
-          format: "mso_mdoc",
-          path: "$"
-        )
-        }
-    )
   }
   
   public static func testVpFormatsSupportedTO() -> VpFormatsSupportedTO {

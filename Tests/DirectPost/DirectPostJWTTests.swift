@@ -295,9 +295,14 @@ final class DirectPostJWTTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        presentationQuery: .byPresentationDefinition(.init(
-          id: "dummy-id",
-          inputDescriptors: [])),
+        presentationQuery: .byDigitalCredentialsQuery(
+          try! .init(credentials: [
+            .init(
+              id: .init(value: "query_0"),
+              format: .init(format: "sd-jwt")
+            )
+          ])
+        ),
         clientMetaData: metaData,
         client: Constants.testClient,
         nonce: Constants.testNonce,
@@ -435,9 +440,14 @@ final class DirectPostJWTTests: DiXCTest {
     let resolved: ResolvedRequestData = .idToken(
       request: .init(
         idTokenType: .attesterSigned,
-        presentationQuery: .byPresentationDefinition(.init(
-          id: "dummy-id",
-          inputDescriptors: [])),
+        presentationQuery: .byDigitalCredentialsQuery(
+          try! .init(credentials: [
+            .init(
+              id: .init(value: "query_0"),
+              format: .init(format: "sd-jwt")
+            )
+          ])
+        ),
         clientMetaData: metaData,
         client: Constants.testClient,
         nonce: Constants.testNonce,
@@ -976,7 +986,11 @@ final class DirectPostJWTTests: DiXCTest {
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
-    let clientId = session["client_id"]!
+    guard let clientId = session["client_id"] else {
+      XCTAssert(false, "Found nil client id")
+      return
+    }
+    
     let transactionId = session["transaction_id"] as! String
     
     overrideDependencies()
@@ -1306,9 +1320,14 @@ final class DirectPostJWTTests: DiXCTest {
     
     let resolved: ResolvedRequestData = .vpToken(
       request: .init(
-        presentationQuery: .byPresentationDefinition(.init(
-          id: "dummy-id",
-          inputDescriptors: [])),
+        presentationQuery: .byDigitalCredentialsQuery(
+          try! .init(credentials: [
+            .init(
+              id: .init(value: "query_0"),
+              format: .init(format: "sd-jwt")
+            )
+          ])
+        ),
         clientMetaData: validatedClientMetaData,
         client: .preRegistered(
           clientId: "https%3A%2F%2Fclient.example.org%2Fcb",
@@ -1326,19 +1345,11 @@ final class DirectPostJWTTests: DiXCTest {
       )
     )
     
-    let submission: PresentationSubmission = .init(
-      id: "psId",
-      definitionID: "psId",
-      descriptorMap: []
-    )
-    let verifiablePresentations: [VerifiablePresentation] = [
-      .generic(TestsConstants.cbor)
-    ]
+    // Obtain consent
     let consent: ClientConsent = .vpToken(
-      vpContent: .presentationExchange(
-        verifiablePresentations: verifiablePresentations,
-        presentationSubmission: submission
-      )
+      vpContent: .dcql(verifiablePresentations: [
+        try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+      ])
     )
     
     let response: AuthorizationResponse = try .init(
