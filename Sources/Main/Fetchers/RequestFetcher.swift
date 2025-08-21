@@ -352,41 +352,48 @@ extension URLRequest {
   /// Values of type [String: Any] or [Any] will be JSON-serialized.
   mutating func setFormURLEncodedBody(_ fields: [String: Any]) throws {
     self.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-    
-    var queryItems: [URLQueryItem] = []
-    
-    for (key, value) in fields {
-      let stringValue: String
-      
+
+    func stringify(_ value: Any) throws -> String {
       switch value {
       case let str as String:
-        stringValue = str
+        return str
       case let num as NSNumber:
-        stringValue = num.stringValue
+        return num.stringValue
       case let bool as Bool:
-        stringValue = bool ? "true" : "false"
+        return bool ? "true" : "false"
       case let dict as [String: Any]:
         let data = try JSONSerialization.data(withJSONObject: dict, options: [])
-        stringValue = String(decoding: data, as: UTF8.self)
+        return String(decoding: data, as: UTF8.self)
       case let array as [Any]:
         let data = try JSONSerialization.data(withJSONObject: array, options: [])
-        stringValue = String(decoding: data, as: UTF8.self)
+        return String(decoding: data, as: UTF8.self)
       default:
-        // fallback
-        stringValue = String(describing: value)
+        return String(describing: value)
       }
-      
-      // Disallow ":" so it becomes %3A
-      let encodeSet = CharacterSet.urlQueryAllowed.subtracting(CharacterSet(charactersIn: ":"))
-      // Pre-encode the value
-      let encodedValue = stringValue.addingPercentEncoding(withAllowedCharacters: encodeSet)
-
-      queryItems.append(URLQueryItem(name: key, value: encodedValue))
     }
-    
-    var components = URLComponents()
-    components.queryItems = queryItems
-    
-    self.httpBody = components.percentEncodedQuery?.data(using: .utf8)
+
+    // Allowed set for x-www-form-urlencoded components (unreserved per RFC 3986)
+    // We intentionally exclude ':', ',', '=', '&', '+' so they are percent-encoded.
+    let unreserved = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~")
+
+    func formEncode(_ s: String) -> String {
+      let encoded = s.addingPercentEncoding(withAllowedCharacters: unreserved) ?? ""
+      // Convert %20 to '+' as per x-www-form-urlencoded
+      return encoded.replacingOccurrences(of: "%20", with: "+")
+    }
+
+    var parts: [String] = []
+    parts.reserveCapacity(fields.count)
+
+    for (key, value) in fields {
+      let rawValue = try stringify(value)
+      let encodedKey = formEncode(key)
+      let encodedValue = formEncode(rawValue)
+      parts.append("\(encodedKey)=\(encodedValue)")
+    }
+
+    let bodyString = parts.joined(separator: "&")
+    self.httpBody = bodyString.data(using: .utf8)
   }
 }
+

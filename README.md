@@ -19,12 +19,31 @@ the [EUDI Wallet Reference Implementation project description](https://github.co
 OpenID4VP is a Protocol that enables the presentation of Verifiable Credentials. It is built on top of OAuth 2.0 and supports multiple credential formats, including W3C Verifiable Credentials Data Model, ISO mdoc, and AnonCreds. This protocol allows for simple, secure, and developer-friendly credential presentation and can be used to support credential presentation and the issuance of access tokens for access to APIs based on Verifiable Credentials in the wallet
 
 This is a swift library that supports 
-the [SIOPv2 (draft 13)](https://openid.github.io/SIOPv2/openid-connect-self-issued-v2-wg-draft.html) 
-and [OpenId4VP (draft 24)](https://openid.net/specs/openid-4-verifiable-presentations-1_0-24.html) protocols.
+[OpenId4VP](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html) protocols.
 In particular, the library focus on the wallet's role using those two protocols with constraints
 included in ISO 23220-4 and ISO-18013-7.
 
 OpenID Connect for Verifiable Presentations (OIDC4VP) and Self-Issued OpenID Provider v2 (SIOP v2) are two specifications that have been approved as OpenID Implementer’s Drafts by the OpenID Foundation membership 1. SIOP v2 is an OpenID specification that allows end-users to act as their own OpenID Providers (OPs). Using Self-Issued OPs, end-users can authenticate themselves and present claims directly to a Relying Party (RP), typically a webapp, without involving a third-party Identity Provider 2. OIDC4VP enables the presentation of Verifiable Credentials using the OpenID Connect protocol.
+
+## Features
+
+| Feature                                                                                                                   | Coverage                                                                                                                               |
+|---------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| Self-Issued OpenID Provider Authorization Requests                                                                        | ✅                                                                                                                                      |
+| Client authentication prefixes                                                                                            | ✅ pre-registered, ✅ redirect_uri, ❌ openid_federation, ✅ decentralized_identifier, ✅ verifier_attestation, ✅ x509_san_dns, ✅ x509_hash |
+| Attestation query dialect                                                                                                 | ✅ DCQL                                                                                                                                 |
+| Signed/encrypted authorization requests (JAR)                                                                             | ✅                                                                                                                                      |
+| Scoped authorization requests                                                                                             | ✅                                                                                                                                      |
+| Request URI Methods                                                                                                       | ✅ GET, ✅ POST                                                                                                                          |
+| Wallet metadata                                                                                                           | ✅                                                                                                                                      |
+| [Dispatch positive and negative responses](#dispatch-authorization-response-to-verifier--rp)                              | ✅                                                                                                                                      |
+| [Dispatch authorization error response to verifier when possible](#dispatch-authorization-error-response-to-verifier--rp) | ✅                                                                                                                                      |
+| Encrypted authorization responses                                                                                         | ✅                                                                                                                                      |
+| Response modes                                                                                                            | ✅ direct_post, ✅ direct_post.jwt, ✅ query, ✅ query.jwt, ✅ fragment, ✅ fragment.jwt                                                     |
+| Transaction Data                                                                                                          | ✅                                                                                                                                      |
+| Verifier Attestation JWT                                                                                                  | ✅                                                                                                                                      |
+| Digital Credential API                                                                                                    | ❌                                                                                                                                      |
+
 
 ## Disclaimer
 

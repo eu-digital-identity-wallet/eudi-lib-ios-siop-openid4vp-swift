@@ -34,7 +34,7 @@ public struct EncryptionRequirementSpecification: Equatable, Sendable {
       throw ValidationError.validationError("Unsupported encryption algorithm \(supportedEncryptionAlgorithm.rawValue)")
     }
 
-    if supportedEncryptionMethod != .A128CBCHS256 {
+    if supportedEncryptionMethod != .A128GCM {
       throw ValidationError.validationError("Unsupported encryption method \(supportedEncryptionMethod.rawValue)")
     }
 
