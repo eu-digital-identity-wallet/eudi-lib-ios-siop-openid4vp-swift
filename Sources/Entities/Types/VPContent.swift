@@ -17,7 +17,9 @@ import Foundation
 import SwiftyJSON
 
 public enum VpContent: Sendable {
-  case dcql(verifiablePresentations: [QueryId: [VerifiablePresentation]])
+  case dcql(verifiablePresentations: [
+    QueryId: [VerifiablePresentation]
+  ])
   
   static func encodeDCQLQuery(
     _ query: [QueryId: [VerifiablePresentation]]

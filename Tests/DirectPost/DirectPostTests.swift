@@ -182,7 +182,7 @@ final class DirectPostTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2FDjQEu5-rp729ygk1qBGiHAJ6A6C9LNo-ikPwPieFqHc_CVsjNlhyth4BHWhYscXCZ-RR2MK1SI0mHrGOxgJlkQ&request_uri_method=post"
+    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2F-_QAM0ONbGS0yWwc1vlEUwan7TAP2o9Rit8zA8ErqRyb2rp0sFKfjUkfl28vwumobKsvD0z615vqsb3AfZHFrQ&request_uri_method=post"
     
     overrideDependencies()
     let result = await sdk.authorize(
@@ -197,6 +197,112 @@ final class DirectPostTests: DiXCTest {
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
           try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+        ])
+      )
+      
+      // Generate a direct post authorisation response
+      let response = try? XCTUnwrap(AuthorizationResponse(
+        resolvedRequest: request,
+        consent: consent,
+        walletOpenId4VPConfig: wallet
+      ), "Expected item to be non-nil")
+      
+      // Dispatch
+      XCTAssertNotNil(response)
+      
+      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
+      switch result {
+      case .accepted:
+        XCTAssert(true)
+      default:
+        XCTAssert(false)
+      }
+    default:
+      XCTExpectFailure()
+      XCTAssert(false)
+    }
+  }
+  
+  func testSDKEndtoEndDirectPostSdJwtVpTokenWithEncryption() async throws {
+    
+    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
+    
+    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
+    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
+    let privateKey = try KeyController.generateECDHPrivateKey()
+    
+    let rsaJWK = try RSAPublicKey(
+      publicKey: rsaPublicKey,
+      additionalParameters: [
+        "use": "sig",
+        "kid": UUID().uuidString,
+        "alg": "RS256"
+      ])
+    
+    let keySet = try WebKeySet(jwk: rsaJWK)
+    
+    let wallet: SiopOpenId4VPConfiguration = .init(
+      subjectSyntaxTypesSupported: [
+        .decentralizedIdentifier,
+        .jwkThumbprint
+      ],
+      preferredSubjectSyntaxType: .jwkThumbprint,
+      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
+      privateKey: privateKey,
+      publicWebKeySet: keySet,
+      supportedClientIdSchemes: [
+        .preregistered(clients: [
+          TestsConstants.testClientId: .init(
+            clientId: TestsConstants.testClientId,
+            legalName: "Verifier",
+            jarSigningAlg: .init(.RS256),
+            jwkSetSource: .fetchByReference(url: publicKeysURL)
+          )
+        ])
+      ],
+      vpFormatsSupported: ClaimFormat.default(),
+      jarConfiguration: .encryptionOption,
+      vpConfiguration: .default(),
+      responseEncryptionConfiguration: .default()
+    )
+    
+    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    /// To get this URL, visit https://dev.verifier.eudiw.dev/
+    /// and  "Request for the entire PID"
+    /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
+    /// Decode the URL online and paste it below in the url variable
+    /// Note:  The url is only valid for one use
+    let url = "#13"
+    
+    overrideDependencies()
+    let result = await sdk.authorize(
+      url: URL(
+        string: url
+      )!
+    )
+    
+    switch result {
+    case .jwt(let request):
+      
+      var presentation: String?
+      switch request {
+      case .vpToken(let request):
+        
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId,
+          nonce: request.nonce,
+          useSha3: false
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
+      // Obtain consent
+      let consent: ClientConsent = .vpToken(
+        vpContent: .dcql(verifiablePresentations: [
+          try QueryId(value: "query_0"): [.generic(presentation!)]
         ])
       )
       

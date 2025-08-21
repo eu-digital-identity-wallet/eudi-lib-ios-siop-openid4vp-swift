@@ -68,7 +68,7 @@ final class DCQLParseTests: XCTestCase {
       "credentials": [
         {
           "id": "eu_europa_ec_eudi_pid_1",
-          "format": "vc+sd-jwt",
+          "format": "dc+sd-jwt",
           "meta": {
             "vct_values": [ "urn:eu.europa.ec.eudi:pid:1" ]
           },
@@ -989,5 +989,7 @@ final class DCQLParseTests: XCTestCase {
         )
       ]
     )
+    
+    XCTAssert(primary == secondary)
   }
 }

@@ -685,7 +685,7 @@ final class DirectPostJWTTests: DiXCTest {
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+          try QueryId(value: "query_0"): [.generic(presentation!)]
         ])
       )
       
@@ -773,7 +773,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "#05"
+    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2F5KFaGjykbMRqgLcomBDekRzN0bJKVYg_HLbDbaMiFDemz6mcU7OZU4AzHCstL0nNvxmY33al9UzkLEEwJOjP7g&request_uri_method=post"
     
     overrideDependencies()
     let result = await sdk.authorize(
@@ -783,11 +783,27 @@ final class DirectPostJWTTests: DiXCTest {
     )
     
     switch result {
-    case .jwt(request: let request):
+    case .jwt(let request):
+      
+      var presentation: String?
+      switch request {
+      case .vpToken(let request):
+        
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.originalClientId,
+          nonce: TestsConstants.testNonce,
+          useSha3: false
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+          try QueryId(value: "query_0"): [.generic(presentation!)]
         ])
       )
       
@@ -931,9 +947,8 @@ final class DirectPostJWTTests: DiXCTest {
         TransactionData.json(
           type: try .init(value: "authorization"),
           credentialIds: [
-            try .init(value: "wa_driver_license")
-          ],
-          hashAlgorithms: [HashAlgorithm.sha256]
+            try .init(value: "query_0")
+          ]
         )
       ]
     )
@@ -1010,11 +1025,9 @@ final class DirectPostJWTTests: DiXCTest {
         let transactionData = request.transactionData!.first
         let type = try! transactionData!.type()
         let credentialId = try! transactionData!.credentialIds().first
-        let hashAlgorithm = try! transactionData!.hashAlgorithms().first
         
         XCTAssertEqual(type.value, "authorization")
-        XCTAssertEqual(credentialId!.value, "wa_driver_license")
-        XCTAssertEqual(hashAlgorithm!.name, "sha-256")
+        XCTAssertEqual(credentialId!.value, "query_0")
         
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
@@ -1030,7 +1043,7 @@ final class DirectPostJWTTests: DiXCTest {
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+          try QueryId(value: "query_0"): [.generic(presentation!)]
         ])
       )
       

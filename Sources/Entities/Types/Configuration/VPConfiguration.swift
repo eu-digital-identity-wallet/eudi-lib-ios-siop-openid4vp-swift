@@ -29,7 +29,10 @@ public struct VPConfiguration: Sendable {
             sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
             kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
           ),
-          .msoMdoc(algorithms: [JWSAlgorithm(.ES256)])
+          .msoMdoc(
+            issuerAuthAlgorithms: [-7],
+            deviceAuthAlgorithms: [-7]
+          )
         ]
       ),
       supportedTransactionDataTypes: [

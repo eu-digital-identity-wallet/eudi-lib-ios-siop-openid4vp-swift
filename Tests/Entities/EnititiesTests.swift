@@ -161,7 +161,10 @@ final class VpFormatsSupportedTests: XCTestCase {
     )
     let jwtVpFormat = VpFormatSupported.jwtVp(algorithms: ["RS256"])
     let ldpVpFormat = VpFormatSupported.ldpVp(proofTypes: ["ProofType1"])
-    let msoMdocFormat = VpFormatSupported.msoMdoc(algorithms: [JWSAlgorithm(.ES256)])
+    let msoMdocFormat = VpFormatSupported.msoMdoc(
+      issuerAuthAlgorithms: [],
+      deviceAuthAlgorithms: []
+    )
 
     let vpFormatsSupported = try VpFormatsSupported(values: [sdJwtFormat, jwtVpFormat, ldpVpFormat, msoMdocFormat])
 
@@ -184,7 +187,7 @@ final class VpFormatsSupportedTests: XCTestCase {
   }
 
   func testFormatNames() {
-    XCTAssertEqual(VpFormatSupported.msoMdoc(algorithms: []).formatName(), .MSO_MDOC)
+    XCTAssertEqual(VpFormatSupported.msoMdoc(issuerAuthAlgorithms: [], deviceAuthAlgorithms: []).formatName(), .MSO_MDOC)
     XCTAssertEqual(VpFormatSupported.sdJwtVc(sdJwtAlgorithms: [], kbJwtAlgorithms: []).formatName(), .SD_JWT_VC)
     XCTAssertEqual(VpFormatSupported.jwtVp(algorithms: []).formatName(), .JWT_VP)
     XCTAssertEqual(VpFormatSupported.ldpVp(proofTypes: []).formatName(), .LDP_VP)
@@ -197,8 +200,8 @@ final class VpFormatsSupportedTests: XCTestCase {
     )
     let json = format.toJSON()
 
-    XCTAssertEqual(json["vc+sd-jwt"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
-    XCTAssertEqual(json["vc+sd-jwt"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["dc+sd-jwt"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["dc+sd-jwt"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
   }
 
   func testVpFormatsToJSON() throws {
@@ -271,14 +274,14 @@ final class VpFormatsSupportedTests: XCTestCase {
       vcSdJwt: VcSdJwtTO(sdJwtAlgorithms: ["ES256"], kdJwtAlgorithms: ["ES256"]),
       jwtVp: JwtVpTO(alg: ["RS256"]),
       ldpVp: LdpVpTO(proofType: ["ProofType"]),
-      msoMdoc: MsoMdocTO(algorithms: ["ES256"])
+      msoMdoc: MsoMdocTO(issuerAuthAlgorithms: [], deviceAuthAlgorithms: [])
     )
 
     let vpFormatsSupported = try VpFormatsSupported(from: to)
 
     XCTAssertEqual(vpFormatsSupported?.values.count, 4)
     XCTAssertTrue(vpFormatsSupported?.contains(.jwtVp(algorithms: ["RS256"])) ?? false)
-    XCTAssertTrue(vpFormatsSupported?.contains(.msoMdoc(algorithms: [.init(.ES256)])) ?? false)
+    XCTAssertTrue(vpFormatsSupported?.contains(.msoMdoc(issuerAuthAlgorithms: [], deviceAuthAlgorithms: [])) ?? false)
   }
 
   func testVpFormatsSupportedIntersectWithCommonElements() throws {
@@ -357,7 +360,7 @@ class WalletMetaDataTests: XCTestCase {
       cfg: walletConfiguration
     )
 
-    XCTAssertEqual(json["request_object_signing_alg_values_supported"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["request_object_signing_alg_values_supported"].arrayValue.map { $0.stringValue }, ["ECDH-ES"])
     XCTAssertEqual(json["presentation_definition_uri_supported"].boolValue, true)
     XCTAssertEqual(json["vp_formats_supported"].dictionaryValue.count, 2)
     XCTAssertEqual(json["client_id_schemes_supported"].arrayValue.map { $0.stringValue }, ["pre-registered"])

@@ -35,7 +35,7 @@ public struct VpFormatsSupportedTO: Codable, Equatable, Sendable {
   }
 
   enum CodingKeys: String, CodingKey {
-    case vcSdJwt = "vc+sd-jwt"
+    case vcSdJwt = "dc+sd-jwt"
     case jwtVp = "jwt_vp"
     case ldpVp = "ldp_vp"
     case msoMdoc = "mso_mdoc"
@@ -61,16 +61,20 @@ public struct VcSdJwtTO: Codable, Equatable, Sendable {
 }
 
 public struct MsoMdocTO: Codable, Equatable, Sendable {
-  public let algorithms: [String]?
-
+  public let issuerAuthAlgorithms: [CoseAlgorithm]?
+  public let deviceAuthAlgorithms: [CoseAlgorithm]?
+  
   enum CodingKeys: String, CodingKey {
-    case algorithms = "alg"
+    case issuerAuthAlgorithms = "issuerauth_alg_values"
+    case deviceAuthAlgorithms = "deviceauth_alg_values"
   }
 
   public init(
-    algorithms: [String]?
+    issuerAuthAlgorithms: [CoseAlgorithm]?,
+    deviceAuthAlgorithms: [CoseAlgorithm]?
   ) {
-    self.algorithms = algorithms
+    self.issuerAuthAlgorithms = issuerAuthAlgorithms
+    self.deviceAuthAlgorithms = deviceAuthAlgorithms
   }
 }
 
@@ -101,7 +105,8 @@ public enum VpFormatSupported: Equatable, Sendable {
     kbJwtAlgorithms: [JWSAlgorithm]
   )
   case msoMdoc(
-    algorithms: [JWSAlgorithm]
+    issuerAuthAlgorithms: [CoseAlgorithm]?,
+    deviceAuthAlgorithms: [CoseAlgorithm]?
   )
   case jwtVp(algorithms: [String])
   case ldpVp(proofTypes: [String])
@@ -122,15 +127,12 @@ public enum VpFormatSupported: Equatable, Sendable {
   }
 
   public static func createMsoMdoc(
-    algorithms: [JWSAlgorithm]
+    issuerAuthAlgorithms: [CoseAlgorithm]?,
+    deviceAuthAlgorithms: [CoseAlgorithm]?
   ) throws -> VpFormatSupported {
-
-    guard !algorithms.isEmpty else {
-      throw ValidationError.validationError("MSO MDOC algorithms cannot be empty")
-    }
-
-    return .msoMdoc(
-      algorithms: algorithms
+    .msoMdoc(
+      issuerAuthAlgorithms: issuerAuthAlgorithms,
+      deviceAuthAlgorithms: deviceAuthAlgorithms
     )
   }
 }
@@ -169,7 +171,8 @@ public struct VpFormatsSupported: Equatable, Sendable {
         kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
       ),
       .msoMdoc(
-        algorithms: [JWSAlgorithm(.ES256)]
+        issuerAuthAlgorithms: [-7],
+        deviceAuthAlgorithms: [-7]
       )
     ])
   }
@@ -263,9 +266,9 @@ public extension VpFormatsSupported {
     }
 
     if let msoMdoc = to.msoMdoc {
-      let algorithms = msoMdoc.algorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
       let msoMdocFormat = VpFormatSupported.msoMdoc(
-        algorithms: algorithms
+        issuerAuthAlgorithms: msoMdoc.issuerAuthAlgorithms,
+        deviceAuthAlgorithms: msoMdoc.deviceAuthAlgorithms
       )
       formats.append(msoMdocFormat)
     }
@@ -307,9 +310,9 @@ public extension VpFormatsSupported {
 
       // Add msoMdoc if it exists
       if let msoMdoc = to.msoMdoc {
-        let algorithms = msoMdoc.algorithms?.compactMap { JWSAlgorithm(name: $0) } ?? []
         let msoMdocFormat = VpFormatSupported.msoMdoc(
-          algorithms: algorithms
+          issuerAuthAlgorithms: msoMdoc.issuerAuthAlgorithms,
+          deviceAuthAlgorithms: msoMdoc.deviceAuthAlgorithms
         )
         formats.append(msoMdocFormat)
       }
@@ -352,14 +355,18 @@ extension VpFormatSupported {
   func toJSON() -> JSON {
     switch self {
     case .sdJwtVc(let sdJwtAlgorithms, let kbJwtAlgorithms):
-      return JSON(["vc+sd-jwt": [
+      return JSON(["dc+sd-jwt": [
         "sd-jwt_alg_values": sdJwtAlgorithms.map { $0.name },
         "kb-jwt_alg_values": kbJwtAlgorithms.map { $0.name }
       ]]
       )
-    case .msoMdoc(let algorithms):
+    case .msoMdoc(
+      let issuerAuthAlgorithms,
+      let deviceAuthAlgorithms
+    ):
       return JSON(["mso_mdoc": [
-        "alg": algorithms.map { $0.name }
+        "issuerauth_alg_values": issuerAuthAlgorithms,
+        "deviceauth_alg_values": deviceAuthAlgorithms
       ]
                   ])
 

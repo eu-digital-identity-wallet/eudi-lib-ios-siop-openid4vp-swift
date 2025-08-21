@@ -25,7 +25,7 @@ class VpContentTests: XCTestCase {
 
     let result = VpContent.encodeDCQLQuery([queryId: [presentation]])
 
-    XCTAssertEqual(result["query1"]?.stringValue, "123")
+    XCTAssertEqual(result["query1"]?.arrayValue.first, "123")
   }
 
   func testEncodeDCQLQueryWithJsonPresentation() throws {
@@ -36,8 +36,8 @@ class VpContentTests: XCTestCase {
 
     let result = VpContent.encodeDCQLQuery([queryId: [presentation]])
 
-    XCTAssertEqual(result["query2"]?["id"].stringValue, "456")
-    XCTAssertEqual(result["query2"]?["type"].stringValue, "JsonTest")
+    XCTAssertEqual(result["query2"]?.array?.first?["id"].stringValue, "456")
+    XCTAssertEqual(result["query2"]?.array?.first?["type"].stringValue, "JsonTest")
   }
 
   func testEncodeDCQLQueryWithMultiplePresentations() throws {
@@ -54,7 +54,7 @@ class VpContentTests: XCTestCase {
 
     let result = VpContent.encodeDCQLQuery(query)
 
-    XCTAssertEqual(result["q1"]?.stringValue, "John")
-    XCTAssertEqual(result["q2"]?["age"].stringValue, "13")
+    XCTAssertEqual(result["q1"]?.array?.first?.stringValue, "John")
+    XCTAssertEqual(result["q2"]?.array?.first?["age"].stringValue, "13")
   }
 }

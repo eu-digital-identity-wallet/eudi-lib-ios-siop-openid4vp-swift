@@ -18,15 +18,15 @@ import JOSESwift
 import SwiftyJSON
 
 internal actor RequestFetcher {
-
+  
   let config: SiopOpenId4VPConfiguration
-
+  
   init(config: SiopOpenId4VPConfiguration) {
     self.config = config
   }
-
+  
   func fetchRequest(request: UnvalidatedRequest) async throws -> FetchedRequest {
-
+    
     switch request {
     case .plain(let object):
       return .plain(requestObject: object)
@@ -41,7 +41,7 @@ internal actor RequestFetcher {
       return .jwtSecured(clientId: clientId, jwt: jwt)
     }
   }
-
+  
   private func fetchJwt(
     clientId: String,
     jwtURI: URL,
@@ -55,7 +55,7 @@ internal actor RequestFetcher {
       clientId: clientId
     ).jwt
   }
-
+  
   private func getJWT(
     requestUriMethod: RequestUriMethod = .GET,
     config: SiopOpenId4VPConfiguration?,
@@ -78,7 +78,7 @@ internal actor RequestFetcher {
       return (jwt, nonce)
     }
   }
-
+  
   private func getJwtViaGET(
     config: SiopOpenId4VPConfiguration?,
     requestUrl: URL
@@ -90,7 +90,7 @@ internal actor RequestFetcher {
       requestUrl: requestUrl
     )
   }
-
+  
   fileprivate struct ResultType: Codable {}
   fileprivate func getJwtString(
     fetcher: Fetcher<ResultType> = Fetcher(),
@@ -103,7 +103,7 @@ internal actor RequestFetcher {
     case .failure: throw ValidationError.invalidJwtPayload
     }
   }
-
+  
   private func getJwtViaPOST(
     config: SiopOpenId4VPConfiguration?,
     requestUrl: URL,
@@ -112,86 +112,97 @@ internal actor RequestFetcher {
     guard let supportedMethods = config?.jarConfiguration.supportedRequestUriMethods else {
       throw AuthorizationError.invalidRequestUriMethod
     }
-
+    
     guard let options = supportedMethods.isPostSupported() else {
       throw AuthorizationError.invalidRequestUriMethod
     }
-
+    
     let isNotRequired = options.jarEncryption.isNotRequired
     let nonce = try generateNonce(from: options)
     let keys: (key: SecKey, jwk: ECPrivateKey)? = !isNotRequired ? (try? generateKeysIfNeeded(
       for: supportedMethods
     )) : nil
-
+    
     let walletMetadata = generateWalletMetadataIfNeeded(
       config: config,
       key: keys?.key,
       include: options.includeWalletMetadata
     )
-
+    
     let jwt = try await postJwtString(
       walletMetaData: walletMetadata,
       nonce: nonce,
       requestUrl: requestUrl
     )
-
+    
     let finalJwt = try decryptIfNeeded(
       jwt: jwt,
       keyManagementAlgorithm: config?.jarConfiguration.supportedEncryption?.supportedEncryptionAlgorithm,
       contentEncryptionAlgorithm: config?.jarConfiguration.supportedEncryption?.supportedEncryptionMethod,
       keys: keys
     )
-
+    
     try config?.ensureValid(
       expectedClient: clientId,
       expectedWalletNonce: nonce,
       jwt: finalJwt
     )
-
+    
     return (finalJwt, nonce)
   }
-
+  
   fileprivate func postJwtString(
     poster: Poster = Poster(),
     walletMetaData: JSON?,
     nonce: String?,
     requestUrl: URL
   ) async throws -> String {
-
+    
     // Building a combined JSON object
     var combined: [String: Any] = [:]
-    if let walletMetaData = walletMetaData {
-      combined[Constants.WALLET_METADATA_FORM_PARAM] = walletMetaData.dictionaryObject?.toJSONString()
+    
+    guard let walletMetaData = walletMetaData else {
+      throw ValidationError.validationError("Invalid wallet metadata")
     }
-
+    
+    if let metaData = walletMetaData.dictionaryObject?.toJSONData() {
+      let metadataString = String(decoding: metaData, as: UTF8.self)
+      combined[Constants.WALLET_METADATA_FORM_PARAM] = metadataString
+    }
+    
     // Convert nonce to JSON and add to combined JSON
     if let nonce = nonce {
       combined[Constants.WALLET_NONCE_FORM_PARAM] = nonce
     }
-
-    let post = VerifierFormPost(
-      additionalHeaders: ["Content-Type": ContentType.form.rawValue],
-      url: requestUrl,
-      formData: combined
+    
+    var request = URLRequest(url: requestUrl)
+    request.httpMethod = "POST"
+    try request.setFormURLEncodedBody(
+      (walletMetaData.dictionaryObject ?? [:])
     )
-
+    
+    request.allHTTPHeaderFields = [
+      "Content-Type": ContentType.form.rawValue
+    ]
+    
     let jwtResult: Result<String, PostError> = await poster.postString(
-      request: post.urlRequest
+      request: request
     )
+    
     switch jwtResult {
     case .success(let string):
       return try extractJWT(string)
     case .failure: throw ValidationError.invalidJwtPayload
     }
   }
-
+  
   private func generateNonce(from options: PostOptions) throws -> String? {
     return switch options.useWalletNonce {
     case .doNotUse: nil
     case .use(let byteLength): try NonceGenerator.generate(length: byteLength)
     }
   }
-
+  
   private func generateKeysIfNeeded(
     for method: SupportedRequestUriMethod
   ) throws -> (key: SecKey, jwk: ECPrivateKey)? {
@@ -204,7 +215,7 @@ internal actor RequestFetcher {
     let jwk = try ECPrivateKey(privateKey: key)
     return (key, jwk)
   }
-
+  
   private func generateWalletMetadataIfNeeded(
     config: SiopOpenId4VPConfiguration?,
     key: SecKey?,
@@ -213,7 +224,7 @@ internal actor RequestFetcher {
     guard include, let config else { return nil }
     return walletMetaData(cfg: config, key: key)
   }
-
+  
   private func decryptIfNeeded(
     jwt: String,
     keyManagementAlgorithm: KeyManagementAlgorithm?,
@@ -223,29 +234,33 @@ internal actor RequestFetcher {
     guard let jwk = keys?.jwk else {
       return jwt
     }
-
+    
     guard let keyManagementAlgorithm, let contentEncryptionAlgorithm else {
       throw AuthorizationError.invalidAlgorithms
     }
-
-    let encryptedJwe = try JWE(compactSerialization: jwt)
-    guard let decrypter = Decrypter(
-      keyManagementAlgorithm: keyManagementAlgorithm,
-      contentEncryptionAlgorithm: contentEncryptionAlgorithm,
-      decryptionKey: jwk
-    ) else {
-      throw AuthorizationError.jwtDecryptionFailed
+    
+    do {
+      let encryptedJwe = try JWE(compactSerialization: jwt)
+      guard let decrypter = Decrypter(
+        keyManagementAlgorithm: keyManagementAlgorithm,
+        contentEncryptionAlgorithm: contentEncryptionAlgorithm,
+        decryptionKey: jwk
+      ) else {
+        throw AuthorizationError.jwtDecryptionFailed
+      }
+      
+      let payloadData = try encryptedJwe.decrypt(using: decrypter).data()
+      guard let decoded = payloadData.base64EncodedString().base64Decoded(),
+            let jwtString = String(data: decoded, encoding: .utf8) else {
+        throw AuthorizationError.jwtDecryptionFailed
+      }
+      
+      return jwtString
+    } catch {
+      return jwt
     }
-
-    let payloadData = try encryptedJwe.decrypt(using: decrypter).data()
-    guard let decoded = payloadData.base64EncodedString().base64Decoded(),
-          let jwtString = String(data: decoded, encoding: .utf8) else {
-      throw AuthorizationError.jwtDecryptionFailed
-    }
-
-    return jwtString
   }
-
+  
   /// Extracts the JWT token from a given JSON string or JWT string.
   /// - Parameter string: The input string containing either a JSON object with a JWT field or a JWT string.
   /// - Returns: The extracted JWT token.
@@ -269,67 +284,109 @@ internal actor RequestFetcher {
 }
 
 internal extension SiopOpenId4VPConfiguration {
-
+  
   func ensureValid(
     expectedClient: String?,
     expectedWalletNonce: String?,
     jwt: JWTString
   ) throws {
-
+    
     let jws = try JWS(compactSerialization: jwt)
-
+    
     guard let expectedClient = expectedClient else {
       throw ValidationError.validationError("expectedClient should not be nil")
     }
-
+    
     guard let jwsClientID = getValueForKey(
       from: jwt,
       key: "client_id"
     ) as? String else {
       throw ValidationError.validationError("client_id should not be nil")
     }
-
+    
     let id = try? VerifierId.parse(clientId: jwsClientID).get()
     let expectedId = try? VerifierId.parse(clientId: expectedClient).get()
     guard id?.originalClientId == expectedId?.originalClientId else {
       throw ValidationError.validationError("client_id's do not match")
     }
-
-    if expectedWalletNonce != nil {
-      guard let jwsNonce = getValueForKey(
-        from: jwt,
-        key: Constants.WALLET_NONCE_FORM_PARAM
-      ) as? String else {
-        throw ValidationError.validationError("nonce should not be nil")
-      }
-
+    
+    if expectedWalletNonce != nil, let jwsNonce = getValueForKey(
+      from: jwt,
+      key: Constants.WALLET_NONCE_FORM_PARAM
+    ) as? String {
+      
       guard jwsNonce == expectedWalletNonce else {
         throw ValidationError.validationError("nonce's do not match")
       }
     }
-
+    
     guard let algorithm = jws.header.algorithm else {
       throw ValidationError.validationError("algorithm should not be nil")
     }
-
+    
     guard jarConfiguration.supportedAlgorithms.contains(where: { $0.name == algorithm.rawValue }) else {
       throw ValidationError.validationError("nonce's do not match")
     }
   }
-
+  
   func getValueForKey(from jwtString: String, key: String) -> Any? {
     do {
       let jwt = try JWS(compactSerialization: jwtString)
       let payloadData = jwt.payload.data()
-
+      
       let jsonObject = try JSONSerialization.jsonObject(with: payloadData, options: [])
       guard let payloadDict = jsonObject as? [String: Any] else {
         return nil
       }
       return payloadDict[key]
-
+      
     } catch {
       return nil
     }
+  }
+}
+
+extension URLRequest {
+  /// Sets the body as application/x-www-form-urlencoded from key/value pairs.
+  /// Values of type String/Int/Bool will be stringified.
+  /// Values of type [String: Any] or [Any] will be JSON-serialized.
+  mutating func setFormURLEncodedBody(_ fields: [String: Any]) throws {
+    self.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+    
+    var queryItems: [URLQueryItem] = []
+    
+    for (key, value) in fields {
+      let stringValue: String
+      
+      switch value {
+      case let str as String:
+        stringValue = str
+      case let num as NSNumber:
+        stringValue = num.stringValue
+      case let bool as Bool:
+        stringValue = bool ? "true" : "false"
+      case let dict as [String: Any]:
+        let data = try JSONSerialization.data(withJSONObject: dict, options: [])
+        stringValue = String(decoding: data, as: UTF8.self)
+      case let array as [Any]:
+        let data = try JSONSerialization.data(withJSONObject: array, options: [])
+        stringValue = String(decoding: data, as: UTF8.self)
+      default:
+        // fallback
+        stringValue = String(describing: value)
+      }
+      
+      // Disallow ":" so it becomes %3A
+      let encodeSet = CharacterSet.urlQueryAllowed.subtracting(CharacterSet(charactersIn: ":"))
+      // Pre-encode the value
+      let encodedValue = stringValue.addingPercentEncoding(withAllowedCharacters: encodeSet)
+
+      queryItems.append(URLQueryItem(name: key, value: encodedValue))
+    }
+    
+    var components = URLComponents()
+    components.queryItems = queryItems
+    
+    self.httpBody = components.percentEncodedQuery?.data(using: .utf8)
   }
 }
