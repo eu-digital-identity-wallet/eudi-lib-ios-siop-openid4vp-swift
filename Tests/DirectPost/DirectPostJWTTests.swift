@@ -1032,7 +1032,7 @@ final class DirectPostJWTTests: DiXCTest {
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
           clientID: request.client.id.originalClientId,
-          nonce: TestsConstants.testNonce,
+          nonce: request.nonce,
           useSha3: false
         )
         
@@ -1043,7 +1043,9 @@ final class DirectPostJWTTests: DiXCTest {
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): [.generic(presentation!)]
+          try QueryId(value: "query_0"): [
+            .generic(presentation!)
+          ]
         ])
       )
       
