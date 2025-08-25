@@ -168,7 +168,10 @@ final class DirectPostTests: DiXCTest {
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
           )
-        ])
+        ]),
+        .x509SanDns(trust: { _ in
+          return true
+        })
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .encryptionOption,
