@@ -177,9 +177,7 @@ internal actor RequestFetcher {
     
     var request = URLRequest(url: requestUrl)
     request.httpMethod = "POST"
-    try request.setFormURLEncodedBody(
-      (walletMetaData.dictionaryObject ?? [:])
-    )
+    try request.setFormURLEncodedBody(combined)
     
     request.allHTTPHeaderFields = [
       "Content-Type": ContentType.form.rawValue
