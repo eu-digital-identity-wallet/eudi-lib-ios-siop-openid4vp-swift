@@ -28,12 +28,8 @@ public func walletMetaData(
     cfg.jarConfiguration.supportedAlgorithms.map { $0.name }
   )
 
-  json[PRESENTATION_DEFINITION_URI_SUPPORTED] = JSON(
-    cfg.vpConfiguration.presentationDefinitionUriSupported
-  )
-
   json[VP_FORMATS_SUPPORTED] = cfg.vpConfiguration.vpFormatsSupported.toJSON()["vp_formats_supported"]
-  json[CLIENT_ID_SCHEMES_SUPPORTED] = JSON(
+  json[CLIENT_ID_PREFIXES_SUPPORTED] = JSON(
     cfg.supportedClientIdSchemes.map { $0.name }
   )
 
@@ -79,6 +75,7 @@ private let AUTHORIZATION_ENCRYPTION_ALG_VALUES_SUPPORTED = "authorization_encry
 private let AUTHORIZATION_ENCRYPTION_ENC_VALUES_SUPPORTED = "authorization_encryption_enc_values_supported"
 private let PRESENTATION_DEFINITION_URI_SUPPORTED = "presentation_definition_uri_supported"
 private let CLIENT_ID_SCHEMES_SUPPORTED = "client_id_schemes_supported"
+private let CLIENT_ID_PREFIXES_SUPPORTED = "client_id_prefixes_supported"
 private let VP_FORMATS_SUPPORTED = "vp_formats_supported"
 private let RESPONSE_TYPES_SUPPORTED = "response_types_supported"
 private let RESPONSE_MODES_SUPPORTED = "response_modes_supported"
