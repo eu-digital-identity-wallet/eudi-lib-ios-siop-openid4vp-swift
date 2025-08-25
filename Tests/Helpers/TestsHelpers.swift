@@ -64,6 +64,7 @@ class TestsHelpers {
 
   static func getDirectPostJwtSession(
     nonce: String,
+    format: String = "mso_mdoc",
     transactionData: JSON
   ) async throws -> [String: Any] {
 
@@ -84,7 +85,7 @@ class TestsHelpers {
         "credentials": [
           [
             "id": "query_0",
-              "format": "mso_mdoc",
+              "format": format,
               "meta": [
                 "doctype_value": "eu.europa.ec.eudi.pid.1"
               ]

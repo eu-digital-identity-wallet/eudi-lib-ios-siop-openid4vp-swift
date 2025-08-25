@@ -943,6 +943,7 @@ final class DirectPostJWTTests: DiXCTest {
     let nonce = TestsConstants.testNonce
     let session = try? await TestsHelpers.getDirectPostJwtSession(
       nonce: nonce,
+      format: "dc+sd-jwt",
       transactionData: [
         TransactionData.json(
           type: try .init(value: "authorization"),
