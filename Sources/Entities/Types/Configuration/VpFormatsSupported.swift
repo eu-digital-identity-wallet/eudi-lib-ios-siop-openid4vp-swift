@@ -161,7 +161,7 @@ public extension VpFormatSupported {
 
 public struct VpFormatsSupported: Equatable, Sendable {
 
-  static let vpFormatsSupported = "vp_formats_supported"
+  public static let vpFormatsSupported = "vp_formats_supported"
   public let values: [VpFormatSupported]
 
   public static func `default`() throws -> VpFormatsSupported {
