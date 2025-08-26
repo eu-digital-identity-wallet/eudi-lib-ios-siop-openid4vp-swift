@@ -218,7 +218,7 @@ final class VpFormatsSupportedTests: XCTestCase {
     let jsonString = """
     {
        "vp_formats_supported": {
-              "vc+sd-jwt": {
+              "dc+sd-jwt": {
                   "sd-jwt_alg_values": [
                       "ES256"
                   ],
