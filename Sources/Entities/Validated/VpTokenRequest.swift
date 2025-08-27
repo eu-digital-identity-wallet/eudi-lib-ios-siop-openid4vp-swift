@@ -27,9 +27,9 @@ extension ValidatedRequestData {
     let responseMode: ResponseMode?
     let requestUriMethod: RequestUriMethod
     let state: String?
-    let vpFormats: VpFormats
+    let vpFormatsSupported: VpFormatsSupported
     let transactionData: [String]?
-    let verifierAttestations: [VerifierAttestation]?
+    let verifierInfo: [VerifierInfo]?
 
     public init(
       querySource: QuerySource,
@@ -40,9 +40,9 @@ extension ValidatedRequestData {
       responseMode: ResponseMode?,
       requestUriMethod: RequestUriMethod,
       state: String?,
-      vpFormats: VpFormats,
+      vpFormatsSupported: VpFormatsSupported,
       transactionData: [String]?,
-      verifierAttestations: [VerifierAttestation]?
+      verifierInfo: [VerifierInfo]?
     ) {
       self.querySource = querySource
       self.clientMetaDataSource = clientMetaDataSource
@@ -52,9 +52,9 @@ extension ValidatedRequestData {
       self.responseMode = responseMode
       self.requestUriMethod = requestUriMethod
       self.state = state
-      self.vpFormats = vpFormats
+      self.vpFormatsSupported = vpFormatsSupported
       self.transactionData = transactionData
-      self.verifierAttestations = verifierAttestations
+      self.verifierInfo = verifierInfo
     }
   }
 }
