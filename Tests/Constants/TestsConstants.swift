@@ -617,3 +617,71 @@ func createECPrivateSecKey(xStr: String, yStr: String, dStr: String) -> SecKey? 
   
   return keyReference
 }
+
+func secKeyFromRSAJWK(_ nBase64: String) throws -> SecKey {
+
+  let eBase64 = "AQAB"
+  guard
+    let nData = Data(base64URLEncoded: nBase64),
+    let eData = Data(base64URLEncoded: eBase64)
+  else {
+    throw NSError(
+      domain: "InvalidBase64",
+      code: 8,
+      userInfo: [NSLocalizedDescriptionKey: "Failed to decode n or e"]
+    )
+  }
+  
+  let rsaKeyData = try encodeRSAPublicKey(modulus: nData, exponent: eData)
+  
+  let attributes: [String: Any] = [
+    kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
+    kSecAttrKeyClass as String: kSecAttrKeyClassPublic,
+    kSecAttrKeySizeInBits as String: nData.count * 8
+  ]
+  
+  guard let secKey = SecKeyCreateWithData(
+    rsaKeyData as CFData,
+    attributes as CFDictionary,
+    nil
+  ) else {
+    throw NSError(
+      domain: "SecKeyCreationFailed",
+      code: 9,
+      userInfo: [NSLocalizedDescriptionKey: "Failed to create RSA SecKey"]
+    )
+  }
+  return secKey
+}
+
+func encodeRSAPublicKey(
+  modulus: Data,
+  exponent: Data
+) throws -> Data {
+  
+  let modulusBytes = modulus.bytes
+  let exponentBytes = exponent.bytes
+  
+  let modulusWithLeadingZero = modulusBytes[0] >= 0x80 ? [0x00] + modulusBytes : modulusBytes
+  let exponentWithLeadingZero = exponentBytes[0] >= 0x80 ? [0x00] + exponentBytes : exponentBytes
+  
+  let modulusLength = encodeASN1Length(modulusWithLeadingZero.count)
+  let exponentLength = encodeASN1Length(exponentWithLeadingZero.count)
+  
+  let sequenceLength = encodeASN1Length(1 + modulusLength.count + modulusWithLeadingZero.count + 1 + exponentLength.count + exponentWithLeadingZero.count)
+  
+  let first: [UInt8] = [0x30] + sequenceLength
+  let second: [UInt8] = [0x02] + modulusLength + modulusWithLeadingZero
+  let third: [UInt8] = [0x02] + exponentLength + exponentWithLeadingZero
+  return Data(first + second + third)
+}
+
+// MARK: - ASN.1 Encoding Helpers
+func encodeASN1Length(_ length: Int) -> [UInt8] {
+  if length < 0x80 {
+    return [UInt8(length)]
+  } else {
+    let lengthBytes = withUnsafeBytes(of: length.bigEndian, Array.init).drop { $0 == 0 }
+    return [0x80 | UInt8(lengthBytes.count)] + lengthBytes
+  }
+}

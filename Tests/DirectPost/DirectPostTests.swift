@@ -40,7 +40,8 @@ final class DirectPostTests: DiXCTest {
           try! .init(credentials: [
             .init(
               id: .init(value: "query_0"),
-              format: .init(format: "sd-jwt")
+              format: .init(format: "sd-jwt"),
+              meta: [:]
             )
           ])
         ),
@@ -87,7 +88,8 @@ final class DirectPostTests: DiXCTest {
           try! .init(credentials: [
             .init(
               id: .init(value: "query_0"),
-              format: .init(format: "sd-jwt")
+              format: .init(format: "sd-jwt"),
+              meta: [:]
             )
           ])
         ),
