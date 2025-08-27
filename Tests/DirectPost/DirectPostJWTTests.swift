@@ -606,7 +606,8 @@ final class DirectPostJWTTests: DiXCTest {
     
     let nonce = TestsConstants.testNonce
     let session = try? await TestsHelpers.getDirectPostJwtSession(
-      nonce: nonce
+      nonce: nonce,
+      format: "dc+sd-jwt"
     )
     
     guard let session = session else {
@@ -775,7 +776,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "eudi-openid4vp://?client_id=x509_san_dns%3Adev.verifier-backend.eudiw.dev&request_uri=https%3A%2F%2Fdev.verifier-backend.eudiw.dev%2Fwallet%2Frequest.jwt%2F5KFaGjykbMRqgLcomBDekRzN0bJKVYg_HLbDbaMiFDemz6mcU7OZU4AzHCstL0nNvxmY33al9UzkLEEwJOjP7g&request_uri_method=post"
+    let url = "#05"
     
     overrideDependencies()
     let result = await sdk.authorize(
@@ -1647,7 +1648,7 @@ final class DirectPostJWTTests: DiXCTest {
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
-    let url = "#09"
+    let url = "#14"
     
     overrideDependencies()
     let result = await sdk.authorize(

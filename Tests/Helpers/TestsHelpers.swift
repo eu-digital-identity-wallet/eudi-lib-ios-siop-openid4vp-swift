@@ -103,7 +103,8 @@ class TestsHelpers {
   }
 
   static func getDirectPostJwtSession(
-    nonce: String
+    nonce: String,
+    format: String = "mso_mdoc"
   ) async throws -> [String: Any] {
 
     // Replace this URL with the endpoint you want to send the POST request to
@@ -122,7 +123,7 @@ class TestsHelpers {
         "credentials": [
           [
             "id": "query_0",
-              "format": "mso_mdoc",
+              "format": format,
               "meta": [
                 "doctype_value": "eu.europa.ec.eudi.pid.1"
               ]
