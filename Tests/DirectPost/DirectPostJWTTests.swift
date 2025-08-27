@@ -795,7 +795,7 @@ final class DirectPostJWTTests: DiXCTest {
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
           clientID: request.client.id.originalClientId,
-          nonce: TestsConstants.testNonce,
+          nonce: request.nonce,
           useSha3: false
         )
         
