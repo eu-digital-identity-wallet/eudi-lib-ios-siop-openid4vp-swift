@@ -35,7 +35,7 @@ public struct VpFormatsSupportedTO: Codable, Equatable, Sendable {
   }
 
   enum CodingKeys: String, CodingKey {
-    case vcSdJwt = "vc+sd-jwt"
+    case vcSdJwt = "dc+sd-jwt"
     case jwtVp = "jwt_vp"
     case ldpVp = "ldp_vp"
     case msoMdoc = "mso_mdoc"
@@ -352,7 +352,7 @@ extension VpFormatSupported {
   func toJSON() -> JSON {
     switch self {
     case .sdJwtVc(let sdJwtAlgorithms, let kbJwtAlgorithms):
-      return JSON(["vc+sd-jwt": [
+      return JSON(["dc+sd-jwt": [
         "sd-jwt_alg_values": sdJwtAlgorithms.map { $0.name },
         "kb-jwt_alg_values": kbJwtAlgorithms.map { $0.name }
       ]]

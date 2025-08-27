@@ -105,9 +105,10 @@ final class VerifierAttestationTests: XCTestCase {
     let queryId = try QueryId(value: "cred-1")
     let format = try Format(format: "jwt")
 
-    let credential = CredentialQuery(
+    let credential = try CredentialQuery(
       id: queryId,
-      format: format
+      format: format,
+      meta: [:]
     )
 
     let attestation = VerifierInfo(
@@ -131,9 +132,10 @@ final class VerifierAttestationTests: XCTestCase {
     let queryId = try QueryId(value: "cred-1")
     let format = try Format(format: "jwt")
 
-    let credential = CredentialQuery(
+    let credential = try CredentialQuery(
       id: queryId,
-      format: format
+      format: format,
+      meta: [:]
     )
 
     let query = PresentationQuery.byDigitalCredentialsQuery(
@@ -151,7 +153,8 @@ final class VerifierAttestationTests: XCTestCase {
   func testEmptyCredentialIdsShouldPass() throws {
     let credential = try CredentialQuery(
       id: QueryId(value: "cred-a"),
-      format: try Format(format: "jwt")
+      format: try Format(format: "jwt"),
+      meta: [:]
     )
 
     let attestation = VerifierInfo(
@@ -176,9 +179,10 @@ final class VerifierAttestationTests: XCTestCase {
     let validId = try QueryId(value: "cred-1")
     let invalidId = try QueryId(value: "nonexistent")
 
-    let credential = CredentialQuery(
+    let credential = try CredentialQuery(
       id: validId,
-      format: try Format(format: "jwt")
+      format: try Format(format: "jwt"),
+      meta: [:]
     )
 
     let attestation = VerifierInfo(

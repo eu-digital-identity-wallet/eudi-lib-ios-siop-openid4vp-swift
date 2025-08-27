@@ -67,8 +67,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       responseMode: responseMode,
       state: state,
       scope: scope,
-      vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!,
-      verifierAttestations: attestations
+      vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!
     )
 
     XCTAssertEqual(tokenData.idTokenType, idTokenType)
@@ -257,8 +256,8 @@ final class VpFormatsSupportedTests: XCTestCase {
     )
     let json = format.toJSON()
 
-    XCTAssertEqual(json["vc+sd-jwt"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
-    XCTAssertEqual(json["vc+sd-jwt"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["dc+sd-jwt"]["sd-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
+    XCTAssertEqual(json["dc+sd-jwt"]["kb-jwt_alg_values"].arrayValue.map { $0.stringValue }, ["ES256"])
   }
 
   func testVpFormatsToJSON() throws {
@@ -275,7 +274,7 @@ final class VpFormatsSupportedTests: XCTestCase {
     let jsonString = """
     {
        "vp_formats_supported": {
-              "vc+sd-jwt": {
+              "dc+sd-jwt": {
                   "sd-jwt_alg_values": [
                       "ES256"
                   ],

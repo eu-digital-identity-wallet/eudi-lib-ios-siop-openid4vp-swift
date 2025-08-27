@@ -263,3 +263,20 @@ internal struct JsonHelper {
     return json?.array
   }
 }
+
+public extension UnvalidatedRequestObject {
+  
+  func validate(
+    against dcql: DCQL,
+    walletSupportsVpFormats: Set<String>
+  ) throws {
+    
+    let _: Set<QueryId> = Set(dcql.credentials.map { $0.id })
+
+    let queryFormats: Set<String> = Set(dcql.credentials.map { $0.format.format })
+    let unsupported = queryFormats.subtracting(walletSupportsVpFormats)
+    guard unsupported.isEmpty else {
+      throw DCQLError.error("Unsupported query format(s): \(Array(unsupported))")
+    }
+  }
+}
