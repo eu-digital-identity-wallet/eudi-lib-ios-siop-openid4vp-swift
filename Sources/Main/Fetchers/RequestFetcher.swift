@@ -119,9 +119,14 @@ internal actor RequestFetcher {
     
     let isNotRequired = options.jarEncryption.isNotRequired
     let nonce = try generateNonce(from: options)
-    let keys: (key: SecKey, jwk: ECPrivateKey)? = !isNotRequired ? (try? generateKeysIfNeeded(
-      for: supportedMethods
-    )) : nil
+    let keys: (
+      key: SecKey,
+      jwk: ECPrivateKey
+    )? = !isNotRequired ? (
+      try? generateKeysIfNeeded(
+        for: supportedMethods
+      )
+    ) : nil
     
     let walletMetadata = generateWalletMetadataIfNeeded(
       config: config,
