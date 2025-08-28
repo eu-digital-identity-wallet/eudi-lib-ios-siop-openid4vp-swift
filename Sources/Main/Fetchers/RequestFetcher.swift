@@ -181,7 +181,7 @@ internal actor RequestFetcher {
     }
     
     var request = URLRequest(url: requestUrl)
-    request.httpMethod = "POST"
+    request.httpMethod = RequestUriMethod.POST.description
     try request.setFormURLEncodedBody(combined)
     
     request.allHTTPHeaderFields = [
