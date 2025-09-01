@@ -97,7 +97,7 @@ final class VerifierIdTests: XCTestCase {
 
     switch result {
     case .success(let verifierId):
-      XCTAssertEqual(verifierId.scheme, .did)
+      XCTAssertEqual(verifierId.scheme, .decentralizedIdentifier)
       XCTAssertEqual(verifierId.originalClientId, clientId)
       XCTAssertEqual(verifierId.clientId, clientId)
     case .failure:

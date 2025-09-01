@@ -96,7 +96,7 @@ internal actor ClientAuthenticator {
         certificate: certificate
       )
 
-    case .did(let keyLookup):
+    case .decentralizedIdentifier(let keyLookup):
       return try await didPublicKeyLookup(
         jws: try JWS(compactSerialization: jwt),
         clientId: clientId,

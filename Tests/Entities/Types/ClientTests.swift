@@ -53,7 +53,7 @@ final class ClientIdSchemeTests: XCTestCase {
     XCTAssertEqual(ClientIdPrefix(rawValue: "pre-registered"), .preRegistered)
     XCTAssertEqual(ClientIdPrefix(rawValue: "redirect_uri"), .redirectUri)
     XCTAssertEqual(ClientIdPrefix(rawValue: "openid_federation"), .openidFederation)
-    XCTAssertEqual(ClientIdPrefix(rawValue: "did"), .did)
+    XCTAssertEqual(ClientIdPrefix(rawValue: "decentralized_identifier"), .decentralizedIdentifier)
     XCTAssertEqual(ClientIdPrefix(rawValue: "x509_san_dns"), .x509SanDns)
     XCTAssertEqual(ClientIdPrefix(rawValue: "verifier_attestation"), .verifierAttestation)
   }
@@ -65,8 +65,8 @@ final class ClientIdSchemeTests: XCTestCase {
 
   func testInitFromAuthorizationRequestObjectWithValidScheme() throws {
     let validSchemes = [
-      "pre-registered", "redirect_uri", "https",
-      "did", "x509_san_dns", "verifier_attestation"
+      "pre-registered", "redirect_uri", "openid_federation",
+      "decentralized_identifier", "x509_san_dns", "verifier_attestation"
     ]
 
     for scheme in validSchemes {

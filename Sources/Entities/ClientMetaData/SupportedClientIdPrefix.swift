@@ -27,8 +27,8 @@ public enum SupportedClientIdPrefix: @unchecked Sendable {
       return .preRegistered
     case .x509SanDns:
       return .x509SanDns
-    case .did:
-      return .did
+    case .decentralizedIdentifier:
+      return .decentralizedIdentifier
     case .verifierAttestation:
       return .verifierAttestation
     case .redirectUri:
@@ -46,8 +46,8 @@ public enum SupportedClientIdPrefix: @unchecked Sendable {
       return "pre-registered"
     case .x509SanDns:
       return "x509_san_dns"
-    case .did:
-      return "did"
+    case .decentralizedIdentifier:
+      return "decentralized_identifier"
     case .verifierAttestation:
       return "verifier_attestation"
     case .redirectUri:
@@ -58,7 +58,7 @@ public enum SupportedClientIdPrefix: @unchecked Sendable {
   case redirectUri
   case preregistered(clients: [OriginalClientId: PreregisteredClient])
   case x509SanDns(trust: CertificateTrust)
-  case did(lookup: DIDPublicKeyLookupAgentType)
+  case decentralizedIdentifier(lookup: DIDPublicKeyLookupAgentType)
   case verifierAttestation(
     trust: Verifier,
     clockSkew: TimeInterval = 15.0

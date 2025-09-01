@@ -120,7 +120,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
     let algorithm = SignatureAlgorithm(rawValue: walletConfig.publicWebKeySet.keys.first!.alg!)!
 
     let clientId = "Verifier"
-    let scheme = "did"
+    let scheme = "decentralized_identifier"
 
     let jws = try JWS(
       header: .init(parameters: [

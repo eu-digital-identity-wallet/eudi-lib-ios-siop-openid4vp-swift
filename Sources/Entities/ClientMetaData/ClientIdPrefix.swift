@@ -25,7 +25,7 @@ public enum ClientIdPrefix: String, Codable, Sendable {
   case preRegistered = "pre-registered"
   case redirectUri = "redirect_uri"
   case openidFederation = "openid_federation"
-  case did = "did"
+  case decentralizedIdentifier = "decentralized_identifier"
   case x509SanDns = "x509_san_dns"
   case verifierAttestation = "verifier_attestation"
 }
@@ -42,8 +42,8 @@ extension ClientIdPrefix {
       scheme == "redirect_uri" ||
       scheme == "pre-registered" ||
       scheme == "x509_san_dns" ||
-      scheme == "did" ||
-      scheme == "openidFederation" ||
+      scheme == "decentralized_identifier" ||
+      scheme == "openid_federation" ||
       scheme == "verifier_attestation",
       let clientIdScheme = ClientIdPrefix(rawValue: scheme)
     else {
@@ -79,8 +79,8 @@ extension ClientIdPrefix {
       self = .redirectUri
     case "openid_federation":
       self = .openidFederation
-    case "did":
-      self = .did
+    case "decentralized_identifier":
+      self = .decentralizedIdentifier
     case "x509_san_dns":
       self = .x509SanDns
     case "verifier_attestation":
