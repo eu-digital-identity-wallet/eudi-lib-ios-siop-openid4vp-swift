@@ -16,7 +16,6 @@
 import Foundation
 import XCTest
 import JOSESwift
-import PresentationExchange
 
 @testable import SiopOpenID4VP
 
@@ -47,7 +46,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -91,10 +90,10 @@ final class SiopOpenID4VPTests: DiXCTest {
           )
         ])
       ],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      responseEncryptionConfiguration: .unsupported
     )
   }
 
@@ -125,7 +124,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       ],
       preferredSubjectSyntaxType: .jwkThumbprint,
       decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
-      signingKey: privateKey,
+      privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
@@ -149,26 +148,11 @@ final class SiopOpenID4VPTests: DiXCTest {
             ]))
           )
         ])],
-      vpFormatsSupported: [],
+      vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: VPConfiguration.default(),
-      jarmConfiguration: .default()
+      responseEncryptionConfiguration: .unsupported
     )
-  }
-
-  // MARK: - Presentation submission test
-
-  func testPresentationSubmissionJsonStringDecoding() throws {
-
-    let definition = try? XCTUnwrap(Dictionary.from(
-      bundle: "presentation_submission_example"
-    ).get().toJSONString())
-
-    let result: Result<PresentationSubmissionContainer, ParserError> = Parser().decode(json: definition!)
-
-    let container = try! result.get()
-
-    XCTAssert(container.submission.id == "a30e3b91-fb77-4d22-95fa-871689c322e2")
   }
 
   // MARK: - Authorisation Request Testing
@@ -176,52 +160,6 @@ final class SiopOpenID4VPTests: DiXCTest {
   func testAuthorizationRequestDataGivenValidDataInURL() throws {
     let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validAuthorizeUrl)
     XCTAssertNotNil(authorizationRequestData)
-  }
-
-  func testAuthorizationRequestDataGivenInvalidInput() throws {
-
-    let parser = Parser()
-    let result: Result<UnvalidatedRequestObject, ParserError> = parser.decode(
-      path: "input_descriptors_example",
-      type: "json"
-    )
-
-    let container = try? result.get()
-    XCTAssertNotNil(container)
-  }
-
-  func testSDKValidationResolutionGivenDataByValueIsValid() async throws {
-
-    let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-    let request = try UnvalidatedRequest.make(from: TestsConstants.validAuthorizeUrl.absoluteString).get()
-    switch request {
-    case .plain(let object):
-      let source = try await RequestAuthenticator(
-        config: walletConfiguration,
-        clientAuthenticator: .init(config: walletConfiguration)
-      ).parseQuerySource(requestObject: object)
-
-      switch source {
-      case .byPresentationDefinitionSource(let source):
-        let resolver = await PresentationDefinitionResolver().resolve(
-          source: source
-        )
-
-        switch resolver {
-        case .success(let presentationDefinition):
-          XCTAssert(presentationDefinition.id == "8e6ad256-bd03-4361-a742-377e8cccced0")
-          XCTAssert(presentationDefinition.inputDescriptors.count == 1)
-
-          return
-        case .failure: break
-        }
-        default: break
-      }
-      default: break
-
-    }
-
-    XCTAssert(false)
   }
 
   func testAuthorize_WhenWalletConfigurationIsNil_ReturnsInvalidResolutionWithMissingConfig() async {
@@ -249,98 +187,6 @@ final class SiopOpenID4VPTests: DiXCTest {
     }
   }
 
-  // MARK: - Resolved Validated Authorisation Request Testing
-
-  func testIdVpTokenValidationResolutionGivenReferenceDataIsValid() async throws {
-
-    let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-
-    do {
-      let unvalidatedRequest = UnvalidatedRequest.make(
-        from: TestsConstants.validIdVpTokenByClientByValuePresentationByReferenceUrl.absoluteString
-      )
-
-      let resolver = AuthorizationRequestResolver()
-      let request = try await resolver.resolve(
-        walletConfiguration: walletConfiguration,
-        unvalidatedRequest: unvalidatedRequest.get()
-      )
-
-      let resolved = request.resolved
-      switch resolved {
-      case .idAndVpToken(let request):
-        XCTAssertEqual(request.clientMetaData!.vpFormatsSupported.values.first!, VpFormatSupported.sdJwtVc(sdJwtAlgorithms: [JWSAlgorithm(.ES256)], kbJwtAlgorithms: [JWSAlgorithm(.ES256)]))
-        XCTAssert(true)
-      default:
-        XCTAssert(false, "Unexpected case")
-      }
-    } catch _ as FetchError {
-      XCTAssert(true)
-    } catch {
-      XCTAssert(false)
-    }
-  }
-
-  func testIdTokenValidationResolutionGivenReferenceDataIsValid() async throws {
-
-    let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-
-    let unvalidatedRequest = UnvalidatedRequest.make(
-      from: TestsConstants.validIdTokenByClientByValuePresentationByReferenceUrl.absoluteString
-    )
-
-    let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.resolve(
-      walletConfiguration: walletConfiguration,
-      unvalidatedRequest: unvalidatedRequest.get()
-    )
-
-    let resolved = request.resolved
-    switch resolved {
-    case .idToken:
-      XCTAssert(true)
-    default:
-      XCTAssert(false, "Unexpected case")
-    }
-  }
-
-  func testValidationResolutionGivenReferenceDataIsValid() async throws {
-
-    let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-
-    let unvalidatedRequest = UnvalidatedRequest.make(
-      from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl.absoluteString
-    )
-
-    let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.resolve(
-      walletConfiguration: walletConfiguration,
-      unvalidatedRequest: unvalidatedRequest.get()
-    )
-
-    let resolved = request.resolved
-    XCTAssertNotNil(resolved)
-  }
-
-  func testValidationResolutionWithAuthorisationRequestGivenDataIsValid() async throws {
-
-    let walletConfiguration = try Self.preRegisteredWalletConfigurationWithKnownClientID()
-
-    let unvalidatedRequest = UnvalidatedRequest.make(
-      from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl.absoluteString
-    )
-
-    let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.resolve(
-      walletConfiguration: walletConfiguration,
-      unvalidatedRequest: unvalidatedRequest.get()
-    )
-
-    let resolved = request.resolved
-
-    XCTAssertNotNil(resolved)
-  }
-
   // MARK: - Invalid data Testing
 
   func testAuthorisationValidationGivenDataIsInvalid() async throws {
@@ -365,74 +211,6 @@ final class SiopOpenID4VPTests: DiXCTest {
     case .invalidResolution:
       XCTAssert(true)
     }
-  }
-
-  func testRequestObjectGivenValidJWT() async throws {
-
-    let walletConfiguration = try preRegisteredWalletConfiguration()
-
-    let unvalidatedRequest = UnvalidatedRequest.make(
-      from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl.absoluteString
-    )
-
-    let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.resolve(
-      walletConfiguration: walletConfiguration,
-      unvalidatedRequest: unvalidatedRequest.get()
-    )
-
-    let resolved = request.resolved
-
-    switch resolved! {
-    case .vpToken:
-      XCTAssert(true)
-    default:
-      XCTAssert(false)
-    }
-  }
-
-  func testRequestObjectGivenValidJWTUri() async throws {
-
-    let walletConfiguration = try preRegisteredWalletConfiguration()
-
-    let unvalidatedRequest = UnvalidatedRequest.make(
-      from: TestsConstants.validVpTokenByClientByValuePresentationByReferenceUrl.absoluteString
-    )
-
-    let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.resolve(
-      walletConfiguration: walletConfiguration,
-      unvalidatedRequest: unvalidatedRequest.get()
-    )
-
-    let resolved = request.resolved
-
-    XCTAssertNotNil(resolved)
-
-    switch resolved {
-    case .vpToken, .idToken:
-      XCTAssert(true)
-    default:
-      XCTAssert(false)
-    }
-  }
-
-  func testSDKValidationResolutionGivenDataRequestObjectByValueIsValid() async throws {
-
-    let walletConfiguration = try preRegisteredWalletConfiguration()
-    let unvalidatedRequest = UnvalidatedRequest.make(
-      from: TestsConstants.requestObjectUrl.absoluteString
-    )
-
-    let resolver = AuthorizationRequestResolver()
-    let request = try await resolver.resolve(
-      walletConfiguration: walletConfiguration,
-      unvalidatedRequest: unvalidatedRequest.get()
-    )
-
-    let resolved = request.resolved
-
-    XCTAssertNotNil(resolved)
   }
 
   func testSDKValidationResolutionGivenDataRequestObjectByReferenceIsNotFoundURL() async throws {

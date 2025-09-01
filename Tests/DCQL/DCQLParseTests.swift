@@ -984,5 +984,7 @@ final class DCQLParseTests: XCTestCase {
         )
       ]
     )
+    
+    XCTAssert(primary == secondary)
   }
 }

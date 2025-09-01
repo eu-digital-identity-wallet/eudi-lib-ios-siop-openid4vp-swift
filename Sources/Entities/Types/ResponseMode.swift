@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 import SwiftyJSON
 
 public enum ResponseMode: Sendable {
@@ -114,6 +113,16 @@ public enum ResponseMode: Sendable {
 }
 
 internal extension ResponseMode {
+  
+  func requiresEncryption() -> Bool {
+    switch self {
+    case .directPostJWT:
+      return true
+    default:
+      return false
+    }
+  }
+  
   func isJarm() -> Bool {
     switch self {
     case .directPost:

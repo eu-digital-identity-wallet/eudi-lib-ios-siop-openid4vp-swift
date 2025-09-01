@@ -21,63 +21,6 @@ import SwiftyJSON
 
 class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
 
-  func testIdAndVpTokenDataInitialization() async throws {
-
-    overrideDependencies()
-
-    let metaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
-    let validator = ClientMetaDataValidator()
-    let validatedClientMetaData = try? await validator.validate(clientMetaData: metaData)
-
-    let idTokenType: IdTokenType = .attesterSigned
-    let presentationDefinition = PresentationExchange.Constants.presentationDefinitionPreview()
-    let clientMetaData = validatedClientMetaData
-    let clientId = "testClientID"
-    let nonce = "testNonce"
-    let responseMode: ResponseMode = .directPost(responseURI: URL(string: "https://www.example.com")!)
-    let state = "testState"
-    let scope = "// Replace with an instance of `Scope`"
-
-    let credentialId = try! QueryId(value: "id_card")
-
-    let attest1 = VerifierInfo(
-      format: "jwt",
-      data: JSON("eyJhbGciOiJFUzI1...EF0RBtvPClL71TWHlIQ"),
-      credentialIds: [ credentialId ]
-    )
-
-    let attest2 = VerifierInfo(
-      format: "json",
-      data: JSON([
-        "verifier": "Acme Corp",
-        "policy": ["retention": "30 days"]
-      ]),
-      credentialIds: nil
-    )
-
-    let attestations = [ attest1, attest2 ]
-
-    let tokenData = ResolvedRequestData.IdAndVpTokenData(
-      idTokenType: idTokenType,
-      presentationQuery: .byPresentationDefinition(presentationDefinition),
-      presentationDefinition: presentationDefinition,
-      clientMetaData: clientMetaData,
-      client: .preRegistered(clientId: clientId, legalName: clientId),
-      nonce: nonce,
-      responseMode: responseMode,
-      state: state,
-      scope: scope,
-      vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!
-    )
-
-    XCTAssertEqual(tokenData.idTokenType, idTokenType)
-    XCTAssertEqual(tokenData.clientMetaData, clientMetaData)
-    XCTAssertEqual(tokenData.nonce, nonce)
-    XCTAssertEqual(tokenData.state, state)
-    XCTAssertEqual(tokenData.scope, scope)
-    XCTAssertEqual(tokenData.verifierInfo, attestations)
-  }
-
   func testWalletOpenId4VPConfigurationInitialization() throws {
     let subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.jwkThumbprint]
     let preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
@@ -88,7 +31,6 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     let signingKeySet = WebKeySet(keys: [])
     let supportedClientIdSchemes: [SupportedClientIdScheme] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
-    let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
 
     let walletOpenId4VPConfiguration = SiopOpenId4VPConfiguration(
       subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
@@ -96,15 +38,14 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       decentralizedIdentifier: decentralizedIdentifier,
       idTokenTTL: idTokenTTL,
       presentationDefinitionUriSupported: presentationDefinitionUriSupported,
-      signingKey: signingKey,
+      privateKey: signingKey,
       publicWebKeySet: signingKeySet,
       supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,
-      knownPresentationDefinitionsPerScope: knownPresentationDefinitionsPerScope,
       jarConfiguration: .noEncryptionOption,
-      vpConfiguration: VPConfiguration.default(),
+      vpConfiguration: .default(),
       session: SiopOpenId4VPConfiguration.walletSession,
-      jarmConfiguration: .default()
+      responseEncryptionConfiguration: .unsupported
     )
 
     XCTAssertEqual(walletOpenId4VPConfiguration.subjectSyntaxTypesSupported, subjectSyntaxTypesSupported)
@@ -220,7 +161,10 @@ final class VpFormatsSupportedTests: XCTestCase {
     )
     let jwtVpFormat = VpFormatSupported.jwtVp(algorithms: ["RS256"])
     let ldpVpFormat = VpFormatSupported.ldpVp(proofTypes: ["ProofType1"])
-    let msoMdocFormat = VpFormatSupported.msoMdoc(algorithms: [JWSAlgorithm(.ES256)])
+    let msoMdocFormat = VpFormatSupported.msoMdoc(
+      issuerAuthAlgorithms: [],
+      deviceAuthAlgorithms: []
+    )
 
     let vpFormatsSupported = try VpFormatsSupported(values: [sdJwtFormat, jwtVpFormat, ldpVpFormat, msoMdocFormat])
 
@@ -243,7 +187,7 @@ final class VpFormatsSupportedTests: XCTestCase {
   }
 
   func testFormatNames() {
-    XCTAssertEqual(VpFormatSupported.msoMdoc(algorithms: []).formatName(), .MSO_MDOC)
+    XCTAssertEqual(VpFormatSupported.msoMdoc(issuerAuthAlgorithms: [], deviceAuthAlgorithms: []).formatName(), .MSO_MDOC)
     XCTAssertEqual(VpFormatSupported.sdJwtVc(sdJwtAlgorithms: [], kbJwtAlgorithms: []).formatName(), .SD_JWT_VC)
     XCTAssertEqual(VpFormatSupported.jwtVp(algorithms: []).formatName(), .JWT_VP)
     XCTAssertEqual(VpFormatSupported.ldpVp(proofTypes: []).formatName(), .LDP_VP)
@@ -330,14 +274,14 @@ final class VpFormatsSupportedTests: XCTestCase {
       vcSdJwt: VcSdJwtTO(sdJwtAlgorithms: ["ES256"], kdJwtAlgorithms: ["ES256"]),
       jwtVp: JwtVpTO(alg: ["RS256"]),
       ldpVp: LdpVpTO(proofType: ["ProofType"]),
-      msoMdoc: MsoMdocTO(algorithms: ["ES256"])
+      msoMdoc: MsoMdocTO(issuerAuthAlgorithms: [], deviceAuthAlgorithms: [])
     )
 
     let vpFormatsSupported = try VpFormatsSupported(from: to)
 
     XCTAssertEqual(vpFormatsSupported?.values.count, 4)
     XCTAssertTrue(vpFormatsSupported?.contains(.jwtVp(algorithms: ["RS256"])) ?? false)
-    XCTAssertTrue(vpFormatsSupported?.contains(.msoMdoc(algorithms: [.init(.ES256)])) ?? false)
+    XCTAssertTrue(vpFormatsSupported?.contains(.msoMdoc(issuerAuthAlgorithms: [], deviceAuthAlgorithms: [])) ?? false)
   }
 
   func testVpFormatsSupportedIntersectWithCommonElements() throws {
@@ -417,9 +361,8 @@ class WalletMetaDataTests: XCTestCase {
     )
 
     XCTAssertEqual(json["request_object_signing_alg_values_supported"].arrayValue.map { $0.stringValue }, ["ES256"])
-    XCTAssertEqual(json["presentation_definition_uri_supported"].boolValue, true)
     XCTAssertEqual(json["vp_formats_supported"].dictionaryValue.count, 2)
-    XCTAssertEqual(json["client_id_schemes_supported"].arrayValue.map { $0.stringValue }, ["pre-registered"])
+    XCTAssertEqual(json["client_id_prefixes_supported"].arrayValue.map { $0.stringValue }, ["pre-registered"])
     XCTAssertEqual(json["response_types_supported"].arrayValue.map { $0.stringValue }, ["vp_token", "id_token"])
     XCTAssertEqual(json["response_modes_supported"].arrayValue.map { $0.stringValue }, ["direct_post", "direct_post.jwt"])
   }
@@ -556,105 +499,5 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
     XCTAssertEqual(data?.responseMode, "responseMode")
     XCTAssertEqual(data?.state, "state")
     XCTAssertEqual(data?.idTokenType, "idTokenType")
-  }
-
-  func testInitFromAuthorizationRequestDataWithPresentationDefinitionUri() throws {
-    let authorizationRequestData = UnvalidatedRequestObject(presentationDefinitionUri: "https://example.com/presentation-definition")
-
-    let source = try PresentationDefinitionSource(authorizationRequestData: authorizationRequestData)
-
-    guard case .fetchByReference(let url) = source else {
-      XCTFail("Expected .fetchByReference case")
-      return
-    }
-
-    XCTAssertEqual(url.absoluteString, "https://example.com/presentation-definition")
-  }
-
-  func testInitFromAuthorizationRequestDataWithScope() throws {
-    let authorizationRequestData = UnvalidatedRequestObject(scope: "openid email profile")
-
-    let source = try PresentationDefinitionSource(authorizationRequestData: authorizationRequestData)
-
-    guard case .implied(let scope) = source else {
-      XCTFail("Expected .implied case")
-      return
-    }
-
-    XCTAssertEqual(scope, ["openid", "email", "profile"])
-  }
-
-  func testInitFromAuthorizationRequestDataWithInvalidPresentationDefinition() {
-    let authorizationRequestData = UnvalidatedRequestObject()
-
-    XCTAssertThrowsError(try PresentationDefinitionSource(authorizationRequestData: authorizationRequestData)) { error in
-      XCTAssertEqual(error as? PresentationError, PresentationError.invalidPresentationDefinition)
-    }
-  }
-
-  func testAuthorizationRequestDataGivenValidInput() throws {
-
-    let parser = Parser()
-    let authorizationResult: Result<UnvalidatedRequestObject, ParserError> = parser.decode(
-      path: "valid_authorizaton_data_example",
-      type: "json"
-    )
-
-    let authorization = try? authorizationResult.get()
-    guard
-      let authorization = authorization
-    else {
-      XCTAssert(false)
-      return
-    }
-
-    let definitionContainerResult: Result<PresentationDefinitionContainer, ParserError> = parser.decode(json: authorization.presentationDefinition!)
-    let definitionContainer = try? definitionContainerResult.get()
-    guard
-      let definitionContainer = definitionContainer
-    else {
-      XCTAssert(false)
-      return
-    }
-
-    XCTAssert(definitionContainer.definition.inputDescriptors.count == 1)
-  }
-
-  func testInitFromAuthorizationRequestObjectWithPresentationDefinitionUri() throws {
-    let authorizationRequestObject: JSON = [
-        "presentation_definition_uri": "https://example.com/presentation-definition"
-    ]
-
-    let source = try PresentationDefinitionSource(authorizationRequestObject: authorizationRequestObject)
-
-    guard case .fetchByReference(let url) = source else {
-        XCTFail("Expected .fetchByReference case")
-        return
-    }
-
-    XCTAssertEqual(url.absoluteString, "https://example.com/presentation-definition")
-  }
-
-  func testInitFromAuthorizationRequestObjectWithScope() throws {
-    let authorizationRequestObject: JSON = [
-        "scope": "openid email profile"
-    ]
-
-    let source = try PresentationDefinitionSource(authorizationRequestObject: authorizationRequestObject)
-
-    guard case .implied(let scope) = source else {
-      XCTFail("Expected .implied case")
-      return
-    }
-
-    XCTAssertEqual(scope, ["openid", "email", "profile"])
-  }
-
-  func testInitFromAuthorizationRequestObjectWithInvalidPresentationDefinition() {
-    let authorizationRequestObject: JSON = [:]
-
-    XCTAssertThrowsError(try PresentationDefinitionSource(authorizationRequestObject: authorizationRequestObject)) { error in
-      XCTAssertEqual(error as? PresentationError, PresentationError.invalidPresentationDefinition)
-    }
   }
 }

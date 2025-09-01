@@ -17,7 +17,6 @@ import Foundation
 
 public struct VPConfiguration: Sendable {
   public let presentationDefinitionUriSupported: Bool = true
-  public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:]
   public let knownDCQLQueriesPerScope: [String: DCQL] = [:]
   public let vpFormatsSupported: VpFormatsSupported
   public let supportedTransactionDataTypes: [SupportedTransactionDataType]
@@ -30,7 +29,10 @@ public struct VPConfiguration: Sendable {
             sdJwtAlgorithms: [JWSAlgorithm(.ES256)],
             kbJwtAlgorithms: [JWSAlgorithm(.ES256)]
           ),
-          .msoMdoc(algorithms: [JWSAlgorithm(.ES256)])
+          .msoMdoc(
+            issuerAuthAlgorithms: [-7],
+            deviceAuthAlgorithms: [-7]
+          )
         ]
       ),
       supportedTransactionDataTypes: [
@@ -44,7 +46,6 @@ public struct VPConfiguration: Sendable {
 
   public init(
     presentationDefinitionUriSupported: Bool = true,
-    knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
     vpFormatsSupported: VpFormatsSupported,
     supportedTransactionDataTypes: [SupportedTransactionDataType]
   ) {

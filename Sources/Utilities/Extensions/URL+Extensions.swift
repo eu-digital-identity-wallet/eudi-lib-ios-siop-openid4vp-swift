@@ -32,4 +32,13 @@ package extension URL {
     }
     return includePercentEncoding ? host : host.removingPercentEncoding
   }
+  
+  var queryParameters: [String: Any]? {
+    guard
+      let components = URLComponents(string: self.absoluteString),
+      let queryItems = components.queryItems else { return nil }
+    return queryItems.reduce(into: [String: String]()) { (result, item) in
+        result[item.name] = item.value?.removingPercentEncoding
+    }
+  }
 }

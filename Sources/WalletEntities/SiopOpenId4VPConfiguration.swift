@@ -21,49 +21,46 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let decentralizedIdentifier: DecentralizedIdentifier
   public let idTokenTTL: TimeInterval
   public let presentationDefinitionUriSupported: Bool
-  public let signingKey: SecKey
+  public let privateKey: SecKey
   public let publicWebKeySet: WebKeySet
   public let supportedClientIdSchemes: [SupportedClientIdScheme]
   public let vpFormatsSupported: [ClaimFormat]
-  public let knownPresentationDefinitionsPerScope: [String: PresentationDefinition]
   public let jarConfiguration: JARConfiguration
   public let vpConfiguration: VPConfiguration
   public let errorDispatchPolicy: ErrorDispatchPolicy
   public let session: Networking
-  public let jarmConfiguration: JARMConfiguration
-
+  public let responseEncryptionConfiguration: ResponseEncryptionConfiguration
+  
   public init(
     subjectSyntaxTypesSupported: [SubjectSyntaxType],
     preferredSubjectSyntaxType: SubjectSyntaxType,
     decentralizedIdentifier: DecentralizedIdentifier,
     idTokenTTL: TimeInterval = 600.0,
     presentationDefinitionUriSupported: Bool = false,
-    signingKey: SecKey,
+    privateKey: SecKey,
     publicWebKeySet: WebKeySet,
     supportedClientIdSchemes: [SupportedClientIdScheme],
-    vpFormatsSupported: [ClaimFormat],
-    knownPresentationDefinitionsPerScope: [String: PresentationDefinition] = [:],
+    vpFormatsSupported: [ClaimFormat] = ClaimFormat.default(),
     jarConfiguration: JARConfiguration = .noEncryptionOption,
-    vpConfiguration: VPConfiguration = VPConfiguration.default(),
+    vpConfiguration: VPConfiguration = .default(),
     errorDispatchPolicy: ErrorDispatchPolicy = .onlyAuthenticatedClients,
     session: Networking = Self.walletSession,
-    jarmConfiguration: JARMConfiguration
+    responseEncryptionConfiguration: ResponseEncryptionConfiguration
   ) {
     self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
     self.preferredSubjectSyntaxType = preferredSubjectSyntaxType
     self.decentralizedIdentifier = decentralizedIdentifier
     self.idTokenTTL = idTokenTTL
     self.presentationDefinitionUriSupported = presentationDefinitionUriSupported
-    self.signingKey = signingKey
+    self.privateKey = privateKey
     self.publicWebKeySet = publicWebKeySet
     self.supportedClientIdSchemes = supportedClientIdSchemes
     self.vpFormatsSupported = vpFormatsSupported
-    self.knownPresentationDefinitionsPerScope = knownPresentationDefinitionsPerScope
     self.jarConfiguration = jarConfiguration
     self.vpConfiguration = vpConfiguration
     self.errorDispatchPolicy = errorDispatchPolicy
     self.session = session
-    self.jarmConfiguration = jarmConfiguration
+    self.responseEncryptionConfiguration = responseEncryptionConfiguration
   }
 
   internal init() throws {
@@ -72,16 +69,15 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     decentralizedIdentifier = try DecentralizedIdentifier(rawValue: "did:example:123|did:example:456")
     idTokenTTL = 600.0
     presentationDefinitionUriSupported = false
-    signingKey = try KeyController.generateRSAPrivateKey()
+    privateKey = try KeyController.generateRSAPrivateKey()
     publicWebKeySet = WebKeySet(keys: [])
     supportedClientIdSchemes = []
     vpFormatsSupported = []
-    knownPresentationDefinitionsPerScope = [:]
     jarConfiguration = .noEncryptionOption
-    vpConfiguration = VPConfiguration.default()
+    vpConfiguration = .default()
     errorDispatchPolicy = .onlyAuthenticatedClients
     session = URLSession.shared
-    jarmConfiguration = .noConfiguration
+    responseEncryptionConfiguration = .unsupported
   }
 
   public static let walletSession: Networking = {

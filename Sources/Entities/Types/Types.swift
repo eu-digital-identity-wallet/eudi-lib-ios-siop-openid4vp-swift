@@ -17,9 +17,11 @@ import Foundation
 
 public typealias OriginalClientId = String
 
+public typealias CoseAlgorithm = Int
+
 public enum RequestUriMethod: CustomStringConvertible, Sendable {
   case GET, POST
-
+  
   public var description: String {
     switch self {
     case .GET:
@@ -28,13 +30,13 @@ public enum RequestUriMethod: CustomStringConvertible, Sendable {
       return "POST"
     }
   }
-
+  
   public init(method: String?) {
     guard let method = method else {
       self = .GET
       return
     }
-
+    
     switch method.uppercased() {
     case "GET":
       self = .GET

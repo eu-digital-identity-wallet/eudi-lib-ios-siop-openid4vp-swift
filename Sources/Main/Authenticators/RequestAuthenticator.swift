@@ -213,21 +213,14 @@ internal actor RequestAuthenticator {
 
   func parseQuerySource(requestObject: UnvalidatedRequestObject) throws -> QuerySource {
 
-    let hasPd = requestObject.presentationDefinition != nil
-    let hasPdUri = requestObject.presentationDefinitionUri != nil
     let hasDcqlQuery = requestObject.dcqlQuery?.exists() ?? false
-
-    let querySourceCount = [hasPd, hasPdUri, hasDcqlQuery].filter { $0 }.count
+    let querySourceCount = [hasDcqlQuery].filter { $0 }.count
 
     if querySourceCount > 1 {
       throw ValidationError.multipleQuerySources
     }
 
-    if hasPd || hasPdUri {
-      return .byPresentationDefinitionSource(
-        try .init(authorizationRequestData: requestObject)
-      )
-    } else if hasDcqlQuery, let dcqlQuery = requestObject.dcqlQuery {
+    if hasDcqlQuery, let dcqlQuery = requestObject.dcqlQuery {
       return .dcqlQuery(
         try .init(
           from: dcqlQuery

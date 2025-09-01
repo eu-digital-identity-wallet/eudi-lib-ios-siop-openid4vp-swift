@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 extension ResolvedRequestData {
   /// A structure representing the data related to ID token and verifiable presentation (VP) token.
   public struct IdAndVpTokenData: Sendable {
     public let idTokenType: IdTokenType
     public let presentationQuery: PresentationQuery
-    public let presentationDefinition: PresentationDefinition
     public let clientMetaData: ClientMetaData.Validated?
     public let client: Client
     public let nonce: String
@@ -30,13 +28,13 @@ extension ResolvedRequestData {
     public let scope: Scope?
     public let vpFormatsSupported: VpFormatsSupported
     public let transactionData: [TransactionData]?
-    public let jarmRequirement: JARMRequirement?
     public let verifierInfo: [VerifierInfo]?
+    public let responseEncryptionSpecification: ResponseEncryptionSpecification?
 
     /// Initializes the `IdAndVpTokenData` structure with the provided values.
     /// - Parameters:
     ///   - idTokenType: The type of the ID token.
-    ///   - presentationDefinition: The presentation definition.
+    ///   - presentationQuery: The presentation query.
     ///   - clientMetaData: The client metadata.
     ///   - nonce: The nonce.
     ///   - responseMode: The response mode.
@@ -45,11 +43,10 @@ extension ResolvedRequestData {
     ///   - vpFormatsSupported: Vp Formats
     ///   - transactionData: Optional list of transcation data
     ///   - verifierInfo: Optional list of verifierInfo
-    ///   - jarmRequirement: JARM
+    ///   - responseEncryptionSpecification: Encryption specification
     public init(
       idTokenType: IdTokenType,
       presentationQuery: PresentationQuery,
-      presentationDefinition: PresentationDefinition,
       clientMetaData: ClientMetaData.Validated?,
       client: Client,
       nonce: String,
@@ -59,11 +56,10 @@ extension ResolvedRequestData {
       vpFormatsSupported: VpFormatsSupported,
       transactionData: [TransactionData]? = nil,
       verifierInfo: [VerifierInfo]? = nil,
-      jarmRequirement: JARMRequirement? = nil
+      responseEncryptionSpecification: ResponseEncryptionSpecification? = nil
     ) {
       self.idTokenType = idTokenType
       self.presentationQuery = presentationQuery
-      self.presentationDefinition = presentationDefinition
       self.clientMetaData = clientMetaData
       self.client = client
       self.nonce = nonce
@@ -73,7 +69,7 @@ extension ResolvedRequestData {
       self.vpFormatsSupported = vpFormatsSupported
       self.transactionData = transactionData
       self.verifierInfo = verifierInfo
-      self.jarmRequirement = jarmRequirement
+      self.responseEncryptionSpecification = responseEncryptionSpecification
     }
   }
 }

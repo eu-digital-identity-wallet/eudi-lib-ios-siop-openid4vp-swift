@@ -19,7 +19,7 @@ public struct ErrorDispatchDetails: Sendable {
   public let nonce: String?
   public let state: String?
   public let clientId: VerifierId?
-  public let jarmRequirement: JARMRequirement?
+  public let responseEncryptionSpecification: ResponseEncryptionSpecification?
 
   // Default initializer
   public init(
@@ -27,12 +27,12 @@ public struct ErrorDispatchDetails: Sendable {
     nonce: String? = nil,
     state: String? = nil,
     clientId: VerifierId?,
-    jarmRequirement: JARMRequirement? = nil
+    responseEncryptionSpecification: ResponseEncryptionSpecification? = nil
   ) {
     self.responseMode = responseMode
     self.nonce = nonce
     self.state = state
     self.clientId = clientId
-    self.jarmRequirement = jarmRequirement
+    self.responseEncryptionSpecification = responseEncryptionSpecification
   }
 }

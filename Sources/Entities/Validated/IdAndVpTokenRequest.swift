@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 extension ValidatedRequestData {
   public struct IdAndVpTokenRequest: Sendable {

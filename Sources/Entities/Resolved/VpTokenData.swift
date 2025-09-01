@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 extension ResolvedRequestData {
   public struct VpTokenData: Sendable {
@@ -26,7 +25,7 @@ extension ResolvedRequestData {
     public let state: String?
     public let vpFormatsSupported: VpFormatsSupported
     public let transactionData: [TransactionData]?
-    public let jarmRequirement: JARMRequirement?
+    public let responseEncryptionSpecification: ResponseEncryptionSpecification?
     
     public let verifierInfo: [VerifierInfo]?
 
@@ -40,7 +39,7 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state value.
     ///   - vpFormatsSupported: Vp Formats
-    ///   - jarmRequirement: JARM
+    ///   - responseEncryptionSpecification: Encryption specification
     ///   - transactionData: Optional list of transcation data
     ///   - verifierInfo: Optional list of verifierInfo
     public init(
@@ -51,7 +50,7 @@ extension ResolvedRequestData {
       responseMode: ResponseMode?,
       state: String?,
       vpFormatsSupported: VpFormatsSupported,
-      jarmRequirement: JARMRequirement?,
+      responseEncryptionSpecification: ResponseEncryptionSpecification?,
       transactionData: [TransactionData]? = nil,
       verifierInfo: [VerifierInfo]? = nil
     ) {
@@ -63,8 +62,8 @@ extension ResolvedRequestData {
       self.state = state
       self.vpFormatsSupported = vpFormatsSupported
       self.transactionData = transactionData
-      self.jarmRequirement = jarmRequirement
       self.verifierInfo = verifierInfo
+      self.responseEncryptionSpecification = responseEncryptionSpecification
     }
   }
 }

@@ -79,13 +79,18 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
 
     let validatedClientMetaData: ClientMetaData.Validated?
     let clientMetaData = authorizedRequest.requestObject.clientMetaData
+    let responseMode = try? ResponseMode(
+      authorizationRequestData: authorizedRequest.requestObject
+    )
     
     // If clientMetaData is nil, we assume the client does not provide any metadata.
     if let clientMetaData {
       do {
         validatedClientMetaData = try await validateClientMetaData(
           validator: clientMetaDataValidator,
-          clientMetaData: clientMetaData
+          clientMetaData: clientMetaData,
+          responseMode: responseMode,
+          responseEncryptionConfiguration: walletConfiguration.responseEncryptionConfiguration
         )
       } catch {
         return .invalidResolution(
@@ -201,13 +206,21 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
 
   private func validateClientMetaData(
     validator: ClientMetaDataValidator,
-    clientMetaData: String?
+    clientMetaData: String?,
+    responseMode: ResponseMode?,
+    responseEncryptionConfiguration: ResponseEncryptionConfiguration
   ) async throws -> ClientMetaData.Validated? {
     guard let clientMetaData else {
       throw ValidationError.invalidClientMetadata
     }
-    let metaData: ClientMetaData = try .init(metaDataString: clientMetaData)
-    return try await validator.validate(clientMetaData: metaData)
+    let metaData: ClientMetaData = try .init(
+      metaDataString: clientMetaData
+    )
+    return try await validator.validate(
+      clientMetaData: metaData,
+      responseMode: responseMode,
+      responseEncryptionConfiguration: responseEncryptionConfiguration
+    )
   }
 
   private func createValidatedAuthorizationRequest(
@@ -258,9 +271,6 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       walletConfiguration: config,
       vpConfiguration: config.vpConfiguration,
       validatedClientMetaData: validatedClientMetaData,
-      presentationDefinitionResolver: PresentationDefinitionResolver(
-        fetcher: Fetcher(session: config.session)
-      ),
       validatedAuthorizationRequest: validatedAuthorizationRequest
     )
   }
@@ -361,7 +371,7 @@ internal extension AuthorizationRequestResolver {
       nonce: validatedRequestObject.nonce,
       state: validatedRequestObject.state,
       clientId: validatedRequestObject.clientId,
-      jarmRequirement: config.jarmRequirement(validated: clientMetaData)
+      responseEncryptionSpecification: clientMetaData?.responseEncryptionSpecification
     )
   }
 }

@@ -64,6 +64,7 @@ class TestsHelpers {
 
   static func getDirectPostJwtSession(
     nonce: String,
+    format: String = "mso_mdoc",
     transactionData: JSON
   ) async throws -> [String: Any] {
 
@@ -80,28 +81,17 @@ class TestsHelpers {
       "response_mode": "direct_post.jwt",
       "nonce": nonce,
       "transaction_data": transactionData,
-      "presentation_definition": [
-        "id": TestsConstants.testPresentationId,
-        "input_descriptors": [
+      "dcql_query": [
+        "credentials": [
           [
-            "id": "wa_driver_license",
-            "name": "Washington State Business License",
-            "purpose": "We can only allow licensed Washington State business representatives into the WA Business Conference",
-            "constraints": [
-              "fields": [
-                [
-                  "path": [
-                    "$.credentialSubject.dateOfBirth",
-                    "$.credentialSubject.dob",
-                    "$.vc.credentialSubject.dateOfBirth",
-                    "$.vc.credentialSubject.dob"
-                  ]
-                ]
+            "id": "query_0",
+              "format": format,
+              "meta": [
+                "doctype_value": "eu.europa.ec.eudi.pid.1"
               ]
-            ]
           ]
         ]
-      ]
+      ],
     ] as JSON
 
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody.object, options: [])
@@ -113,7 +103,8 @@ class TestsHelpers {
   }
 
   static func getDirectPostJwtSession(
-    nonce: String
+    nonce: String,
+    format: String = "mso_mdoc"
   ) async throws -> [String: Any] {
 
     // Replace this URL with the endpoint you want to send the POST request to
@@ -128,28 +119,17 @@ class TestsHelpers {
       "type": "vp_token",
       "response_mode": "direct_post.jwt",
       "nonce": nonce,
-      "presentation_definition": [
-        "id": TestsConstants.testPresentationId,
-        "input_descriptors": [
+      "dcql_query": [
+        "credentials": [
           [
-            "id": "wa_driver_license",
-            "name": "Washington State Business License",
-            "purpose": "We can only allow licensed Washington State business representatives into the WA Business Conference",
-            "constraints": [
-              "fields": [
-                [
-                  "path": [
-                    "$.credentialSubject.dateOfBirth",
-                    "$.credentialSubject.dob",
-                    "$.vc.credentialSubject.dateOfBirth",
-                    "$.vc.credentialSubject.dob"
-                  ]
-                ]
+            "id": "query_0",
+              "format": format,
+              "meta": [
+                "doctype_value": "eu.europa.ec.eudi.pid.1"
               ]
-            ]
           ]
         ]
-      ]
+      ],
     ] as [String: Any]
 
     let jsonData = try JSONSerialization.data(withJSONObject: jsonBody, options: [])
