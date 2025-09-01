@@ -28,6 +28,11 @@ public enum Client: Sendable {
     certificate: Certificate
   )
 
+  case x509Hash(
+    clientId: OriginalClientId,
+    certificate: Certificate
+  )
+  
   case didClient(
     did: DID
   )
@@ -55,6 +60,11 @@ public enum Client: Sendable {
         scheme: .x509SanDns,
         originalClientId: clientId
       )
+    case .x509Hash(let clientId, _):
+      return .init(
+        scheme: .x509Hash,
+        originalClientId: clientId
+      )
     case .didClient(let did):
       return .init(
         scheme: .decentralizedIdentifier,
@@ -75,6 +85,8 @@ public enum Client: Sendable {
     case .redirectUri:
       return nil
     case .x509SanDns(_, let certificate):
+      return certificate.legaName
+    case .x509Hash(_, let certificate):
       return certificate.legaName
     case .didClient:
       return nil

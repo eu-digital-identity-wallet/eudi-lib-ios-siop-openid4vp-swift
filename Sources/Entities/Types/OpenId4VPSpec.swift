@@ -21,6 +21,7 @@ public struct OpenId4VPSpec {
   public static let clientIdSchemeOpenidFederation = "openid_federation"
   public static let clientIdSchemeDid = "decentralized_identifier"
   public static let clientIdSchemeX509SanDns = "x509_san_dns"
+  public static let clientIdSchemeX509Hash = "x509_hash"
   public static let clientIdSchemeVerifierAttestation = "verifier_attestation"
 
   public static let AUTHORIZATION_REQUEST_OBJECT_TYPE = "oauth-authz-req+jwt"
