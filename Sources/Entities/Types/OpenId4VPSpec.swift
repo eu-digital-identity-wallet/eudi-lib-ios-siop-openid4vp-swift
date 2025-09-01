@@ -20,7 +20,6 @@ public struct OpenId4VPSpec {
   public static let clientIdSchemeHttps = "https"
   public static let clientIdSchemeOpenidFederation = "openid_federation"
   public static let clientIdSchemeDid = "did"
-  public static let clientIdSchemeX509SanUri = "x509_san_uri"
   public static let clientIdSchemeX509SanDns = "x509_san_dns"
   public static let clientIdSchemeVerifierAttestation = "verifier_attestation"
 

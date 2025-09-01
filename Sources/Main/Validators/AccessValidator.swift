@@ -60,20 +60,6 @@ public actor AccessValidator: AccessValidating {
         clientId: clientId,
         jws: jws
       )
-    case .x509SanUri:
-      let supported: SupportedClientIdPrefix? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
-      try await validateX509(
-        supportedClientIdScheme: supported,
-        clientId: clientId,
-        jws: jws,
-        alternativeNames: { certificate in
-          let alternativeNames = try? certificate
-            .extensions
-            .subjectAlternativeNames?
-            .rawUniformResourceIdentifiers()
-          return alternativeNames ?? []
-        }
-      )
     case .x509SanDns:
       let supported: SupportedClientIdPrefix? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
       try await validateX509(
@@ -111,8 +97,7 @@ public actor AccessValidator: AccessValidating {
     }
 
     switch supportedClientIdScheme {
-    case .x509SanDns(let trust),
-         .x509SanUri(let trust):
+    case .x509SanDns(let trust):
       let trust = await trust(chain)
       if !trust {
         throw ValidationError.validationError("Could not trust certificate chain")

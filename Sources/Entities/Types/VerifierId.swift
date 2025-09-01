@@ -30,8 +30,6 @@ public struct VerifierId: Sendable {
       switch scheme {
       case .redirectUri:
         return OpenId4VPSpec.clientIdSchemeRedirectUri
-      case .x509SanUri:
-        return OpenId4VPSpec.clientIdSchemeX509SanUri
       case .x509SanDns:
         return OpenId4VPSpec.clientIdSchemeX509SanDns
       case .verifierAttestation:
@@ -79,7 +77,7 @@ public struct VerifierId: Sendable {
         switch scheme {
         case .preRegistered:
           throw invalid("'\(ClientIdPrefix.preRegistered)' cannot be used as a Client ID Scheme")
-        case .redirectUri, .x509SanUri, .x509SanDns, .verifierAttestation:
+        case .redirectUri, .x509SanDns, .verifierAttestation:
           return VerifierId(scheme: scheme, originalClientId: originalClientId)
         case .openidFederation, .did:
           return VerifierId(scheme: scheme, originalClientId: clientId)

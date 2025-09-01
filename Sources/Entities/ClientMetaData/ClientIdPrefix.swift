@@ -27,7 +27,6 @@ public enum ClientIdPrefix: String, Codable, Sendable {
   case openidFederation = "openid_federation"
   case did = "did"
   case x509SanDns = "x509_san_dns"
-  case x509SanUri = "x509_san_uri"
   case verifierAttestation = "verifier_attestation"
 }
 
@@ -43,7 +42,6 @@ extension ClientIdPrefix {
       scheme == "redirect_uri" ||
       scheme == "pre-registered" ||
       scheme == "x509_san_dns" ||
-      scheme == "x509_san_uri" ||
       scheme == "did" ||
       scheme == "openidFederation" ||
       scheme == "verifier_attestation",
@@ -85,8 +83,6 @@ extension ClientIdPrefix {
       self = .did
     case "x509_san_dns":
       self = .x509SanDns
-    case "x509_san_uri":
-      self = .x509SanUri
     case "verifier_attestation":
       self = .verifierAttestation
     default:

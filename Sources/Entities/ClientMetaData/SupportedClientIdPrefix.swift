@@ -25,8 +25,6 @@ public enum SupportedClientIdPrefix: @unchecked Sendable {
       */
     case .preregistered:
       return .preRegistered
-    case .x509SanUri:
-      return .x509SanUri
     case .x509SanDns:
       return .x509SanDns
     case .did:
@@ -46,8 +44,6 @@ public enum SupportedClientIdPrefix: @unchecked Sendable {
       */
     case .preregistered:
       return "pre-registered"
-    case .x509SanUri:
-      return "x509_san_url"
     case .x509SanDns:
       return "x509_san_dns"
     case .did:
@@ -61,7 +57,6 @@ public enum SupportedClientIdPrefix: @unchecked Sendable {
 
   case redirectUri
   case preregistered(clients: [OriginalClientId: PreregisteredClient])
-  case x509SanUri(trust: CertificateTrust)
   case x509SanDns(trust: CertificateTrust)
   case did(lookup: DIDPublicKeyLookupAgentType)
   case verifierAttestation(

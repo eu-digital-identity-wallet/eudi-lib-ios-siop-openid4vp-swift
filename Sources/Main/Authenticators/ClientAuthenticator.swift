@@ -77,8 +77,7 @@ internal actor ClientAuthenticator {
         legalName: client.legalName
       )
 
-    case .x509SanUri,
-        .x509SanDns:
+    case .x509SanDns:
       guard let jws = try? JWS(compactSerialization: jwt) else {
         throw ValidationError.validationError("Unable to process JWT")
       }
@@ -92,7 +91,7 @@ internal actor ClientAuthenticator {
         throw ValidationError.validationError("No certificate in chain")
       }
 
-      return .x509SanUri(
+      return .x509SanDns(
         clientId: clientId,
         certificate: certificate
       )

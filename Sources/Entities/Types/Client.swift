@@ -27,10 +27,6 @@ public enum Client: Sendable {
     clientId: OriginalClientId,
     certificate: Certificate
   )
-  case x509SanUri(
-    clientId: OriginalClientId,
-    certificate: Certificate
-  )
 
   case didClient(
     did: DID
@@ -59,11 +55,6 @@ public enum Client: Sendable {
         scheme: .x509SanDns,
         originalClientId: clientId
       )
-    case .x509SanUri(let clientId, _):
-      return .init(
-        scheme: .x509SanUri,
-        originalClientId: clientId
-      )
     case .didClient(let did):
       return .init(
         scheme: .did,
@@ -84,8 +75,6 @@ public enum Client: Sendable {
     case .redirectUri:
       return nil
     case .x509SanDns(_, let certificate):
-      return certificate.legaName
-    case .x509SanUri(_, let certificate):
       return certificate.legaName
     case .didClient:
       return nil
