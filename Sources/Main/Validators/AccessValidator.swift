@@ -54,14 +54,14 @@ public actor AccessValidator: AccessValidating {
 
     switch clientIdScheme {
     case .preRegistered:
-      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
+      let supported: SupportedClientIdPrefix? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
       try await validatePreregistered(
         supportedClientIdScheme: supported,
         clientId: clientId,
         jws: jws
       )
     case .x509SanUri:
-      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
+      let supported: SupportedClientIdPrefix? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
       try await validateX509(
         supportedClientIdScheme: supported,
         clientId: clientId,
@@ -75,7 +75,7 @@ public actor AccessValidator: AccessValidating {
         }
       )
     case .x509SanDns:
-      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
+      let supported: SupportedClientIdPrefix? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
       try await validateX509(
         supportedClientIdScheme: supported,
         clientId: clientId,
@@ -93,7 +93,7 @@ public actor AccessValidator: AccessValidating {
   }
 
   private func validateX509(
-    supportedClientIdScheme: SupportedClientIdScheme?,
+    supportedClientIdScheme: SupportedClientIdPrefix?,
     clientId: String,
     jws: JWS,
     alternativeNames: (Certificate) -> [String]
@@ -156,7 +156,7 @@ public actor AccessValidator: AccessValidating {
   }
 
   private func validatePreregistered(
-    supportedClientIdScheme: SupportedClientIdScheme?,
+    supportedClientIdScheme: SupportedClientIdPrefix?,
     clientId: String,
     jws: JWS
   ) async throws {

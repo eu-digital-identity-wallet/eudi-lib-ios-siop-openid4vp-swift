@@ -147,7 +147,7 @@ internal actor ClientAuthenticator {
 
   private func verifierAttestation(
     jwt: JWTString,
-    supportedScheme: SupportedClientIdScheme,
+    supportedScheme: SupportedClientIdPrefix,
     clientId: String
   ) throws -> Client {
     guard case let .verifierAttestation(verifier, clockSkew) = supportedScheme else {

@@ -21,10 +21,10 @@ import SwiftyJSON
  */
 
 /// An enumeration representing different client ID schemes.
-public enum ClientIdScheme: String, Codable, Sendable {
+public enum ClientIdPrefix: String, Codable, Sendable {
   case preRegistered = "pre-registered"
   case redirectUri = "redirect_uri"
-  case https = "https"
+  case openidFederation = "openid_federation"
   case did = "did"
   case x509SanDns = "x509_san_dns"
   case x509SanUri = "x509_san_uri"
@@ -32,7 +32,7 @@ public enum ClientIdScheme: String, Codable, Sendable {
 }
 
 /// Extension providing additional functionality to the `ClientIdScheme` enumeration.
-extension ClientIdScheme {
+extension ClientIdPrefix {
 
   /// Initializes a `ClientIdScheme` based on the authorization request object.
   /// - Parameter authorizationRequestObject: The authorization request object.
@@ -45,9 +45,9 @@ extension ClientIdScheme {
       scheme == "x509_san_dns" ||
       scheme == "x509_san_uri" ||
       scheme == "did" ||
-      scheme == "https" ||
+      scheme == "openidFederation" ||
       scheme == "verifier_attestation",
-      let clientIdScheme = ClientIdScheme(rawValue: scheme)
+      let clientIdScheme = ClientIdPrefix(rawValue: scheme)
     else {
       throw ValidationError.unsupportedClientIdScheme(scheme)
     }
@@ -61,7 +61,7 @@ extension ClientIdScheme {
   init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard
       authorizationRequestData.clientIdScheme == "pre-registered",
-      let clientIdScheme = ClientIdScheme(rawValue: authorizationRequestData.clientIdScheme ?? "")
+      let clientIdScheme = ClientIdPrefix(rawValue: authorizationRequestData.clientIdScheme ?? "")
     else {
       throw ValidationError.unsupportedClientIdScheme(authorizationRequestData.clientIdScheme)
     }
@@ -79,8 +79,8 @@ extension ClientIdScheme {
       self = .preRegistered
     case "redirect_uri":
       self = .redirectUri
-    case "https":
-      self = .https
+    case "openid_federation":
+      self = .openidFederation
     case "did":
       self = .did
     case "x509_san_dns":

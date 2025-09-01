@@ -23,7 +23,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let presentationDefinitionUriSupported: Bool
   public let privateKey: SecKey
   public let publicWebKeySet: WebKeySet
-  public let supportedClientIdSchemes: [SupportedClientIdScheme]
+  public let supportedClientIdSchemes: [SupportedClientIdPrefix]
   public let vpFormatsSupported: [ClaimFormat]
   public let jarConfiguration: JARConfiguration
   public let vpConfiguration: VPConfiguration
@@ -39,7 +39,7 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     presentationDefinitionUriSupported: Bool = false,
     privateKey: SecKey,
     publicWebKeySet: WebKeySet,
-    supportedClientIdSchemes: [SupportedClientIdScheme],
+    supportedClientIdSchemes: [SupportedClientIdPrefix],
     vpFormatsSupported: [ClaimFormat] = ClaimFormat.default(),
     jarConfiguration: JARConfiguration = .noEncryptionOption,
     vpConfiguration: VPConfiguration = .default(),

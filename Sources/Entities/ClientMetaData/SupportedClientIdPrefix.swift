@@ -16,8 +16,8 @@
 import Foundation
 @preconcurrency import JOSESwift
 
-public enum SupportedClientIdScheme: @unchecked Sendable {
-  public var scheme: ClientIdScheme {
+public enum SupportedClientIdPrefix: @unchecked Sendable {
+  public var scheme: ClientIdPrefix {
     switch self {
 
     /**

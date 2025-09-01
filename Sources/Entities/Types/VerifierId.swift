@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 public struct VerifierId: Sendable {
-  public let scheme: ClientIdScheme
+  public let scheme: ClientIdPrefix
   public let originalClientId: OriginalClientId
 
   public init(
-    scheme: ClientIdScheme,
+    scheme: ClientIdPrefix,
     originalClientId: OriginalClientId = ""
   ) {
     self.scheme = scheme
@@ -72,16 +72,16 @@ public struct VerifierId: Sendable {
         let schemeString = String(parts[0])
         let originalClientId = String(parts[1])
 
-        guard let scheme = ClientIdScheme(rawValue: schemeString) else {
+        guard let scheme = ClientIdPrefix(rawValue: schemeString) else {
           throw invalid("'\(clientId)' does not contain a valid Client ID Scheme")
         }
 
         switch scheme {
         case .preRegistered:
-          throw invalid("'\(ClientIdScheme.preRegistered)' cannot be used as a Client ID Scheme")
+          throw invalid("'\(ClientIdPrefix.preRegistered)' cannot be used as a Client ID Scheme")
         case .redirectUri, .x509SanUri, .x509SanDns, .verifierAttestation:
           return VerifierId(scheme: scheme, originalClientId: originalClientId)
-        case .https, .did:
+        case .openidFederation, .did:
           return VerifierId(scheme: scheme, originalClientId: clientId)
         }
       }
