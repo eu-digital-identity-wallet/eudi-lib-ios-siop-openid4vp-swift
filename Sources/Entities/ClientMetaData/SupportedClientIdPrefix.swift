@@ -45,17 +45,17 @@ public enum SupportedClientIdPrefix: @unchecked Sendable {
       * The Client Identifier is known to the Wallet in advance of the Authorization Request.
       */
     case .preregistered:
-      return "pre-registered"
+      return OpenId4VPSpec.clientIdSchemePreRegistered
     case .x509SanDns:
-      return "x509_san_dns"
+      return OpenId4VPSpec.clientIdSchemeX509SanDns
     case .x509Hash:
-      return "x509_hash"
+      return OpenId4VPSpec.clientIdSchemeX509Hash
     case .decentralizedIdentifier:
-      return "decentralized_identifier"
+      return OpenId4VPSpec.clientIdSchemeDid
     case .verifierAttestation:
-      return "verifier_attestation"
+      return OpenId4VPSpec.clientIdSchemeVerifierAttestation
     case .redirectUri:
-      return "redirect_uri"
+      return OpenId4VPSpec.clientIdSchemeRedirectUri
     }
   }
 

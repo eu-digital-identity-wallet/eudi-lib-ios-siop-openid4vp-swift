@@ -40,13 +40,13 @@ extension ClientIdPrefix {
   init(authorizationRequestObject: JSON) throws {
     let scheme = authorizationRequestObject["client_id_scheme"].string ?? "unknown"
     guard
-      scheme == "redirect_uri" ||
-      scheme == "pre-registered" ||
-      scheme == "x509_san_dns" ||
-      scheme == "x509_hash" ||
-      scheme == "decentralized_identifier" ||
-      scheme == "openid_federation" ||
-      scheme == "verifier_attestation",
+      scheme == OpenId4VPSpec.clientIdSchemeRedirectUri ||
+      scheme == OpenId4VPSpec.clientIdSchemePreRegistered ||
+      scheme == OpenId4VPSpec.clientIdSchemeX509SanDns ||
+      scheme == OpenId4VPSpec.clientIdSchemeX509Hash ||
+      scheme == OpenId4VPSpec.clientIdSchemeDid ||
+      scheme == OpenId4VPSpec.clientIdSchemeOpenidFederation ||
+      scheme == OpenId4VPSpec.clientIdSchemeVerifierAttestation,
       let clientIdScheme = ClientIdPrefix(rawValue: scheme)
     else {
       throw ValidationError.unsupportedClientIdScheme(scheme)
@@ -60,7 +60,7 @@ extension ClientIdPrefix {
   /// - Throws: An error if the client ID scheme is unsupported.
   init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard
-      authorizationRequestData.clientIdScheme == "pre-registered",
+      authorizationRequestData.clientIdScheme == OpenId4VPSpec.clientIdSchemePreRegistered,
       let clientIdScheme = ClientIdPrefix(rawValue: authorizationRequestData.clientIdScheme ?? "")
     else {
       throw ValidationError.unsupportedClientIdScheme(authorizationRequestData.clientIdScheme)
@@ -75,19 +75,19 @@ extension ClientIdPrefix {
   /// - Returns: An instance of `ClientIdScheme` if the raw value matches a valid scheme, or `nil` otherwise.
   public init?(rawValue: String) {
     switch rawValue {
-    case "pre-registered":
+    case OpenId4VPSpec.clientIdSchemePreRegistered:
       self = .preRegistered
-    case "redirect_uri":
+    case OpenId4VPSpec.clientIdSchemeRedirectUri:
       self = .redirectUri
-    case "openid_federation":
+    case OpenId4VPSpec.clientIdSchemeOpenidFederation:
       self = .openidFederation
-    case "decentralized_identifier":
+    case OpenId4VPSpec.clientIdSchemeDid:
       self = .decentralizedIdentifier
-    case "x509_san_dns":
+    case OpenId4VPSpec.clientIdSchemeX509SanDns:
       self = .x509SanDns
-    case "x509_hash":
+    case OpenId4VPSpec.clientIdSchemeX509Hash:
       self = .x509Hash
-    case "verifier_attestation":
+    case OpenId4VPSpec.clientIdSchemeVerifierAttestation:
       self = .verifierAttestation
     default:
       return nil // Return nil if the raw value doesn't match any case
