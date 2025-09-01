@@ -91,7 +91,7 @@ internal actor ClientAuthenticator {
       let certificates: [Certificate] = parseCertificates(from: chain)
       guard
         let certificate = certificates.first,
-        let expectedHash = try? certificate.encoded()
+        let expectedHash = try? certificate.hashed()
       else {
         throw ValidationError.validationError("No valid certificate in chain")
       }
@@ -246,12 +246,20 @@ internal actor ClientAuthenticator {
 
 private extension Certificate {
   
-  /// SHA-256 over the certificate's canonical DER; Base64URL (no padding).
-  func encoded() throws -> String {
+  func hashed() throws -> String {
     var serializer = DER.Serializer()
-    try serializer.serialize(self)
-    let der = Data(serializer.serializedBytes)
-    let digest = SHA256.hash(data: der)
-    return Data(digest).base64URLEncodedString
+    try serializer
+      .serialize(
+        self
+      )
+    let der = Data(
+      serializer.serializedBytes
+    )
+    let digest = SHA256.hash(
+      data: der
+    )
+    return Data(
+      digest
+    ).base64URLEncodedString
   }
 }
