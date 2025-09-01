@@ -60,7 +60,8 @@ public actor AccessValidator: AccessValidating {
         clientId: clientId,
         jws: jws
       )
-    case .x509SanDns:
+    case .x509SanDns,
+         .x509Hash:
       let supported: SupportedClientIdPrefix? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
       try await validateX509(
         supportedClientIdScheme: supported,
