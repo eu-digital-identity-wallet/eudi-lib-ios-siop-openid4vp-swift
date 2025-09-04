@@ -53,8 +53,7 @@ final class TransactionDataTests: XCTestCase {
     let transactionData = TransactionData.create(
       type: try .init(value: "example-type"),
       credentialIds: [
-        try .init(value: "cred1"),
-        try .init(value: "cred2")
+        try .init(value: "query_0"),
       ],
       hashAlgorithms: [HashAlgorithm.sha256]
     )
@@ -65,14 +64,17 @@ final class TransactionDataTests: XCTestCase {
       hashAlgorithms: Set([HashAlgorithm.sha256])
     )
 
-    // Create a dummy presentation definition with matching credential IDs.
-    let dummyPresentation = TestsConstants.presentationDefinition
-
     // Parse the transaction data.
     let result = TransactionData.parse(
       transactionData.value,
       supportedTypes: [supportedType],
-      presentationQuery: .byPresentationDefinition(dummyPresentation)
+      presentationQuery: .byDigitalCredentialsQuery(try! .init(credentials: [
+        .init(
+          id: .init(value: "query_0"),
+          format: .init(format: "sd-jwt"),
+          meta: [:]
+        )
+      ]))
     )
 
     switch result {
@@ -103,13 +105,16 @@ final class TransactionDataTests: XCTestCase {
       hashAlgorithms: Set([HashAlgorithm.sha256])
     )
 
-    // Create a dummy presentation definition with matching credential IDs.
-    let dummyPresentation = TestsConstants.presentationDefinition
-
     let result = TransactionData.parse(
       transactionData.value,
       supportedTypes: [unsupportedType],
-      presentationQuery: .byPresentationDefinition(dummyPresentation)
+      presentationQuery: .byDigitalCredentialsQuery(try! .init(credentials: [
+        .init(
+          id: .init(value: "query_0"),
+          format: .init(format: "sd-jwt"),
+          meta: [:]
+        )
+      ]))
     )
 
     switch result {
@@ -139,13 +144,16 @@ final class TransactionDataTests: XCTestCase {
       hashAlgorithms: Set([HashAlgorithm.sha256])
     )
 
-    // Create a dummy presentation definition with a missing credential ID.
-    let dummyPresentation = TestsConstants.presentationDefinition
-
     let result = TransactionData.parse(
       transactionData.value,
       supportedTypes: [supportedType],
-      presentationQuery: .byPresentationDefinition(dummyPresentation)
+      presentationQuery: .byDigitalCredentialsQuery(try! .init(credentials: [
+        .init(
+          id: .init(value: "query_0"),
+          format: .init(format: "sd-jwt"),
+          meta: [:]
+        )
+      ]))
     )
 
     switch result {
@@ -224,29 +232,5 @@ final class TransactionDataTests: XCTestCase {
 
     let decodedCredentialIds = try transactionData.credentialIds().map { $0.value }
     XCTAssertEqual(Set(decodedCredentialIds), Set(["credA", "credB"]))
-
-    let decodedHashAlgorithms = try transactionData.hashAlgorithms().map { $0.name }
-    XCTAssertEqual(decodedHashAlgorithms, ["sha-256"])
-  }
-
-  func testTransactionDataWithEmptyValue() throws {
-    XCTAssertThrowsError(try TransactionDataCredentialId(value: "")) { error in
-      XCTAssertEqual(error as? ValidationError, ValidationError.validationError("TransactionDataCredentialId value cannot be empty"))
-    }
-  }
-
-  func testDescriptionReturnsValue() throws {
-    let expectedValue = "test-value"
-    let credentialId = try TransactionDataCredentialId(value: expectedValue)
-    let description = credentialId.description
-
-    XCTAssertEqual(description, expectedValue)
-  }
-
-  func testValueIsStoredCorrectly() throws {
-    let expectedValue = "test-value"
-    let credentialId = try TransactionDataCredentialId(value: expectedValue)
-
-    XCTAssertEqual(credentialId.value, expectedValue)
   }
 }

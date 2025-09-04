@@ -26,9 +26,9 @@ extension ResolvedRequestData {
     public let responseMode: ResponseMode?
     public let state: String?
     public let scope: Scope?
-    public let jarmRequirement: JARMRequirement?
+    public let responseEncryptionSpecification: ResponseEncryptionSpecification?
     public let transactionData: [TransactionData]?
-    public let verifierAttestations: [VerifierAttestation]?
+    public let verifierInfo: [VerifierInfo]?
 
     /// Initializes the `IdTokenData` structure with the provided values.
     /// - Parameters:
@@ -40,9 +40,9 @@ extension ResolvedRequestData {
     ///   - responseMode: The response mode.
     ///   - state: The state.
     ///   - scope: The scope.
-    ///   - jarmRequirement: JARM
+    ///   - responseEncryptionSpecification: Encryption specification
     ///   - transactionData: Optional list of transcation data
-    ///   - verifierAttestations: Optional list of verifierAttestations
+    ///   - verifierInfo: Optional list of verifierInfo
     public init(
       idTokenType: IdTokenType,
       presentationQuery: PresentationQuery,
@@ -52,9 +52,9 @@ extension ResolvedRequestData {
       responseMode: ResponseMode?,
       state: String?,
       scope: Scope?,
-      jarmRequirement: JARMRequirement?,
+      responseEncryptionSpecification: ResponseEncryptionSpecification?,
       transactionData: [TransactionData]? = nil,
-      verifierAttestations: [VerifierAttestation]? = nil
+      verifierInfo: [VerifierInfo]? = nil
     ) {
       self.idTokenType = idTokenType
       self.presentationQuery = presentationQuery
@@ -64,9 +64,9 @@ extension ResolvedRequestData {
       self.responseMode = responseMode
       self.state = state
       self.scope = scope
-      self.jarmRequirement = jarmRequirement
+      self.responseEncryptionSpecification = responseEncryptionSpecification
       self.transactionData = transactionData
-      self.verifierAttestations = verifierAttestations
+      self.verifierInfo = verifierInfo
     }
   }
 }

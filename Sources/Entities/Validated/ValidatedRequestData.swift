@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 import JOSESwift
 import X509
 import SwiftyJSON
@@ -66,26 +65,6 @@ public enum ValidatedRequestData: Sendable {
       request.client.id
     case .idAndVpToken(let request):
       request.client.id
-    }
-  }
-
-  public func clientMetaData() async -> ClientMetaData.Validated? {
-    let source = switch self {
-    case .idToken(let request):
-      request.clientMetaDataSource
-    case .vpToken(let request):
-      request.clientMetaDataSource
-    case .idAndVpToken(let request):
-      request.clientMetaDataSource
-    }
-
-    switch source {
-    case .passByValue(let metadata):
-      return try? await ClientMetaDataValidator().validate(
-        clientMetaData: metadata
-      )
-    case .none:
-      return nil
     }
   }
 }

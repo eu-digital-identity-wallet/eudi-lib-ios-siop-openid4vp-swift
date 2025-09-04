@@ -76,7 +76,7 @@ public actor AuthorisationService: AuthorisationServiceType {
       )
       return try result.get()
 
-    case .directPostJwt(let url, let data, let jarmRequirement):
+    case .directPostJwt(let url, let data, let responseEncryptionSpecification):
       // Handle invalid request case
       if case .invalidRequest(let error, _, let state, _) = data {
         let payload: [String: Any] = [
@@ -100,7 +100,7 @@ public actor AuthorisationService: AuthorisationServiceType {
 
       let encryptor: ResponseSignerEncryptor = .init()
       let joseResponse = try await encryptor.signEncryptResponse(
-        requirement: jarmRequirement,
+        responseEncryptionSpecification: responseEncryptionSpecification,
         data: data
       )
 

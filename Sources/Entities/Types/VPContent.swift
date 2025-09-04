@@ -17,27 +17,30 @@ import Foundation
 import SwiftyJSON
 
 public enum VpContent: Sendable {
-  case presentationExchange(
-    verifiablePresentations: [VerifiablePresentation],
-    presentationSubmission: PresentationSubmission
-  )
-
-  case dcql(verifiablePresentations: [QueryId: VerifiablePresentation])
-
+  case dcql(verifiablePresentations: [
+    QueryId: [VerifiablePresentation]
+  ])
+  
   static func encodeDCQLQuery(
-    _ query: [QueryId: VerifiablePresentation]
+    _ query: [QueryId: [VerifiablePresentation]]
   ) -> [String: JSON] {
-
+    
     var components: [String: JSON] = [:]
-    for (key, value) in query {
-      switch value {
-      case .generic(let value):
-        components[key.value] = JSON(value)
-      case .json(let value):
-        components[key.value] = value
+    for (key, presentations) in query {
+      // Encode the array of presentations into JSON
+      let jsonArray: [JSON] = presentations.map { presentation in
+        switch presentation {
+        case .generic(let value):
+          return JSON(value)
+        case .json(let value):
+          return value
+        }
       }
+      
+      // Store as a JSON array under the query ID
+      components[key.value] = JSON(jsonArray)
     }
-
+    
     return components
   }
 }

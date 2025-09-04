@@ -13,19 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import Foundation
 
-public struct TransactionDataCredentialId: Codable, Equatable, CustomStringConvertible {
-  public let value: String
+public enum ClaimFormat: Equatable, Sendable {
+  case msoMdoc
+  case jwtType(JWTType)
+  case ldpType(LDPType)
 
-  public init(value: String) throws {
-    guard !value.isEmpty else {
-      throw ValidationError.validationError(
-        "TransactionDataCredentialId value cannot be empty"
-      )
-    }
-    self.value = value
+  public enum JWTType: Sendable {
+    case jwt
+    case jwt_vc
+    case jwt_vp
   }
 
-  public var description: String { value }
+  public enum LDPType: Sendable {
+    case ldp
+    case ldp_vc
+    case ldp_vp
+  }
 }
+
+public extension ClaimFormat {
+  
+  static func `default`() -> [ClaimFormat] {
+    [
+      .jwtType(.jwt),
+      .jwtType(.jwt_vc),
+      .jwtType(.jwt_vp),
+      .msoMdoc
+    ]
+  }
+}
+

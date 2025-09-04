@@ -43,7 +43,7 @@ public struct OpenId4VPSpec {
   public static let DCQL_CLAIM_SETS: String = "claim_sets"
   public static let DCQL_OPTIONS: String = "options"
   public static let DCQL_REQUIRED: String = "required"
-  public static let DCQL_PURPOSE: String = "purpose"
+
   public static let DCQL_PATH: String = "path"
   public static let DCQL_VALUES: String = "values"
   public static let DCQL_SD_JWT_VC_VCT_VALUES: String = "vct_values"
@@ -51,5 +51,14 @@ public struct OpenId4VPSpec {
   public static let DCQL_MSO_MDOC_NAMESPACE: String = "namespace"
   public static let DCQL_MSO_MDOC_CLAIM_NAME: String = "claim_name"
 
-  public static let DCQL_MSO_MDOC_INTENT_TO_RETAIN = "intent_to_retain"
+  public static let DCQL_MULTIPLE: String = "multiple"
+  public static let DCQL_TRUSTED_AUTHORITIES: String = "trusted_authorities"
+  public static let DCQL_REQUIRE_CRYPTOGRAPHIC_HB: String = "require_cryptographic_holder_binding"
+  
+  public static let DCQL_MSO_MDOC_INTENT_TO_RETAIN: String = "intent_to_retain"
+  public static let DCQL_TRUSTED_AUTHORITY_TYPE: String = "type"
+  public static let DCQL_TRUSTED_AUTHORITY_VALUES: String = "values"
+  public static let DCQL_TRUSTED_AUTHORITY_TYPE_AKI: String = "aki"
+  public static let DCQL_TRUSTED_AUTHORITY_TYPE_ETSI_TL: String = "etsi_tl"
+  public static let DCQL_TRUSTED_AUTHORITY_TYPE_OPENID_FEDERATION: String = "openid_federation"
 }

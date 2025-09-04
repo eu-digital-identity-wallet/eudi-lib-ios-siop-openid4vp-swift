@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-@_exported import PresentationExchange
 import SwiftyJSON
 
 /**
@@ -26,7 +25,6 @@ import SwiftyJSON
  */
 public protocol SiopOpenID4VPType {
   func authorize(url: URL) async -> AuthorizationRequest
-  func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match
   func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome
   func submit()
   func consent()
@@ -71,20 +69,6 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
         dispatchDetails: nil
       )
     }
-  }
-
-  /**
-   Matches a presentation definition to a list of claims.
-
-   - Parameters:
-    - presentationDefinition: A valid URL
-    - claims: A list of claim objects
-
-   - Returns: A ClaimsEvaluation object, empty or with matches
-   */
-  public func match(presentationDefinition: PresentationDefinition, claims: [Claim]) -> Match {
-    let matcher = PresentationMatcher()
-    return matcher.match(claims: claims, with: presentationDefinition)
   }
 
   /**

@@ -18,22 +18,27 @@ import SwiftyJSON
 
 // MARK: - TransactionData
 
-public struct TransactionData: Codable, Sendable {
-  public let value: String
+public enum TransactionData: Codable, Sendable {
+  case sdJwtVc(value: String)
 
+  var value: String {
+    switch self {
+    case .sdJwtVc(let value):
+      return value
+    }
+  }
+  
   public init(value: String) {
-    self.value = value
+    self = .sdJwtVc(value: value)
   }
 
   public init(
     type: TransactionDataType,
-    credentialIds: [TransactionDataCredentialId],
-    hashAlgorithms: [HashAlgorithm]?
+    credentialIds: [QueryId]
   ) {
     self = Self.create(
       type: type,
-      credentialIds: credentialIds,
-      hashAlgorithms: hashAlgorithms
+      credentialIds: credentialIds
     )
   }
 
@@ -41,12 +46,8 @@ public struct TransactionData: Codable, Sendable {
     try decode(value).type()
   }
 
-  public func credentialIds() throws -> [TransactionDataCredentialId] {
+  public func credentialIds() throws -> [QueryId] {
     try decode(value).credentialIds()
-  }
-
-  public func hashAlgorithms() throws -> [HashAlgorithm] {
-    try decode(value).hashAlgorithms()
   }
 
   /// Parses a TransactionData from a string, validating against supported types and the presentation query.
@@ -57,8 +58,6 @@ public struct TransactionData: Codable, Sendable {
   ) -> Result<TransactionData, Error> {
     Result {
       let ids: [String] = switch presentationQuery {
-      case .byPresentationDefinition(let presentationDefinition):
-        presentationDefinition.inputDescriptors.map { $0.id }
       case .byDigitalCredentialsQuery(let dcql):
         dcql.credentials.map { $0.id.value }
       }
@@ -81,26 +80,14 @@ public struct TransactionData: Codable, Sendable {
     return try JSON(data: jsonData)
   }
 
-  /// Validates if the transaction data type and hash algorithms are supported.
+  /// Validates if the transaction data type is supported.
   private func isSupported(_ supportedTypes: [SupportedTransactionDataType]) throws {
-    guard let supportedType = supportedTypes.first(where: { supportedType -> Bool in
-      do {
-        return try self.type() == supportedType.type
-      } catch {
-        return false
-      }
-    }) else {
-      throw ValidationError.validationError(
-        "Unsupported transaction data type: \(String(describing: self.type))"
-      )
-    }
+    let actualType = try self.type()                // evaluate once
 
-    let algorithms: [HashAlgorithm] = try self.hashAlgorithms()
-    let hashAlgorithmsSet = Set(algorithms)
-    let supportedHashAlgorithms = supportedType.hashAlgorithms
-    guard !supportedHashAlgorithms.intersection(hashAlgorithmsSet).isEmpty else {
+    let isTypeSupported = supportedTypes.contains { $0.type == actualType }
+    guard isTypeSupported else {
       throw ValidationError.validationError(
-        "Unsupported hash algorithms: \(String(describing: self.hashAlgorithms))"
+        "Unsupported transaction data type: \(actualType)"
       )
     }
   }
@@ -108,7 +95,7 @@ public struct TransactionData: Codable, Sendable {
   /// Validates if the transaction data has the correct credential IDs as per the ids.
   private func hasCorrectIds(_ ids: [String]) throws {
     let requestedCredentialIds = try ids.map {
-      try TransactionDataCredentialId(value: $0)
+      try QueryId(value: $0)
     }
     guard requestedCredentialIds.containsAll(try self.credentialIds()) else {
       throw ValidationError.validationError(
@@ -116,21 +103,16 @@ public struct TransactionData: Codable, Sendable {
       )
     }
   }
-
+  
   /// Convenience initializer to build a JSON from components.
   internal static func json(
     type: TransactionDataType,
-    credentialIds: [TransactionDataCredentialId],
-    hashAlgorithms: [HashAlgorithm]? = nil
+    credentialIds: [QueryId]
   ) -> JSON {
 
     var json = JSON()
     json[OpenId4VPSpec.TRANSACTION_DATA_TYPE].string = type.value
     json[OpenId4VPSpec.TRANSACTION_DATA_CREDENTIAL_IDS].arrayObject = credentialIds.map { $0.value }
-
-    if let hashAlgorithms = hashAlgorithms, !hashAlgorithms.isEmpty {
-      json[OpenId4VPSpec.TRANSACTION_DATA_HASH_ALGORITHMS].arrayObject = hashAlgorithms.map { $0.name }
-    }
 
     return json
   }
@@ -138,7 +120,7 @@ public struct TransactionData: Codable, Sendable {
   /// Convenience initializer to build a TransactionData from components.
   public static func create(
     type: TransactionDataType,
-    credentialIds: [TransactionDataCredentialId],
+    credentialIds: [QueryId],
     hashAlgorithms: [HashAlgorithm]? = nil,
     builder: (inout JSON) -> Void = { _ in }
   ) -> TransactionData {
@@ -183,20 +165,9 @@ internal extension JSON {
     }
   }
 
-  func credentialIds() throws -> [TransactionDataCredentialId] {
+  func credentialIds() throws -> [QueryId] {
     let ids = try self.requiredStringArray(OpenId4VPSpec.TRANSACTION_DATA_CREDENTIAL_IDS)
-    return try ids.map { try TransactionDataCredentialId(value: $0) }
-  }
-}
-
-/// Extension to compare arrays of TransactionDataCredentialId.
-/// Assumes that TransactionDataCredentialId conforms to Equatable.
-private extension Array where Element == TransactionDataCredentialId {
-  func containsAll(_ other: [TransactionDataCredentialId]) -> Bool {
-    for item in other {
-      if !self.contains(where: { $0 == item }) { return false }
-    }
-    return true
+    return try ids.map { try QueryId(value: $0) }
   }
 }
 
@@ -210,5 +181,13 @@ struct Base64UrlNoPadding {
     }
 
     return data
+  }
+}
+
+extension Sequence where Element: Hashable {
+  /// Returns true if this sequence contains all elements of another sequence.
+  func containsAll<S: Sequence>(_ other: S) -> Bool where S.Element == Element {
+    let selfSet = Set(self)
+    return Set(other).isSubset(of: selfSet)
   }
 }

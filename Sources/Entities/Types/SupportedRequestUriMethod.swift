@@ -98,7 +98,7 @@ public enum SupportedRequestUriMethod: Sendable {
       jarEncryption: .required(
         encryptionRequirementSpecification: .init(
           supportedEncryptionAlgorithm: .ECDH_ES,
-          supportedEncryptionMethod: .A128CBCHS256,
+          supportedEncryptionMethod: .A128GCM,
           ephemeralEncryptionKeyCurve: .P256
         )
       )

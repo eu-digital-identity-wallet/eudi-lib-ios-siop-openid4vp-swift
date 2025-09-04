@@ -53,7 +53,7 @@ internal struct JWTDecoder {
 
     let pd = json["presentation_definition"].dictionaryObject?.toJSONString() ?? json["presentation_definition"].string
     let transactionData = json["transaction_data"].arrayObject as? [String]
-    let verifierAttestations = json["verifier_attestations"].arrayValue
+    let verifierInfo = json["verifier_info"].arrayValue
 
     return UnvalidatedRequestObject(
       responseType: json["response_type"].string,
@@ -76,7 +76,7 @@ internal struct JWTDecoder {
       idTokenType: json["id_token_type"].string,
       supportedAlgorithm: json["supported_algorithm"].string,
       transactionData: transactionData,
-      verifierAttestations: verifierAttestations
+      verifierInfo: verifierInfo
     )
   }
 }
@@ -130,7 +130,7 @@ internal actor RequestAuthenticator {
     requestObject: UnvalidatedRequestObject,
     clientMetaData: ClientMetaData.Validated
   ) throws -> ValidatedRequestData {
-    let formats: VpFormats = clientMetaData.vpFormats
+    let formats: VpFormatsSupported = clientMetaData.vpFormatsSupported
     let querySource = try parseQuerySource(
       requestObject: requestObject
     )
@@ -145,10 +145,10 @@ internal actor RequestAuthenticator {
       scope: requestObject.scope,
       responseMode: requestObject.validResponseMode,
       state: requestObject.state,
-      vpFormats: formats.values.isEmpty ? try VpFormats.default() : formats,
+      vpFormatsSupported: formats.values.isEmpty ? try VpFormatsSupported.default() : formats,
       transactionData: requestObject.transactionData,
-      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
-        try VerifierAttestation.from(json: json)
+      verifierInfo:  try requestObject.verifierInfo?.map({ json in
+        try VerifierInfo.from(json: json)
       })
     ))
   }
@@ -175,8 +175,8 @@ internal actor RequestAuthenticator {
       responseMode: try? .init(authorizationRequestData: requestObject),
       state: requestObject.state,
       transactionData: requestObject.transactionData,
-      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
-        try VerifierAttestation.from(json: json)
+      verifierInfo:  try requestObject.verifierInfo?.map({ json in
+        try VerifierInfo.from(json: json)
       })
     ))
   }
@@ -189,7 +189,7 @@ internal actor RequestAuthenticator {
     requestObject: UnvalidatedRequestObject,
     clientMetaData: ClientMetaData.Validated
   ) throws -> ValidatedRequestData {
-    let formats: VpFormats = clientMetaData.vpFormats
+    let formats: VpFormatsSupported = clientMetaData.vpFormatsSupported
     let querySource = try parseQuerySource(
       requestObject: requestObject
     )
@@ -203,31 +203,24 @@ internal actor RequestAuthenticator {
       responseMode: requestObject.validResponseMode,
       requestUriMethod: .init(method: requestObject.requestUriMethod),
       state: requestObject.state,
-      vpFormats: formats.values.isEmpty ? try VpFormats.default() : formats,
+      vpFormatsSupported: formats.values.isEmpty ? try VpFormatsSupported.default() : formats,
       transactionData: requestObject.transactionData,
-      verifierAttestations:  try requestObject.verifierAttestations?.map({ json in
-        try VerifierAttestation.from(json: json)
+      verifierInfo:  try requestObject.verifierInfo?.map({ json in
+        try VerifierInfo.from(json: json)
       })
     ))
   }
 
   func parseQuerySource(requestObject: UnvalidatedRequestObject) throws -> QuerySource {
 
-    let hasPd = requestObject.presentationDefinition != nil
-    let hasPdUri = requestObject.presentationDefinitionUri != nil
     let hasDcqlQuery = requestObject.dcqlQuery?.exists() ?? false
-
-    let querySourceCount = [hasPd, hasPdUri, hasDcqlQuery].filter { $0 }.count
+    let querySourceCount = [hasDcqlQuery].filter { $0 }.count
 
     if querySourceCount > 1 {
       throw ValidationError.multipleQuerySources
     }
 
-    if hasPd || hasPdUri {
-      return .byPresentationDefinitionSource(
-        try .init(authorizationRequestData: requestObject)
-      )
-    } else if hasDcqlQuery, let dcqlQuery = requestObject.dcqlQuery {
+    if hasDcqlQuery, let dcqlQuery = requestObject.dcqlQuery {
       return .dcqlQuery(
         try .init(
           from: dcqlQuery

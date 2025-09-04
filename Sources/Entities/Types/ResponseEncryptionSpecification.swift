@@ -15,7 +15,20 @@
  */
 import Foundation
 
-public enum QuerySource: Sendable {
-  case dcqlQuery(DCQL)
-  case byScope(Scope)
+public struct ResponseEncryptionSpecification: Equatable, Sendable {
+  
+  public let responseEncryptionAlg: JWEAlgorithm
+  public let responseEncryptionEnc: EncryptionMethod
+  public let clientKey: WebKeySet
+  
+  public init(
+    responseEncryptionAlg: JWEAlgorithm,
+    responseEncryptionEnc: EncryptionMethod,
+    clientKey: WebKeySet
+  ) {
+    self.responseEncryptionAlg = responseEncryptionAlg
+    self.responseEncryptionEnc = responseEncryptionEnc
+    self.clientKey = clientKey
+  }
 }
+

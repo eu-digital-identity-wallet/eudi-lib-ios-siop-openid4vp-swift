@@ -18,7 +18,7 @@
 import Foundation
 @preconcurrency import SwiftyJSON
 
-public struct VerifierAttestation: Codable, Sendable, Equatable {
+public struct VerifierInfo: Codable, Sendable, Equatable {
 
   public let format: String
   public let data: JSON
@@ -34,7 +34,7 @@ public struct VerifierAttestation: Codable, Sendable, Equatable {
     self.credentialIds = credentialIds
   }
 
-  public static func from(json: JSON) throws -> VerifierAttestation {
+  public static func from(json: JSON) throws -> VerifierInfo {
       guard let format = json["format"].string else {
         throw ValidationError.invalidVerifierAttestationFormat
       }
@@ -47,17 +47,17 @@ public struct VerifierAttestation: Codable, Sendable, Equatable {
           try QueryId(value: $0.stringValue) }
       }
 
-      return VerifierAttestation(format: format, data: data, credentialIds: credentialIds)
+      return VerifierInfo(format: format, data: data, credentialIds: credentialIds)
   }
 }
 
 
-public extension VerifierAttestation {
+public extension VerifierInfo {
   
-  static func validatedVerifierAttestations(
-    _ attestations: [VerifierAttestation]?,
+  static func validatedVerifierInfo(
+    _ attestations: [VerifierInfo]?,
     presentationQuery: PresentationQuery
-  ) throws -> [VerifierAttestation]? {
+  ) throws -> [VerifierInfo]? {
     
     guard let attestations else { return nil }
     switch presentationQuery {
@@ -73,10 +73,7 @@ public extension VerifierAttestation {
           }
         }
       }
-      
       return attestations
-    case .byPresentationDefinition(_):
-      return nil
     }
   }
 }

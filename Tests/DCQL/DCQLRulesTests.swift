@@ -62,8 +62,8 @@ final class DCQLRulesTests: XCTestCase {
       let id = try QueryId(value: "id")
       _ = try DCQL(
         credentials: [
-          .init(id: id, format: try Format.MsoMdoc()),
-          .init(id: id, format: try Format.SdJwtVc())
+          .init(id: id, format: try Format.MsoMdoc(), meta: [:]),
+          .init(id: id, format: try Format.SdJwtVc(), meta: [:])
         ]
       )
       XCTAssert(false, "CredentialQuery ids must be unique")
@@ -76,8 +76,8 @@ final class DCQLRulesTests: XCTestCase {
     do {
       _ = try DCQL(
         credentials: [
-          .init(id: .init(value: "1"), format: try Format.MsoMdoc()),
-          .init(id: .init(value: "2"), format: try Format.SdJwtVc())
+          .init(id: .init(value: "1"), format: try Format.MsoMdoc(), meta: [:]),
+          .init(id: .init(value: "2"), format: try Format.SdJwtVc(), meta: [:])
         ],
         credentialSets: []
       )

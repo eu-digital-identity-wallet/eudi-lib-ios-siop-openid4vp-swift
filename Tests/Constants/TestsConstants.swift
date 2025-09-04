@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 import CryptoKit
 import CryptoSwift
 import JOSESwift
@@ -31,10 +30,7 @@ struct TestsConstants {
       idTokenEncryptedResponseAlg: ".idTokenEncryptedResponseAlg",
       idTokenEncryptedResponseEnc: ".idTokenEncryptedResponseEnc",
       subjectSyntaxTypesSupported: [],
-      authorizationSignedResponseAlg: ".authorizationSignedResponseAlg",
-      authorizationEncryptedResponseAlg: ".authorizationEncryptedResponseAlg",
-      authorizationEncryptedResponseEnc: ".authorizationEncryptedResponseEnc",
-      vpFormats: Self.testVpFormatsTO()
+      vpFormatsSupported: Self.testVpFormatsSupportedTO()
     )
   }
   
@@ -48,34 +44,9 @@ struct TestsConstants {
       authorizationSignedResponseAlg: .init(.ES256),
       authorizationEncryptedResponseAlg: .init(.A128GCMKW),
       authorizationEncryptedResponseEnc: .init(.A128CBC_HS256),
-      vpFormats: try! VpFormats(from: TestsConstants.testVpFormatsTO())!
+      vpFormatsSupported: try! VpFormatsSupported(from: TestsConstants.testVpFormatsSupportedTO())!
     )
   }
-  
-  public static let testPresentationId = "32f54163-7166-48f1-93d8-ff217bdb0653"
-  public static let testPresentationSubmission: PresentationSubmission = .init(
-    id: "028b39fd-33b6-46a1-8887-2ef654771d7f",
-    definitionID: TestsConstants.testPresentationId,
-    descriptorMap: [
-      .init(
-        id: "wa_driver_license",
-        format: "mso_mdoc",
-        path: "$"
-      )
-    ]
-  )
-  
-  public static let testPresentationSubmissionSdJwt: PresentationSubmission = .init(
-    id: "028b39fd-33b6-46a1-8887-2ef654771d7f",
-    definitionID: TestsConstants.testPresentationId,
-    descriptorMap: [
-      .init(
-        id: "wa_driver_license",
-        format: "dc+sd-jwt",
-        path: "$"
-      )
-    ]
-  )
   
   public static let testClientId = "dev.verifier-backend.eudiw.dev"
   public static let clientId = "x509_san_dns:\(Self.testClientId)"
@@ -132,34 +103,6 @@ struct TestsConstants {
   
   static let sampleValidJWKS = #"{"keys":[{"kty":"RSA", "e":"AQAB", "use":"sig", "kid":"9556a7a5-bb4f-4354-9208-74789528d1c7", "iat":1691595131, "n":"087NDoY9u7QUYAd-hjzx0B7k5_jofB1-wgRWGpFtpFmBkWMPCHtH72E240xkEO_nrgyEPJvh5-K6V--9MHevBCw1ihR-GtiCK4LEtY6alTWJx90yFEwiwHqVTzWpGDZSyRb3QGgjSgqWlYeIHkro58EykYyVCXr9m5PuyiM1Uekt6PXAZdWYFBeT8v1bjwe8knVEayC7U5eVkScabGcGGUWRFeOVbkS6vR18PCJ8nokHQipISpgD2pdD29Vn39Aped3hd7tdVJj-C7qZwIuAEUeRzxXeKdLRxmZvj_oX_Q39XzNVpMVO8IQSrKvqPKvQUNABboxb24L7pK1b9F0S4w"}]}"#
   
-  static let testClaimsBankAndPassport = [
-    Claim(
-      id: "samplePassport",
-      format: "ldp",
-      jsonObject: [
-        "credentialSchema":
-          [
-            "id": "hub://did:foo:123/Collections/schema.us.gov/passport.json"
-          ],
-        "credentialSubject":
-          [
-            "birth_date": "1974-11-11"
-          ]
-      ]
-    ),
-    Claim(
-      id: "sampleBankAccount",
-      format: "jwt",
-      jsonObject: [
-        "issuer": "did:example:123",
-        "credentialSchema":
-          [
-            "id": "https://bank-standards.example.com/fullaccountroute.json"
-          ]
-      ]
-    )
-  ]
-  
   // MARK: - Client meta data by value, Presentation definition by reference
   
   static let validVpTokenByClientByValuePresentationByReferenceUrlString =
@@ -167,7 +110,7 @@ struct TestsConstants {
   "response_type=vp_token" +
   "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
-  "&client_metadata={\"jwks\":{\"keys\":[{\"kty\":\"RSA\", \"e\":\"AQAB\", \"use\":\"sig\", \"kid\":\"a4e1bbe6-26e8-480b-a364-f43497894453\", \"iat\":1683559586, \"n\":\"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew\"}]}, \"id_token_signed_respons e_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats\":{\"vc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}}" +
+  "&client_metadata={\"jwks\":{\"keys\":[{\"kty\":\"RSA\", \"e\":\"AQAB\", \"use\":\"sig\", \"kid\":\"a4e1bbe6-26e8-480b-a364-f43497894453\", \"iat\":1683559586, \"n\":\"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew\"}]}, \"id_token_signed_respons e_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats_supported\":{\"dc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
   "&presentation_definition={\"comment\":\"Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.\",\"presentation_definition\":{\"id\":\"8e6ad256-bd03-4361-a742-377e8cccced0\",\"name\":\"Presentation definition 002\",\"purpose\":\"Account info 002\",\"input_descriptors\":[{\"id\":\"wa_driver_license\",\"name\":\"Washington State Business License\",\"purpose\":\"We can only allow licensed Washington State business representatives into the WA Business Conference\",\"constraints\":{\"fields\":[{\"path\":[\"$.credentialSubject.dateOfBirth\",\"$.credentialSubject.dob\",\"$.vc.credentialSubject.dateOfBirth\",\"$.vc.credentialSubject.dob\"]}]}}]}}" +
   "&nonce=n-0S6_WzA2Mj" +
@@ -184,7 +127,7 @@ struct TestsConstants {
   "response_type=id_token" +
   "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
-  "&client_metadata={\"jwks\":{\"keys\":[{\"kty\":\"RSA\", \"e\":\"AQAB\", \"use\":\"sig\", \"kid\":\"a4e1bbe6-26e8-480b-a364-f43497894453\", \"iat\":1683559586, \"n\":\"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew\"}]},\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats\":{\"vc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}}" +
+  "&client_metadata={\"jwks\":{\"keys\":[{\"kty\":\"RSA\", \"e\":\"AQAB\", \"use\":\"sig\", \"kid\":\"a4e1bbe6-26e8-480b-a364-f43497894453\", \"iat\":1683559586, \"n\":\"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew\"}]},\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats_supported\":{\"dc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
   "&presentation_definition={\"comment\":\"Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.\",\"presentation_definition\":{\"id\":\"8e6ad256-bd03-4361-a742-377e8cccced0\",\"name\":\"Presentation definition 002\",\"purpose\":\"Account info 002\",\"input_descriptors\":[{\"id\":\"wa_driver_license\",\"name\":\"Washington State Business License\",\"purpose\":\"We can only allow licensed Washington State business representatives into the WA Business Conference\",\"constraints\":{\"fields\":[{\"path\":[\"$.credentialSubject.dateOfBirth\",\"$.credentialSubject.dob\",\"$.vc.credentialSubject.dateOfBirth\",\"$.vc.credentialSubject.dob\"]}]}}]}}" +
   "&nonce=n-0S6_WzA2Mj" +
@@ -202,7 +145,7 @@ struct TestsConstants {
   "response_type=vp_token id_token" +
   "&client_id=verifier-backend.eudiw.dev" +
   "&client_id_scheme=pre-registered" +
-  "&client_metadata={\"jwks\":{\"keys\":[{\"kty\":\"RSA\", \"e\":\"AQAB\", \"use\":\"sig\", \"kid\":\"a4e1bbe6-26e8-480b-a364-f43497894453\", \"iat\":1683559586, \"n\":\"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew\"}]},\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats\":{\"vc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}}" +
+  "&client_metadata={\"jwks\":{\"keys\":[{\"kty\":\"RSA\", \"e\":\"AQAB\", \"use\":\"sig\", \"kid\":\"a4e1bbe6-26e8-480b-a364-f43497894453\", \"iat\":1683559586, \"n\":\"xHI9zoXS-fOAFXDhDmPMmT_UrU1MPimy0xfP-sL0Iu4CQJmGkALiCNzJh9v343fqFT2hfrbigMnafB2wtcXZeEDy6Mwu9QcJh1qLnklW5OOdYsLJLTyiNwMbLQXdVxXiGby66wbzpUymrQmT1v80ywuYd8Y0IQVyteR2jvRDNxy88bd2eosfkUdQhNKUsUmpODSxrEU2SJCClO4467fVdPng7lyzF2duStFeA2vUkZubor3EcrJ72JbZVI51YDAqHQyqKZIDGddOOvyGUTyHz9749bsoesqXHOugVXhc2elKvegwBik3eOLgfYKJwisFcrBl62k90RaMZpXCxNO4Ew\"}]},\"id_token_signed_response_alg\":\"value_id_token_signed_response_alg\",\"id_token_encrypted_response_alg\":\"value_id_token_encrypted_response_alg\",\"id_token_encrypted_response_enc\":\"value_id_token_encrypted_response_enc\",\"subject_syntax_types_supported\":[\"value_subject_syntax_types_supported\"],\"vp_formats_supported\":{\"dc+sd-jwt\":{\"sd-jwt_alg_values\":[\"ES256\"],\"kb-jwt_alg_values\":[\"ES256\"]}}}" +
   "&redirect_uri=https://client.example.org/redirect_me" +
   "&presentation_definition={\"comment\":\"Note: VP, OIDC, DIDComm, or CHAPI outer wrapper would be here.\",\"presentation_definition\":{\"id\":\"8e6ad256-bd03-4361-a742-377e8cccced0\",\"name\":\"Presentation definition 002\",\"purpose\":\"Account info 002\",\"input_descriptors\":[{\"id\":\"wa_driver_license\",\"name\":\"Washington State Business License\",\"purpose\":\"We can only allow licensed Washington State business representatives into the WA Business Conference\",\"constraints\":{\"fields\":[{\"path\":[\"$.credentialSubject.dateOfBirth\",\"$.credentialSubject.dob\",\"$.vc.credentialSubject.dateOfBirth\",\"$.vc.credentialSubject.dob\"]}]}}]}}" +
   "&nonce=n-0S6_WzA2Mj" +
@@ -393,28 +336,6 @@ struct TestsConstants {
     return "https://verifier-backend.eudiw.dev/wallet/public-keys.json"
   }
   
-  static let presentationDefinition = PresentationDefinition(
-    id: UUID().uuidString,
-    inputDescriptors: [
-      .init(
-        id: "cred1",
-        name: nil,
-        purpose: nil,
-        formatContainer: nil,
-        constraints: .init(fields: []),
-        groups: nil
-      ),
-      .init(
-        id: "cred2",
-        name: nil,
-        purpose: nil,
-        formatContainer: nil,
-        constraints: .init(fields: []),
-        groups: nil
-      )
-    ]
-  )
-  
   static let signedResponseAlg = "RS256"
   static let encryptedResponseAlg = "RSA-OAEP-256"
   static let encryptedResponseEnc = "A128CBC-HS256"
@@ -485,25 +406,7 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
     return Data(bytes).base64URLEncodedString()
   }
   
-  static func presentationSubmission(_ presentationDefinition: PresentationDefinition) -> PresentationSubmission {
-    .init(
-      id: UUID().uuidString,
-      definitionID: presentationDefinition.id,
-      descriptorMap:
-        presentationDefinition.inputDescriptors.filter {
-          $0.formatContainer?.formats.contains(
-            where: { $0["designation"].string?.lowercased() == "mso_mdoc"
-            }) ?? false
-        }.map { DescriptorMap(
-          id: $0.id,
-          format: "mso_mdoc",
-          path: "$"
-        )
-        }
-    )
-  }
-  
-  public static func testVpFormatsTO() -> VpFormatsTO {
+  public static func testVpFormatsSupportedTO() -> VpFormatsSupportedTO {
     .init(
       vcSdJwt: .init(
         sdJwtAlgorithms: ["PS256"],
@@ -531,9 +434,9 @@ d82/03tD1U0Slpjr2098V5XpQMeSveb/elCPCohSBt7tBiaN98zc
   }
   
   static let x509CertificateChain: [String] = [
-    "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"
+    "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"
   ]
   
   static func loadRootCertificates() throws -> [Base64Certificate] {
@@ -713,4 +616,72 @@ func createECPrivateSecKey(xStr: String, yStr: String, dStr: String) -> SecKey? 
   }
   
   return keyReference
+}
+
+func secKeyFromRSAJWK(_ nBase64: String) throws -> SecKey {
+
+  let eBase64 = "AQAB"
+  guard
+    let nData = Data(base64URLEncoded: nBase64),
+    let eData = Data(base64URLEncoded: eBase64)
+  else {
+    throw NSError(
+      domain: "InvalidBase64",
+      code: 8,
+      userInfo: [NSLocalizedDescriptionKey: "Failed to decode n or e"]
+    )
+  }
+  
+  let rsaKeyData = try encodeRSAPublicKey(modulus: nData, exponent: eData)
+  
+  let attributes: [String: Any] = [
+    kSecAttrKeyType as String: kSecAttrKeyTypeRSA,
+    kSecAttrKeyClass as String: kSecAttrKeyClassPublic,
+    kSecAttrKeySizeInBits as String: nData.count * 8
+  ]
+  
+  guard let secKey = SecKeyCreateWithData(
+    rsaKeyData as CFData,
+    attributes as CFDictionary,
+    nil
+  ) else {
+    throw NSError(
+      domain: "SecKeyCreationFailed",
+      code: 9,
+      userInfo: [NSLocalizedDescriptionKey: "Failed to create RSA SecKey"]
+    )
+  }
+  return secKey
+}
+
+func encodeRSAPublicKey(
+  modulus: Data,
+  exponent: Data
+) throws -> Data {
+  
+  let modulusBytes = modulus.bytes
+  let exponentBytes = exponent.bytes
+  
+  let modulusWithLeadingZero = modulusBytes[0] >= 0x80 ? [0x00] + modulusBytes : modulusBytes
+  let exponentWithLeadingZero = exponentBytes[0] >= 0x80 ? [0x00] + exponentBytes : exponentBytes
+  
+  let modulusLength = encodeASN1Length(modulusWithLeadingZero.count)
+  let exponentLength = encodeASN1Length(exponentWithLeadingZero.count)
+  
+  let sequenceLength = encodeASN1Length(1 + modulusLength.count + modulusWithLeadingZero.count + 1 + exponentLength.count + exponentWithLeadingZero.count)
+  
+  let first: [UInt8] = [0x30] + sequenceLength
+  let second: [UInt8] = [0x02] + modulusLength + modulusWithLeadingZero
+  let third: [UInt8] = [0x02] + exponentLength + exponentWithLeadingZero
+  return Data(first + second + third)
+}
+
+// MARK: - ASN.1 Encoding Helpers
+func encodeASN1Length(_ length: Int) -> [UInt8] {
+  if length < 0x80 {
+    return [UInt8(length)]
+  } else {
+    let lengthBytes = withUnsafeBytes(of: length.bigEndian, Array.init).drop { $0 == 0 }
+    return [0x80 | UInt8(lengthBytes.count)] + lengthBytes
+  }
 }

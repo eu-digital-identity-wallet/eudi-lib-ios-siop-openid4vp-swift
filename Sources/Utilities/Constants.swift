@@ -29,7 +29,7 @@ public struct Constants {
   public static let CLIENT_ID_SCHEME = "client_id_scheme"
   public static let PRESENTATION_DEFINITION = "presentation_definition"
   public static let DCQL_QUERY = "dcql_query"
-  public static let VERIFIER_ATTESTATIONS = "verifier_attestations"
+  public static let VERIFIER_INFO = "verifier_info"
   public static let PRESENTATION_DEFINITION_URI = "presentation_definition_uri"
   public static let REQUEST_URI_METHOD = "request_url_method"
   public static let CLIENT_METADATA = "client_metadata"
@@ -56,10 +56,7 @@ public struct Constants {
       idTokenEncryptedResponseAlg: "RS256",
       idTokenEncryptedResponseEnc: "A128CBC-HS256",
       subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
-      authorizationSignedResponseAlg: "RS256",
-      authorizationEncryptedResponseAlg: "RSA-OAEP-256",
-      authorizationEncryptedResponseEnc: "A128CBC-HS256",
-      vpFormats: nil
+      vpFormatsSupported: nil
     )
   }
 

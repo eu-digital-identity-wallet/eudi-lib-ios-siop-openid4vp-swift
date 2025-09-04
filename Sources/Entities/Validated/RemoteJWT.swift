@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 public struct RemoteJWT: Codable, Equatable {
   let jwt: JWTString

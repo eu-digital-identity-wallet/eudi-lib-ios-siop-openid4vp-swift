@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import Foundation
-import PresentationExchange
 
 extension ResolvedRequestData {
   public struct VpTokenData: Sendable {
@@ -24,11 +23,11 @@ extension ResolvedRequestData {
     public let nonce: String
     public let responseMode: ResponseMode?
     public let state: String?
-    public let vpFormats: VpFormats
+    public let vpFormatsSupported: VpFormatsSupported
     public let transactionData: [TransactionData]?
-    public let jarmRequirement: JARMRequirement?
+    public let responseEncryptionSpecification: ResponseEncryptionSpecification?
     
-    public let verifierAttestations: [VerifierAttestation]?
+    public let verifierInfo: [VerifierInfo]?
 
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///
@@ -39,10 +38,10 @@ extension ResolvedRequestData {
     ///   - nonce: The nonce value.
     ///   - responseMode: The response mode.
     ///   - state: The state value.
-    ///   - vpFormats: Vp Formats
-    ///   - jarmRequirement: JARM
+    ///   - vpFormatsSupported: Vp Formats
+    ///   - responseEncryptionSpecification: Encryption specification
     ///   - transactionData: Optional list of transcation data
-    ///   - verifierAttestations: Optional list of verifierAttestations
+    ///   - verifierInfo: Optional list of verifierInfo
     public init(
       presentationQuery: PresentationQuery,
       clientMetaData: ClientMetaData.Validated?,
@@ -50,10 +49,10 @@ extension ResolvedRequestData {
       nonce: String,
       responseMode: ResponseMode?,
       state: String?,
-      vpFormats: VpFormats,
-      jarmRequirement: JARMRequirement?,
+      vpFormatsSupported: VpFormatsSupported,
+      responseEncryptionSpecification: ResponseEncryptionSpecification?,
       transactionData: [TransactionData]? = nil,
-      verifierAttestations: [VerifierAttestation]? = nil
+      verifierInfo: [VerifierInfo]? = nil
     ) {
       self.presentationQuery = presentationQuery
       self.clientMetaData = clientMetaData
@@ -61,10 +60,10 @@ extension ResolvedRequestData {
       self.nonce = nonce
       self.responseMode = responseMode
       self.state = state
-      self.vpFormats = vpFormats
+      self.vpFormatsSupported = vpFormatsSupported
       self.transactionData = transactionData
-      self.jarmRequirement = jarmRequirement
-      self.verifierAttestations = verifierAttestations
+      self.verifierInfo = verifierInfo
+      self.responseEncryptionSpecification = responseEncryptionSpecification
     }
   }
 }
