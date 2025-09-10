@@ -16,8 +16,8 @@
 import Foundation
 @preconcurrency import JOSESwift
 
-public enum SupportedClientIdScheme: @unchecked Sendable {
-  public var scheme: ClientIdScheme {
+public enum SupportedClientIdPrefix: @unchecked Sendable {
+  public var scheme: ClientIdPrefix {
     switch self {
 
     /**
@@ -25,12 +25,12 @@ public enum SupportedClientIdScheme: @unchecked Sendable {
       */
     case .preregistered:
       return .preRegistered
-    case .x509SanUri:
-      return .x509SanUri
     case .x509SanDns:
       return .x509SanDns
-    case .did:
-      return .did
+    case .x509Hash:
+      return .x509Hash
+    case .decentralizedIdentifier:
+      return .decentralizedIdentifier
     case .verifierAttestation:
       return .verifierAttestation
     case .redirectUri:
@@ -45,25 +45,25 @@ public enum SupportedClientIdScheme: @unchecked Sendable {
       * The Client Identifier is known to the Wallet in advance of the Authorization Request.
       */
     case .preregistered:
-      return "pre-registered"
-    case .x509SanUri:
-      return "x509_san_url"
+      return OpenId4VPSpec.clientIdSchemePreRegistered
     case .x509SanDns:
-      return "x509_san_dns"
-    case .did:
-      return "did"
+      return OpenId4VPSpec.clientIdSchemeX509SanDns
+    case .x509Hash:
+      return OpenId4VPSpec.clientIdSchemeX509Hash
+    case .decentralizedIdentifier:
+      return OpenId4VPSpec.clientIdSchemeDid
     case .verifierAttestation:
-      return "verifier_attestation"
+      return OpenId4VPSpec.clientIdSchemeVerifierAttestation
     case .redirectUri:
-      return "redirect_uri"
+      return OpenId4VPSpec.clientIdSchemeRedirectUri
     }
   }
 
   case redirectUri
   case preregistered(clients: [OriginalClientId: PreregisteredClient])
-  case x509SanUri(trust: CertificateTrust)
   case x509SanDns(trust: CertificateTrust)
-  case did(lookup: DIDPublicKeyLookupAgentType)
+  case x509Hash(trust: CertificateTrust)
+  case decentralizedIdentifier(lookup: DIDPublicKeyLookupAgentType)
   case verifierAttestation(
     trust: Verifier,
     clockSkew: TimeInterval = 15.0

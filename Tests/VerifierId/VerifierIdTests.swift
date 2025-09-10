@@ -64,7 +64,7 @@ final class VerifierIdTests: XCTestCase {
 
   // Test failure for pre-registered scheme
   func testParsePreRegisteredClientIdScheme() {
-    let clientId = "\(ClientIdScheme.preRegistered.rawValue):exampleClientId"
+    let clientId = "\(ClientIdPrefix.preRegistered.rawValue):exampleClientId"
     let result = VerifierId.parse(clientId: clientId)
 
     switch result {
@@ -77,12 +77,12 @@ final class VerifierIdTests: XCTestCase {
 
   // Test valid HTTPS scheme
   func testParseValidHttpsClientId() {
-    let clientId = "\(OpenId4VPSpec.clientIdSchemeHttps):exampleClientId"
+    let clientId = "\(OpenId4VPSpec.clientIdSchemeOpenidFederation):exampleClientId"
     let result = VerifierId.parse(clientId: clientId)
 
     switch result {
     case .success(let verifierId):
-      XCTAssertEqual(verifierId.scheme, .https)
+      XCTAssertEqual(verifierId.scheme, .openidFederation)
       XCTAssertEqual(verifierId.originalClientId, clientId)
       XCTAssertEqual(verifierId.clientId, clientId)
     case .failure:
@@ -97,7 +97,7 @@ final class VerifierIdTests: XCTestCase {
 
     switch result {
     case .success(let verifierId):
-      XCTAssertEqual(verifierId.scheme, .did)
+      XCTAssertEqual(verifierId.scheme, .decentralizedIdentifier)
       XCTAssertEqual(verifierId.originalClientId, clientId)
       XCTAssertEqual(verifierId.clientId, clientId)
     case .failure:

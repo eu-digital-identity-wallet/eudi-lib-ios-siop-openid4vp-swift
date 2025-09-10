@@ -97,7 +97,7 @@ private extension ClientMetaDataValidator {
             verifierCandidateEncryptionKeys: WebKeySet(
               keys: verifierCandidateEncryptionKeys
             ),
-            verifierSupportedEncryptionMethods: verifierSupportedEncryptionMethods ?? [EncryptionMethod.parse(RESPONSE_ENCRYPTION_METHODS_SUPPORTED_DEFAULT)]
+            verifierSupportedEncryptionMethods: verifierSupportedEncryptionMethods ?? DEFAULT_RESPONSE_ENCRYPTION_METHODS
           )
         } else {
           throw ValidationError.validationError(

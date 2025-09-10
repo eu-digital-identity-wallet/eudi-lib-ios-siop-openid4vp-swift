@@ -54,28 +54,15 @@ public actor AccessValidator: AccessValidating {
 
     switch clientIdScheme {
     case .preRegistered:
-      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
+      let supported: SupportedClientIdPrefix? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
       try await validatePreregistered(
         supportedClientIdScheme: supported,
         clientId: clientId,
         jws: jws
       )
-    case .x509SanUri:
-      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
-      try await validateX509(
-        supportedClientIdScheme: supported,
-        clientId: clientId,
-        jws: jws,
-        alternativeNames: { certificate in
-          let alternativeNames = try? certificate
-            .extensions
-            .subjectAlternativeNames?
-            .rawUniformResourceIdentifiers()
-          return alternativeNames ?? []
-        }
-      )
-    case .x509SanDns:
-      let supported: SupportedClientIdScheme? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
+    case .x509SanDns,
+         .x509Hash:
+      let supported: SupportedClientIdPrefix? = walletOpenId4VPConfig?.supportedClientIdSchemes.first(where: { $0.scheme == clientIdScheme })
       try await validateX509(
         supportedClientIdScheme: supported,
         clientId: clientId,
@@ -93,7 +80,7 @@ public actor AccessValidator: AccessValidating {
   }
 
   private func validateX509(
-    supportedClientIdScheme: SupportedClientIdScheme?,
+    supportedClientIdScheme: SupportedClientIdPrefix?,
     clientId: String,
     jws: JWS,
     alternativeNames: (Certificate) -> [String]
@@ -111,8 +98,12 @@ public actor AccessValidator: AccessValidating {
     }
 
     switch supportedClientIdScheme {
-    case .x509SanDns(let trust),
-         .x509SanUri(let trust):
+    case .x509SanDns(let trust):
+      let trust = await trust(chain)
+      if !trust {
+        throw ValidationError.validationError("Could not trust certificate chain")
+      }
+    case .x509Hash(let trust):
       let trust = await trust(chain)
       if !trust {
         throw ValidationError.validationError("Could not trust certificate chain")
@@ -156,7 +147,7 @@ public actor AccessValidator: AccessValidating {
   }
 
   private func validatePreregistered(
-    supportedClientIdScheme: SupportedClientIdScheme?,
+    supportedClientIdScheme: SupportedClientIdPrefix?,
     clientId: String,
     jws: JWS
   ) async throws {

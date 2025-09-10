@@ -191,8 +191,7 @@ Library requires the presence of `client_id_scheme` with one of the following va
 
 - `pre-registered` assuming out of bound knowledge of verifier meta-data. A verifier may send an authorization request signed (JAR) or plain
 - `x509-san-dns` where verifier must send the authorization request signed (JAR) using by a suitable X509 certificate
-- `x509-san-uri` where verifier must send the authorization request signed (JAR) using by a suitable X509 certificate
-- `did` where verifier must send the authorization request signed (JAR) using a key resolvable via DID URL.
+- `decentralized_identifier` where verifier must send the authorization request signed (JAR) using a key resolvable via DID URL.
 - `verifier_attestation` where verifier must send the authorization request signed (JAR), witch contains a verifier attestation JWT from a trusted issuer
 
 ### Retrieving Authorization Request 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 public struct VerifierId: Sendable {
-  public let scheme: ClientIdScheme
+  public let scheme: ClientIdPrefix
   public let originalClientId: OriginalClientId
 
   public init(
-    scheme: ClientIdScheme,
+    scheme: ClientIdPrefix,
     originalClientId: OriginalClientId = ""
   ) {
     self.scheme = scheme
@@ -30,8 +30,6 @@ public struct VerifierId: Sendable {
       switch scheme {
       case .redirectUri:
         return OpenId4VPSpec.clientIdSchemeRedirectUri
-      case .x509SanUri:
-        return OpenId4VPSpec.clientIdSchemeX509SanUri
       case .x509SanDns:
         return OpenId4VPSpec.clientIdSchemeX509SanDns
       case .verifierAttestation:
@@ -72,16 +70,16 @@ public struct VerifierId: Sendable {
         let schemeString = String(parts[0])
         let originalClientId = String(parts[1])
 
-        guard let scheme = ClientIdScheme(rawValue: schemeString) else {
+        guard let scheme = ClientIdPrefix(rawValue: schemeString) else {
           throw invalid("'\(clientId)' does not contain a valid Client ID Scheme")
         }
 
         switch scheme {
         case .preRegistered:
-          throw invalid("'\(ClientIdScheme.preRegistered)' cannot be used as a Client ID Scheme")
-        case .redirectUri, .x509SanUri, .x509SanDns, .verifierAttestation:
+          throw invalid("'\(ClientIdPrefix.preRegistered)' cannot be used as a Client ID Scheme")
+        case .redirectUri, .x509SanDns, .x509Hash, .verifierAttestation:
           return VerifierId(scheme: scheme, originalClientId: originalClientId)
-        case .https, .did:
+        case .openidFederation, .decentralizedIdentifier:
           return VerifierId(scheme: scheme, originalClientId: clientId)
         }
       }

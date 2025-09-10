@@ -27,19 +27,26 @@ extension Data {
     }
     return data
   }
-
+  
   init?(base64UrlEncoded base64Url: String) {
     var base64 = base64Url
       .replacingOccurrences(of: "-", with: "+") // Replace '-' with '+'
       .replacingOccurrences(of: "_", with: "/") // Replace '_' with '/'
-
+    
     // Pad with '=' to make the base64 string length a multiple of 4
     let paddingLength = 4 - base64.count % 4
     if paddingLength < 4 {
       base64.append(String(repeating: "=", count: paddingLength))
     }
-
+    
     guard let data = Data(base64Encoded: base64) else { return nil }
     self = data
+  }
+  
+  var base64URLEncodedString: String {
+    return self.base64EncodedString()
+      .replacingOccurrences(of: "+", with: "-")
+      .replacingOccurrences(of: "/", with: "_")
+      .replacingOccurrences(of: "=", with: "")
   }
 }

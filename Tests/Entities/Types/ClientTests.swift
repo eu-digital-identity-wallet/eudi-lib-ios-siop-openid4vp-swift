@@ -50,43 +50,42 @@ class ClientTests: XCTestCase {
 final class ClientIdSchemeTests: XCTestCase {
 
   func testRawValueInitialization() {
-    XCTAssertEqual(ClientIdScheme(rawValue: "pre-registered"), .preRegistered)
-    XCTAssertEqual(ClientIdScheme(rawValue: "redirect_uri"), .redirectUri)
-    XCTAssertEqual(ClientIdScheme(rawValue: "https"), .https)
-    XCTAssertEqual(ClientIdScheme(rawValue: "did"), .did)
-    XCTAssertEqual(ClientIdScheme(rawValue: "x509_san_dns"), .x509SanDns)
-    XCTAssertEqual(ClientIdScheme(rawValue: "x509_san_uri"), .x509SanUri)
-    XCTAssertEqual(ClientIdScheme(rawValue: "verifier_attestation"), .verifierAttestation)
+    XCTAssertEqual(ClientIdPrefix(rawValue: "pre-registered"), .preRegistered)
+    XCTAssertEqual(ClientIdPrefix(rawValue: "redirect_uri"), .redirectUri)
+    XCTAssertEqual(ClientIdPrefix(rawValue: "openid_federation"), .openidFederation)
+    XCTAssertEqual(ClientIdPrefix(rawValue: "decentralized_identifier"), .decentralizedIdentifier)
+    XCTAssertEqual(ClientIdPrefix(rawValue: "x509_san_dns"), .x509SanDns)
+    XCTAssertEqual(ClientIdPrefix(rawValue: "verifier_attestation"), .verifierAttestation)
   }
 
   func testRawValueInitializationForInvalidValue() {
-    XCTAssertNil(ClientIdScheme(rawValue: "unknown"))
-    XCTAssertNil(ClientIdScheme(rawValue: "invalid_value"))
+    XCTAssertNil(ClientIdPrefix(rawValue: "unknown"))
+    XCTAssertNil(ClientIdPrefix(rawValue: "invalid_value"))
   }
 
   func testInitFromAuthorizationRequestObjectWithValidScheme() throws {
     let validSchemes = [
-      "pre-registered", "redirect_uri", "https",
-      "did", "x509_san_dns", "x509_san_uri", "verifier_attestation"
+      "pre-registered", "redirect_uri", "openid_federation",
+      "decentralized_identifier", "x509_san_dns", "verifier_attestation"
     ]
 
     for scheme in validSchemes {
       let json = JSON(["client_id_scheme": scheme])
-      let clientIdScheme = try ClientIdScheme(authorizationRequestObject: json)
+      let clientIdScheme = try ClientIdPrefix(authorizationRequestObject: json)
       XCTAssertEqual(clientIdScheme.rawValue, scheme)
     }
   }
 
   func testInitFromAuthorizationRequestObjectWithMissingKey() {
     let json = JSON([:])
-    XCTAssertThrowsError(try ClientIdScheme(authorizationRequestObject: json)) { error in
+    XCTAssertThrowsError(try ClientIdPrefix(authorizationRequestObject: json)) { error in
       XCTAssertEqual(error as? ValidationError, .unsupportedClientIdScheme("unknown"))
     }
   }
 
   func testInitFromAuthorizationRequestObjectWithUnsupportedValue() {
     let json = JSON(["client_id_scheme": "custom_scheme"])
-    XCTAssertThrowsError(try ClientIdScheme(authorizationRequestObject: json)) { error in
+    XCTAssertThrowsError(try ClientIdPrefix(authorizationRequestObject: json)) { error in
       XCTAssertEqual(error as? ValidationError, .unsupportedClientIdScheme("custom_scheme"))
     }
   }

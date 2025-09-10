@@ -27,11 +27,12 @@ public enum Client: Sendable {
     clientId: OriginalClientId,
     certificate: Certificate
   )
-  case x509SanUri(
+
+  case x509Hash(
     clientId: OriginalClientId,
     certificate: Certificate
   )
-
+  
   case didClient(
     did: DID
   )
@@ -59,14 +60,14 @@ public enum Client: Sendable {
         scheme: .x509SanDns,
         originalClientId: clientId
       )
-    case .x509SanUri(let clientId, _):
+    case .x509Hash(let clientId, _):
       return .init(
-        scheme: .x509SanUri,
+        scheme: .x509Hash,
         originalClientId: clientId
       )
     case .didClient(let did):
       return .init(
-        scheme: .did,
+        scheme: .decentralizedIdentifier,
         originalClientId: did.string
       )
     case .attested(let clientId):
@@ -85,7 +86,7 @@ public enum Client: Sendable {
       return nil
     case .x509SanDns(_, let certificate):
       return certificate.legaName
-    case .x509SanUri(_, let certificate):
+    case .x509Hash(_, let certificate):
       return certificate.legaName
     case .didClient:
       return nil

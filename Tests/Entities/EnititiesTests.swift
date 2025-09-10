@@ -29,7 +29,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     let presentationDefinitionUriSupported: Bool = false
     let signingKey = try KeyController.generateRSAPrivateKey()
     let signingKeySet = WebKeySet(keys: [])
-    let supportedClientIdSchemes: [SupportedClientIdScheme] = []
+    let supportedClientIdSchemes: [SupportedClientIdPrefix] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
 
     let walletOpenId4VPConfiguration = SiopOpenId4VPConfiguration(

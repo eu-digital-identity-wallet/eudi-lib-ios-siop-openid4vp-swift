@@ -84,6 +84,7 @@ private let CONTENT_TYPE_JWT = "JWT"
 
 internal let RESPONSE_ENCRYPTION_METHODS_SUPPORTED: String = "encrypted_response_enc_values_supported"
 internal let RESPONSE_ENCRYPTION_METHODS_SUPPORTED_DEFAULT: String = "A128GCM"
+internal let DEFAULT_RESPONSE_ENCRYPTION_METHODS: [EncryptionMethod] = [EncryptionMethod.parse(RESPONSE_ENCRYPTION_METHODS_SUPPORTED_DEFAULT), .init(name: "A128CBC-HS256")]
 
 private extension JWKSet {
   func toJSON() -> JSON? {

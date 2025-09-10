@@ -21,18 +21,18 @@ import SwiftyJSON
  */
 
 /// An enumeration representing different client ID schemes.
-public enum ClientIdScheme: String, Codable, Sendable {
+public enum ClientIdPrefix: String, Codable, Sendable {
   case preRegistered = "pre-registered"
   case redirectUri = "redirect_uri"
-  case https = "https"
-  case did = "did"
+  case openidFederation = "openid_federation"
+  case decentralizedIdentifier = "decentralized_identifier"
   case x509SanDns = "x509_san_dns"
-  case x509SanUri = "x509_san_uri"
+  case x509Hash = "x509_hash"
   case verifierAttestation = "verifier_attestation"
 }
 
 /// Extension providing additional functionality to the `ClientIdScheme` enumeration.
-extension ClientIdScheme {
+extension ClientIdPrefix {
 
   /// Initializes a `ClientIdScheme` based on the authorization request object.
   /// - Parameter authorizationRequestObject: The authorization request object.
@@ -40,14 +40,14 @@ extension ClientIdScheme {
   init(authorizationRequestObject: JSON) throws {
     let scheme = authorizationRequestObject["client_id_scheme"].string ?? "unknown"
     guard
-      scheme == "redirect_uri" ||
-      scheme == "pre-registered" ||
-      scheme == "x509_san_dns" ||
-      scheme == "x509_san_uri" ||
-      scheme == "did" ||
-      scheme == "https" ||
-      scheme == "verifier_attestation",
-      let clientIdScheme = ClientIdScheme(rawValue: scheme)
+      scheme == OpenId4VPSpec.clientIdSchemeRedirectUri ||
+      scheme == OpenId4VPSpec.clientIdSchemePreRegistered ||
+      scheme == OpenId4VPSpec.clientIdSchemeX509SanDns ||
+      scheme == OpenId4VPSpec.clientIdSchemeX509Hash ||
+      scheme == OpenId4VPSpec.clientIdSchemeDid ||
+      scheme == OpenId4VPSpec.clientIdSchemeOpenidFederation ||
+      scheme == OpenId4VPSpec.clientIdSchemeVerifierAttestation,
+      let clientIdScheme = ClientIdPrefix(rawValue: scheme)
     else {
       throw ValidationError.unsupportedClientIdScheme(scheme)
     }
@@ -60,8 +60,8 @@ extension ClientIdScheme {
   /// - Throws: An error if the client ID scheme is unsupported.
   init(authorizationRequestData: UnvalidatedRequestObject) throws {
     guard
-      authorizationRequestData.clientIdScheme == "pre-registered",
-      let clientIdScheme = ClientIdScheme(rawValue: authorizationRequestData.clientIdScheme ?? "")
+      authorizationRequestData.clientIdScheme == OpenId4VPSpec.clientIdSchemePreRegistered,
+      let clientIdScheme = ClientIdPrefix(rawValue: authorizationRequestData.clientIdScheme ?? "")
     else {
       throw ValidationError.unsupportedClientIdScheme(authorizationRequestData.clientIdScheme)
     }
@@ -75,19 +75,19 @@ extension ClientIdScheme {
   /// - Returns: An instance of `ClientIdScheme` if the raw value matches a valid scheme, or `nil` otherwise.
   public init?(rawValue: String) {
     switch rawValue {
-    case "pre-registered":
+    case OpenId4VPSpec.clientIdSchemePreRegistered:
       self = .preRegistered
-    case "redirect_uri":
+    case OpenId4VPSpec.clientIdSchemeRedirectUri:
       self = .redirectUri
-    case "https":
-      self = .https
-    case "did":
-      self = .did
-    case "x509_san_dns":
+    case OpenId4VPSpec.clientIdSchemeOpenidFederation:
+      self = .openidFederation
+    case OpenId4VPSpec.clientIdSchemeDid:
+      self = .decentralizedIdentifier
+    case OpenId4VPSpec.clientIdSchemeX509SanDns:
       self = .x509SanDns
-    case "x509_san_uri":
-      self = .x509SanUri
-    case "verifier_attestation":
+    case OpenId4VPSpec.clientIdSchemeX509Hash:
+      self = .x509Hash
+    case OpenId4VPSpec.clientIdSchemeVerifierAttestation:
       self = .verifierAttestation
     default:
       return nil // Return nil if the raw value doesn't match any case
