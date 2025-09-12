@@ -17,7 +17,7 @@ import Foundation
 import X509
 import Security
 
-public enum ChainTrustResult: Equatable {
+enum ChainTrustResult: Equatable {
   case success
   case recoverableFailure(String)
   case failure
@@ -32,11 +32,11 @@ enum CertificateValidationError: Error {
   case invalidChain([VerificationResult.PolicyFailure])
 }
 
-public enum DataConversionError: Error {
+enum DataConversionError: Error {
   case conversionFailed(String)
 }
 
-public struct X509CertificateChainVerifier {
+struct X509CertificateChainVerifier {
 
   public init() {
 
@@ -46,7 +46,7 @@ public struct X509CertificateChainVerifier {
     return result != .failure
   }
 
-  public func verifyCertificateChain(base64Certificates: [Base64Certificate]) throws -> ChainTrustResult {
+  public func verifyCertificateChain(base64Certificates: [String]) throws -> ChainTrustResult {
 
     let certificates = try convertStringsToData(
       base64Strings: base64Certificates
@@ -74,7 +74,7 @@ public struct X509CertificateChainVerifier {
     }
   }
 
-  public func checkCertificateValidAndNotRevoked(base64Certificate: Base64Certificate) throws -> Bool {
+  public func checkCertificateValidAndNotRevoked(base64Certificate: String) throws -> Bool {
 
     let certificates = try convertStringsToData(
       base64Strings: [base64Certificate]
@@ -183,7 +183,7 @@ private extension X509CertificateChainVerifier {
   }
 }
 
-public extension X509CertificateChainVerifier {
+extension X509CertificateChainVerifier {
 
   /// Converts a `SecCertificate` to `X509.Certificate`
   private func convertToX509Certificate(_ secCert: SecCertificate) throws -> Certificate {
@@ -192,15 +192,15 @@ public extension X509CertificateChainVerifier {
   }
 
   func verifyChain(
-    rootBase64Certificates: [Base64Certificate],
-    intermediateBase64Certificates: [Base64Certificate] = [],
-    leafBase64Certificate: Base64Certificate,
+    rootBase64Certificates: [String],
+    intermediateBase64Certificates: [String] = [],
+    leafBase64Certificate: String,
     date: Date = Date(),
     showDiagnostics: Bool = false
   ) async throws -> ChainTrustResult {
 
     func decodeBase64Certificates(
-      _ base64s: [Base64Certificate]
+      _ base64s: [String]
     ) throws -> [Certificate] {
       return try convertStringsToData(base64Strings: base64s)
         .compactMap { SecCertificateCreateWithData(nil, $0 as CFData) }
