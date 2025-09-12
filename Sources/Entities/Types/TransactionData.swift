@@ -21,7 +21,7 @@ import SwiftyJSON
 public enum TransactionData: Codable, Sendable {
   case sdJwtVc(value: String)
 
-  var value: String {
+  public var value: String {
     switch self {
     case .sdJwtVc(let value):
       return value
