@@ -659,8 +659,8 @@ func encodeRSAPublicKey(
   exponent: Data
 ) throws -> Data {
   
-  let modulusBytes = modulus.bytes
-  let exponentBytes = exponent.bytes
+  let modulusBytes = Array(modulus)
+  let exponentBytes = Array(exponent)
   
   let modulusWithLeadingZero = modulusBytes[0] >= 0x80 ? [0x00] + modulusBytes : modulusBytes
   let exponentWithLeadingZero = exponentBytes[0] >= 0x80 ? [0x00] + exponentBytes : exponentBytes
