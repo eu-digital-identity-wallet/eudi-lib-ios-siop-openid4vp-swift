@@ -19,10 +19,10 @@ public enum PostError: Error {
   case invalidUrl
   case invalidResponse
   case networkError(Error)
-
+  
   /**
    Provides a localized description of the post error.
-
+   
    - Returns: A string describing the post error.
    */
   public var localizedDescription: String {
@@ -38,34 +38,34 @@ public enum PostError: Error {
 }
 
 public protocol Posting: Sendable {
-
+  
   var session: Networking { get set }
-
+  
   /**
    Performs a POST request with the provided URLRequest.
-
+   
    - Parameters:
-      - request: The URLRequest to be used for the POST request.
-
+   - request: The URLRequest to be used for the POST request.
+   
    - Returns: A Result type with the response data or an error.
    */
   func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError>
-
+  
   /**
    Performs a POST request with the provided URLRequest.
-
+   
    - Parameters:
-      - request: The URLRequest to be used for the POST request.
-
+   - request: The URLRequest to be used for the POST request.
+   
    - Returns: A Result type with a success boolean (based on status code) or an error.
    */
   func check(key: String, request: URLRequest) async -> Result<(String, Bool), PostError>
 }
 
 public struct Poster: Posting {
-
+  
   public var session: Networking
-
+  
   /**
    Initializes a Poster instance.
    */
@@ -74,68 +74,57 @@ public struct Poster: Posting {
   ) {
     self.session = session
   }
-
+  
   /**
    Performs a POST request with the provided URLRequest.
-
+   
    - Parameters:
-      - request: The URLRequest to be used for the POST request.
-
+   - request: The URLRequest to be used for the POST request.
+   
    - Returns: A Result type with the response data or an error.
    */
   public func post<Response: Codable>(request: URLRequest) async -> Result<Response, PostError> {
     do {
       let (data, _) = try await self.session.data(for: request)
       let object = try JSONDecoder().decode(Response.self, from: data)
-
+      
       return .success(object)
-    } catch let error as NSError {
-      if error.domain == NSURLErrorDomain {
-        return .failure(.networkError(error))
-      } else {
-        return .failure(.networkError(error))
-      }
     } catch {
       return .failure(.networkError(error))
     }
   }
-
+  
   /**
    Performs a POST request with the provided URLRequest.
-
+   
    - Parameters:
-      - request: The URLRequest to be used for the POST request.
-
+   - request: The URLRequest to be used for the POST request.
+   
    - Returns: A Result type with a success boolean (based on status code) or an error.
    */
   public func check(key: String, request: URLRequest) async -> Result<(String, Bool), PostError> {
     do {
-
-      let (data, response) = try await self.session.data(for: request)
-
-      let string = String(data: data, encoding: .utf8)
-      let dictionary = string?.toDictionary() ?? [:]
-      let value = dictionary[key] as? String ?? ""
-      let success = (response as? HTTPURLResponse)?.statusCode.isWithinRange(200...299) ?? false
-
-      return .success((value, success))
-    } catch let error as NSError {
-      if error.domain == NSURLErrorDomain {
-        return .failure(.networkError(error))
-      } else {
-        return .failure(.networkError(error))
-      }
+      let (data, response) = try await session.data(for: request)
+      let success = (response as? HTTPURLResponse)?
+        .statusCode
+        .isWithinRange(200...299) ?? false
+      
+      let description = success
+      ? descriptionForKey(key, in: data)
+      : errorDescription(in: data)
+      
+      return .success((description, success))
     } catch {
       return .failure(.networkError(error))
     }
   }
-
+  
   /**
    Performs a POST request with the provided URLRequest.
-
+   
    - Parameters:
-      - request: The URLRequest to be used for the POST request.
-
+   - request: The URLRequest to be used for the POST request.
+   
    - Returns: A String or an error.
    */
   public func postString(request: URLRequest) async -> Result<String, PostError> {
@@ -145,7 +134,7 @@ public struct Poster: Posting {
       if !statusCode.isWithinRange(200...299) {
         return .failure(.invalidResponse)
       }
-
+      
       if let string = String(data: data, encoding: .utf8) {
         return .success(string)
       } else {
@@ -154,5 +143,22 @@ public struct Poster: Posting {
     } catch {
       return .failure(.networkError(error))
     }
+  }
+}
+
+private extension Poster {
+  private func descriptionForKey(_ key: String, in data: Data) -> String {
+    // Avoid String -> Dict conversions; go straight from Data to [String: Any]
+    guard
+      let json = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any],
+      let value = json[key] as? String
+    else {
+      return ""
+    }
+    return value
+  }
+  
+  private func errorDescription(in data: Data) -> String {
+    (try? JSONDecoder().decode(GenericErrorResponse.self, from: data))?.errorDescription ?? ""
   }
 }
