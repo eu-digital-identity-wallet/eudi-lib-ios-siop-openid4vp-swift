@@ -47,6 +47,6 @@ public actor Dispatcher: DispatcherType {
       response: self.authorizationResponse
     )
 
-    return result.1 == true ? .accepted(redirectURI: URL(string: result.0)) : .rejected(reason: "")
+    return result.1 == true ? .accepted(redirectURI: URL(string: result.0)) : .rejected(reason: result.0)
   }
 }

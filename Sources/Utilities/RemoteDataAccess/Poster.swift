@@ -159,6 +159,6 @@ private extension Poster {
   }
   
   private func errorDescription(in data: Data) -> String {
-    (try? JSONDecoder().decode(GenericErrorResponse.self, from: data))?.errorDescription ?? ""
+    String(data: data, encoding: .utf8) ?? ""
   }
 }
