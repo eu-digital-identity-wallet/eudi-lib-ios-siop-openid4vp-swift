@@ -57,6 +57,9 @@ final class DirectPostJWTTests: DiXCTest {
         ]),
         .x509SanDns(trust: { _ in
           true
+        }),
+        .x509Hash(trust: { _ in
+          true
         })
       ],
       vpFormatsSupported: ClaimFormat.default(),
@@ -140,6 +143,9 @@ final class DirectPostJWTTests: DiXCTest {
       supportedClientIdSchemes: [
         .redirectUri,
         .x509SanDns(trust: { _ in
+          true
+        }),
+        .x509Hash(trust: { _ in
           true
         })
       ],
@@ -539,7 +545,8 @@ final class DirectPostJWTTests: DiXCTest {
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
           )
-        ])
+        ]),
+        .x509Hash(trust: { _ in true })
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
@@ -644,7 +651,8 @@ final class DirectPostJWTTests: DiXCTest {
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
           )
-        ])
+        ]),
+        .x509Hash(trust: { _ in true })
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
@@ -867,7 +875,8 @@ final class DirectPostJWTTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier)
+        .x509SanDns(trust: chainVerifier),
+        .x509Hash(trust: chainVerifier)
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .encryptionOption,
@@ -1560,7 +1569,8 @@ final class DirectPostJWTTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier)
+        .x509SanDns(trust: chainVerifier),
+        .x509Hash(trust: chainVerifier)
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
@@ -1649,7 +1659,8 @@ final class DirectPostJWTTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier)
+        .x509SanDns(trust: chainVerifier),
+        .x509Hash(trust: chainVerifier)
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
@@ -1739,7 +1750,8 @@ final class DirectPostJWTTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier)
+        .x509SanDns(trust: chainVerifier),
+        .x509Hash(trust: chainVerifier)
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,

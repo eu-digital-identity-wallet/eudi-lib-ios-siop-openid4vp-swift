@@ -173,6 +173,9 @@ final class DirectPostTests: DiXCTest {
         ]),
         .x509SanDns(trust: { _ in
           return true
+        }),
+        .x509Hash(trust: { _ in
+          return true
         })
       ],
       vpFormatsSupported: ClaimFormat.default(),
@@ -265,6 +268,9 @@ final class DirectPostTests: DiXCTest {
           )
         ]),
         .x509SanDns(trust: { _ in
+          return true
+        }),
+        .x509Hash(trust: { _ in
           return true
         })
       ],
@@ -374,6 +380,9 @@ final class DirectPostTests: DiXCTest {
           )
         ]),
         .x509SanDns(trust: { _ in
+          return true
+        }),
+        .x509Hash(trust:  { _ in
           return true
         })
       ],
