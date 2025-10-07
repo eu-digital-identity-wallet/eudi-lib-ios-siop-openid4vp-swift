@@ -96,7 +96,7 @@ internal actor ClientAuthenticator {
         throw ValidationError.validationError("No valid certificate in chain")
       }
       
-      if expectedHash != clientId {
+      if expectedHash != verifierId.originalClientId {
         throw ValidationError.validationError("ClientId does not match leaf certificate's SHA-256 hash")
       }
       
