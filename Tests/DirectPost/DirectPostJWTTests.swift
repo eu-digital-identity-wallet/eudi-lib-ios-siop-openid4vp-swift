@@ -526,6 +526,7 @@ final class DirectPostJWTTests: DiXCTest {
         "alg": "RS256"
       ])
     
+    let verifiedClient = try! VerifierId.parse(clientId: session["client_id"] as! String).get()
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let wallet: SiopOpenId4VPConfiguration = .init(
@@ -539,14 +540,13 @@ final class DirectPostJWTTests: DiXCTest {
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          TestsConstants.testClientId: .init(
+          verifiedClient.originalClientId: .init(
             clientId: TestsConstants.testClientId,
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
           )
-        ]),
-        .x509Hash(trust: { _ in true })
+        ])
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
