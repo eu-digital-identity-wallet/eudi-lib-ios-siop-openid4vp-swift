@@ -30,7 +30,7 @@ public actor AccessValidator: AccessValidating {
   public init(
     walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
     objectType: JOSEObjectType = .REQ_JWT,
-    fetcher: any Fetching = Fetcher<WebKeySet>(),
+    fetcher: any Fetching = Fetcher<WebKeySet>()
   ) {
     self.walletOpenId4VPConfig = walletOpenId4VPConfig
     self.objectType = objectType
