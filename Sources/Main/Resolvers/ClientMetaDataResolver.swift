@@ -37,15 +37,10 @@ public protocol ClientMetaDataResolverType {
 
 public actor ClientMetaDataResolver: ClientMetaDataResolverType {
 
-  private let fetcher: Fetcher<ClientMetaData>
-
   /**
     Initializes an instance.
    */
-  public init(
-    fetcher: Fetcher<ClientMetaData> = Fetcher()
-  ) {
-    self.fetcher = fetcher
+  public init() {
   }
 
   /// Resolves client metadata asynchronously.
