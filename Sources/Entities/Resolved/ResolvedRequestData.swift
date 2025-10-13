@@ -50,11 +50,6 @@ public enum ResolvedRequestData: Sendable {
 public extension ResolvedRequestData {
   
   /// Initializes a `ResolvedRequestData` instance with the provided parameters.
-  ///
-  /// - Parameters:
-  ///   - clientMetaDataResolver: The resolver for client metadata.
-  ///   - presentationDefinitionResolver: The resolver for presentation definition.
-  ///   - validatedAuthorizationRequest: The validated SiopOpenId4VPRequest.
   init(
     walletConfiguration: SiopOpenId4VPConfiguration,
     vpConfiguration: VPConfiguration,
