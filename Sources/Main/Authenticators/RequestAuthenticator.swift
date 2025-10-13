@@ -22,20 +22,14 @@ internal struct AuthenticatedRequest: Sendable {
 }
 
 internal struct JWTDecoder {
-
+  
   static func decodeJWT(_ jwt: String) -> UnvalidatedRequestObject? {
-    let segments = jwt.components(separatedBy: ".")
-    guard segments.count >= 2 else { return nil }
-
-    let payloadSegment = segments[1]
-
-    // Pad base64 string if needed
-    let requiredLength = 4 * ((payloadSegment.count + 3) / 4)
-    let paddingLength = requiredLength - payloadSegment.count
-    let base64 = payloadSegment + String(repeating: "=", count: paddingLength)
-
-    guard let payloadData = Data(base64Encoded: base64) else { return nil }
-
+    // JWS compact: header.payload.signature (we only need payload)
+    let parts = jwt.split(separator: ".", omittingEmptySubsequences: false)
+    guard parts.count >= 2 else { return nil }
+    
+    guard let payloadData = String(parts[1]).base64AnyDecodedData else { return nil }
+    
     do {
       let json = try JSON(data: payloadData)
       return mapJSONToRequestObject(json)
@@ -43,18 +37,18 @@ internal struct JWTDecoder {
       return nil
     }
   }
-
+  
   private static func mapJSONToRequestObject(_ json: JSON) -> UnvalidatedRequestObject {
     var dcqlQuery: JSON?
     let raw = JSON(json["dcql_query"])
     if raw != .null {
       dcqlQuery = raw
     }
-
+    
     let pd = json["presentation_definition"].dictionaryObject?.toJSONString() ?? json["presentation_definition"].string
     let transactionData = json["transaction_data"].arrayObject as? [String]
     let verifierInfo = json["verifier_info"].arrayValue
-
+    
     return UnvalidatedRequestObject(
       responseType: json["response_type"].string,
       responseUri: json["response_uri"].string,
@@ -82,15 +76,15 @@ internal struct JWTDecoder {
 }
 
 internal actor RequestAuthenticator {
-
+  
   let config: SiopOpenId4VPConfiguration
   let clientAuthenticator: ClientAuthenticator
-
+  
   init(config: SiopOpenId4VPConfiguration, clientAuthenticator: ClientAuthenticator) {
     self.config = config
     self.clientAuthenticator = clientAuthenticator
   }
-
+  
   func authenticate(fetchRequest: FetchedRequest) async throws -> AuthenticatedRequest {
     let client = try await clientAuthenticator.authenticate(
       fetchRequest: fetchRequest
@@ -102,7 +96,7 @@ internal actor RequestAuthenticator {
       guard let requestObject = JWTDecoder.decodeJWT(jwt) else {
         throw ValidationError.invalidRequest
       }
-
+      
       try await verify(
         validator: AccessValidator(
           walletOpenId4VPConfig: config,
@@ -113,11 +107,11 @@ internal actor RequestAuthenticator {
         token: jwt,
         clientId: clientId
       )
-
+      
       return .init(client: client, requestObject: requestObject)
     }
   }
-
+  
   func verify(
     validator: AccessValidating,
     token: JWTString,
@@ -125,7 +119,7 @@ internal actor RequestAuthenticator {
   ) async throws {
     try? await validator.validate(clientId: clientId, jwt: token)
   }
-
+  
   func createIdVpToken(
     clientId: String,
     client: Client,
@@ -137,7 +131,7 @@ internal actor RequestAuthenticator {
     let querySource = try parseQuerySource(
       requestObject: requestObject
     )
-
+    
     return .idAndVpToken(request: .init(
       idTokenType: try .init(authorizationRequestData: requestObject),
       querySource: querySource,
@@ -155,7 +149,7 @@ internal actor RequestAuthenticator {
       })
     ))
   }
-
+  
   func createIdToken(
     clientId: String,
     client: Client,
@@ -183,7 +177,7 @@ internal actor RequestAuthenticator {
       })
     ))
   }
-
+  
   // Create a VP token request
   func createVpToken(
     clientId: String,
@@ -196,7 +190,7 @@ internal actor RequestAuthenticator {
     let querySource = try parseQuerySource(
       requestObject: requestObject
     )
-
+    
     return .vpToken(request: .init(
       querySource: querySource,
       clientMetaDataSource: nil,
@@ -213,25 +207,52 @@ internal actor RequestAuthenticator {
       })
     ))
   }
-
+  
   func parseQuerySource(requestObject: UnvalidatedRequestObject) throws -> QuerySource {
-
+    
     let hasDcqlQuery = requestObject.dcqlQuery?.exists() ?? false
     let querySourceCount = [hasDcqlQuery].filter { $0 }.count
-
+    
     if querySourceCount > 1 {
       throw ValidationError.multipleQuerySources
     }
-
+    
     if hasDcqlQuery, let dcqlQuery = requestObject.dcqlQuery {
       return .dcqlQuery(
         try .init(
           from: dcqlQuery
         )
       )
-
+      
     } else {
       throw ValidationError.invalidQuerySource
     }
+  }
+}
+
+package extension String {
+  
+  /// Normalizes a Base64 or Base64URL string (adds padding, swaps URL-safe chars).
+  var normalizedBase64: String {
+    // Trim whitespace/newlines just in case
+    var s = self.trimmingCharacters(in: .whitespacesAndNewlines)
+    
+    // Convert Base64URL alphabet to standard Base64 if present
+    if s.contains("-") || s.contains("_") {
+      s = s.replacingOccurrences(of: "-", with: "+")
+        .replacingOccurrences(of: "_", with: "/")
+    }
+    
+    // Pad to multiple of 4 characters
+    let remainder = s.count % 4
+    if remainder != 0 {
+      s.append(String(repeating: "=", count: 4 - remainder))
+    }
+    return s
+  }
+  
+  /// Decodes either Base64 or Base64URL.
+  var base64AnyDecodedData: Data? {
+    Data(base64Encoded: self.normalizedBase64, options: .ignoreUnknownCharacters)
   }
 }
