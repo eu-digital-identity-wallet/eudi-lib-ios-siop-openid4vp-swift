@@ -70,7 +70,10 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .supported(
+        supportedAlgorithms: [.init(.ECDH_ES)],
+        supportedMethods: [.init(.A256GCM)]
+      )
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -94,7 +97,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
         nonce = request.nonce
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
-          clientID: request.client.id.originalClientId,
+          clientID: request.client.id.clientId,
           nonce: nonce!,
           useSha3: false
         )
