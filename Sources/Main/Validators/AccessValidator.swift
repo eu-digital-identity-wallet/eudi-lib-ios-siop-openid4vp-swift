@@ -24,15 +24,17 @@ public protocol AccessValidating: Sendable {
 public actor AccessValidator: AccessValidating {
 
   public let walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
-  private let resolver = WebKeyResolver()
+  private let fetcher: any Fetching
   private let objectType: JOSEObjectType
 
   public init(
     walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
-    objectType: JOSEObjectType = .REQ_JWT
+    objectType: JOSEObjectType = .REQ_JWT,
+    fetcher: any Fetching = Fetcher<WebKeySet>(),
   ) {
     self.walletOpenId4VPConfig = walletOpenId4VPConfig
     self.objectType = objectType
+    self.fetcher = fetcher
   }
 
   public func validate(clientId: String?, jwt: JWTString) async throws {
@@ -179,11 +181,24 @@ public actor AccessValidator: AccessValidating {
     client: PreregisteredClient
   ) async throws {
 
+    guard let fetcher = self.fetcher as? Fetcher<WebKeySet> else {
+      throw ValidationError.validationError(
+        "Fetcher type mismatch"
+      )
+    }
+    
     if jws.header.typ != objectType.rawValue {
-      throw ValidationError.validationError("Header object type mismatch")
+      throw ValidationError.validationError(
+        "Header object type mismatch"
+      )
     }
 
-    let jwk = await resolver.resolve(source: client.jwkSetSource)
+    let resolver = WebKeyResolver()
+    let jwk = await resolver.resolve(
+      fetcher: fetcher,
+      source: client.jwkSetSource
+    )
+    
     switch jwk {
     case .success(let set):
       guard let key = set?.keys.first,
