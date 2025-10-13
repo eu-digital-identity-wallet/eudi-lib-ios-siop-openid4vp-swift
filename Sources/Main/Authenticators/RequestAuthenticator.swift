@@ -105,7 +105,10 @@ internal actor RequestAuthenticator {
 
       try await verify(
         validator: AccessValidator(
-          walletOpenId4VPConfig: config
+          walletOpenId4VPConfig: config,
+          fetcher: Fetcher<WebKeySet>(
+            session: config.session
+          )
         ),
         token: jwt,
         clientId: clientId
