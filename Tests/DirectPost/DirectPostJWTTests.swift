@@ -229,14 +229,9 @@ final class DirectPostJWTTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .preregistered(clients: [
-          TestsConstants.testClientId: .init(
-            clientId: TestsConstants.testClientId,
-            legalName: "Verifier",
-            jarSigningAlg: .init(.RS256),
-            jwkSetSource: .fetchByReference(url: publicKeysURL)
-          )
-        ])
+        .x509Hash(trust: { _ in
+          true
+        })
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
