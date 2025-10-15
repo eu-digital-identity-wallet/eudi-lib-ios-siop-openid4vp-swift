@@ -259,14 +259,6 @@ final class DirectPostTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .preregistered(clients: [
-          TestsConstants.testClientId: .init(
-            clientId: TestsConstants.testClientId,
-            legalName: "Verifier",
-            jarSigningAlg: .init(.RS256),
-            jwkSetSource: .fetchByReference(url: publicKeysURL)
-          )
-        ]),
         .x509SanDns(trust: { _ in
           return true
         }),

@@ -141,13 +141,7 @@ final class DirectPostJWTTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .redirectUri,
-        .x509SanDns(trust: { _ in
-          true
-        }),
-        .x509Hash(trust: { _ in
-          true
-        })
+        .redirectUri
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .encryptionOption,
