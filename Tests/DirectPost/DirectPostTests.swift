@@ -259,14 +259,6 @@ final class DirectPostTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .preregistered(clients: [
-          TestsConstants.testClientId: .init(
-            clientId: TestsConstants.testClientId,
-            legalName: "Verifier",
-            jarSigningAlg: .init(.RS256),
-            jwkSetSource: .fetchByReference(url: publicKeysURL)
-          )
-        ]),
         .x509SanDns(trust: { _ in
           return true
         }),
@@ -317,102 +309,6 @@ final class DirectPostTests: DiXCTest {
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
           try QueryId(value: "query_0"): [.generic(presentation!)]
-        ])
-      )
-      
-      // Generate a direct post authorisation response
-      let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: request,
-        consent: consent,
-        walletOpenId4VPConfig: wallet
-      ), "Expected item to be non-nil")
-      
-      // Dispatch
-      XCTAssertNotNil(response)
-      
-      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
-      switch result {
-      case .accepted:
-        XCTAssert(true)
-      default:
-        XCTAssert(false)
-      }
-    default:
-      XCTExpectFailure()
-      XCTAssert(false)
-    }
-  }
-  
-  func testSDKEndtoEndDirectPostVpTokenWithNoEncryption() async throws {
-    
-    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    
-    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
-    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
-    let privateKey = try KeyController.generateECDHPrivateKey()
-    
-    let rsaJWK = try RSAPublicKey(
-      publicKey: rsaPublicKey,
-      additionalParameters: [
-        "use": "sig",
-        "kid": UUID().uuidString,
-        "alg": "RS256"
-      ])
-    
-    let keySet = try WebKeySet(jwk: rsaJWK)
-    
-    let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      privateKey: privateKey,
-      publicWebKeySet: keySet,
-      supportedClientIdSchemes: [
-        .preregistered(clients: [
-          TestsConstants.testClientId: .init(
-            clientId: TestsConstants.testClientId,
-            legalName: "Verifier",
-            jarSigningAlg: .init(.RS256),
-            jwkSetSource: .fetchByReference(url: publicKeysURL)
-          )
-        ]),
-        .x509SanDns(trust: { _ in
-          return true
-        }),
-        .x509Hash(trust:  { _ in
-          return true
-        })
-      ],
-      vpFormatsSupported: ClaimFormat.default(),
-      jarConfiguration: .encryptionOption,
-      vpConfiguration: .default(),
-      responseEncryptionConfiguration: .default()
-    )
-    
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    /// To get this URL, visit https://dev.verifier.eudiw.dev/
-    /// and  "Request for the entire PID"
-    /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
-    /// Decode the URL online and paste it below in the url variable
-    /// Note:  The url is only valid for one use
-    let url = "#11"
-
-    overrideDependencies()
-    let result = await sdk.authorize(
-      url: URL(
-        string: url
-      )!
-    )
-    
-    switch result {
-    case .jwt(request: let request):
-      // Obtain consent
-      let consent: ClientConsent = .vpToken(
-        vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
         ])
       )
       

@@ -55,19 +55,19 @@ final class JWTDecoderTests: XCTestCase {
         ]
       ]
     ]
-
+    
     let payloadData = try! JSONSerialization.data(withJSONObject: payload)
     let base64Payload = payloadData.base64EncodedString()
       .replacingOccurrences(of: "+", with: "-")
       .replacingOccurrences(of: "/", with: "_")
       .replacingOccurrences(of: "=", with: "")
     let jwt = "header.\(base64Payload).signature"
-
+    
     guard let result = JWTDecoder.decodeJWT(jwt) else {
       XCTFail("Decoding returned nil")
       return
     }
-
+    
     XCTAssertEqual(result.responseType, "code")
     XCTAssertEqual(result.responseUri, "https://response.uri")
     XCTAssertEqual(result.redirectUri, "https://redirect.uri")
@@ -89,15 +89,94 @@ final class JWTDecoderTests: XCTestCase {
     XCTAssertEqual(result.supportedAlgorithm, "ES256")
     XCTAssertEqual(result.transactionData, ["txn1", "txn2"])
     XCTAssertEqual(result.verifierInfo?.count, 2)
-
+    
     let first = result.verifierInfo?[0]
     XCTAssertEqual(first?["format"].string, "jwt")
     XCTAssertEqual(first?["data"].string, "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...abc123")
     XCTAssertEqual(first?["credential_ids"].arrayValue.map { $0.string! }, ["id_card"])
-
+    
     let second = result.verifierInfo?[1]
     XCTAssertEqual(second?["format"].string, "jwt")
     XCTAssertEqual(second?["data"].string, "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9...xyz456")
-    XCTAssertNil(second?["credential_ids"].array)  
+    XCTAssertNil(second?["credential_ids"].array)
+  }
+  
+  /// Builds a compact JWS `header.payload.signature` with URL-safe Base64 (no padding).
+  private func makeJWT(
+    header: [String: Any] = ["alg": "none", "typ": "JWT"],
+    payload: [String: Any],
+    signature: String = "sig" // arbitrary; decoder ignores it
+  ) throws -> String {
+    func jsonData(_ obj: Any) throws -> Data {
+      try JSONSerialization.data(withJSONObject: obj, options: [])
+    }
+    func base64url(_ data: Data) -> String {
+      let b64 = data.base64EncodedString()
+      // URL-safe, strip padding per JWT spec
+      return b64
+        .replacingOccurrences(of: "+", with: "-")
+        .replacingOccurrences(of: "/", with: "_")
+        .replacingOccurrences(of: "=", with: "")
+    }
+    
+    let headerPart = base64url(try jsonData(header))
+    let payloadPart = base64url(try jsonData(payload))
+    return [headerPart, payloadPart, signature].joined(separator: ".")
+  }
+  
+  // MARK: - decodeJWT tests
+  
+  func testDecodeJWT_returnsNil_whenFewerThanTwoSegments() {
+    XCTAssertNil(JWTDecoder.decodeJWT(""), "Empty should be nil")
+    XCTAssertNil(JWTDecoder.decodeJWT("onlyone"), "Single segment should be nil")
+    XCTAssertNil(JWTDecoder.decodeJWT("."), "Dot with empty parts still <2 segments after split behavior")
+  }
+  
+  func testDecodeJWT_allowsThreeSegments_andDecodesPayload() throws {
+    let jwt = try makeJWT(payload: ["sub": "user123", "iat": 1_700_000_000])
+    XCTAssertNotNil(JWTDecoder.decodeJWT(jwt))
+  }
+  
+  func testDecodeJWT_supportsURLSafeBase64WithoutPadding() throws {
+    // Craft a length that typically needs padding in standard Base64
+    let jwt = try makeJWT(payload: ["role": "admin", "aud": "example"])
+    XCTAssertNotNil(JWTDecoder.decodeJWT(jwt))
+  }
+  
+  func testDecodeJWT_ignoresSignatureContent() throws {
+    let jwt = try makeJWT(payload: ["ok": true], signature: "!!!not-a-real-signature!!!")
+    XCTAssertNotNil(JWTDecoder.decodeJWT(jwt))
+  }
+  
+  func testDecodeJWT_returnsNil_whenPayloadIsNotBase64() {
+    // header . invalidBase64 . signature
+    let header = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0" // {"alg":"none","typ":"JWT"} w/o padding
+    let jwt = "\(header).not_base64!!.\("x")"
+    XCTAssertNil(JWTDecoder.decodeJWT(jwt))
+  }
+  
+  func testDecodeJWT_returnsNil_whenPayloadIsNotValidJSON() throws {
+    // Base64url of non-JSON bytes
+    let bad = Data([0xFF, 0xFE, 0xFD, 0x00, 0x01])
+    let b64 = bad.base64EncodedString()
+      .replacingOccurrences(of: "+", with: "-")
+      .replacingOccurrences(of: "/", with: "_")
+      .replacingOccurrences(of: "=", with: "")
+    let header = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0"
+    let jwt = "\(header).\(b64).sig"
+    XCTAssertNil(JWTDecoder.decodeJWT(jwt))
+  }
+  
+  func testDecodeJWT_handlesLargePayload() throws {
+    let claims = (0..<200).reduce(into: [String: Any]()) { $0["k\($1)"] = "v\($1)" }
+    let jwt = try makeJWT(payload: claims)
+    XCTAssertNotNil(JWTDecoder.decodeJWT(jwt))
+  }
+  
+  func testDecodeJWT_allowsEmptySignatureSegment() throws {
+    // header.payload.  (trailing dot)
+    let base = try makeJWT(payload: ["x": 1])
+    let noSig = base.split(separator: ".").prefix(2).joined(separator: ".") + "."
+    XCTAssertNotNil(JWTDecoder.decodeJWT(noSig))
   }
 }

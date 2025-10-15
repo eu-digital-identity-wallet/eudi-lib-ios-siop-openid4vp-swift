@@ -141,13 +141,7 @@ final class DirectPostJWTTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .redirectUri,
-        .x509SanDns(trust: { _ in
-          true
-        }),
-        .x509Hash(trust: { _ in
-          true
-        })
+        .redirectUri
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .encryptionOption,
@@ -229,14 +223,9 @@ final class DirectPostJWTTests: DiXCTest {
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
-        .preregistered(clients: [
-          TestsConstants.testClientId: .init(
-            clientId: TestsConstants.testClientId,
-            legalName: "Verifier",
-            jarSigningAlg: .init(.RS256),
-            jwkSetSource: .fetchByReference(url: publicKeysURL)
-          )
-        ])
+        .x509Hash(trust: { _ in
+          true
+        })
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
@@ -526,6 +515,7 @@ final class DirectPostJWTTests: DiXCTest {
         "alg": "RS256"
       ])
     
+    let verifiedClient = try! VerifierId.parse(clientId: session["client_id"] as! String).get()
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
     let wallet: SiopOpenId4VPConfiguration = .init(
@@ -539,14 +529,13 @@ final class DirectPostJWTTests: DiXCTest {
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
         .preregistered(clients: [
-          TestsConstants.testClientId: .init(
+          verifiedClient.originalClientId: .init(
             clientId: TestsConstants.testClientId,
             legalName: "Verifier",
             jarSigningAlg: .init(.RS256),
             jwkSetSource: .fetchByReference(url: publicKeysURL)
           )
-        ]),
-        .x509Hash(trust: { _ in true })
+        ])
       ],
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
@@ -1586,187 +1575,6 @@ final class DirectPostJWTTests: DiXCTest {
     /// Decode the URL online and paste it below in the url variable
     /// Note:  The url is only valid for one use
     let url = "#09"
-    
-    overrideDependencies()
-    let result = await sdk.authorize(
-      url: URL(
-        string: url
-      )!
-    )
-    
-    switch result {
-    case .jwt(request: let request):
-      // Obtain consent
-      let consent: ClientConsent = .vpToken(
-        vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
-        ])
-      )
-      
-      // Generate a direct post authorisation response
-      let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: request,
-        consent: consent,
-        walletOpenId4VPConfig: wallet
-      ), "Expected item to be non-nil")
-      
-      // Dispatch
-      XCTAssertNotNil(response)
-      
-      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
-      switch result {
-      case .accepted:
-        XCTAssert(true)
-      default:
-        XCTAssert(false)
-      }
-    default:
-      XCTExpectFailure("This tests depends on a verifier url")
-      XCTAssert(false)
-    }
-  }
-  
-  func testSDKEndtoEndWebVerifierDirectPostJwtX509DCQL() async throws {
-    
-    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
-    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
-    let privateKey = try KeyController.generateECDHPrivateKey()
-    
-    let rsaJWK = try RSAPublicKey(
-      publicKey: rsaPublicKey,
-      additionalParameters: [
-        "use": "sig",
-        "kid": UUID().uuidString,
-        "alg": "RS256"
-      ])
-    
-    let chainVerifier = { certificates in
-      let chainVerifier = X509CertificateChainVerifier()
-      let verified = try? chainVerifier.verifyCertificateChain(
-        base64Certificates: certificates
-      )
-      return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
-    }
-    
-    let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      privateKey: privateKey,
-      publicWebKeySet: keySet,
-      supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier),
-        .x509Hash(trust: chainVerifier)
-      ],
-      vpFormatsSupported: ClaimFormat.default(),
-      jarConfiguration: .noEncryptionOption,
-      vpConfiguration: .default(),
-      responseEncryptionConfiguration: .default()
-    )
-    
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    
-    /// To get this URL, visit https://dev.verifier.eudiw.dev/
-    /// and  "Request for the entire PID"
-    /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
-    /// Decode the URL online and paste it below in the url variable
-    /// Note:  The url is only valid for one use
-    let url = "#10"
-    
-    overrideDependencies()
-    let result = await sdk.authorize(
-      url: URL(
-        string: url
-      )!
-    )
-    
-    switch result {
-    case .jwt(let request):
-      
-      // Obtain consent
-      let consent: ClientConsent = .vpToken(
-        vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
-        ])
-      )
-      
-      // Generate a direct post authorisation response
-      let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: request,
-        consent: consent,
-        walletOpenId4VPConfig: wallet
-      ), "Expected item to be non-nil")
-      
-      // Dispatch
-      XCTAssertNotNil(response)
-      
-      let result: DispatchOutcome = try await sdk.dispatch(response: response!)
-      switch result {
-      case .accepted:
-        XCTAssert(true)
-      default:
-        XCTAssert(false)
-      }
-    default:
-      XCTExpectFailure("This tests depends on a verifier url")
-      XCTAssert(false)
-    }
-  }
-  
-  func testSDKEndtoEndWebVerifierX509DirectPostJwt() async throws {
-    
-    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
-    let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
-    let privateKey = try KeyController.generateECDHPrivateKey()
-    
-    let rsaJWK = try RSAPublicKey(
-      publicKey: rsaPublicKey,
-      additionalParameters: [
-        "use": "sig",
-        "kid": UUID().uuidString,
-        "alg": "RS256"
-      ])
-    
-    let chainVerifier = { certificates in
-      let chainVerifier = X509CertificateChainVerifier()
-      let verified = try? chainVerifier.verifyCertificateChain(
-        base64Certificates: certificates
-      )
-      return chainVerifier.isChainTrustResultSuccesful(verified ?? .failure)
-    }
-    
-    let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
-      privateKey: privateKey,
-      publicWebKeySet: keySet,
-      supportedClientIdSchemes: [
-        .x509SanDns(trust: chainVerifier),
-        .x509Hash(trust: chainVerifier)
-      ],
-      vpFormatsSupported: ClaimFormat.default(),
-      jarConfiguration: .noEncryptionOption,
-      vpConfiguration: .default(),
-      responseEncryptionConfiguration: .default()
-    )
-    
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
-    
-    /// To get this URL, visit https://dev.verifier.eudiw.dev/
-    /// and  "Request for the entire PID"
-    /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
-    /// Decode the URL online and paste it below in the url variable
-    /// Note:  The url is only valid for one use
-    let url = "#14"
     
     overrideDependencies()
     let result = await sdk.authorize(

@@ -18,9 +18,19 @@ import Foundation
 /// A protocol for an authorization service.
 public protocol AuthorisationServiceType: Sendable {
   /// Posts a response and returns a generic result.
-  func formPost<T: Codable & Sendable>(poster: Posting, response: AuthorizationResponse) async throws -> T
+  func formPost<T: Codable & Sendable>(
+    poster: Posting,
+    response: AuthorizationResponse
+  ) async throws -> T
+  
   /// Posts a response and returns a success boolean.
-  func formCheck(poster: Posting, response: AuthorizationResponse) async throws -> (String, Bool)
+  func formCheck(
+    poster: Posting,
+    response: AuthorizationResponse
+  ) async throws -> (
+    String,
+    Bool
+  )
 }
 
 /// An implementation of the `AuthorisationServiceType` protocol.
@@ -32,7 +42,7 @@ public actor AuthorisationService: AuthorisationServiceType {
 
   /// Posts a response and returns a generic result.
   public func formPost<T: Codable & Sendable>(
-    poster: Posting = Poster(),
+    poster: Posting,
     response: AuthorizationResponse
   ) async throws -> T {
     switch response {
