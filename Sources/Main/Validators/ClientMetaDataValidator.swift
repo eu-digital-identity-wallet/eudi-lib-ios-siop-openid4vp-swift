@@ -138,8 +138,8 @@ private extension ClientMetaDataValidator {
     
     switch walletConfiguration {
     case .supported(
-      let supportedAlgorithms,
-      let supportedMethods
+      _,
+      _
     ):
       guard let (encryptionAlgorithm, encryptionKey) = walletConfiguration.supportedAlgorithms.compactMap({ supportedAlgorithm -> (JWEAlgorithm, WebKeySet.Key)? in
         if let encryptionKey = verifierCandidateEncryptionKeys.keys.first(where: { key in

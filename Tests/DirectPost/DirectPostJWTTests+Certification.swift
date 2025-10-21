@@ -56,12 +56,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -172,12 +166,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -286,12 +274,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
