@@ -18,7 +18,7 @@
 public struct SiopOpenId4VPConfiguration: Sendable {
   public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
   public let preferredSubjectSyntaxType: SubjectSyntaxType
-  public let decentralizedIdentifier: DecentralizedIdentifier
+  public let decentralizedIdentifier: DecentralizedIdentifier?
   public let idTokenTTL: TimeInterval
   public let presentationDefinitionUriSupported: Bool
   public let privateKey: SecKey
@@ -32,9 +32,9 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let responseEncryptionConfiguration: ResponseEncryptionConfiguration
   
   public init(
-    subjectSyntaxTypesSupported: [SubjectSyntaxType],
-    preferredSubjectSyntaxType: SubjectSyntaxType,
-    decentralizedIdentifier: DecentralizedIdentifier,
+    subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.decentralizedIdentifier, .jwkThumbprint],
+    preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint,
+    decentralizedIdentifier: DecentralizedIdentifier? = nil,
     idTokenTTL: TimeInterval = 600.0,
     presentationDefinitionUriSupported: Bool = false,
     privateKey: SecKey,

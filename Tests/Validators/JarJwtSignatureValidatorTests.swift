@@ -166,12 +166,6 @@ private extension JarJwtSignatureValidatorTests {
     ])
 
     return SiopOpenId4VPConfiguration(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -209,12 +203,6 @@ private extension JarJwtSignatureValidatorTests {
     ])
 
     return SiopOpenId4VPConfiguration(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

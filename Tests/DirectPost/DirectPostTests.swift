@@ -154,12 +154,6 @@ final class DirectPostTests: DiXCTest {
     let keySet = try WebKeySet(jwk: rsaJWK)
     
     let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -233,8 +227,6 @@ final class DirectPostTests: DiXCTest {
   
   func testSDKEndtoEndDirectPostSdJwtVpTokenWithEncryption() async throws {
     
-    let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    
     let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let rsaPublicKey = try KeyController.generateRSAPublicKey(from: rsaPrivateKey)
     let privateKey = try KeyController.generateECDHPrivateKey()
@@ -250,12 +242,6 @@ final class DirectPostTests: DiXCTest {
     let keySet = try WebKeySet(jwk: rsaJWK)
     
     let wallet: SiopOpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

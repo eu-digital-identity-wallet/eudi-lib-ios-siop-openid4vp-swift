@@ -71,7 +71,8 @@ public class JOSEController {
       JWTClaimNames.issuedAt: Int(iat.timeIntervalSince1970.rounded()),
       JWTClaimNames.expirationTime: Int(exp.timeIntervalSince1970.rounded()),
       JWTClaimNames.subjectJWK: subjectJwk.toDictionary()
-    ] as [String: Any])
+    ] as [String: Any?])
+      .compactMapValues { $0 }
       .merging(holderInfo.toDictionary(), uniquingKeysWith: { _, new in
         new
       })
@@ -123,12 +124,12 @@ private extension JOSEController {
   func buildIssuerClaim(
     walletConfiguration: SiopOpenId4VPConfiguration,
     rsaJWK: RSAPublicKey
-  ) throws -> String {
+  ) throws -> String? {
     switch walletConfiguration.preferredSubjectSyntaxType {
     case .jwkThumbprint:
       return try rsaJWK.thumbprint(algorithm: .SHA256)
     case .decentralizedIdentifier:
-      return walletConfiguration.decentralizedIdentifier.stringValue
+      return walletConfiguration.decentralizedIdentifier?.stringValue
     }
   }
 
