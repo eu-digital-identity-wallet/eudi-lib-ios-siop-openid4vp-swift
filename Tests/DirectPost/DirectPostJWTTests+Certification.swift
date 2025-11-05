@@ -282,7 +282,10 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       vpFormatsSupported: ClaimFormat.default(),
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      responseEncryptionConfiguration: .unsupported
+      responseEncryptionConfiguration: .supported(
+        supportedAlgorithms: [.init(.ECDH_ES)],
+        supportedMethods: [.init(.A256GCM)]
+      )
     )
     
     let sdk = SiopOpenID4VP(walletConfiguration: wallet)
@@ -298,10 +301,27 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     case .jwt(request: let request):
       let resolved = request
       
+      var presentation: String?
+      var nonce: String?
+      switch resolved {
+      case .vpToken(let request):
+        
+        nonce = request.nonce
+        presentation = TestsConstants.sdJwtPresentations(
+          transactiondata: request.transactionData,
+          clientID: request.client.id.clientId,
+          nonce: nonce!,
+          useSha3: false
+        )
+        
+      default:
+        XCTFail("Incorrectly resolved")
+      }
+      
       // Obtain consent
       let consent: ClientConsent = .vpToken(
         vpContent: .dcql(verifiablePresentations: [
-          try QueryId(value: "query_0"): [.generic(TestsConstants.cbor)]
+          try QueryId(value: "query_0"): [.generic(presentation!)]
         ])
       )
       
@@ -318,9 +338,9 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       let result: DispatchOutcome = try await sdk.dispatch(response: response!)
       switch result {
       case .accepted:
-        XCTAssert(false)
-      default:
         XCTAssert(true)
+      default:
+        XCTAssert(false)
       }
     default:
       XCTExpectFailure()
