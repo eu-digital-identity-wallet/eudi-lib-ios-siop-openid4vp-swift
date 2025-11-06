@@ -79,7 +79,7 @@ private extension ClientMetaDataValidator {
   ) throws -> ResponseEncryptionSpecification? {
     if let responseMode {
       if !responseMode.requiresEncryption() {
-        if verifierSupportedEncryptionMethods != nil {
+        if verifierSupportedEncryptionMethods == nil {
           return nil
         } else {
           throw ValidationError.validationError(
