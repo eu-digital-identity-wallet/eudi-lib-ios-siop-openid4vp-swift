@@ -138,7 +138,9 @@ internal actor ClientAuthenticator {
         clientId: clientId
       )
     case .redirectUri:
-      return .redirectUri
+      return .redirectUri(
+        clientId: clientId
+      )
     }
   }
   
@@ -165,7 +167,9 @@ internal actor ClientAuthenticator {
         legalName: client.legalName
       )
     case .redirectUri:
-      return .redirectUri
+      return .redirectUri(
+        clientId: clientId
+      )
       
     default:
       throw ValidationError.validationError("Scheme \(scheme) not supported")

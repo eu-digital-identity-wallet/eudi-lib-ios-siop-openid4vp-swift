@@ -29,7 +29,7 @@ class ClientTests: XCTestCase {
   }
 
   func testClientIdRedirectUri() throws {
-    let client = Client.redirectUri
+    let client = Client.redirectUri(clientId: "client123")
     let id = client.id
 
     XCTAssertEqual(id.scheme, .redirectUri)
@@ -42,7 +42,7 @@ class ClientTests: XCTestCase {
   }
 
   func testLegalNameRedirectUri() {
-    let client = Client.redirectUri
+    let client = Client.redirectUri(clientId: "client123")
     XCTAssertNil(client.legalName)
   }
 }
