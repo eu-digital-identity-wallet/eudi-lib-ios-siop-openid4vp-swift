@@ -40,12 +40,6 @@ final class SiopOpenID4VPTests: DiXCTest {
     ])
 
     return OpenId4VPConfiguration(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

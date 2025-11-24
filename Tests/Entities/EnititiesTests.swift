@@ -22,22 +22,12 @@ import SwiftyJSON
 class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
 
   func testWalletOpenId4VPConfigurationInitialization() throws {
-    let subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.jwkThumbprint]
-    let preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
-    let decentralizedIdentifier: DecentralizedIdentifier = .did("DID:example:12341512#$")
-    let idTokenTTL: TimeInterval = 600.0
-    let presentationDefinitionUriSupported: Bool = false
     let signingKey = try KeyController.generateRSAPrivateKey()
     let signingKeySet = WebKeySet(keys: [])
     let supportedClientIdSchemes: [SupportedClientIdPrefix] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
 
     let walletOpenId4VPConfiguration = OpenId4VPConfiguration(
-      subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
-      preferredSubjectSyntaxType: preferredSubjectSyntaxType,
-      decentralizedIdentifier: decentralizedIdentifier,
-      idTokenTTL: idTokenTTL,
-      presentationDefinitionUriSupported: presentationDefinitionUriSupported,
       privateKey: signingKey,
       publicWebKeySet: signingKeySet,
       supportedClientIdSchemes: supportedClientIdSchemes,
@@ -48,42 +38,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       responseEncryptionConfiguration: .unsupported
     )
 
-    XCTAssertEqual(walletOpenId4VPConfiguration.subjectSyntaxTypesSupported, subjectSyntaxTypesSupported)
-    XCTAssertEqual(walletOpenId4VPConfiguration.preferredSubjectSyntaxType, preferredSubjectSyntaxType)
-    XCTAssertEqual(walletOpenId4VPConfiguration.decentralizedIdentifier, decentralizedIdentifier)
-    XCTAssertEqual(walletOpenId4VPConfiguration.idTokenTTL, idTokenTTL)
-    XCTAssertEqual(walletOpenId4VPConfiguration.presentationDefinitionUriSupported, presentationDefinitionUriSupported)
     XCTAssertEqual(walletOpenId4VPConfiguration.vpFormatsSupported, vpFormatsSupported)
-  }
-
-  func testSubjectSyntaxTypeInitWithThumbprint() {
-    let subjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
-    XCTAssert(subjectSyntaxType == .jwkThumbprint)
-  }
-
-  func testSubjectSyntaxTypeInitWithDecentralizedIdentifier() {
-    let subjectSyntaxType: SubjectSyntaxType = .decentralizedIdentifier
-    XCTAssert(subjectSyntaxType == .decentralizedIdentifier)
-  }
-
-  func testValidDID() {
-    let did = DecentralizedIdentifier.did("did:example:123abc")
-    XCTAssertTrue(did.isValid())
-  }
-
-  func testInvalidDID() {
-    let did = DecentralizedIdentifier.did("invalid_did")
-    XCTAssertFalse(did.isValid())
-  }
-
-  func testEmptyDID() {
-    let did = DecentralizedIdentifier.did("")
-    XCTAssertFalse(did.isValid())
-  }
-
-  func testWhitespaceDID() {
-    let did = DecentralizedIdentifier.did("  ")
-    XCTAssertFalse(did.isValid())
   }
 }
 

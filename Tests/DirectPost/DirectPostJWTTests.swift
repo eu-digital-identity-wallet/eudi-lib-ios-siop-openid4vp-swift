@@ -731,14 +731,6 @@ final class DirectPostJWTTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let wallet: OpenId4VPConfiguration = .init(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try .init(
-        rawValue: "did:example:123"
-      ),
       privateKey: rsaPrivateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

@@ -21,14 +21,6 @@ import JOSESwift
 
 private let topPrivateKey = try! KeyController.generateRSAPrivateKey()
 private let config: OpenId4VPConfiguration = .init(
-  subjectSyntaxTypesSupported: [
-    .decentralizedIdentifier,
-    .jwkThumbprint
-  ],
-  preferredSubjectSyntaxType: .jwkThumbprint,
-  decentralizedIdentifier: try! .init(
-    rawValue: "did:example:123"
-  ),
   privateKey: topPrivateKey,
   publicWebKeySet: .init(keys: []),
   supportedClientIdSchemes: [
@@ -39,6 +31,7 @@ private let config: OpenId4VPConfiguration = .init(
   vpConfiguration: VPConfiguration.default(),
   responseEncryptionConfiguration: .unsupported
 )
+
 final class VerifierAttestationIssuerTests: XCTestCase {
 
   override func setUpWithError() throws {
@@ -158,12 +151,6 @@ private extension VerifierAttestationIssuerTests {
     ])
 
     return OpenId4VPConfiguration(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

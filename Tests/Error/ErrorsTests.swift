@@ -28,16 +28,6 @@ class ErrorTests: XCTestCase {
     XCTAssertEqual(error.errorDescription, ".invalidScopes")
   }
 
-  func testMissingPresentationDefinition() {
-    let error = AuthorizationError.missingPresentationDefinition
-    XCTAssertEqual(error.errorDescription, ".missingPresentationDefinition")
-  }
-
-  func testNonHttpsPresentationDefinitionUri() {
-    let error = AuthorizationError.nonHttpsPresentationDefinitionUri
-    XCTAssertEqual(error.errorDescription, ".nonHttpsPresentationDefinitionUri")
-  }
-
   func testUnsupportedURLScheme() {
     let error = AuthorizationError.unsupportedURLScheme
     XCTAssertEqual(error.errorDescription, ".unsupportedURLScheme")

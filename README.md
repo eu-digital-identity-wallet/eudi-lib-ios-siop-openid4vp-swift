@@ -216,20 +216,6 @@ Finally, ISO-23220-4 requires the  usage of RFC 9101
 Library supports obtaining the request object both by value (using `request` attribute) or
 by reference (using `request_uri`)
 
-
-## Presentation Definition
-The Verifier articulates requirements of the Credential(s) that are requested using
-`presentation_definition` and `presentation_definition_uri` parameters that contain a 
-Presentation Definition JSON object. 
-
-According to OpenId4VP, verifier may pass the `presentation_definition` either
-
-* [by value](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-5.1)
-* [by reference](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-presentation_definition_uri)
-* [using scope](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-using-scope-parameter-to-re)
-
-Library supports all these options
-
 ## DCQL
 
 The Verifier articulated requirements of the Verifiable Credential(s) that are requested, are provided using

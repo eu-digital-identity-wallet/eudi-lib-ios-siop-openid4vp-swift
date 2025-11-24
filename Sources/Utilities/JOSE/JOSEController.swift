@@ -125,12 +125,7 @@ private extension JOSEController {
     walletConfiguration: OpenId4VPConfiguration,
     rsaJWK: RSAPublicKey
   ) throws -> String? {
-    switch walletConfiguration.preferredSubjectSyntaxType {
-    case .jwkThumbprint:
-      return try rsaJWK.thumbprint(algorithm: .SHA256)
-    case .decentralizedIdentifier:
-      return walletConfiguration.decentralizedIdentifier?.stringValue
-    }
+    return try rsaJWK.thumbprint(algorithm: .SHA256)
   }
 
   func sign(
