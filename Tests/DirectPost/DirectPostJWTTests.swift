@@ -195,9 +195,8 @@ final class DirectPostJWTTests: DiXCTest {
     )
     
     // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .idToken(
+    let resolved: ResolvedRequestData = .vpToken(
       request: .init(
-        idTokenType: .attesterSigned,
         presentationQuery: .byDigitalCredentialsQuery(
           try! .init(credentials: [
             .init(
@@ -212,7 +211,7 @@ final class DirectPostJWTTests: DiXCTest {
         nonce: Constants.testNonce,
         responseMode: Constants.testDirectPostJwtResponseMode,
         state: Constants.generateRandomBase64String(),
-        scope: Constants.testScope,
+        vpFormatsSupported: try .default(),
         responseEncryptionSpecification: nil
       )
     )
@@ -542,16 +541,12 @@ final class DirectPostJWTTests: DiXCTest {
       var presentation: String?
       switch resolved {
       case .vpToken(let request):
-        
         presentation = TestsConstants.sdJwtPresentations(
           transactiondata: request.transactionData,
           clientID: request.client.id.originalClientId,
           nonce: TestsConstants.testNonce,
           useSha3: false
         )
-        
-      default:
-        XCTFail("Incorrectly resolved")
       }
       
       // Obtain consent
@@ -662,9 +657,6 @@ final class DirectPostJWTTests: DiXCTest {
           nonce: request.nonce,
           useSha3: false
         )
-        
-      default:
-        XCTFail("Incorrectly resolved")
       }
       
       // Obtain consent
@@ -889,9 +881,6 @@ final class DirectPostJWTTests: DiXCTest {
           nonce: request.nonce,
           useSha3: false
         )
-        
-      default:
-        XCTFail("Incorrectly resolved")
       }
       
       // Obtain consent
@@ -1154,11 +1143,7 @@ final class DirectPostJWTTests: DiXCTest {
     {
       "jwks": {
         "keys": [\(ecPublicJwkString!), \(rsaPublicJwkString!)]
-      },
-      "id_token_signed_response_alg": "RS256",
-      "id_token_encrypted_response_alg": "RS256",
-      "id_token_encrypted_response_enc": "A128CBC-HS256",
-      "subject_syntax_types_supported": ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"]
+      }
     }
     """
     

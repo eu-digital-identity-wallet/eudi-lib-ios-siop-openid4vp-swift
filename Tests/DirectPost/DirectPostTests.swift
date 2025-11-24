@@ -33,9 +33,8 @@ final class DirectPostTests: DiXCTest {
     )
     
     // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .idToken(
+    let resolved: ResolvedRequestData = .vpToken(
       request: .init(
-        idTokenType: .attesterSigned,
         presentationQuery:  .byDigitalCredentialsQuery(
           try! .init(credentials: [
             .init(
@@ -50,16 +49,13 @@ final class DirectPostTests: DiXCTest {
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope,
+        vpFormatsSupported: try .default(),
         responseEncryptionSpecification: nil
       )
     )
     
-    // Generate a random JWT
-    let jwt = TestsConstants.generateRandomJWT()
-    
     // Obtain consent
-    let consent: ClientConsent = .idToken(idToken: jwt)
+    let consent: ClientConsent = .vpToken(vpContent: .dcql(verifiablePresentations: [try .init(value: "query_0") : [.generic(TestsConstants.cbor)]]))
     
     // Generate a direct post authorisation response
     let response = try? AuthorizationResponse(
@@ -81,9 +77,8 @@ final class DirectPostTests: DiXCTest {
     )
     
     // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .idToken(
+    let resolved: ResolvedRequestData = .vpToken(
       request: .init(
-        idTokenType: .attesterSigned,
         presentationQuery:  .byDigitalCredentialsQuery(
           try! .init(credentials: [
             .init(
@@ -98,7 +93,7 @@ final class DirectPostTests: DiXCTest {
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope,
+        vpFormatsSupported: try .default(),
         responseEncryptionSpecification: nil
       )
     )
@@ -286,9 +281,6 @@ final class DirectPostTests: DiXCTest {
           nonce: request.nonce,
           useSha3: false
         )
-        
-      default:
-        XCTFail("Incorrectly resolved")
       }
       
       // Obtain consent

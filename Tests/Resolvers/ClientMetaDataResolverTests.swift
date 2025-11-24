@@ -48,19 +48,6 @@ final class ClientMetaDataResolverTests: XCTestCase {
       XCTFail(error.localizedDescription)
     }
   }
-
-  func testResolve_WhenPassByValue_ThenReturnSuccessMetaData() async throws {
-
-    let clientMetaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
-    let response = await self.clientMetaDataResolver.resolve(source: .passByValue(metaData: clientMetaData))
-
-    switch response {
-    case .success(let metaData):
-      XCTAssertEqual(metaData, clientMetaData)
-    case .failure(let error):
-      XCTFail(error.localizedDescription)
-    }
-  }
 }
 
 private extension ClientMetaDataResolverTests {

@@ -46,15 +46,14 @@ public class JOSEController {
     kid: UUID = UUID()
   ) throws -> JWTString {
 
-    var idTokenData: ResolvedRequestData.IdTokenData?
+    var vpTokenData: ResolvedRequestData.VpTokenData?
     switch request {
-    case .idToken(request: let data):
-      idTokenData = data
-    default: throw JOSEError.notSupportedRequest
+    case .vpToken(let data):
+      vpTokenData = data
     }
 
-    guard let idTokenData = idTokenData else {
-      throw JOSEError.invalidIdTokenRequest
+    guard let vpTokenData = vpTokenData else {
+      throw JOSEError.notSupportedRequest
     }
 
     let subjectJwk = JWKSet(keys: [rsaJWK])
@@ -67,7 +66,7 @@ public class JOSEController {
     let claimSet = try ([
       JWTClaimNames.issuer: issuerClaim,
       JWTClaimNames.subject: issuerClaim,
-      JWTClaimNames.audience: idTokenData.client.id.clientId,
+      JWTClaimNames.audience: vpTokenData.client.id.clientId,
       JWTClaimNames.issuedAt: Int(iat.timeIntervalSince1970.rounded()),
       JWTClaimNames.expirationTime: Int(exp.timeIntervalSince1970.rounded()),
       JWTClaimNames.subjectJWK: subjectJwk.toDictionary()

@@ -241,21 +241,6 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         requestObject: authorizedRequest.requestObject,
         clientMetaData: clientMetaData
       )
-    case .idToken:
-      return try await requestAuthenticator.createIdToken(
-        clientId: clientId,
-        client: authorizedRequest.client,
-        nonce: nonce,
-        requestObject: authorizedRequest.requestObject
-      )
-    case .vpAndIdToken:
-      return try await requestAuthenticator.createIdVpToken(
-        clientId: clientId,
-        client: authorizedRequest.client,
-        nonce: nonce,
-        requestObject: authorizedRequest.requestObject,
-        clientMetaData: clientMetaData
-      )
     default:
       throw ValidationError.unsupportedResponseType(responseType.rawValue)
     }

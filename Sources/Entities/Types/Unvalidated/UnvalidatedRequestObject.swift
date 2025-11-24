@@ -24,8 +24,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
   public let responseType: String?
   public let responseUri: String?
   public let redirectUri: String?
-  public let presentationDefinition: String?
-  public let presentationDefinitionUri: String?
   public let dcqlQuery: JSON?
   public let request: String?
   public let requestUri: String?
@@ -38,7 +36,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
   public let scope: String?
   public let responseMode: String?
   public let state: String? // OpenId4VP specific, not utilized from ISO-23330-4
-  public let idTokenType: String?
   public let supportedAlgorithm: String?
   public let transactionData: [String]?
   public let verifierInfo: [JSON]?
@@ -47,8 +44,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     case responseType = "response_type"
     case responseUri = "response_uri"
     case redirectUri = "redirect_uri"
-    case presentationDefinition = "presentation_definition"
-    case presentationDefinitionUri = "presentation_definition_uri"
     case dcqlQuery = "dcql_query"
     case clientId = "client_id"
     case clientMetaData = "client_metadata"
@@ -58,7 +53,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     case scope
     case responseMode = "response_mode"
     case state = "state"
-    case idTokenType = "id_token_type"
     case request
     case requestUri = "request_uri"
     case requestUriMethod = "request_uri_method"
@@ -71,8 +65,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     responseType: String? = nil,
     responseUri: String? = nil,
     redirectUri: String? = nil,
-    presentationDefinition: String? = nil,
-    presentationDefinitionUri: String? = nil,
     dcqlQuery: JSON? = nil,
     request: String? = nil,
     requestUri: String? = nil,
@@ -85,7 +77,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     scope: String? = nil,
     responseMode: String? = nil,
     state: String? = nil,
-    idTokenType: String? = nil,
     supportedAlgorithm: String? = nil,
     transactionData: [String]? = nil,
     verifierInfo: [JSON]? = nil
@@ -93,8 +84,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     self.responseType = responseType
     self.responseUri = responseUri
     self.redirectUri = redirectUri
-    self.presentationDefinition = presentationDefinition
-    self.presentationDefinitionUri = presentationDefinitionUri
     self.dcqlQuery = dcqlQuery
     self.request = request
     self.requestUri = requestUri
@@ -107,7 +96,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     self.scope = scope
     self.responseMode = responseMode
     self.state = state
-    self.idTokenType = idTokenType
     self.supportedAlgorithm = supportedAlgorithm
     self.transactionData = transactionData
     self.verifierInfo = verifierInfo
@@ -119,8 +107,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     responseUri = try? container.decode(String.self, forKey: .responseUri)
     redirectUri = try? container.decode(String.self, forKey: .redirectUri)
 
-    presentationDefinition = try? container.decode(String.self, forKey: .presentationDefinition)
-    presentationDefinitionUri = try? container.decode(String.self, forKey: .presentationDefinitionUri)
     dcqlQuery = try? container.decode(JSON.self, forKey: .dcqlQuery)
 
     clientId = try? container.decode(String.self, forKey: .clientId)
@@ -132,8 +118,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     scope = try? container.decode(String.self, forKey: .scope)
     responseMode = try? container.decode(String.self, forKey: .responseMode)
     state = try? container.decode(String.self, forKey: .state)
-
-    idTokenType = try? container.decode(String.self, forKey: .idTokenType)
 
     request = try? container.decode(String.self, forKey: .request)
     requestUri = try? container.decode(String.self, forKey: .requestUri)
@@ -152,8 +136,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     try? container.encode(responseUri, forKey: .responseUri)
     try? container.encode(redirectUri, forKey: .redirectUri)
 
-    try? container.encode(presentationDefinition, forKey: .presentationDefinition)
-    try? container.encode(presentationDefinitionUri, forKey: .presentationDefinitionUri)
     try? container.encode(dcqlQuery, forKey: .dcqlQuery)
 
     try? container.encode(clientId, forKey: .clientId)
@@ -165,8 +147,6 @@ public struct UnvalidatedRequestObject: Codable, Sendable {
     try? container.encode(scope, forKey: .scope)
     try? container.encode(responseMode, forKey: .responseMode)
     try? container.encode(state, forKey: .state)
-
-    try? container.encode(idTokenType, forKey: .idTokenType)
 
     try? container.encode(request, forKey: .request)
     try? container.encode(requestUri, forKey: .requestUri)
@@ -186,9 +166,6 @@ public extension UnvalidatedRequestObject {
     responseUri = parameters?[CodingKeys.responseUri.rawValue] as? String
     redirectUri = parameters?[CodingKeys.redirectUri.rawValue] as? String
 
-    presentationDefinition = parameters?[CodingKeys.presentationDefinition.rawValue] as? String
-    presentationDefinitionUri = parameters?[CodingKeys.presentationDefinitionUri.rawValue] as? String
-
     if let dcqlString = parameters?[CodingKeys.dcqlQuery.rawValue] as? String,
        let jsonData = dcqlString.data(using: .utf8) {
       dcqlQuery = try? JSON(data: jsonData)
@@ -205,8 +182,6 @@ public extension UnvalidatedRequestObject {
     scope = parameters?[CodingKeys.scope.rawValue] as? String
     responseMode = parameters?[CodingKeys.responseMode.rawValue] as? String
     state = parameters?[CodingKeys.state.rawValue] as? String
-
-    idTokenType = parameters?[CodingKeys.idTokenType.rawValue] as? String
 
     request = parameters?[CodingKeys.request.rawValue] as? String
     requestUri = parameters?[CodingKeys.requestUri.rawValue] as? String
@@ -230,16 +205,12 @@ public extension UnvalidatedRequestObject {
     return clientMetaData != nil || clientMetadataUri != nil
   }
 
-  var hasPresentationDefinitions: Bool {
-    return presentationDefinition != nil || presentationDefinitionUri != nil
-  }
-
   var hasRequests: Bool {
     return request != nil || requestUri != nil
   }
 
   var hasConflicts: Bool {
-    return (hasClientMetaData || hasPresentationDefinitions) && hasRequests
+    return hasClientMetaData && hasRequests
   }
 }
 

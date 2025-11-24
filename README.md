@@ -134,11 +134,11 @@ This functionality is a wallet concern and it is not supported directly by the l
 After collecting holder's consensus, wallet can use the library to form an appropriate response [AuthorizationResponse](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/Entities/AuthorisationRequest/AuthorizationResponse.swift).
 
 ```swift
-import SiopOpenID4VP
-// Example assumes that requestObject is SiopAuthentication & holder's agreed to the issuance of id_token
+import OpenID4VP
+
 let resolved: ResolvedSiopOpenId4VPRequestData = ...
 let jwt: JWTString = ... // provided by wallet
-let consent: ClientConsent = .idToken(idToken: jwt)
+let consent: ClientConsent = .vpToken(...)
 let response = try AuthorizationResponse(
       resolvedRequest: resolved,
       consent: consent

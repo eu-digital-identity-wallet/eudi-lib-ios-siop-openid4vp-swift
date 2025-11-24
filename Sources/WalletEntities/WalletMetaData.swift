@@ -33,7 +33,7 @@ public func walletMetaData(
     config.supportedClientIdSchemes.map { $0.name }
   )
 
-  json[RESPONSE_TYPES_SUPPORTED] = JSON(["vp_token", "id_token"])
+  json[RESPONSE_TYPES_SUPPORTED] = JSON(["vp_token"])
   json[RESPONSE_MODES_SUPPORTED] = JSON(["direct_post", "direct_post.jwt"])
 
   if let options: PostOptions = config.jarConfiguration.supportedRequestUriMethods.isPostSupported() {

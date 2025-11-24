@@ -95,9 +95,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
           nonce: nonce!,
           useSha3: false
         )
-        
-      default:
-        XCTFail("Incorrectly resolved")
       }
       
       // Obtain consent
@@ -202,9 +199,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
           nonce: nonce!,
           useSha3: false
         )
-        
-      default:
-        XCTFail("Incorrectly resolved")
       }
       
       // Obtain consent
@@ -313,9 +307,6 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
           nonce: nonce!,
           useSha3: false
         )
-        
-      default:
-        XCTFail("Incorrectly resolved")
       }
       
       // Obtain consent

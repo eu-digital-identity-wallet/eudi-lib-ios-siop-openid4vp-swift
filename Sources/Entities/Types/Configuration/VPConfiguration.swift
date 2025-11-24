@@ -16,7 +16,6 @@
 import Foundation
 
 public struct VPConfiguration: Sendable {
-  public let presentationDefinitionUriSupported: Bool = true
   public let knownDCQLQueriesPerScope: [String: DCQL] = [:]
   public let vpFormatsSupported: VpFormatsSupported
   public let supportedTransactionDataTypes: [SupportedTransactionDataType]
@@ -45,7 +44,6 @@ public struct VPConfiguration: Sendable {
   }
 
   public init(
-    presentationDefinitionUriSupported: Bool = true,
     vpFormatsSupported: VpFormatsSupported,
     supportedTransactionDataTypes: [SupportedTransactionDataType]
   ) {

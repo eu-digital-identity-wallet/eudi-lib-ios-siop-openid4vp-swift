@@ -145,11 +145,6 @@ final class SiopOpenID4VPTests: DiXCTest {
 
   // MARK: - Authorisation Request Testing
 
-  func testAuthorizationRequestDataGivenValidDataInURL() throws {
-    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validAuthorizeUrl)
-    XCTAssertNotNil(authorizationRequestData)
-  }
-
   func testAuthorize_WhenWalletConfigurationIsNil_ReturnsInvalidResolutionWithMissingConfig() async {
     let siop = SiopOpenID4VP(walletConfiguration: nil)
     let url = URL(string: "https://example.com/valid-request")!

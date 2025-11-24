@@ -32,7 +32,6 @@ extension ResolvedRequestData {
     /// Initializes a `VpTokenData` instance with the provided parameters.
     ///
     /// - Parameters:
-    ///   - presentationDefinition: The presentation definition.
     ///   - clientMetaData: The client metadata.
     ///   - clientId: The client ID.
     ///   - nonce: The nonce value.

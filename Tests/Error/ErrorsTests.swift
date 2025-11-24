@@ -63,19 +63,9 @@ class ErrorTests: XCTestCase {
     XCTAssertEqual(error.errorDescription, ".unsupportedResponseMode ")
   }
 
-  func testUnsupportedIdTokenType() {
-    let error = ValidationError.unsupportedIdTokenType("access_token")
-    XCTAssertEqual(error.errorDescription, ".unsupportedIdTokenType access_token")
-  }
-
   func testInvalidResponseType() {
     let error = ValidationError.invalidResponseType
     XCTAssertEqual(error.errorDescription, "")
-  }
-
-  func testInvalidIdTokenType() {
-    let error = ValidationError.invalidIdTokenType
-    XCTAssertEqual(error.errorDescription, ".invalidResponseType")
   }
 
   func testNoAuthorizationData() {
@@ -86,11 +76,6 @@ class ErrorTests: XCTestCase {
   func testInvalidAuthorizationData() {
     let error = ValidationError.invalidAuthorizationData
     XCTAssertEqual(error.errorDescription, "invalidAuthorizationData")
-  }
-
-  func testInvalidPresentationDefinition() {
-    let error = ValidationError.invalidPresentationDefinition
-    XCTAssertEqual(error.errorDescription, ".invalidAuthorizationData")
   }
 
   func testInvalidClientMetadata() {
@@ -158,11 +143,6 @@ class ErrorTests: XCTestCase {
     XCTAssertEqual(error.errorDescription, ".invalidClientData")
   }
 
-  func testInvalidPresentationDefinitionData() {
-    let error = ResolvedAuthorisationError.invalidPresentationDefinitionData
-    XCTAssertEqual(error.errorDescription, ".invalidPresentationDefinitionData")
-  }
-
   func testResolvedUnsupportedResponseType() {
     let error = ResolvedAuthorisationError.unsupportedResponseType("code")
     XCTAssertEqual(error.errorDescription, ".unsupportedResponseType code")
@@ -193,12 +173,10 @@ class JOSEErrorTests: XCTestCase {
 
   func testErrorDescription() {
     XCTAssertEqual(JOSEError.notSupportedRequest.errorDescription, ".notSupportedRequest")
-    XCTAssertEqual(JOSEError.invalidIdTokenRequest.errorDescription, ".invalidIdTokenRequest")
     XCTAssertEqual(JOSEError.invalidPublicKey.errorDescription, ".invalidPublicKey")
     XCTAssertEqual(JOSEError.invalidJWS.errorDescription, ".invalidJWS")
     XCTAssertEqual(JOSEError.invalidSigner.errorDescription, ".invalidSigner")
     XCTAssertEqual(JOSEError.invalidVerifier.errorDescription, ".invalidVerifier")
-    XCTAssertEqual(JOSEError.invalidDidIdentifier.errorDescription, ".invalidDidIdentifier")
   }
 }
 
