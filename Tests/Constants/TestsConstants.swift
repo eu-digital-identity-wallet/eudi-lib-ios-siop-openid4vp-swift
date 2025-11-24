@@ -26,10 +26,6 @@ struct TestsConstants {
   public static func testClientMetaData() -> ClientMetaData {
     .init(
       jwks: "jwks",
-      idTokenSignedResponseAlg: ".idTokenSignedResponseAlg",
-      idTokenEncryptedResponseAlg: ".idTokenEncryptedResponseAlg",
-      idTokenEncryptedResponseEnc: ".idTokenEncryptedResponseEnc",
-      subjectSyntaxTypesSupported: [],
       vpFormatsSupported: Self.testVpFormatsSupportedTO()
     )
   }
@@ -37,10 +33,6 @@ struct TestsConstants {
   public static func testValidatedClientMetaData() -> ClientMetaData.Validated {
     .init(
       jwkSet: webKeySet,
-      idTokenJWSAlg: .init(.ES256),
-      idTokenJWEAlg: .init(.A128GCMKW),
-      idTokenJWEEnc: .init(.A128CBC_HS256),
-      subjectSyntaxTypesSupported: [.decentralizedIdentifier],
       authorizationSignedResponseAlg: .init(.ES256),
       authorizationEncryptedResponseAlg: .init(.A128GCMKW),
       authorizationEncryptedResponseEnc: .init(.A128CBC_HS256),

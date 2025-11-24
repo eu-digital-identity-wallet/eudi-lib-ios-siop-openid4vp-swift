@@ -103,7 +103,6 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       }
     } else {
       validatedClientMetaData = ClientMetaData.Validated(
-        subjectSyntaxTypesSupported: [.jwkThumbprint, .decentralizedIdentifier],
         vpFormatsSupported: try! .default()
       )
     }

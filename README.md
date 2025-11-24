@@ -1,4 +1,4 @@
-# OpenID4VP / SIOPv2 
+# OpenID4VP 
 
 :heavy_exclamation_mark: **Important!** Before you proceed, please read
 the [EUDI Wallet Reference Implementation project description](https://github.com/eu-digital-identity-wallet/.github/blob/main/profile/reference-implementation.md)
@@ -16,14 +16,14 @@ the [EUDI Wallet Reference Implementation project description](https://github.co
 
 ## Introduction
 
-OpenID4VP is a Protocol that enables the presentation of Verifiable Credentials. It is built on top of OAuth 2.0 and supports multiple credential formats, including W3C Verifiable Credentials Data Model, ISO mdoc, and AnonCreds. This protocol allows for simple, secure, and developer-friendly credential presentation and can be used to support credential presentation and the issuance of access tokens for access to APIs based on Verifiable Credentials in the wallet
+OpenID4VP is a Protocol that enables the presentation of Verifiable Credentials. It is built on top of OAuth 2.0 and supports multiple credential formats. This protocol allows for simple, secure, and developer-friendly credential presentation and can be used to support credential presentation and the issuance of access tokens for access to APIs based on Verifiable Credentials in the wallet
 
 This is a swift library that supports 
 [OpenId4VP](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html) protocols.
 In particular, the library focus on the wallet's role using those two protocols with constraints
 included in ISO 23220-4 and ISO-18013-7.
 
-OpenID Connect for Verifiable Presentations (OIDC4VP) and Self-Issued OpenID Provider v2 (SIOP v2) are two specifications that have been approved as OpenID Implementer’s Drafts by the OpenID Foundation membership 1. SIOP v2 is an OpenID specification that allows end-users to act as their own OpenID Providers (OPs). Using Self-Issued OPs, end-users can authenticate themselves and present claims directly to a Relying Party (RP), typically a webapp, without involving a third-party Identity Provider 2. OIDC4VP enables the presentation of Verifiable Credentials using the OpenID Connect protocol.
+OpenID Connect for Verifiable Presentations (OIDC4VP) enables the presentation of Verifiable Credentials using the OpenID Connect protocol.
 
 ## Features
 
@@ -60,11 +60,10 @@ The released software is an initial development release version:
 
 ## Library implementation
 
-This is a Swift library, that conforms to Self Issued OpenID Provider v2 (SIOPv2 - draft 12) and OpenID for Verifiable Presentations (OpenID4VP - draft 21) specifications as defined by the OpenID Connect working group.
+This is a Swift library, that conforms to OpenID for Verifiable Presentations (OpenID4VP) specification.
 In particular, the library focus on the wallet's role and in addition focuses on the 
 usage of those two protocols as they are constraint by ISO 23220-4 and ISO-18013-7
 
-Additionally, it has support for Verifiable Presentations using the Presentation Exchange  library version 2. 
 You can use this library to simplify the integration of OIDC4VP into your mobile applications.
 
 
