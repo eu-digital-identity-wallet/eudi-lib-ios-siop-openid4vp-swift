@@ -39,7 +39,7 @@ public class JOSEController {
   public func build<T: Codable>(
     request: ResolvedRequestData,
     holderInfo: T,
-    walletConfiguration: SiopOpenId4VPConfiguration,
+    walletConfiguration: OpenId4VPConfiguration,
     rsaJWK: RSAPublicKey,
     signingKey: SecKey,
     ttl: TimeInterval = 600.0,
@@ -122,7 +122,7 @@ private extension JOSEController {
   }
 
   func buildIssuerClaim(
-    walletConfiguration: SiopOpenId4VPConfiguration,
+    walletConfiguration: OpenId4VPConfiguration,
     rsaJWK: RSAPublicKey
   ) throws -> String? {
     switch walletConfiguration.preferredSubjectSyntaxType {

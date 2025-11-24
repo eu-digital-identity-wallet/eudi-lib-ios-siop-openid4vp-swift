@@ -20,7 +20,7 @@ import JOSESwift
 @testable import SiopOpenID4VP
 
 private let topPrivateKey = try! KeyController.generateRSAPrivateKey()
-private let config: SiopOpenId4VPConfiguration = .init(
+private let config: OpenId4VPConfiguration = .init(
   subjectSyntaxTypesSupported: [
     .decentralizedIdentifier,
     .jwkThumbprint
@@ -140,7 +140,7 @@ private extension VerifierAttestationIssuerTests {
   func verifierAttestationWalletConfiguration(
     privateKey: SecKey,
     verifier: Verifier
-  ) throws -> SiopOpenId4VPConfiguration {
+  ) throws -> OpenId4VPConfiguration {
 
     let publicKey = try KeyController.generateECDHPublicKey(from: privateKey)
 
@@ -157,7 +157,7 @@ private extension VerifierAttestationIssuerTests {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
 
-    return SiopOpenId4VPConfiguration(
+    return OpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint

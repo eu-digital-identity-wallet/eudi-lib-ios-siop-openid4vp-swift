@@ -77,10 +77,10 @@ internal struct JWTDecoder {
 
 internal actor RequestAuthenticator {
   
-  let config: SiopOpenId4VPConfiguration
+  let config: OpenId4VPConfiguration
   let clientAuthenticator: ClientAuthenticator
   
-  init(config: SiopOpenId4VPConfiguration, clientAuthenticator: ClientAuthenticator) {
+  init(config: OpenId4VPConfiguration, clientAuthenticator: ClientAuthenticator) {
     self.config = config
     self.clientAuthenticator = clientAuthenticator
   }

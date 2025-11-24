@@ -64,7 +64,7 @@ public extension AuthorizationResponse {
   init(
     resolvedRequest: ResolvedRequestData,
     consent: ClientConsent,
-    walletOpenId4VPConfig: SiopOpenId4VPConfiguration? = nil,
+    walletOpenId4VPConfig: OpenId4VPConfiguration? = nil,
     encryptionParameters: EncryptionParameters? = nil
   ) throws {
     switch consent {
@@ -152,7 +152,7 @@ private extension AuthorizationResponse {
     responseMode: ResponseMode?,
     payload: AuthorizationResponsePayload,
     clientMetaData: ClientMetaData.Validated?,
-    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
+    walletOpenId4VPConfig: OpenId4VPConfiguration?,
     responseEncryptionSpecification: ResponseEncryptionSpecification?
   ) throws -> AuthorizationResponse {
     guard let responseMode = responseMode else {

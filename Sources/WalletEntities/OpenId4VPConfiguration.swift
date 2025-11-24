@@ -15,7 +15,7 @@
  */
 @preconcurrency import Foundation
 
-public struct SiopOpenId4VPConfiguration: Sendable {
+public struct OpenId4VPConfiguration: Sendable {
   public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
   public let preferredSubjectSyntaxType: SubjectSyntaxType
   public let decentralizedIdentifier: DecentralizedIdentifier?

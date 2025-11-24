@@ -153,7 +153,7 @@ final class DirectPostTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -241,7 +241,7 @@ final class DirectPostTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

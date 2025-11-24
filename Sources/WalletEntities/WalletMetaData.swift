@@ -19,7 +19,7 @@ import JOSESwift
 
 // Function to create wallet metadata
 public func walletMetaData(
-  cfg: SiopOpenId4VPConfiguration,
+  cfg: OpenId4VPConfiguration,
   key: SecKey? = nil
 ) -> JSON {
   var json = JSON()

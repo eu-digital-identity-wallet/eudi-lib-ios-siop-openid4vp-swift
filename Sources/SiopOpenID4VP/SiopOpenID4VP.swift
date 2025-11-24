@@ -32,11 +32,11 @@ public protocol SiopOpenID4VPType {
 
 public class SiopOpenID4VP: SiopOpenID4VPType {
 
-  let walletConfiguration: SiopOpenId4VPConfiguration?
+  let walletConfiguration: OpenId4VPConfiguration?
   let authorizatinRequestResolver: AuthorizationRequestResolving
 
   public init(
-    walletConfiguration: SiopOpenId4VPConfiguration? = nil,
+    walletConfiguration: OpenId4VPConfiguration? = nil,
     authorizatinRequestResolver: AuthorizationRequestResolving = AuthorizationRequestResolver()
   ) {
     self.walletConfiguration = walletConfiguration

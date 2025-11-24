@@ -32,7 +32,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
     let supportedClientIdSchemes: [SupportedClientIdPrefix] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
 
-    let walletOpenId4VPConfiguration = SiopOpenId4VPConfiguration(
+    let walletOpenId4VPConfiguration = OpenId4VPConfiguration(
       subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
       preferredSubjectSyntaxType: preferredSubjectSyntaxType,
       decentralizedIdentifier: decentralizedIdentifier,
@@ -44,7 +44,7 @@ class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
       vpFormatsSupported: vpFormatsSupported,
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      session: SiopOpenId4VPConfiguration.walletSession,
+      session: OpenId4VPConfiguration.walletSession,
       responseEncryptionConfiguration: .unsupported
     )
 

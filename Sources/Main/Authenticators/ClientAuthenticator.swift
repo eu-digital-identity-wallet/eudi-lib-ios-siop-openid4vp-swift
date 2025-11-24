@@ -21,9 +21,9 @@ import CryptoKit
 
 internal actor ClientAuthenticator {
   
-  let config: SiopOpenId4VPConfiguration
+  let config: OpenId4VPConfiguration
   
-  init(config: SiopOpenId4VPConfiguration) {
+  init(config: OpenId4VPConfiguration) {
     self.config = config
   }
   
@@ -49,7 +49,7 @@ internal actor ClientAuthenticator {
   func getClient(
     clientId: String?,
     jwt: JWTString,
-    config: SiopOpenId4VPConfiguration?
+    config: OpenId4VPConfiguration?
   ) async throws -> Client {
     
     guard let clientId else {
@@ -146,7 +146,7 @@ internal actor ClientAuthenticator {
   
   func getClient(
     clientId: String,
-    config: SiopOpenId4VPConfiguration?
+    config: OpenId4VPConfiguration?
   ) async throws -> Client {
     guard
       let verifierId = try? VerifierId.parse(clientId: clientId).get(),

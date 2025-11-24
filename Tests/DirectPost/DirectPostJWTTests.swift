@@ -37,7 +37,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -125,7 +125,7 @@ final class DirectPostJWTTests: DiXCTest {
       ])
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -256,7 +256,7 @@ final class DirectPostJWTTests: DiXCTest {
     // Obtain consent
     let consent: ClientConsent = .negative(message: "user_cancelled")
     
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: try KeyController.generateRSAPrivateKey(),
       publicWebKeySet: TestsConstants.webKeySet,
       supportedClientIdSchemes: [],
@@ -302,7 +302,7 @@ final class DirectPostJWTTests: DiXCTest {
     let verifiedClient = try! VerifierId.parse(clientId: session["client_id"] as! String).get()
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -401,7 +401,7 @@ final class DirectPostJWTTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     let publicKeysURL = URL(string: "\(TestsConstants.host)/wallet/public-keys.json")!
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -511,7 +511,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: rsaPrivateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -620,7 +620,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -730,7 +730,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -849,7 +849,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: rsaPrivateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -977,7 +977,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -1076,7 +1076,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -1284,7 +1284,7 @@ final class DirectPostJWTTests: DiXCTest {
     }
     
     let keySet = try WebKeySet(jwk: rsaJWK)
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

@@ -21,7 +21,7 @@ import JOSESwift
 
 final class SiopOpenID4VPTests: DiXCTest {
 
-  func preRegisteredWalletConfiguration() throws -> SiopOpenId4VPConfiguration {
+  func preRegisteredWalletConfiguration() throws -> OpenId4VPConfiguration {
 
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -39,7 +39,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
 
-    return SiopOpenId4VPConfiguration(
+    return OpenId4VPConfiguration(
       subjectSyntaxTypesSupported: [
         .decentralizedIdentifier,
         .jwkThumbprint
@@ -99,7 +99,7 @@ final class SiopOpenID4VPTests: DiXCTest {
 
   static func preRegisteredWalletConfigurationWithKnownClientID(
     _ clientId: String = "verifier-backend.eudiw.dev"
-  ) throws -> SiopOpenId4VPConfiguration {
+  ) throws -> OpenId4VPConfiguration {
 
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -117,7 +117,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
 
-    return SiopOpenId4VPConfiguration(
+    return OpenId4VPConfiguration(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

@@ -51,7 +51,7 @@ public extension ResolvedRequestData {
   
   /// Initializes a `ResolvedRequestData` instance with the provided parameters.
   init(
-    walletConfiguration: SiopOpenId4VPConfiguration,
+    walletConfiguration: OpenId4VPConfiguration,
     vpConfiguration: VPConfiguration,
     validatedClientMetaData: ClientMetaData.Validated,
     validatedAuthorizationRequest: ValidatedRequestData
