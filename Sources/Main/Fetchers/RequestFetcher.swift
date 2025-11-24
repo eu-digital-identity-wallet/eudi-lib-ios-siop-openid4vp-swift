@@ -225,7 +225,10 @@ internal actor RequestFetcher {
     include: Bool
   ) -> JSON? {
     guard include, let config else { return nil }
-    return walletMetaData(cfg: config, key: key)
+    return walletMetaData(
+      config: config,
+      key: key
+    )
   }
   
   private func decryptIfNeeded(

@@ -357,7 +357,7 @@ class WalletMetaDataTests: XCTestCase {
     let walletConfiguration = try SiopOpenID4VPTests.preRegisteredWalletConfigurationWithKnownClientID()
 
     let json = walletMetaData(
-      cfg: walletConfiguration
+      config: walletConfiguration
     )
 
     XCTAssertEqual(json["request_object_signing_alg_values_supported"].arrayValue.map { $0.stringValue }, ["ES256"])
