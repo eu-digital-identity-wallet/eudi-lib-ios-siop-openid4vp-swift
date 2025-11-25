@@ -19,34 +19,22 @@ import X509
 import SwiftyJSON
 
 // Enum defining the types of validated OpenID4VP requests
-public enum ValidatedRequestData: Sendable {
-  case vpToken(request: VpTokenRequest)
+public struct ValidatedRequestData: Sendable {
+  let request: VpTokenRequest
 
   public var responseMode: ResponseMode? {
-    switch self {
-    case .vpToken(let request):
-      request.responseMode
-    }
+    request.responseMode
   }
 
   public var nonce: String? {
-    switch self {
-    case .vpToken(let request):
-      request.nonce
-    }
+    request.nonce
   }
 
   public var state: String? {
-    switch self {
-    case .vpToken(let request):
-      request.state
-    }
+    request.state
   }
 
   public var clientId: VerifierId {
-    switch self {
-    case .vpToken(let request):
-      request.client.id
-    }
+    request.client.id
   }
 }

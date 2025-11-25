@@ -69,38 +69,34 @@ public extension AuthorizationResponse {
   ) throws {
     switch consent {
     case .vpToken(let vpContent):
-      switch resolvedRequest {
-      case .vpToken(let request):
-        let payload: AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
-          vpContent: vpContent,
-          state: request.state ?? "",
-          nonce: request.nonce,
-          clientId: resolvedRequest.client.id,
-          encryptionParameters: encryptionParameters
-        )
-        self = try .buildAuthorizationResponse(
-          responseMode: request.responseMode,
-          payload: payload,
-          clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig,
-          responseEncryptionSpecification: request.responseEncryptionSpecification
-        )
-      }
+      let request = resolvedRequest.request
+      let payload: AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
+        vpContent: vpContent,
+        state: request.state ?? "",
+        nonce: request.nonce,
+        clientId: resolvedRequest.client.id,
+        encryptionParameters: encryptionParameters
+      )
+      self = try .buildAuthorizationResponse(
+        responseMode: request.responseMode,
+        payload: payload,
+        clientMetaData: request.clientMetaData,
+        walletOpenId4VPConfig: walletOpenId4VPConfig,
+        responseEncryptionSpecification: request.responseEncryptionSpecification
+      )
     case .negative(let error):
-      switch resolvedRequest {
-      case .vpToken(let request):
-        let payload: AuthorizationResponsePayload = .noConsensusResponseData(
-          state: try request.state ?? { throw AuthorizationError.invalidState }(),
-          error: error
-        )
-        self = try .buildAuthorizationResponse(
-          responseMode: request.responseMode,
-          payload: payload,
-          clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig,
-          responseEncryptionSpecification: request.responseEncryptionSpecification
-        )
-      }
+      let request = resolvedRequest.request
+      let payload: AuthorizationResponsePayload = .noConsensusResponseData(
+        state: try request.state ?? { throw AuthorizationError.invalidState }(),
+        error: error
+      )
+      self = try .buildAuthorizationResponse(
+        responseMode: request.responseMode,
+        payload: payload,
+        clientMetaData: request.clientMetaData,
+        walletOpenId4VPConfig: walletOpenId4VPConfig,
+        responseEncryptionSpecification: request.responseEncryptionSpecification
+      )
     }
   }
 }

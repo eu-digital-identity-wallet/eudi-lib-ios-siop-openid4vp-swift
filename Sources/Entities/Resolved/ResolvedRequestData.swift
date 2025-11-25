@@ -16,24 +16,18 @@
 import Foundation
 import SwiftyJSON
 
-public enum ResolvedRequestData: Sendable {
-  case vpToken(request: VpTokenData)
+public struct ResolvedRequestData: Sendable {
+  let request: VpTokenData
 
   public var dcql: DCQL? {
-    switch self {
-    case .vpToken(let request):
-      switch request.presentationQuery {
-      case .byDigitalCredentialsQuery(let dcql):
-        return dcql
-      }
+    switch request.presentationQuery {
+    case .byDigitalCredentialsQuery(let dcql):
+      return dcql
     }
   }
 
   public var client: Client {
-    switch self {
-    case .vpToken(let request):
-      return request.client
-    }
+    return request.client
   }
 }
 
@@ -47,32 +41,30 @@ public extension ResolvedRequestData {
     validatedAuthorizationRequest: ValidatedRequestData
   ) async throws {
 
-    switch validatedAuthorizationRequest {
-    case .vpToken(let request):
-      let commonFormats = VpFormatsSupported.common(request.vpFormatsSupported, vpConfiguration.vpFormatsSupported) ?? request.vpFormatsSupported
-      let presentationQuery = try await Self.resolvePresentationQuery(
-        from: request.querySource
-      )
+    let request = validatedAuthorizationRequest.request
+    let commonFormats = VpFormatsSupported.common(request.vpFormatsSupported, vpConfiguration.vpFormatsSupported) ?? request.vpFormatsSupported
+    let presentationQuery = try await Self.resolvePresentationQuery(
+      from: request.querySource
+    )
 
-      self = .vpToken(request: .init(
-        presentationQuery: presentationQuery,
-        clientMetaData: validatedClientMetaData,
-        client: request.client,
-        nonce: request.nonce,
-        responseMode: request.responseMode,
-        state: request.state,
-        vpFormatsSupported: commonFormats,
-        responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
-        transactionData: try Self.parseTransactionData(
-          transactionData: request.transactionData,
-          vpConfiguration: vpConfiguration,
-          presentationQuery: presentationQuery),
-        verifierInfo: try VerifierInfo.validatedVerifierInfo(
-          request.verifierInfo,
-          presentationQuery: presentationQuery
-        )
-      ))
-    }
+    self = .init(request: .init(
+      presentationQuery: presentationQuery,
+      clientMetaData: validatedClientMetaData,
+      client: request.client,
+      nonce: request.nonce,
+      responseMode: request.responseMode,
+      state: request.state,
+      vpFormatsSupported: commonFormats,
+      responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
+      transactionData: try Self.parseTransactionData(
+        transactionData: request.transactionData,
+        vpConfiguration: vpConfiguration,
+        presentationQuery: presentationQuery),
+      verifierInfo: try VerifierInfo.validatedVerifierInfo(
+        request.verifierInfo,
+        presentationQuery: presentationQuery
+      )
+    ))
   }
   
   private static func lookupConfiguredQueries(
@@ -90,10 +82,7 @@ public extension ResolvedRequestData {
   }
   
   var legalName: String? {
-    switch self {
-    case .vpToken(let request):
-      return request.client.legalName
-    }
+    return request.client.legalName
   }
 }
 

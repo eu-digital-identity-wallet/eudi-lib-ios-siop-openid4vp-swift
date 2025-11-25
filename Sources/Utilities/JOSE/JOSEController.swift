@@ -37,7 +37,7 @@ public class JOSEController {
   }
 
   public func build<T: Codable>(
-    request: ResolvedRequestData,
+    resolvedRequest: ResolvedRequestData,
     holderInfo: T,
     walletConfiguration: OpenId4VPConfiguration,
     rsaJWK: RSAPublicKey,
@@ -46,12 +46,7 @@ public class JOSEController {
     kid: UUID = UUID()
   ) throws -> JWTString {
 
-    var vpTokenData: ResolvedRequestData.VpTokenData?
-    switch request {
-    case .vpToken(let data):
-      vpTokenData = data
-    }
-
+    let vpTokenData: ResolvedRequestData.VpTokenData? = resolvedRequest.request
     guard let vpTokenData = vpTokenData else {
       throw JOSEError.notSupportedRequest
     }

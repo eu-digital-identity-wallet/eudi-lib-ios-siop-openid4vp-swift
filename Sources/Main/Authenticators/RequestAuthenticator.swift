@@ -129,7 +129,7 @@ internal actor RequestAuthenticator {
       requestObject: requestObject
     )
     
-    return .vpToken(request: .init(
+    return .init(request: .init(
       querySource: querySource,
       clientMetaDataSource: nil,
       clientId: clientId,
