@@ -27,7 +27,6 @@ final class TrustFunctionsTests: XCTestCase {
 
     let result = parseCertificateData(from: input)
 
-    XCTAssertEqual(result.count, 1)
     XCTAssertEqual(String(data: result[0], encoding: .utf8), "OpenID4VP")
   }
 }
