@@ -18,7 +18,7 @@ import XCTest
 import JOSESwift
 import SwiftyJSON
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class JWTDecoderTests: XCTestCase {
   func testDecodeJWT_AllFieldsDecodedCorrectly() {

@@ -19,7 +19,7 @@ import CryptoKit
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class DirectPostTests: DiXCTest {
   
@@ -173,7 +173,7 @@ final class DirectPostTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
@@ -253,7 +253,7 @@ final class DirectPostTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"

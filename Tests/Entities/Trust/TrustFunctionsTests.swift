@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 import XCTest
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 import X509
 
 final class TrustFunctionsTests: XCTestCase {
 
   func testParseCertificateDataWithValidAndInvalidBase64() {
 
-    let validBase64 = "U2lvcE9wZW5JRDRWUA=="
+    let validBase64 = "T3BlbklENFZQ=="
     let invalidBase64 = "not_base_64"
     let input = [validBase64, invalidBase64]
 
     let result = parseCertificateData(from: input)
 
     XCTAssertEqual(result.count, 1)
-    XCTAssertEqual(String(data: result[0], encoding: .utf8), "SiopOpenID4VP")
+    XCTAssertEqual(String(data: result[0], encoding: .utf8), "OpenID4VP")
   }
 }

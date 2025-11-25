@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-  name: "SiopOpenID4VP",
+  name: "OpenID4VP",
   platforms: [.iOS(.v14), .macOS(.v12)],
   products: [
     .library(
-      name: "SiopOpenID4VP",
-      targets: ["SiopOpenID4VP"])
+      name: "OpenID4VP",
+      targets: ["OpenID4VP"])
   ],
   dependencies: [
     .package(
@@ -39,7 +39,7 @@ let package = Package(
   ],
   targets: [
     .target(
-      name: "SiopOpenID4VP",
+      name: "OpenID4VP",
       dependencies: [
         .product(
           name: "JOSESwift",
@@ -68,9 +68,9 @@ let package = Package(
       ]
     ),
     .testTarget(
-      name: "SiopOpenID4VPTests",
+      name: "OpenID4VPTests",
       dependencies: [
-        "SiopOpenID4VP",
+        "OpenID4VP",
         .product(
           name: "JOSESwift",
           package: "JOSESwift"

@@ -16,7 +16,7 @@
 import XCTest
 import Foundation
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class NonceGeneratorTests: XCTestCase {
 

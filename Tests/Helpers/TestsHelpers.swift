@@ -16,7 +16,7 @@
 import Foundation
 import SwiftyJSON
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 class TestsHelpers {
   static func transactionDataBase64String() -> String {

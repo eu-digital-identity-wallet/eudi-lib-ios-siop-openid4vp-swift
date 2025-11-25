@@ -18,7 +18,7 @@ import JOSESwift
 import X509
 import SwiftyJSON
 
-// Enum defining the types of validated SIOP OpenID4VP requests
+// Enum defining the types of validated OpenID4VP requests
 public enum ValidatedRequestData: Sendable {
   case vpToken(request: VpTokenRequest)
 

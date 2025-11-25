@@ -19,7 +19,7 @@ import CryptoSwift
 import JOSESwift
 import Security
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 struct TestsConstants {
   

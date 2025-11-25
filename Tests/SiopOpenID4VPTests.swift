@@ -17,9 +17,9 @@ import Foundation
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
-final class SiopOpenID4VPTests: DiXCTest {
+final class OpenID4VPTests: DiXCTest {
 
   func preRegisteredWalletConfiguration() throws -> OpenId4VPConfiguration {
 
@@ -146,9 +146,9 @@ final class SiopOpenID4VPTests: DiXCTest {
   // MARK: - Authorisation Request Testing
 
   func testAuthorize_WhenWalletConfigurationIsNil_ReturnsInvalidResolutionWithMissingConfig() async {
-    let siop = SiopOpenID4VP(walletConfiguration: nil)
+    let vp = OpenID4VP(walletConfiguration: nil)
     let url = URL(string: "https://example.com/valid-request")!
-    let result = await siop.authorize(url: url)
+    let result = await vp.authorize(url: url)
 
     switch result {
     case .invalidResolution(let error, let dispatchDetails):

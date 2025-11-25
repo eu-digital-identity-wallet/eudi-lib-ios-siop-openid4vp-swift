@@ -17,7 +17,7 @@ import Foundation
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
   
@@ -70,7 +70,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       )
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     
     overrideDependencies()
     let result = await sdk.authorize(
@@ -174,7 +174,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       responseEncryptionConfiguration: .unsupported
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     
     overrideDependencies()
     let result = await sdk.authorize(
@@ -282,7 +282,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       )
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     
     overrideDependencies()
     let result = await sdk.authorize(

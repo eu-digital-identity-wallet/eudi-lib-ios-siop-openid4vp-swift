@@ -17,7 +17,7 @@
 @preconcurrency import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 private let topPrivateKey = try! KeyController.generateRSAPrivateKey()
 private let config: OpenId4VPConfiguration = .init(

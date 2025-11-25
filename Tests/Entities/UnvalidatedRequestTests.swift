@@ -15,7 +15,7 @@
  */
 import XCTest
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class UnvalidatedRequestTests: XCTestCase {
 

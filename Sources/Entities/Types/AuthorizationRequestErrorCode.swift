@@ -38,7 +38,7 @@ enum AuthorizationRequestErrorCode: String {
 
   case invalidTransactionData = "invalid_transaction_data"
 
-  // SIOPv2 Error Codes
+  // Error Codes
   case userCancelled = "user_cancelled"
   case registrationValueNotSupported = "registration_value_not_supported"
   case subjectSyntaxTypesNotSupported = "subject_syntax_types_not_supported"

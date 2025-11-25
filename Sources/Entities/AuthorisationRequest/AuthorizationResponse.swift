@@ -59,7 +59,7 @@ public enum AuthorizationResponse: Sendable {
 public extension AuthorizationResponse {
   /// Initializes an `AuthorizationResponse` based on the resolved request and consent.
   /// - Parameters:
-  ///   - resolvedRequest: The resolved SIOP OpenID Connect 4 Verifiable Presentation request data.
+  ///   - resolvedRequest: The resolved Verifiable Presentation request data.
   ///   - consent: The client consent.
   init(
     resolvedRequest: ResolvedRequestData,

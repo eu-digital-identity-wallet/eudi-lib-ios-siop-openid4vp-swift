@@ -16,7 +16,7 @@
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class ResponseSignerEncryptorTests: DiXCTest {
 

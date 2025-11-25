@@ -18,7 +18,7 @@ platform :ios do
     
     params = {
       package_path: '.',
-      scheme: 'SiopOpenID4VP',
+      scheme: 'OpenID4VP',
       devices: ['iPhone 16'], 
       output_directory: "xcov_output",
       result_bundle: true
@@ -31,7 +31,7 @@ platform :ios do
     run_tests(params)
 
     xcov(
-      scheme: "SiopOpenID4VP",
+      scheme: "OpenID4VP",
       output_directory: "xcov_output",
       is_swift_package: true,
       minimum_coverage_percentage: 60.0
@@ -45,7 +45,7 @@ platform :ios do
   lane :tests do
     params = {
       package_path: '.',
-      scheme: 'SiopOpenID4VP',
+      scheme: 'OpenID4VP',
       devices: ['iPhone 16'], 
       result_bundle: true
     }
@@ -56,7 +56,7 @@ platform :ios do
   desc "Builds the package"
   lane :just_build do
     xcodebuild(
-      scheme: "SiopOpenID4VP",
+      scheme: "OpenID4VP",
       destination: "platform=iOS Simulator,OS=16.2,name=iPhone 8",
       xcargs: "-skipPackagePluginValidation -disableAutomaticPackageResolution"
     )

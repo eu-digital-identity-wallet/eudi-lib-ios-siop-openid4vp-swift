@@ -17,7 +17,7 @@ import Foundation
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class DirectPostJWTTests: DiXCTest {
   
@@ -62,7 +62,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     
     /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
@@ -137,7 +137,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     
     /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
@@ -320,7 +320,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]
     let transactionId = session["transaction_id"] as! String
@@ -420,7 +420,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]
     let transactionId = session["transaction_id"] as! String
@@ -522,7 +522,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]!
     let transactionId = session["transaction_id"] as! String
@@ -628,7 +628,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     
     /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
@@ -734,7 +734,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]
     let transactionId = session["transaction_id"] as! String
@@ -845,7 +845,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     guard let clientId = session["client_id"] else {
       XCTAssert(false, "Found nil client id")
@@ -970,7 +970,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     let clientId = session["client_id"]!
     let transactionId = session["transaction_id"] as! String
@@ -1069,7 +1069,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     let url = session["request_uri"]
     
     overrideDependencies()
@@ -1274,7 +1274,7 @@ final class DirectPostJWTTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     
     /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"

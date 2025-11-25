@@ -17,9 +17,9 @@ import XCTest
 import Foundation
 import SwiftyJSON
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
-class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
+class ResolvedOpenId4VPRequestDataTests: DiXCTest {
 
   func testWalletOpenId4VPConfigurationInitialization() throws {
     let signingKey = try KeyController.generateRSAPrivateKey()
@@ -309,7 +309,7 @@ class WalletMetaDataTests: XCTestCase {
 
   func testWalletMetaData() throws {
 
-    let walletConfiguration = try SiopOpenID4VPTests.preRegisteredWalletConfigurationWithKnownClientID()
+    let walletConfiguration = try OpenID4VPTests.preRegisteredWalletConfigurationWithKnownClientID()
 
     let json = walletMetaData(
       config: walletConfiguration
