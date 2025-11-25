@@ -33,7 +33,7 @@ final class DirectPostTests: DiXCTest {
     )
     
     // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .vpToken(
+    let resolved: ResolvedRequestData = .init(
       request: .init(
         presentationQuery:  .byDigitalCredentialsQuery(
           try! .init(credentials: [
@@ -77,7 +77,7 @@ final class DirectPostTests: DiXCTest {
     )
     
     // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .vpToken(
+    let resolved: ResolvedRequestData = .init(
       request: .init(
         presentationQuery:  .byDigitalCredentialsQuery(
           try! .init(credentials: [
@@ -269,19 +269,14 @@ final class DirectPostTests: DiXCTest {
     )
     
     switch result {
-    case .jwt(let request):
-      
-      var presentation: String?
-      switch request {
-      case .vpToken(let request):
-        
-        presentation = TestsConstants.sdJwtPresentations(
-          transactiondata: request.transactionData,
-          clientID: request.client.id.originalClientId,
-          nonce: request.nonce,
-          useSha3: false
-        )
-      }
+    case .jwt(let resolved):
+      let request = resolved.request
+      let presentation: String? = TestsConstants.sdJwtPresentations(
+        transactiondata: request.transactionData,
+        clientID: request.client.id.originalClientId,
+        nonce: request.nonce,
+        useSha3: false
+      )
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
@@ -292,7 +287,7 @@ final class DirectPostTests: DiXCTest {
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: request,
+        resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")

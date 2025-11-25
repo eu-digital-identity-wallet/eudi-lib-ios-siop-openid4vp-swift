@@ -80,22 +80,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     )
     
     switch result {
-    case .jwt(request: let request):
-      let resolved = request
-      
-      var presentation: String?
-      var nonce: String?
-      switch resolved {
-      case .vpToken(let request):
-        
-        nonce = request.nonce
-        presentation = TestsConstants.sdJwtPresentations(
-          transactiondata: request.transactionData,
-          clientID: request.client.id.clientId,
-          nonce: nonce!,
-          useSha3: false
-        )
-      }
+    case .jwt(let resolved):
+      let request = resolved.request
+      let nonce: String? = request.nonce
+      let presentation: String? = TestsConstants.sdJwtPresentations(
+        transactiondata: request.transactionData,
+        clientID: request.client.id.clientId,
+        nonce: nonce!,
+        useSha3: false
+      )
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
@@ -106,7 +99,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: request,
+        resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -184,22 +177,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     )
     
     switch result {
-    case .jwt(request: let request):
-      let resolved = request
-      
-      var presentation: String?
-      var nonce: String?
-      switch resolved {
-      case .vpToken(let request):
-        
-        nonce = request.nonce
-        presentation = TestsConstants.sdJwtPresentations(
-          transactiondata: request.transactionData,
-          clientID: request.client.id.originalClientId,
-          nonce: nonce!,
-          useSha3: false
-        )
-      }
+    case .jwt(request: let resolved):
+      let request = resolved.request
+      let nonce: String? = request.nonce
+      let presentation: String? = TestsConstants.sdJwtPresentations(
+        transactiondata: request.transactionData,
+        clientID: request.client.id.originalClientId,
+        nonce: nonce!,
+        useSha3: false
+      )
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
@@ -210,7 +196,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: request,
+        resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
@@ -292,22 +278,15 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
     )
     
     switch result {
-    case .jwt(request: let request):
-      let resolved = request
-      
-      var presentation: String?
-      var nonce: String?
-      switch resolved {
-      case .vpToken(let request):
-        
-        nonce = request.nonce
-        presentation = TestsConstants.sdJwtPresentations(
-          transactiondata: request.transactionData,
-          clientID: request.client.id.clientId,
-          nonce: nonce!,
-          useSha3: false
-        )
-      }
+    case .jwt(request: let resolved):
+      let request = resolved.request
+      let nonce: String? = request.nonce
+      let presentation: String? = TestsConstants.sdJwtPresentations(
+        transactiondata: request.transactionData,
+        clientID: request.client.id.clientId,
+        nonce: nonce!,
+        useSha3: false
+      )
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
@@ -318,7 +297,7 @@ final class DirectPostJWTCertificationAndConformanceTests: DiXCTest {
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: request,
+        resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")
