@@ -18,7 +18,7 @@ import JOSESwift
 
 public protocol AuthorizationRequestResolving: Sendable {
   func resolve(
-    walletConfiguration: SiopOpenId4VPConfiguration,
+    walletConfiguration: OpenId4VPConfiguration,
     unvalidatedRequest: UnvalidatedRequest
   ) async -> AuthorizationRequest
 }
@@ -28,7 +28,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
   public init() {}
 
   public func resolve(
-    walletConfiguration: SiopOpenId4VPConfiguration,
+    walletConfiguration: OpenId4VPConfiguration,
     unvalidatedRequest: UnvalidatedRequest
   ) async -> AuthorizationRequest {
 
@@ -103,7 +103,6 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
       }
     } else {
       validatedClientMetaData = ClientMetaData.Validated(
-        subjectSyntaxTypesSupported: [.jwkThumbprint, .decentralizedIdentifier],
         vpFormatsSupported: try! .default()
       )
     }
@@ -186,7 +185,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
   }
 
   private func fetchRequest(
-    config: SiopOpenId4VPConfiguration,
+    config: OpenId4VPConfiguration,
     unvalidatedRequest: UnvalidatedRequest
   ) async throws -> FetchedRequest {
     try await RequestFetcher(
@@ -196,7 +195,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
 
   private func authenticateRequest(
     requestAuthenticator: RequestAuthenticator,
-    config: SiopOpenId4VPConfiguration,
+    config: OpenId4VPConfiguration,
     fetchedRequest: FetchedRequest
   ) async throws -> AuthenticatedRequest {
     return try await requestAuthenticator.authenticate(
@@ -225,7 +224,7 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
 
   private func createValidatedAuthorizationRequest(
     responseType: ResponseType,
-    config: SiopOpenId4VPConfiguration,
+    config: OpenId4VPConfiguration,
     requestAuthenticator: RequestAuthenticator,
     authorizedRequest: AuthenticatedRequest,
     nonce: String,
@@ -242,28 +241,13 @@ public actor AuthorizationRequestResolver: AuthorizationRequestResolving {
         requestObject: authorizedRequest.requestObject,
         clientMetaData: clientMetaData
       )
-    case .idToken:
-      return try await requestAuthenticator.createIdToken(
-        clientId: clientId,
-        client: authorizedRequest.client,
-        nonce: nonce,
-        requestObject: authorizedRequest.requestObject
-      )
-    case .vpAndIdToken:
-      return try await requestAuthenticator.createIdVpToken(
-        clientId: clientId,
-        client: authorizedRequest.client,
-        nonce: nonce,
-        requestObject: authorizedRequest.requestObject,
-        clientMetaData: clientMetaData
-      )
     default:
       throw ValidationError.unsupportedResponseType(responseType.rawValue)
     }
   }
 
   private func resolveRequest(
-    config: SiopOpenId4VPConfiguration,
+    config: OpenId4VPConfiguration,
     validatedClientMetaData: ClientMetaData.Validated,
     validatedAuthorizationRequest: ValidatedRequestData
   ) async throws -> ResolvedRequestData {
@@ -294,7 +278,7 @@ internal extension AuthorizationRequestResolver {
    * Creates an invalid resolution for errors that manifested while trying to authenticate a Client.
    */
   func optionalDispatchDetails(
-    config: SiopOpenId4VPConfiguration,
+    config: OpenId4VPConfiguration,
     fetchedRequest: FetchedRequest
   ) -> ErrorDispatchDetails? {
     switch fetchedRequest {
@@ -334,7 +318,7 @@ internal extension AuthorizationRequestResolver {
   }
 
   func optionalDispatchDetails(
-    config: SiopOpenId4VPConfiguration,
+    config: OpenId4VPConfiguration,
     requestObject: UnvalidatedRequestObject
   ) -> ErrorDispatchDetails? {
     guard let responseMode = requestObject.validatedResponseMode else {
@@ -364,7 +348,7 @@ internal extension AuthorizationRequestResolver {
   func optionalDispatchDetails(
     validatedRequestObject: ValidatedRequestData,
     clientMetaData: ClientMetaData.Validated?,
-    config: SiopOpenId4VPConfiguration
+    config: OpenId4VPConfiguration
   ) -> ErrorDispatchDetails? {
     .init(
       responseMode: validatedRequestObject.responseMode,

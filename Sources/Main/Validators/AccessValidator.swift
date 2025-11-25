@@ -23,12 +23,12 @@ public protocol AccessValidating: Sendable {
 
 public actor AccessValidator: AccessValidating {
 
-  public let walletOpenId4VPConfig: SiopOpenId4VPConfiguration?
+  public let walletOpenId4VPConfig: OpenId4VPConfiguration?
   private let fetcher: any Fetching
   private let objectType: JOSEObjectType
 
   public init(
-    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
+    walletOpenId4VPConfig: OpenId4VPConfiguration?,
     objectType: JOSEObjectType = .REQ_JWT,
     fetcher: any Fetching = Fetcher<WebKeySet>()
   ) {

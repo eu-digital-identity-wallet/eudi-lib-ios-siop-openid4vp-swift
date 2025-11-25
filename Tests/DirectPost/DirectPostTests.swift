@@ -19,7 +19,7 @@ import CryptoKit
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class DirectPostTests: DiXCTest {
   
@@ -33,9 +33,8 @@ final class DirectPostTests: DiXCTest {
     )
     
     // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .idToken(
+    let resolved: ResolvedRequestData = .init(
       request: .init(
-        idTokenType: .attesterSigned,
         presentationQuery:  .byDigitalCredentialsQuery(
           try! .init(credentials: [
             .init(
@@ -50,16 +49,13 @@ final class DirectPostTests: DiXCTest {
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope,
+        vpFormatsSupported: try .default(),
         responseEncryptionSpecification: nil
       )
     )
     
-    // Generate a random JWT
-    let jwt = TestsConstants.generateRandomJWT()
-    
     // Obtain consent
-    let consent: ClientConsent = .idToken(idToken: jwt)
+    let consent: ClientConsent = .vpToken(vpContent: .dcql(verifiablePresentations: [try .init(value: "query_0") : [.generic(TestsConstants.cbor)]]))
     
     // Generate a direct post authorisation response
     let response = try? AuthorizationResponse(
@@ -81,9 +77,8 @@ final class DirectPostTests: DiXCTest {
     )
     
     // Obtain an id token resolution
-    let resolved: ResolvedRequestData = .idToken(
+    let resolved: ResolvedRequestData = .init(
       request: .init(
-        idTokenType: .attesterSigned,
         presentationQuery:  .byDigitalCredentialsQuery(
           try! .init(credentials: [
             .init(
@@ -98,7 +93,7 @@ final class DirectPostTests: DiXCTest {
         nonce: TestsConstants.testNonce,
         responseMode: TestsConstants.testResponseMode,
         state: TestsConstants.generateRandomBase64String(),
-        scope: TestsConstants.testScope,
+        vpFormatsSupported: try .default(),
         responseEncryptionSpecification: nil
       )
     )
@@ -153,7 +148,7 @@ final class DirectPostTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -178,7 +173,7 @@ final class DirectPostTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
@@ -241,7 +236,7 @@ final class DirectPostTests: DiXCTest {
     
     let keySet = try WebKeySet(jwk: rsaJWK)
     
-    let wallet: SiopOpenId4VPConfiguration = .init(
+    let wallet: OpenId4VPConfiguration = .init(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -258,7 +253,7 @@ final class DirectPostTests: DiXCTest {
       responseEncryptionConfiguration: .default()
     )
     
-    let sdk = SiopOpenID4VP(walletConfiguration: wallet)
+    let sdk = OpenID4VP(walletConfiguration: wallet)
     /// To get this URL, visit https://dev.verifier.eudiw.dev/
     /// and  "Request for the entire PID"
     /// Copy the "Authenticate with wallet link", choose the value for "request_uri"
@@ -274,22 +269,14 @@ final class DirectPostTests: DiXCTest {
     )
     
     switch result {
-    case .jwt(let request):
-      
-      var presentation: String?
-      switch request {
-      case .vpToken(let request):
-        
-        presentation = TestsConstants.sdJwtPresentations(
-          transactiondata: request.transactionData,
-          clientID: request.client.id.originalClientId,
-          nonce: request.nonce,
-          useSha3: false
-        )
-        
-      default:
-        XCTFail("Incorrectly resolved")
-      }
+    case .jwt(let resolved):
+      let request = resolved.request
+      let presentation: String? = TestsConstants.sdJwtPresentations(
+        transactiondata: request.transactionData,
+        clientID: request.client.id.originalClientId,
+        nonce: request.nonce,
+        useSha3: false
+      )
       
       // Obtain consent
       let consent: ClientConsent = .vpToken(
@@ -300,7 +287,7 @@ final class DirectPostTests: DiXCTest {
       
       // Generate a direct post authorisation response
       let response = try? XCTUnwrap(AuthorizationResponse(
-        resolvedRequest: request,
+        resolvedRequest: resolved,
         consent: consent,
         walletOpenId4VPConfig: wallet
       ), "Expected item to be non-nil")

@@ -18,7 +18,7 @@ import XCTest
 import Foundation
 import SwiftyJSON
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class VerifierAttestationTests: XCTestCase {
 

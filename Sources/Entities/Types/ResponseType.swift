@@ -18,8 +18,6 @@ import SwiftyJSON
 
 public enum ResponseType: String, Codable {
   case vpToken = "vp_token"
-  case idToken = "id_token"
-  case vpAndIdToken = "vp_token id_token"
   case code = "code"
 
   /// Initializes a `ResponseType` instance with the given authorization request object.

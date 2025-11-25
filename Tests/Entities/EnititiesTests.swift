@@ -17,73 +17,28 @@ import XCTest
 import Foundation
 import SwiftyJSON
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
-class ResolvedSiopOpenId4VPRequestDataTests: DiXCTest {
+class ResolvedOpenId4VPRequestDataTests: DiXCTest {
 
   func testWalletOpenId4VPConfigurationInitialization() throws {
-    let subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.jwkThumbprint]
-    let preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
-    let decentralizedIdentifier: DecentralizedIdentifier = .did("DID:example:12341512#$")
-    let idTokenTTL: TimeInterval = 600.0
-    let presentationDefinitionUriSupported: Bool = false
     let signingKey = try KeyController.generateRSAPrivateKey()
     let signingKeySet = WebKeySet(keys: [])
     let supportedClientIdSchemes: [SupportedClientIdPrefix] = []
     let vpFormatsSupported: [ClaimFormat] = [.jwtType(.jwt)]
 
-    let walletOpenId4VPConfiguration = SiopOpenId4VPConfiguration(
-      subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
-      preferredSubjectSyntaxType: preferredSubjectSyntaxType,
-      decentralizedIdentifier: decentralizedIdentifier,
-      idTokenTTL: idTokenTTL,
-      presentationDefinitionUriSupported: presentationDefinitionUriSupported,
+    let walletOpenId4VPConfiguration = OpenId4VPConfiguration(
       privateKey: signingKey,
       publicWebKeySet: signingKeySet,
       supportedClientIdSchemes: supportedClientIdSchemes,
       vpFormatsSupported: vpFormatsSupported,
       jarConfiguration: .noEncryptionOption,
       vpConfiguration: .default(),
-      session: SiopOpenId4VPConfiguration.walletSession,
+      session: OpenId4VPConfiguration.walletSession,
       responseEncryptionConfiguration: .unsupported
     )
 
-    XCTAssertEqual(walletOpenId4VPConfiguration.subjectSyntaxTypesSupported, subjectSyntaxTypesSupported)
-    XCTAssertEqual(walletOpenId4VPConfiguration.preferredSubjectSyntaxType, preferredSubjectSyntaxType)
-    XCTAssertEqual(walletOpenId4VPConfiguration.decentralizedIdentifier, decentralizedIdentifier)
-    XCTAssertEqual(walletOpenId4VPConfiguration.idTokenTTL, idTokenTTL)
-    XCTAssertEqual(walletOpenId4VPConfiguration.presentationDefinitionUriSupported, presentationDefinitionUriSupported)
     XCTAssertEqual(walletOpenId4VPConfiguration.vpFormatsSupported, vpFormatsSupported)
-  }
-
-  func testSubjectSyntaxTypeInitWithThumbprint() {
-    let subjectSyntaxType: SubjectSyntaxType = .jwkThumbprint
-    XCTAssert(subjectSyntaxType == .jwkThumbprint)
-  }
-
-  func testSubjectSyntaxTypeInitWithDecentralizedIdentifier() {
-    let subjectSyntaxType: SubjectSyntaxType = .decentralizedIdentifier
-    XCTAssert(subjectSyntaxType == .decentralizedIdentifier)
-  }
-
-  func testValidDID() {
-    let did = DecentralizedIdentifier.did("did:example:123abc")
-    XCTAssertTrue(did.isValid())
-  }
-
-  func testInvalidDID() {
-    let did = DecentralizedIdentifier.did("invalid_did")
-    XCTAssertFalse(did.isValid())
-  }
-
-  func testEmptyDID() {
-    let did = DecentralizedIdentifier.did("")
-    XCTAssertFalse(did.isValid())
-  }
-
-  func testWhitespaceDID() {
-    let did = DecentralizedIdentifier.did("  ")
-    XCTAssertFalse(did.isValid())
   }
 }
 
@@ -354,16 +309,16 @@ class WalletMetaDataTests: XCTestCase {
 
   func testWalletMetaData() throws {
 
-    let walletConfiguration = try SiopOpenID4VPTests.preRegisteredWalletConfigurationWithKnownClientID()
+    let walletConfiguration = try OpenID4VPTests.preRegisteredWalletConfigurationWithKnownClientID()
 
     let json = walletMetaData(
-      cfg: walletConfiguration
+      config: walletConfiguration
     )
 
     XCTAssertEqual(json["request_object_signing_alg_values_supported"].arrayValue.map { $0.stringValue }, ["ES256"])
     XCTAssertEqual(json["vp_formats_supported"].dictionaryValue.count, 2)
     XCTAssertEqual(json["client_id_prefixes_supported"].arrayValue.map { $0.stringValue }, ["pre-registered"])
-    XCTAssertEqual(json["response_types_supported"].arrayValue.map { $0.stringValue }, ["vp_token", "id_token"])
+    XCTAssertEqual(json["response_types_supported"].arrayValue.map { $0.stringValue }, ["vp_token"])
     XCTAssertEqual(json["response_modes_supported"].arrayValue.map { $0.stringValue }, ["direct_post", "direct_post.jwt"])
   }
 
@@ -400,8 +355,6 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
         responseType: "code",
         responseUri: "https://example.com/response",
         redirectUri: "https://example.com/redirect",
-        presentationDefinition: "presentationDefinition",
-        presentationDefinitionUri: "https://example.com/definition",
         request: "request",
         requestUri: "https://example.com/request",
         clientMetaData: "clientMetaData",
@@ -411,15 +364,12 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
         nonce: "nonce",
         scope: "scope",
         responseMode: "responseMode",
-        state: "state",
-        idTokenType: "idTokenType"
+        state: "state"
     )
 
     XCTAssertEqual(data.responseType, "code")
     XCTAssertEqual(data.responseUri, "https://example.com/response")
     XCTAssertEqual(data.redirectUri, "https://example.com/redirect")
-    XCTAssertEqual(data.presentationDefinition, "presentationDefinition")
-    XCTAssertEqual(data.presentationDefinitionUri, "https://example.com/definition")
     XCTAssertEqual(data.request, "request")
     XCTAssertEqual(data.requestUri, "https://example.com/request")
     XCTAssertEqual(data.clientMetaData, "clientMetaData")
@@ -430,7 +380,6 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
     XCTAssertEqual(data.scope, "scope")
     XCTAssertEqual(data.responseMode, "responseMode")
     XCTAssertEqual(data.state, "state")
-    XCTAssertEqual(data.idTokenType, "idTokenType")
   }
 
   func testInitFromDecoder() throws {
@@ -439,8 +388,6 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
         "response_type": "code",
         "response_uri": "https://example.com/response",
         "redirect_uri": "https://example.com/redirect",
-        "presentation_definition": "presentationDefinition",
-        "presentation_definition_uri": "https://example.com/definition",
         "request": "request",
         "request_uri": "https://example.com/request",
         "client_metadata": "clientMetaData",
@@ -450,8 +397,7 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
         "nonce": "nonce",
         "scope": "scope",
         "response_mode": "responseMode",
-        "state": "state",
-        "id_token_type": "idTokenType"
+        "state": "state"
     }
     """
 
@@ -463,8 +409,6 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
     XCTAssertEqual(data.responseType, "code")
     XCTAssertEqual(data.responseUri, "https://example.com/response")
     XCTAssertEqual(data.redirectUri, "https://example.com/redirect")
-    XCTAssertEqual(data.presentationDefinition, "presentationDefinition")
-    XCTAssertEqual(data.presentationDefinitionUri, "https://example.com/definition")
     XCTAssertEqual(data.request, "request")
     XCTAssertEqual(data.requestUri, "https://example.com/request")
     XCTAssertEqual(data.clientMetaData, "clientMetaData")
@@ -475,19 +419,16 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
     XCTAssertEqual(data.scope, "scope")
     XCTAssertEqual(data.responseMode, "responseMode")
     XCTAssertEqual(data.state, "state")
-    XCTAssertEqual(data.idTokenType, "idTokenType")
   }
 
   func testInitFromURL() {
-    let url = URL(string: "https://example.com?response_type=code&response_uri=https%3A%2F%2Fexample.com%2Fresponse&redirect_uri=https%3A%2F%2Fexample.com%2Fredirect&presentation_definition=presentationDefinition&presentation_definition_uri=https%3A%2F%2Fexample.com%2Fdefinition&request=request&request_uri=https%3A%2F%2Fexample.com%2Frequest&client_metadata=clientMetaData&client_id=clientId&client_metadata_uri=https%3A%2F%2Fexample.com%2Fmetadata&client_id_scheme=clientScheme&nonce=nonce&scope=scope&response_mode=responseMode&state=state&id_token_type=idTokenType")!
+    let url = URL(string: "https://example.com?response_type=code&response_uri=https%3A%2F%2Fexample.com%2Fresponse&redirect_uri=https%3A%2F%2Fexample.com%2Fredirect&request=request&request_uri=https%3A%2F%2Fexample.com%2Frequest&client_metadata=clientMetaData&client_id=clientId&client_metadata_uri=https%3A%2F%2Fexample.com%2Fmetadata&client_id_scheme=clientScheme&nonce=nonce&scope=scope&response_mode=responseMode&state=state")!
 
     let data = UnvalidatedRequestObject(from: url)
 
     XCTAssertEqual(data?.responseType, "code")
     XCTAssertEqual(data?.responseUri, "https://example.com/response")
     XCTAssertEqual(data?.redirectUri, "https://example.com/redirect")
-    XCTAssertEqual(data?.presentationDefinition, "presentationDefinition")
-    XCTAssertEqual(data?.presentationDefinitionUri, "https://example.com/definition")
     XCTAssertEqual(data?.request, "request")
     XCTAssertEqual(data?.requestUri, "https://example.com/request")
     XCTAssertEqual(data?.clientMetaData, "clientMetaData")
@@ -498,6 +439,5 @@ final class AuthorizationRequestUnprocessedDataTests: XCTestCase {
     XCTAssertEqual(data?.scope, "scope")
     XCTAssertEqual(data?.responseMode, "responseMode")
     XCTAssertEqual(data?.state, "state")
-    XCTAssertEqual(data?.idTokenType, "idTokenType")
   }
 }

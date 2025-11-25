@@ -16,7 +16,7 @@
 import XCTest
 import X509
 import SwiftyJSON
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 class ClientTests: XCTestCase {
 

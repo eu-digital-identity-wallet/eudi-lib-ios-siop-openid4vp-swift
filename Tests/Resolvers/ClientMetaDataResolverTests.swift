@@ -16,7 +16,7 @@
 import Foundation
 import XCTest
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class ClientMetaDataResolverTests: XCTestCase {
 
@@ -44,19 +44,6 @@ final class ClientMetaDataResolverTests: XCTestCase {
     switch response {
     case .success(let metaData):
       XCTAssertNil(metaData)
-    case .failure(let error):
-      XCTFail(error.localizedDescription)
-    }
-  }
-
-  func testResolve_WhenPassByValue_ThenReturnSuccessMetaData() async throws {
-
-    let clientMetaData = try ClientMetaData(metaDataString: TestsConstants.sampleClientMetaData)
-    let response = await self.clientMetaDataResolver.resolve(source: .passByValue(metaData: clientMetaData))
-
-    switch response {
-    case .success(let metaData):
-      XCTAssertEqual(metaData, clientMetaData)
     case .failure(let error):
       XCTFail(error.localizedDescription)
     }

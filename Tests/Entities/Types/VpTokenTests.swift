@@ -15,7 +15,7 @@
  */
 import XCTest
 import SwiftyJSON
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 class VpTokenTests: XCTestCase {
   func testVpTokenEncodingWithSingleGenericPresentation() throws {

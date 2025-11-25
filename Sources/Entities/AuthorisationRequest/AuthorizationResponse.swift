@@ -59,84 +59,44 @@ public enum AuthorizationResponse: Sendable {
 public extension AuthorizationResponse {
   /// Initializes an `AuthorizationResponse` based on the resolved request and consent.
   /// - Parameters:
-  ///   - resolvedRequest: The resolved SIOP OpenID Connect 4 Verifiable Presentation request data.
+  ///   - resolvedRequest: The resolved Verifiable Presentation request data.
   ///   - consent: The client consent.
   init(
     resolvedRequest: ResolvedRequestData,
     consent: ClientConsent,
-    walletOpenId4VPConfig: SiopOpenId4VPConfiguration? = nil,
+    walletOpenId4VPConfig: OpenId4VPConfiguration? = nil,
     encryptionParameters: EncryptionParameters? = nil
   ) throws {
     switch consent {
-    case .idToken(let idToken):
-      switch resolvedRequest {
-      case .idToken(let request):
-        let payload: AuthorizationResponsePayload = .siopAuthenticationResponse(
-          idToken: idToken,
-          state: try request.state ?? { throw AuthorizationError.invalidState }(),
-          nonce: try request.state ?? { throw AuthorizationError.invalidNonce }(),
-          clientId: resolvedRequest.client.id,
-          encryptionParameters: encryptionParameters
-        )
-        self = try .buildAuthorizationResponse(
-          responseMode: request.responseMode,
-          payload: payload,
-          clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig,
-          responseEncryptionSpecification: request.responseEncryptionSpecification
-        )
-      default: throw AuthorizationError.unsupportedResolution
-      }
     case .vpToken(let vpContent):
-      switch resolvedRequest {
-      case .vpToken(let request):
-        let payload: AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
-          vpContent: vpContent,
-          state: request.state ?? "",
-          nonce: request.nonce,
-          clientId: resolvedRequest.client.id,
-          encryptionParameters: encryptionParameters
-        )
-        self = try .buildAuthorizationResponse(
-          responseMode: request.responseMode,
-          payload: payload,
-          clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig,
-          responseEncryptionSpecification: request.responseEncryptionSpecification
-        )
-      default: throw AuthorizationError.unsupportedResolution
-      }
-    case .idAndVPToken:
-      throw ValidationError.unsupportedConsent
+      let request = resolvedRequest.request
+      let payload: AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
+        vpContent: vpContent,
+        state: request.state ?? "",
+        nonce: request.nonce,
+        clientId: resolvedRequest.client.id,
+        encryptionParameters: encryptionParameters
+      )
+      self = try .buildAuthorizationResponse(
+        responseMode: request.responseMode,
+        payload: payload,
+        clientMetaData: request.clientMetaData,
+        walletOpenId4VPConfig: walletOpenId4VPConfig,
+        responseEncryptionSpecification: request.responseEncryptionSpecification
+      )
     case .negative(let error):
-      switch resolvedRequest {
-      case .idToken(request: let request):
-        let payload: AuthorizationResponsePayload = .noConsensusResponseData(
-          state: try request.state ?? { throw AuthorizationError.invalidState }(),
-          error: error
-        )
-        self = try .buildAuthorizationResponse(
-          responseMode: request.responseMode,
-          payload: payload,
-          clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig,
-          responseEncryptionSpecification: request.responseEncryptionSpecification
-        )
-      case .idAndVpToken:
-        throw AuthorizationError.unsupportedResolution
-      case .vpToken(let request):
-        let payload: AuthorizationResponsePayload = .noConsensusResponseData(
-          state: try request.state ?? { throw AuthorizationError.invalidState }(),
-          error: error
-        )
-        self = try .buildAuthorizationResponse(
-          responseMode: request.responseMode,
-          payload: payload,
-          clientMetaData: request.clientMetaData,
-          walletOpenId4VPConfig: walletOpenId4VPConfig,
-          responseEncryptionSpecification: request.responseEncryptionSpecification
-        )
-      }
+      let request = resolvedRequest.request
+      let payload: AuthorizationResponsePayload = .noConsensusResponseData(
+        state: try request.state ?? { throw AuthorizationError.invalidState }(),
+        error: error
+      )
+      self = try .buildAuthorizationResponse(
+        responseMode: request.responseMode,
+        payload: payload,
+        clientMetaData: request.clientMetaData,
+        walletOpenId4VPConfig: walletOpenId4VPConfig,
+        responseEncryptionSpecification: request.responseEncryptionSpecification
+      )
     }
   }
 }
@@ -152,7 +112,7 @@ private extension AuthorizationResponse {
     responseMode: ResponseMode?,
     payload: AuthorizationResponsePayload,
     clientMetaData: ClientMetaData.Validated?,
-    walletOpenId4VPConfig: SiopOpenId4VPConfiguration?,
+    walletOpenId4VPConfig: OpenId4VPConfiguration?,
     responseEncryptionSpecification: ResponseEncryptionSpecification?
   ) throws -> AuthorizationResponse {
     guard let responseMode = responseMode else {

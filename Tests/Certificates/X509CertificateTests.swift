@@ -16,7 +16,7 @@
 import XCTest
 import X509
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class X509CertificateTests: XCTestCase {
 

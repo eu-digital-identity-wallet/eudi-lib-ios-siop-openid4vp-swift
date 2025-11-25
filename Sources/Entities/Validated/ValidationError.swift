@@ -20,13 +20,10 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
   case unsupportedClientIdScheme(String?)
   case unsupportedResponseType(String?)
   case unsupportedResponseMode(String?)
-  case unsupportedIdTokenType(String?)
   case invalidResponseType
-  case invalidIdTokenType
   case noAuthorizationData
   case invalidAuthorizationData
   case invalidConfiguration
-  case invalidPresentationDefinition
   case invalidClientMetadata
   case invalidJWTWebKeySet
   case missingRequiredField(String?)
@@ -71,20 +68,14 @@ indirect public enum ValidationError: AuthorizationRequestError, Equatable {
       return ".unsupportedResponseType \(String(describing: type))"
     case .unsupportedResponseMode(let mode):
       return ".unsupportedResponseMode \(mode ?? "")"
-    case .unsupportedIdTokenType(let type):
-      return ".unsupportedIdTokenType \(type ?? "")"
     case .invalidResponseType:
       return ""
-    case .invalidIdTokenType:
-      return ".invalidResponseType"
     case .noAuthorizationData:
       return ".noAuthorizationData"
     case .invalidAuthorizationData:
       return "invalidAuthorizationData"
     case .invalidConfiguration:
       return "invalidConfiguration"
-    case .invalidPresentationDefinition:
-      return ".invalidAuthorizationData"
     case .invalidClientMetadata:
       return ".invalidClientMetadata"
     case .invalidJWTWebKeySet:

@@ -19,9 +19,9 @@ import SwiftyJSON
 
 internal actor RequestFetcher {
   
-  let config: SiopOpenId4VPConfiguration
+  let config: OpenId4VPConfiguration
   
-  init(config: SiopOpenId4VPConfiguration) {
+  init(config: OpenId4VPConfiguration) {
     self.config = config
   }
   
@@ -58,7 +58,7 @@ internal actor RequestFetcher {
   
   private func getJWT(
     requestUriMethod: RequestUriMethod = .GET,
-    config: SiopOpenId4VPConfiguration?,
+    config: OpenId4VPConfiguration?,
     requestUrl: URL,
     clientId: String?
   ) async throws -> (jwt: String, walletNonce: String?) {
@@ -80,7 +80,7 @@ internal actor RequestFetcher {
   }
   
   private func getJwtViaGET(
-    config: SiopOpenId4VPConfiguration?,
+    config: OpenId4VPConfiguration?,
     requestUrl: URL
   ) async throws -> String {
     return try await getJwtString(
@@ -105,7 +105,7 @@ internal actor RequestFetcher {
   }
   
   private func getJwtViaPOST(
-    config: SiopOpenId4VPConfiguration?,
+    config: OpenId4VPConfiguration?,
     requestUrl: URL,
     clientId: String?
   ) async throws -> (jwt: String, nonce: String?) {
@@ -220,12 +220,15 @@ internal actor RequestFetcher {
   }
   
   private func generateWalletMetadataIfNeeded(
-    config: SiopOpenId4VPConfiguration?,
+    config: OpenId4VPConfiguration?,
     key: SecKey?,
     include: Bool
   ) -> JSON? {
     guard include, let config else { return nil }
-    return walletMetaData(cfg: config, key: key)
+    return walletMetaData(
+      config: config,
+      key: key
+    )
   }
   
   private func decryptIfNeeded(
@@ -286,7 +289,7 @@ internal actor RequestFetcher {
   }
 }
 
-internal extension SiopOpenId4VPConfiguration {
+internal extension OpenId4VPConfiguration {
   
   func ensureValid(
     expectedClient: String?,

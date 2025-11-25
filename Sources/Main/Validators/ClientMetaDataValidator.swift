@@ -29,20 +29,6 @@ internal actor ClientMetaDataValidator {
       return nil
     }
 
-    let idTokenJWSAlg: JWSAlgorithm? = parseOptionJWSAlgorithm(
-      algorithm: clientMetaData.idTokenSignedResponseAlg
-    )
-
-    let idTokenJWEAlg: JWEAlgorithm? = .init(
-      optionalName: clientMetaData.idTokenEncryptedResponseAlg
-    )
-
-    let idTokenJWEEnc: JOSEEncryptionMethod? = .init(
-      optionalName: clientMetaData.idTokenEncryptedResponseEnc
-    )
-
-    let subjectSyntaxTypesSupported: [SubjectSyntaxType] = clientMetaData.subjectSyntaxTypesSupported.compactMap { SubjectSyntaxType(rawValue: $0) }
-
     let keySet = try? await extractKeySet(clientMetaData: clientMetaData)
     let formats = try? VpFormatsSupported(from: clientMetaData.vpFormatsSupported)
     let supported = try responseEncryptionMethodsSupported(
@@ -57,10 +43,6 @@ internal actor ClientMetaDataValidator {
     
     let validated = ClientMetaData.Validated(
       jwkSet: keySet,
-      idTokenJWSAlg: idTokenJWSAlg,
-      idTokenJWEAlg: idTokenJWEAlg,
-      idTokenJWEEnc: idTokenJWEEnc,
-      subjectSyntaxTypesSupported: subjectSyntaxTypesSupported,
       vpFormatsSupported: try (formats ?? VpFormatsSupported.empty()),
       responseEncryptionSpecification: responseEncryptionSpecification
     )

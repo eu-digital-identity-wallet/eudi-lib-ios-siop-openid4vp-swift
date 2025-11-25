@@ -23,20 +23,20 @@ import SwiftyJSON
    Reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0.html
  
  */
-public protocol SiopOpenID4VPType {
+public protocol OpenID4VPType {
   func authorize(url: URL) async -> AuthorizationRequest
   func dispatch(response: AuthorizationResponse) async throws -> DispatchOutcome
   func submit()
   func consent()
 }
 
-public class SiopOpenID4VP: SiopOpenID4VPType {
+public class OpenID4VP: OpenID4VPType {
 
-  let walletConfiguration: SiopOpenId4VPConfiguration?
+  let walletConfiguration: OpenId4VPConfiguration?
   let authorizatinRequestResolver: AuthorizationRequestResolving
 
   public init(
-    walletConfiguration: SiopOpenId4VPConfiguration? = nil,
+    walletConfiguration: OpenId4VPConfiguration? = nil,
     authorizatinRequestResolver: AuthorizationRequestResolving = AuthorizationRequestResolver()
   ) {
     self.walletConfiguration = walletConfiguration
@@ -128,7 +128,7 @@ public class SiopOpenID4VP: SiopOpenID4VPType {
   public func submit() {}
 }
 
-private extension SiopOpenID4VP {
+private extension OpenID4VP {
   func registerDependencies() {
     DependencyContainer.shared.register(type: Reporting.self, dependency: {
       Reporter()

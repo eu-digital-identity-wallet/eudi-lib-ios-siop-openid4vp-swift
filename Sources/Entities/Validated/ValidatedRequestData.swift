@@ -18,53 +18,23 @@ import JOSESwift
 import X509
 import SwiftyJSON
 
-// Enum defining the types of validated SIOP OpenID4VP requests
-public enum ValidatedRequestData: Sendable {
-  case idToken(request: IdTokenRequest)
-  case vpToken(request: VpTokenRequest)
-  case idAndVpToken(request: IdAndVpTokenRequest)
+// Enum defining the types of validated OpenID4VP requests
+public struct ValidatedRequestData: Sendable {
+  let request: VpTokenRequest
 
   public var responseMode: ResponseMode? {
-    switch self {
-    case .idToken(let request):
-      request.responseMode
-    case .vpToken(let request):
-      request.responseMode
-    case .idAndVpToken(let request):
-      request.responseMode
-    }
+    request.responseMode
   }
 
   public var nonce: String? {
-    switch self {
-    case .idToken(let request):
-      request.nonce
-    case .vpToken(let request):
-      request.nonce
-    case .idAndVpToken(let request):
-      request.nonce
-    }
+    request.nonce
   }
 
   public var state: String? {
-    switch self {
-    case .idToken(let request):
-      request.state
-    case .vpToken(let request):
-      request.state
-    case .idAndVpToken(let request):
-      request.state
-    }
+    request.state
   }
 
   public var clientId: VerifierId {
-    switch self {
-    case .idToken(let request):
-      request.client.id
-    case .vpToken(let request):
-      request.client.id
-    case .idAndVpToken(let request):
-      request.client.id
-    }
+    request.client.id
   }
 }

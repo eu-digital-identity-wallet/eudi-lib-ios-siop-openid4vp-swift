@@ -22,12 +22,10 @@ It conforms to the LocalizedError protocol so we can get a human-readable error 
 public enum JOSEError: LocalizedError {
   // The error case representing an unsupported request
   case notSupportedRequest
-  case invalidIdTokenRequest
   case invalidPublicKey
   case invalidJWS
   case invalidSigner
   case invalidVerifier
-  case invalidDidIdentifier
   case invalidObjectType
 
   // A computed property to provide a description for each error case
@@ -35,8 +33,6 @@ public enum JOSEError: LocalizedError {
     switch self {
     case .notSupportedRequest:
       return ".notSupportedRequest"
-    case .invalidIdTokenRequest:
-      return ".invalidIdTokenRequest"
     case .invalidPublicKey:
       return ".invalidPublicKey"
     case .invalidJWS:
@@ -45,8 +41,6 @@ public enum JOSEError: LocalizedError {
       return ".invalidSigner"
     case .invalidVerifier:
       return ".invalidVerifier"
-    case .invalidDidIdentifier:
-      return ".invalidDidIdentifier"
     case .invalidObjectType:
       return ".invalidObjectType"
     }

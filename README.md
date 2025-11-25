@@ -1,4 +1,4 @@
-# OpenID4VP / SIOPv2 
+# OpenID4VP 
 
 :heavy_exclamation_mark: **Important!** Before you proceed, please read
 the [EUDI Wallet Reference Implementation project description](https://github.com/eu-digital-identity-wallet/.github/blob/main/profile/reference-implementation.md)
@@ -16,14 +16,14 @@ the [EUDI Wallet Reference Implementation project description](https://github.co
 
 ## Introduction
 
-OpenID4VP is a Protocol that enables the presentation of Verifiable Credentials. It is built on top of OAuth 2.0 and supports multiple credential formats, including W3C Verifiable Credentials Data Model, ISO mdoc, and AnonCreds. This protocol allows for simple, secure, and developer-friendly credential presentation and can be used to support credential presentation and the issuance of access tokens for access to APIs based on Verifiable Credentials in the wallet
+OpenID4VP is a Protocol that enables the presentation of Verifiable Credentials. It is built on top of OAuth 2.0 and supports multiple credential formats. This protocol allows for simple, secure, and developer-friendly credential presentation and can be used to support credential presentation and the issuance of access tokens for access to APIs based on Verifiable Credentials in the wallet
 
 This is a swift library that supports 
 [OpenId4VP](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html) protocols.
 In particular, the library focus on the wallet's role using those two protocols with constraints
-included in ISO 23220-4 and ISO-18013-7.
+included in `ISO 23220-4` and `ISO-18013-7`.
 
-OpenID Connect for Verifiable Presentations (OIDC4VP) and Self-Issued OpenID Provider v2 (SIOP v2) are two specifications that have been approved as OpenID Implementer’s Drafts by the OpenID Foundation membership 1. SIOP v2 is an OpenID specification that allows end-users to act as their own OpenID Providers (OPs). Using Self-Issued OPs, end-users can authenticate themselves and present claims directly to a Relying Party (RP), typically a webapp, without involving a third-party Identity Provider 2. OIDC4VP enables the presentation of Verifiable Credentials using the OpenID Connect protocol.
+OpenID Connect for Verifiable Presentations (OIDC4VP) enables the presentation of Verifiable Credentials using the OpenID Connect protocol.
 
 ## Features
 
@@ -60,26 +60,25 @@ The released software is an initial development release version:
 
 ## Library implementation
 
-This is a Swift library, that conforms to Self Issued OpenID Provider v2 (SIOPv2 - draft 12) and OpenID for Verifiable Presentations (OpenID4VP - draft 21) specifications as defined by the OpenID Connect working group.
-In particular, the library focus on the wallet's role and in addition focuses on the 
-usage of those two protocols as they are constraint by ISO 23220-4 and ISO-18013-7
+This is a Swift library, that conforms to OpenID for Verifiable Presentations (OpenID4VP) specification.
+In particular, the library focuses on the wallet's role and in addition focuses on the 
+usage of those two protocols as they are constrained by `ISO 23220-4` and `ISO-18013-7`
 
-Additionally, it has support for Verifiable Presentations using the Presentation Exchange  library version 2. 
 You can use this library to simplify the integration of OIDC4VP into your mobile applications.
 
 
 ## Usage
 
-Entry point to the library is the class [SiopOpenId4Vp](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/SiopOpenID4VP/SiopOpenID4VP.swift).
+Entry point to the library is the class [OpenId4Vp](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/SiopOpenID4VP/OpenID4VP.swift).
 
 You can add the library to your project using Swift Package Manager. [Releases](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/releases)
 
 ```swift
-import SiopOpenID4VP
+import OpenID4VP
 
-let walletConfig: SiopOpenId4VPConfig = SiopOpenId4VPConfig(...)
+let walletConfig: OpenId4VPConfig = .init(...)
 
-let siopOpenId4Vp = SiopOpenID4V(walletConfiguration: walletConfig)
+let openId4Vp = OpenID4V(walletConfiguration: walletConfig)
 ```
 
 
@@ -87,17 +86,15 @@ let siopOpenId4Vp = SiopOpenID4V(walletConfiguration: walletConfig)
 
 Wallet receives an OAUTH2 Authorization request, formed by the Verifier, that may represent either 
 
-- a SIOPv2 authentication request, or 
-- a OpenID4VP authorization request,  
-- or a combined SIOP & OpenID4VP request
+- an OpenID4VP authorization request
 
-In the same device  scenario the aforementioned authorization request reaches the wallet in terms of 
+In the same device scenario the aforementioned authorization request reaches the wallet in terms of 
 a deep link. Similarly, in the cross device scenario, the request would be obtained via scanning a QR Code.
 
-Regardless of the scenario, wallet must take the URI (of the deep link or the QR Code) that represents the 
+Regardless of the scenario, a wallet must take the URI (of the deep link or the QR Code) that represents the 
 authorization request and ask the SDK to validate the URI (that is to make sure that it represents one of the supported
 requests mentioned aforementioned) and in addition gather from Verifier additional information that may be included by
-reference (such as `presentation_definition_uri`, etc)
+reference.
 
 The object that captures the aforementioned functionality is 
 [ResolvedRequestData](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/Entities/Resolved/ResolvedRequestData.swift)
@@ -106,11 +103,11 @@ The object that captures the aforementioned functionality is
 `async/await` version:
 
 ```swift
-import SiopOpenID4VP
+import OpenID4VP
 
 let authorizationRequestUri : URL = ...
 
-let sdk = SiopOpenID4VP(walletConfiguration: ...)
+let sdk = OpenID4VP(walletConfiguration: ...)
 let result = try await sdk.authorization(url: authorizationRequestUri)
 
 switch result {
@@ -118,15 +115,13 @@ switch result {
 }
 ```
 
-### Holder's consensus, Handling of a valid authorization request
+### Holder's consent, handling of a valid authorization request
 
 After receiving a valid authorization wallet has to process it. Depending on the type of request this means
 
-* For a SIOPv2 authentication request, wallet must get holder's consensus and provide an `id_token`
 * For a OpenID4VP authorization request,
     * wallet should check whether holder has claims that can fulfill verifier's requirements
     * let the holder choose which claims will be presented to the verifier and form a `vp_token`
-* For a combined SIOP & OpenID4VP request, wallet should perform both actions described above.
 
 This functionality is a wallet concern and it is not supported directly by the library
 
@@ -135,18 +130,18 @@ This functionality is a wallet concern and it is not supported directly by the l
 After collecting holder's consensus, wallet can use the library to form an appropriate response [AuthorizationResponse](https://github.com/eu-digital-identity-wallet/eudi-lib-ios-siop-openid4vp-swift/blob/main/Sources/Entities/AuthorisationRequest/AuthorizationResponse.swift).
 
 ```swift
-import SiopOpenID4VP
-// Example assumes that requestObject is SiopAuthentication & holder's agreed to the issuance of id_token
+import OpenID4VP
+
 let resolved: ResolvedSiopOpenId4VPRequestData = ...
 let jwt: JWTString = ... // provided by wallet
-let consent: ClientConsent = .idToken(idToken: jwt)
+let consent: ClientConsent = .vpToken(...)
 let response = try AuthorizationResponse(
       resolvedRequest: resolved,
       consent: consent
     )
 ```
 
-### Dispatch authorization response to verifier / RP (WIP)
+### Dispatch authorization response to verifier / RP
 
 The final step, of processing an authorization request, is to dispatch to the verifier the authorization response.
 Depending on the `response_mode` that the verifier included in his authorization request, this is done either
@@ -172,7 +167,7 @@ case .inValidResolution(let error, let details):
 ```
 
 
-## SIOPv2 & OpenId4VP features supported
+## OpenId4VP features supported
 
 ## `response_mode`
 
@@ -191,6 +186,7 @@ Library requires the presence of `client_id_scheme` with one of the following va
 
 - `pre-registered` assuming out of bound knowledge of verifier meta-data. A verifier may send an authorization request signed (JAR) or plain
 - `x509-san-dns` where verifier must send the authorization request signed (JAR) using by a suitable X509 certificate
+- `x509-hash` when the client Identifier prefix is x509_hash is a hash and matches the hash of the leaf certificate passed with the request.
 - `decentralized_identifier` where verifier must send the authorization request signed (JAR) using a key resolvable via DID URL.
 - `verifier_attestation` where verifier must send the authorization request signed (JAR), witch contains a verifier attestation JWT from a trusted issuer
 
@@ -212,24 +208,10 @@ OpenID4VP on the other hand foresees in addition, support to
 [RFC 9101](https://www.rfc-editor.org/rfc/rfc9101.html#request_object) where
 the aforementioned HTTP Get contains a JWT encoded `AuthorizationRequest`
 
-Finally, ISO-23220-4 requires the  usage of RFC 9101
+Finally, `ISO-23220-4` requires the  usage of `RFC 9101`
 
 Library supports obtaining the request object both by value (using `request` attribute) or
 by reference (using `request_uri`)
-
-
-## Presentation Definition
-The Verifier articulates requirements of the Credential(s) that are requested using
-`presentation_definition` and `presentation_definition_uri` parameters that contain a 
-Presentation Definition JSON object. 
-
-According to OpenId4VP, verifier may pass the `presentation_definition` either
-
-* [by value](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#section-5.1)
-* [by reference](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-presentation_definition_uri)
-* [using scope](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html#name-using-scope-parameter-to-re)
-
-Library supports all these options
 
 ## DCQL
 
@@ -253,11 +235,11 @@ Library currently supports `response_type` equal to `id_token` or `vp_token id_t
 
 ## Dependencies
 
-* Presentation Exchange [Presentation Exchange](https://github.com/niscy-eudiw/eudi-lib-ios-presentation-exchange-swift)
-* JSONSchema support: [JSON Schema](https://github.com/kylef/JSONSchema.swift)
-* JSONPath support: [Sextant](https://github.com/KittyMac/Sextant.git)
 * Lint support: [SwiftLint](https://github.com/realm/SwiftLint.git)
 * JWS, JWE, and JWK support: [JOSESwift](https://github.com/airsidemobile/JOSESwift.git)
+* X.509 certificate support: [swift-certificates](https://github.com/apple/swift-certificates)
+* JSON: [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON)
+* ASN.1 types and DER serialization: [swift-asn1](https://github.com/apple/swift-asn1)
 
 ## License details
 

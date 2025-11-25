@@ -37,24 +37,18 @@ public class JOSEController {
   }
 
   public func build<T: Codable>(
-    request: ResolvedRequestData,
+    resolvedRequest: ResolvedRequestData,
     holderInfo: T,
-    walletConfiguration: SiopOpenId4VPConfiguration,
+    walletConfiguration: OpenId4VPConfiguration,
     rsaJWK: RSAPublicKey,
     signingKey: SecKey,
     ttl: TimeInterval = 600.0,
     kid: UUID = UUID()
   ) throws -> JWTString {
 
-    var idTokenData: ResolvedRequestData.IdTokenData?
-    switch request {
-    case .idToken(request: let data):
-      idTokenData = data
-    default: throw JOSEError.notSupportedRequest
-    }
-
-    guard let idTokenData = idTokenData else {
-      throw JOSEError.invalidIdTokenRequest
+    let vpTokenData: ResolvedRequestData.VpTokenData? = resolvedRequest.request
+    guard let vpTokenData = vpTokenData else {
+      throw JOSEError.notSupportedRequest
     }
 
     let subjectJwk = JWKSet(keys: [rsaJWK])
@@ -67,7 +61,7 @@ public class JOSEController {
     let claimSet = try ([
       JWTClaimNames.issuer: issuerClaim,
       JWTClaimNames.subject: issuerClaim,
-      JWTClaimNames.audience: idTokenData.client.id.clientId,
+      JWTClaimNames.audience: vpTokenData.client.id.clientId,
       JWTClaimNames.issuedAt: Int(iat.timeIntervalSince1970.rounded()),
       JWTClaimNames.expirationTime: Int(exp.timeIntervalSince1970.rounded()),
       JWTClaimNames.subjectJWK: subjectJwk.toDictionary()
@@ -122,15 +116,10 @@ private extension JOSEController {
   }
 
   func buildIssuerClaim(
-    walletConfiguration: SiopOpenId4VPConfiguration,
+    walletConfiguration: OpenId4VPConfiguration,
     rsaJWK: RSAPublicKey
   ) throws -> String? {
-    switch walletConfiguration.preferredSubjectSyntaxType {
-    case .jwkThumbprint:
-      return try rsaJWK.thumbprint(algorithm: .SHA256)
-    case .decentralizedIdentifier:
-      return walletConfiguration.decentralizedIdentifier?.stringValue
-    }
+    return try rsaJWK.thumbprint(algorithm: .SHA256)
   }
 
   func sign(

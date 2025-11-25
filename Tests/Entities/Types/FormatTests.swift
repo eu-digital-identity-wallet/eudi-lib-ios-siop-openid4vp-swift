@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import XCTest
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class FormatTests: XCTestCase {
   func testInitWithValidFormat() throws {
