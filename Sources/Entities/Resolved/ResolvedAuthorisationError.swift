@@ -18,7 +18,6 @@ import Foundation
 /// An enumeration representing the possible errors encountered during authorization resolution.
 public enum ResolvedAuthorisationError: LocalizedError {
   case invalidClientData
-  case invalidPresentationDefinitionData
   case unsupportedResponseType(String)
   case invalidQueryDataForScope(Scope)
 
@@ -27,8 +26,6 @@ public enum ResolvedAuthorisationError: LocalizedError {
     switch self {
     case .invalidClientData:
       return ".invalidClientData"
-    case .invalidPresentationDefinitionData:
-      return ".invalidPresentationDefinitionData"
     case .unsupportedResponseType(let type):
       return ".unsupportedResponseType \(type)"
     case .invalidQueryDataForScope:

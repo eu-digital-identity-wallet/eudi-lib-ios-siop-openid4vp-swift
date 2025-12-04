@@ -17,18 +17,10 @@
 @preconcurrency import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 private let topPrivateKey = try! KeyController.generateRSAPrivateKey()
-private let config: SiopOpenId4VPConfiguration = .init(
-  subjectSyntaxTypesSupported: [
-    .decentralizedIdentifier,
-    .jwkThumbprint
-  ],
-  preferredSubjectSyntaxType: .jwkThumbprint,
-  decentralizedIdentifier: try! .init(
-    rawValue: "did:example:123"
-  ),
+private let config: OpenId4VPConfiguration = .init(
   privateKey: topPrivateKey,
   publicWebKeySet: .init(keys: []),
   supportedClientIdSchemes: [
@@ -39,6 +31,7 @@ private let config: SiopOpenId4VPConfiguration = .init(
   vpConfiguration: VPConfiguration.default(),
   responseEncryptionConfiguration: .unsupported
 )
+
 final class VerifierAttestationIssuerTests: XCTestCase {
 
   override func setUpWithError() throws {
@@ -140,7 +133,7 @@ private extension VerifierAttestationIssuerTests {
   func verifierAttestationWalletConfiguration(
     privateKey: SecKey,
     verifier: Verifier
-  ) throws -> SiopOpenId4VPConfiguration {
+  ) throws -> OpenId4VPConfiguration {
 
     let publicKey = try KeyController.generateECDHPublicKey(from: privateKey)
 
@@ -157,13 +150,7 @@ private extension VerifierAttestationIssuerTests {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
 
-    return SiopOpenId4VPConfiguration(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
+    return OpenId4VPConfiguration(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

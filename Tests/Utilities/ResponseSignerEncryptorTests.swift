@@ -16,12 +16,12 @@
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class ResponseSignerEncryptorTests: DiXCTest {
 
-  let mockResponsePayload: AuthorizationResponsePayload = .siopAuthenticationResponse(
-    idToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+  let mockResponsePayload: AuthorizationResponsePayload = .openId4VPAuthorizationResponse(
+    vpContent: .dcql(verifiablePresentations: [try! .init(value: "query_0"): [.generic(TestsConstants.cbor)]]),
     state: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
     nonce: "UVHfA8p0K5HP7BpLSNYChhIco9RYTlLj",
     clientId: .init(scheme: .preRegistered, originalClientId: "client"),
@@ -196,12 +196,11 @@ final class ResponseSignerEncryptorTests: DiXCTest {
     let decryptionPayload = try encryptedJwe.decrypt(using: decrypter)
     let dictionary = try JSONSerialization.jsonObject(with: decryptionPayload.data(), options: []) as? [String: Any]
 
-    XCTAssert(dictionary!["id_token"] as! String == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
+    XCTAssert(dictionary!["state"] as! String == "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9")
   }
 
   func testECDHSignEncryptResponseWithWalletConfiguration() async throws {
 
-    let rsaPrivateKey = try KeyController.generateRSAPrivateKey()
     let ecdhPrivateKey = try KeyController.generateECDHPrivateKey()
     let publicKey = try KeyController.generateECDHPublicKey(from: ecdhPrivateKey)
 

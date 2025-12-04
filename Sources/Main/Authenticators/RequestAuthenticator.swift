@@ -45,7 +45,6 @@ internal struct JWTDecoder {
       dcqlQuery = raw
     }
     
-    let pd = json["presentation_definition"].dictionaryObject?.toJSONString() ?? json["presentation_definition"].string
     let transactionData = json["transaction_data"].arrayObject as? [String]
     let verifierInfo = json["verifier_info"].arrayValue
     
@@ -53,8 +52,6 @@ internal struct JWTDecoder {
       responseType: json["response_type"].string,
       responseUri: json["response_uri"].string,
       redirectUri: json["redirect_uri"].string,
-      presentationDefinition: pd,
-      presentationDefinitionUri: json["presentation_definition_uri"].string,
       dcqlQuery: dcqlQuery,
       request: json["request"].string,
       requestUri: json["request_uri"].string,
@@ -67,7 +64,6 @@ internal struct JWTDecoder {
       scope: json["scope"].string,
       responseMode: json["response_mode"].string,
       state: json["state"].string,
-      idTokenType: json["id_token_type"].string,
       supportedAlgorithm: json["supported_algorithm"].string,
       transactionData: transactionData,
       verifierInfo: verifierInfo
@@ -77,10 +73,10 @@ internal struct JWTDecoder {
 
 internal actor RequestAuthenticator {
   
-  let config: SiopOpenId4VPConfiguration
+  let config: OpenId4VPConfiguration
   let clientAuthenticator: ClientAuthenticator
   
-  init(config: SiopOpenId4VPConfiguration, clientAuthenticator: ClientAuthenticator) {
+  init(config: OpenId4VPConfiguration, clientAuthenticator: ClientAuthenticator) {
     self.config = config
     self.clientAuthenticator = clientAuthenticator
   }
@@ -120,64 +116,6 @@ internal actor RequestAuthenticator {
     try? await validator.validate(clientId: clientId, jwt: token)
   }
   
-  func createIdVpToken(
-    clientId: String,
-    client: Client,
-    nonce: String,
-    requestObject: UnvalidatedRequestObject,
-    clientMetaData: ClientMetaData.Validated
-  ) throws -> ValidatedRequestData {
-    let formats: VpFormatsSupported = clientMetaData.vpFormatsSupported
-    let querySource = try parseQuerySource(
-      requestObject: requestObject
-    )
-    
-    return .idAndVpToken(request: .init(
-      idTokenType: try .init(authorizationRequestData: requestObject),
-      querySource: querySource,
-      clientMetaDataSource: nil,
-      clientId: clientId,
-      client: client,
-      nonce: nonce,
-      scope: requestObject.scope,
-      responseMode: requestObject.validResponseMode,
-      state: requestObject.state,
-      vpFormatsSupported: formats.values.isEmpty ? try VpFormatsSupported.default() : formats,
-      transactionData: requestObject.transactionData,
-      verifierInfo:  try requestObject.verifierInfo?.map({ json in
-        try VerifierInfo.from(json: json)
-      })
-    ))
-  }
-  
-  func createIdToken(
-    clientId: String,
-    client: Client,
-    nonce: String,
-    requestObject: UnvalidatedRequestObject
-  ) throws -> ValidatedRequestData {
-    
-    let querySource = try parseQuerySource(
-      requestObject: requestObject
-    )
-    
-    return .idToken(request: .init(
-      querySource: querySource,
-      idTokenType: try .init(authorizationRequestData: requestObject),
-      clientMetaDataSource: nil,
-      clientId: clientId,
-      client: client,
-      nonce: nonce,
-      scope: requestObject.scope,
-      responseMode: try? .init(authorizationRequestData: requestObject),
-      state: requestObject.state,
-      transactionData: requestObject.transactionData,
-      verifierInfo:  try requestObject.verifierInfo?.map({ json in
-        try VerifierInfo.from(json: json)
-      })
-    ))
-  }
-  
   // Create a VP token request
   func createVpToken(
     clientId: String,
@@ -191,7 +129,7 @@ internal actor RequestAuthenticator {
       requestObject: requestObject
     )
     
-    return .vpToken(request: .init(
+    return .init(request: .init(
       querySource: querySource,
       clientMetaDataSource: nil,
       clientId: clientId,

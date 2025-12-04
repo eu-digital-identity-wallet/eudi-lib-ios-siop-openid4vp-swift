@@ -52,10 +52,6 @@ public struct Constants {
   public static func testClientMetaData() -> ClientMetaData {
     .init(
       jwks: Constants.clientMetaDataJWKSString,
-      idTokenSignedResponseAlg: ".idTokenSignedResponseAlg",
-      idTokenEncryptedResponseAlg: "RS256",
-      idTokenEncryptedResponseEnc: "A128CBC-HS256",
-      subjectSyntaxTypesSupported: ["urn:ietf:params:oauth:jwk-thumbprint", "did:example", "did:key"],
       vpFormatsSupported: nil
     )
   }

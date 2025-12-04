@@ -16,7 +16,7 @@
 import Foundation
 import XCTest
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 struct Cat: Codable, Equatable {
   let meow: String

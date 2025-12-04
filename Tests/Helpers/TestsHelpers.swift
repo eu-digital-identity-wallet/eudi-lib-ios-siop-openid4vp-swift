@@ -16,35 +16,9 @@
 import Foundation
 import SwiftyJSON
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 class TestsHelpers {
-  static func getDirectPostSession(
-    nonce: String
-  ) async throws -> [String: Any] {
-
-    // Replace this URL with the endpoint you want to send the POST request to
-    let url = URL(string: "\(TestsConstants.host)/ui/presentations")!
-
-    // Create a POST request
-    var request = URLRequest(url: url)
-    request.httpMethod = "POST"
-
-    // Set the request body data (e.g., JSON data)
-    let jsonBody = [
-      "type": "id_token",
-      "id_token_type": "subject_signed_id_token",
-      "nonce": nonce
-    ]
-
-    let jsonData = try JSONSerialization.data(withJSONObject: jsonBody, options: [])
-    request.httpBody = jsonData
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-    let (data, _) = try await URLSession.shared.data(for: request)
-    return try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-  }
-
   static func transactionDataBase64String() -> String {
 
     var json = JSON()

@@ -19,24 +19,24 @@ import JOSESwift
 
 // Function to create wallet metadata
 public func walletMetaData(
-  cfg: SiopOpenId4VPConfiguration,
+  config: OpenId4VPConfiguration,
   key: SecKey? = nil
 ) -> JSON {
   var json = JSON()
 
   json[REQUEST_OBJECT_SIGNING_ALG_VALUES_SUPPORTED] = JSON(
-    cfg.jarConfiguration.supportedAlgorithms.map { $0.name }
+    config.jarConfiguration.supportedAlgorithms.map { $0.name }
   )
 
-  json[VP_FORMATS_SUPPORTED] = cfg.vpConfiguration.vpFormatsSupported.toJSON()["vp_formats_supported"]
+  json[VP_FORMATS_SUPPORTED] = config.vpConfiguration.vpFormatsSupported.toJSON()["vp_formats_supported"]
   json[CLIENT_ID_PREFIXES_SUPPORTED] = JSON(
-    cfg.supportedClientIdSchemes.map { $0.name }
+    config.supportedClientIdSchemes.map { $0.name }
   )
 
-  json[RESPONSE_TYPES_SUPPORTED] = JSON(["vp_token", "id_token"])
+  json[RESPONSE_TYPES_SUPPORTED] = JSON(["vp_token"])
   json[RESPONSE_MODES_SUPPORTED] = JSON(["direct_post", "direct_post.jwt"])
 
-  if let options: PostOptions = cfg.jarConfiguration.supportedRequestUriMethods.isPostSupported() {
+  if let options: PostOptions = config.jarConfiguration.supportedRequestUriMethods.isPostSupported() {
     switch options.jarEncryption {
     case .notRequired: break
     case .required(

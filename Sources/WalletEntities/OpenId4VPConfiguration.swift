@@ -15,12 +15,7 @@
  */
 @preconcurrency import Foundation
 
-public struct SiopOpenId4VPConfiguration: Sendable {
-  public let subjectSyntaxTypesSupported: [SubjectSyntaxType]
-  public let preferredSubjectSyntaxType: SubjectSyntaxType
-  public let decentralizedIdentifier: DecentralizedIdentifier?
-  public let idTokenTTL: TimeInterval
-  public let presentationDefinitionUriSupported: Bool
+public struct OpenId4VPConfiguration: Sendable {
   public let privateKey: SecKey
   public let publicWebKeySet: WebKeySet
   public let supportedClientIdSchemes: [SupportedClientIdPrefix]
@@ -32,11 +27,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   public let responseEncryptionConfiguration: ResponseEncryptionConfiguration
   
   public init(
-    subjectSyntaxTypesSupported: [SubjectSyntaxType] = [.decentralizedIdentifier, .jwkThumbprint],
-    preferredSubjectSyntaxType: SubjectSyntaxType = .jwkThumbprint,
-    decentralizedIdentifier: DecentralizedIdentifier? = nil,
-    idTokenTTL: TimeInterval = 600.0,
-    presentationDefinitionUriSupported: Bool = false,
     privateKey: SecKey,
     publicWebKeySet: WebKeySet,
     supportedClientIdSchemes: [SupportedClientIdPrefix],
@@ -47,11 +37,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
     session: Networking = Self.walletSession,
     responseEncryptionConfiguration: ResponseEncryptionConfiguration
   ) {
-    self.subjectSyntaxTypesSupported = subjectSyntaxTypesSupported
-    self.preferredSubjectSyntaxType = preferredSubjectSyntaxType
-    self.decentralizedIdentifier = decentralizedIdentifier
-    self.idTokenTTL = idTokenTTL
-    self.presentationDefinitionUriSupported = presentationDefinitionUriSupported
     self.privateKey = privateKey
     self.publicWebKeySet = publicWebKeySet
     self.supportedClientIdSchemes = supportedClientIdSchemes
@@ -64,11 +49,6 @@ public struct SiopOpenId4VPConfiguration: Sendable {
   }
 
   internal init() throws {
-    subjectSyntaxTypesSupported = []
-    preferredSubjectSyntaxType = .decentralizedIdentifier
-    decentralizedIdentifier = try DecentralizedIdentifier(rawValue: "did:example:123|did:example:456")
-    idTokenTTL = 600.0
-    presentationDefinitionUriSupported = false
     privateKey = try KeyController.generateRSAPrivateKey()
     publicWebKeySet = WebKeySet(keys: [])
     supportedClientIdSchemes = []

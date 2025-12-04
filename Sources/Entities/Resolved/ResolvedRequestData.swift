@@ -16,34 +16,18 @@
 import Foundation
 import SwiftyJSON
 
-public enum ResolvedRequestData: Sendable {
-  case idToken(request: IdTokenData)
-  case vpToken(request: VpTokenData)
-  case idAndVpToken(request: IdAndVpTokenData)
+public struct ResolvedRequestData: Sendable {
+  public let request: VpTokenData
 
   public var dcql: DCQL? {
-    switch self {
-    case .vpToken(let request):
-      switch request.presentationQuery {
-      case .byDigitalCredentialsQuery(let dcql):
-        return dcql
-      }
-    case .idAndVpToken:
-      return nil
-    default:
-      return nil
+    switch request.presentationQuery {
+    case .byDigitalCredentialsQuery(let dcql):
+      return dcql
     }
   }
 
   public var client: Client {
-    switch self {
-    case .vpToken(let request):
-      return request.client
-    case .idAndVpToken(let request):
-      return request.client
-    case .idToken(let request):
-      return request.client
-    }
+    return request.client
   }
 }
 
@@ -51,92 +35,36 @@ public extension ResolvedRequestData {
   
   /// Initializes a `ResolvedRequestData` instance with the provided parameters.
   init(
-    walletConfiguration: SiopOpenId4VPConfiguration,
+    walletConfiguration: OpenId4VPConfiguration,
     vpConfiguration: VPConfiguration,
     validatedClientMetaData: ClientMetaData.Validated,
     validatedAuthorizationRequest: ValidatedRequestData
   ) async throws {
 
-    switch validatedAuthorizationRequest {
-    case .idToken(let request):
-      let presentationQuery = try await Self.resolvePresentationQuery(
-        from: request.querySource
+    let request = validatedAuthorizationRequest.request
+    let commonFormats = VpFormatsSupported.common(request.vpFormatsSupported, vpConfiguration.vpFormatsSupported) ?? request.vpFormatsSupported
+    let presentationQuery = try await Self.resolvePresentationQuery(
+      from: request.querySource
+    )
+
+    self = .init(request: .init(
+      presentationQuery: presentationQuery,
+      clientMetaData: validatedClientMetaData,
+      client: request.client,
+      nonce: request.nonce,
+      responseMode: request.responseMode,
+      state: request.state,
+      vpFormatsSupported: commonFormats,
+      responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
+      transactionData: try Self.parseTransactionData(
+        transactionData: request.transactionData,
+        vpConfiguration: vpConfiguration,
+        presentationQuery: presentationQuery),
+      verifierInfo: try VerifierInfo.validatedVerifierInfo(
+        request.verifierInfo,
+        presentationQuery: presentationQuery
       )
-
-      self = .idToken(request: .init(
-        idTokenType: request.idTokenType,
-        presentationQuery: presentationQuery,
-        clientMetaData: validatedClientMetaData,
-        client: request.client,
-        nonce: request.nonce,
-        responseMode: request.responseMode,
-        state: request.state,
-        scope: request.scope,
-        responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
-        transactionData: try Self.parseTransactionData(
-          transactionData: request.transactionData,
-          vpConfiguration: vpConfiguration,
-          presentationQuery: presentationQuery),
-        verifierInfo: try VerifierInfo.validatedVerifierInfo(
-          request.verifierInfo,
-          presentationQuery: presentationQuery)
-      ))
-
-    case .vpToken(let request):
-      let commonFormats = VpFormatsSupported.common(request.vpFormatsSupported, vpConfiguration.vpFormatsSupported) ?? request.vpFormatsSupported
-      let presentationQuery = try await Self.resolvePresentationQuery(
-        from: request.querySource
-      )
-
-      self = .vpToken(request: .init(
-        presentationQuery: presentationQuery,
-        clientMetaData: validatedClientMetaData,
-        client: request.client,
-        nonce: request.nonce,
-        responseMode: request.responseMode,
-        state: request.state,
-        vpFormatsSupported: commonFormats,
-        responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification,
-        transactionData: try Self.parseTransactionData(
-          transactionData: request.transactionData,
-          vpConfiguration: vpConfiguration,
-          presentationQuery: presentationQuery),
-        verifierInfo: try VerifierInfo.validatedVerifierInfo(
-          request.verifierInfo,
-          presentationQuery: presentationQuery
-        )
-      ))
-
-    case .idAndVpToken(let request):
-      let commonFormats = VpFormatsSupported.common(request.vpFormatsSupported, vpConfiguration.vpFormatsSupported) ?? request.vpFormatsSupported
-      let presentationQuery = try await Self.resolvePresentationQuery(
-        from: request.querySource
-      )
-
-      switch request.querySource {
-      case .dcqlQuery:
-        self = .vpToken(request: .init(
-          presentationQuery: presentationQuery,
-          clientMetaData: validatedClientMetaData,
-          client: request.client,
-          nonce: request.nonce,
-          responseMode: request.responseMode,
-          state: request.state,
-          vpFormatsSupported: commonFormats,
-          responseEncryptionSpecification: validatedClientMetaData.responseEncryptionSpecification, transactionData: try Self.parseTransactionData(
-            transactionData: request.transactionData,
-            vpConfiguration: vpConfiguration,
-            presentationQuery: presentationQuery
-          ),
-          verifierInfo: try VerifierInfo.validatedVerifierInfo(
-            request.verifierInfo,
-            presentationQuery: presentationQuery
-          )
-        ))
-      default:
-        throw ValidationError.validationError("Query source by scope is not supported for now")
-      }
-    }
+    ))
   }
   
   private static func lookupConfiguredQueries(
@@ -154,14 +82,7 @@ public extension ResolvedRequestData {
   }
   
   var legalName: String? {
-    switch self {
-    case .idToken(let request):
-      return request.client.legalName
-    case .vpToken(let request):
-      return request.client.legalName
-    case .idAndVpToken(let request):
-      return request.client.legalName
-    }
+    return request.client.legalName
   }
 }
 

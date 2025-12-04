@@ -15,11 +15,11 @@
  */
 import XCTest
 import SwiftyJSON
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 class ResponseModeTests: XCTestCase {
   func testInitWithValidDirectPostJSON() throws {
-    let url = "https://siopOpenID4VP.com/callback"
+    let url = "https://openID4VP.com/callback"
     let json: JSON = [
       "response_mode": "direct_post",
       "response_uri": url
@@ -35,7 +35,7 @@ class ResponseModeTests: XCTestCase {
   }
 
   func testInitWithValidQueryJSON() throws {
-    let url = "https://siopOpenID4VP.com/redirect"
+    let url = "https://openID4VP.com/redirect"
     let json: JSON = [
       "response_mode": "query",
       "redirect_uri": url
@@ -52,7 +52,7 @@ class ResponseModeTests: XCTestCase {
 
   func testInitWithMissingResponseMode() {
     let json: JSON = [
-      "redirect_uri": "https://siopOpenID4VP.com/redirect"
+      "redirect_uri": "https://openID4VP.com/redirect"
     ]
 
     XCTAssertThrowsError(try ResponseMode(authorizationRequestObject: json)) { error in
@@ -77,13 +77,13 @@ class ResponseModeTests: XCTestCase {
   }
 
   func testIsJarmWhenDirectPostJWT() {
-    let url = URL(string: "https://siopOpenID4VP.com")!
+    let url = URL(string: "https://openID4VP.com")!
     let mode = ResponseMode.directPostJWT(responseURI: url)
     XCTAssertTrue(mode.isJarm())
   }
 
   func testIsJarmWhenDirectPost() {
-    let url = URL(string: "https://siopOpenID4VP.com")!
+    let url = URL(string: "https://openID4VP.com")!
     let mode = ResponseMode.directPost(responseURI: url)
     XCTAssertFalse(mode.isJarm())
   }
@@ -91,13 +91,13 @@ class ResponseModeTests: XCTestCase {
   func testValidatedResponseModeWithValidData() {
     let data = UnvalidatedRequestObject(
       responseUri: nil,
-      redirectUri: "https://siopOpenID4VP.com",
+      redirectUri: "https://openID4VP.com",
       responseMode: "query"
     )
 
     let mode = data.validatedResponseMode
     if case let .query(responseURI)? = mode {
-      XCTAssertEqual(responseURI.absoluteString, "https://siopOpenID4VP.com")
+      XCTAssertEqual(responseURI.absoluteString, "https://openID4VP.com")
     } else {
       XCTFail("Expected .query but got nil or another value")
     }

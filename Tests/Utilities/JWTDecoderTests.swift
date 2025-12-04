@@ -18,7 +18,7 @@ import XCTest
 import JOSESwift
 import SwiftyJSON
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class JWTDecoderTests: XCTestCase {
   func testDecodeJWT_AllFieldsDecodedCorrectly() {
@@ -40,7 +40,6 @@ final class JWTDecoderTests: XCTestCase {
       "scope": "openid",
       "response_mode": "fragment",
       "state": "xyz",
-      "id_token_type": "subject_signed",
       "supported_algorithm": "ES256",
       "transaction_data": ["txn1", "txn2"],
       "verifier_info": [
@@ -71,8 +70,6 @@ final class JWTDecoderTests: XCTestCase {
     XCTAssertEqual(result.responseType, "code")
     XCTAssertEqual(result.responseUri, "https://response.uri")
     XCTAssertEqual(result.redirectUri, "https://redirect.uri")
-    XCTAssertEqual(result.presentationDefinition, "{\"def123\": \"test\"}")
-    XCTAssertEqual(result.presentationDefinitionUri, "https://definition.uri")
     XCTAssertEqual(result.dcqlQuery?["foo"].string, "bar")
     XCTAssertEqual(result.request, "requestToken")
     XCTAssertEqual(result.requestUri, "https://request.uri")
@@ -85,7 +82,6 @@ final class JWTDecoderTests: XCTestCase {
     XCTAssertEqual(result.scope, "openid")
     XCTAssertEqual(result.responseMode, "fragment")
     XCTAssertEqual(result.state, "xyz")
-    XCTAssertEqual(result.idTokenType, "subject_signed")
     XCTAssertEqual(result.supportedAlgorithm, "ES256")
     XCTAssertEqual(result.transactionData, ["txn1", "txn2"])
     XCTAssertEqual(result.verifierInfo?.count, 2)

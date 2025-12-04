@@ -16,7 +16,7 @@
 import Foundation
 import XCTest
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class ClientMetaDataValidatorTests: XCTestCase {
 
@@ -38,10 +38,6 @@ final class ClientMetaDataValidatorTests: XCTestCase {
     do {
       let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
         jwks: TestsConstants.webKeyJson,
-        idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
-        idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
-        idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
-        subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
         vpFormatsSupported: TestsConstants.testVpFormatsSupportedTO()
       ), responseMode: nil, responseEncryptionConfiguration: .unsupported)!
 
@@ -58,10 +54,6 @@ final class ClientMetaDataValidatorTests: XCTestCase {
     do {
       let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
         jwks: TestsConstants.webKeyJson,
-        idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
-        idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
-        idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
-        subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
         vpFormatsSupported: TestsConstants.testVpFormatsSupportedTO()
       ), responseMode: nil, responseEncryptionConfiguration: .unsupported)!
 
@@ -76,10 +68,6 @@ final class ClientMetaDataValidatorTests: XCTestCase {
 
     let response: ClientMetaData.Validated = try await self.validator.validate(clientMetaData: .init(
       jwks: TestsConstants.sampleValidJWKS,
-      idTokenSignedResponseAlg: TestsConstants.signedResponseAlg,
-      idTokenEncryptedResponseAlg: TestsConstants.encryptedResponseAlg,
-      idTokenEncryptedResponseEnc: TestsConstants.encryptedResponseEnc,
-      subjectSyntaxTypesSupported: [TestsConstants.subjectSyntaxTypesSupported],
       vpFormatsSupported: TestsConstants.testVpFormatsSupportedTO()
     ), responseMode: nil, responseEncryptionConfiguration: .unsupported)!
 

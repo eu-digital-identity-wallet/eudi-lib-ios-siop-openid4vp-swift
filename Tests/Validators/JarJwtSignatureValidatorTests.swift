@@ -17,7 +17,7 @@ import Foundation
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
 final class JarJwtSignatureValidatorTests: XCTestCase {
 
@@ -147,7 +147,7 @@ final class JarJwtSignatureValidatorTests: XCTestCase {
 
 private extension JarJwtSignatureValidatorTests {
 
-  func preRegisteredWalletConfiguration() throws -> SiopOpenId4VPConfiguration {
+  func preRegisteredWalletConfiguration() throws -> OpenId4VPConfiguration {
 
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -165,7 +165,7 @@ private extension JarJwtSignatureValidatorTests {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
 
-    return SiopOpenId4VPConfiguration(
+    return OpenId4VPConfiguration(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -184,7 +184,7 @@ private extension JarJwtSignatureValidatorTests {
     )
   }
 
-  func iso509WalletConfiguration() throws -> SiopOpenId4VPConfiguration {
+  func iso509WalletConfiguration() throws -> OpenId4VPConfiguration {
 
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -202,7 +202,7 @@ private extension JarJwtSignatureValidatorTests {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
 
-    return SiopOpenId4VPConfiguration(
+    return OpenId4VPConfiguration(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [

@@ -33,18 +33,12 @@ enum AuthorizationRequestErrorCode: String {
   /// The Wallet does not support any of the formats requested by the Verifier
   case vpFormatsNotSupported = "vp_formats_not_supported"
 
-  /// The Presentation Definition URL cannot be reached
-  case invalidPresentationDefinitionURI = "invalid_presentation_definition_uri"
-
-  /// The Presentation Definition URL can be reached, but the specified presentation_definition cannot be found
-  case invalidPresentationDefinitionReference = "invalid_presentation_definition_reference"
-
   /// The value of the request_uri_method request parameter is neither get nor post
   case invalidRequestURIMethod = "invalid_request_uri_method"
 
   case invalidTransactionData = "invalid_transaction_data"
 
-  // SIOPv2 Error Codes
+  // Error Codes
   case userCancelled = "user_cancelled"
   case registrationValueNotSupported = "registration_value_not_supported"
   case subjectSyntaxTypesNotSupported = "subject_syntax_types_not_supported"

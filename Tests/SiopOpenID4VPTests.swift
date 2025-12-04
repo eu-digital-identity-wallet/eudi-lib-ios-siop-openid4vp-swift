@@ -17,11 +17,11 @@ import Foundation
 import XCTest
 import JOSESwift
 
-@testable import SiopOpenID4VP
+@testable import OpenID4VP
 
-final class SiopOpenID4VPTests: DiXCTest {
+final class OpenID4VPTests: DiXCTest {
 
-  func preRegisteredWalletConfiguration() throws -> SiopOpenId4VPConfiguration {
+  func preRegisteredWalletConfiguration() throws -> OpenId4VPConfiguration {
 
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -39,13 +39,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
 
-    return SiopOpenId4VPConfiguration(
-      subjectSyntaxTypesSupported: [
-        .decentralizedIdentifier,
-        .jwkThumbprint
-      ],
-      preferredSubjectSyntaxType: .jwkThumbprint,
-      decentralizedIdentifier: try DecentralizedIdentifier(rawValue: "did:example:123"),
+    return OpenId4VPConfiguration(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -99,7 +93,7 @@ final class SiopOpenID4VPTests: DiXCTest {
 
   static func preRegisteredWalletConfigurationWithKnownClientID(
     _ clientId: String = "verifier-backend.eudiw.dev"
-  ) throws -> SiopOpenId4VPConfiguration {
+  ) throws -> OpenId4VPConfiguration {
 
     let privateKey = try KeyController.generateRSAPrivateKey()
     let publicKey = try KeyController.generateRSAPublicKey(from: privateKey)
@@ -117,7 +111,7 @@ final class SiopOpenID4VPTests: DiXCTest {
       "keys": [publicKeyJWK.jsonString()?.convertToDictionary()]
     ])
 
-    return SiopOpenId4VPConfiguration(
+    return OpenId4VPConfiguration(
       privateKey: privateKey,
       publicWebKeySet: keySet,
       supportedClientIdSchemes: [
@@ -151,15 +145,10 @@ final class SiopOpenID4VPTests: DiXCTest {
 
   // MARK: - Authorisation Request Testing
 
-  func testAuthorizationRequestDataGivenValidDataInURL() throws {
-    let authorizationRequestData = UnvalidatedRequestObject(from: TestsConstants.validAuthorizeUrl)
-    XCTAssertNotNil(authorizationRequestData)
-  }
-
   func testAuthorize_WhenWalletConfigurationIsNil_ReturnsInvalidResolutionWithMissingConfig() async {
-    let siop = SiopOpenID4VP(walletConfiguration: nil)
+    let vp = OpenID4VP(walletConfiguration: nil)
     let url = URL(string: "https://example.com/valid-request")!
-    let result = await siop.authorize(url: url)
+    let result = await vp.authorize(url: url)
 
     switch result {
     case .invalidResolution(let error, let dispatchDetails):
