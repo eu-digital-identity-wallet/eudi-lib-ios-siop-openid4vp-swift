@@ -17,7 +17,7 @@ import Foundation
 import SwiftyJSON
 
 public struct ResolvedRequestData: Sendable {
-  let request: VpTokenData
+  public let request: VpTokenData
 
   public var dcql: DCQL? {
     switch request.presentationQuery {
